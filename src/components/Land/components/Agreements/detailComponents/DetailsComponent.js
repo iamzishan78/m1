@@ -49,9 +49,11 @@ import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
 
 import { detailCardController } from 'hookstate/detailCardController';
 import { jobController } from 'hookstate/jobStateController';
+import { popupController } from 'hookstate/popupStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
 import { PaymentFeatureTenants } from 'utils/data';
+import { UserSession } from 'utils/user';
 
 import { setLandReduxKey } from 'actions';
 import { AppContext } from 'AppContext';
@@ -250,7 +252,7 @@ export function DetailComponents(props) {
 	const activeAgreement = useSelector(({ Land }) => Land.agreement?.activeAgreement);
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [drawer, setDrawer] = useContext(DrawerContext);
-	const isPaymentTenant = PaymentFeatureTenants.includes(window.sessionStorage?.getItem('tenantName').toLowerCase());
+	const isPaymentTenant = PaymentFeatureTenants.includes(UserSession.getStorageItem('tenantName').toLowerCase());
 
 	const [tab, setTab] = useState(0);
 	const sectionsRef = useRef([]); // References for all tab sections
@@ -321,10 +323,10 @@ export function DetailComponents(props) {
 			shape.id = dataCustomLayer.customLayer._id;
 			shape.properties.id = dataCustomLayer.customLayer._id;
 			shape.layer = { id: dataCustomLayer.customLayer.layer };
-			setStateApp(state => ({
-				...state,
+			popupController.updateState({
 				selectedShape: { ...shape.properties, shape },
-			}));
+			});
+
 			dispatch(
 				setLandReduxKey('agreement', {
 					activeAgreement: {

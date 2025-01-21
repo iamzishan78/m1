@@ -443,6 +443,7 @@ const TractInterestOwnerMeta = {
 						value={row?.original?.commentsCount}
 						targetLabel={'Parcel Ownership'}
 						hideShareCommentsToggle
+						type={'commentsWithTags'}
 					/>
 				);
 			},

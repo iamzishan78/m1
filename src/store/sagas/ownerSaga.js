@@ -5,8 +5,7 @@ import { getPolygonString } from 'components/Shared/functions';
 
 import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
 import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
-import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
-import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { GET_DB_DATA, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 import { OWNERS_BY_WELL_IDS } from 'graphQL/useQueryOwnersByWellIds';
 import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
 import { SHAPEOWNERSCOUNT, SHAPEOWNERSINTERESTCOUNT } from 'graphQL/useQueryShapeOwnersCount';
@@ -27,6 +26,8 @@ import {
 	GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT,
 	EXEC_ASYNC_EXPORT_JOB,
 } from 'store/type';
+
+import { LOD_YEAR } from 'utils/consts';
 
 import { showErrorMessage } from 'actions';
 import Api from 'api';
@@ -139,7 +140,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
 		if (wellIds?.length > 0) {
 			taxOwners = yield call(Api.query, OWNERS_BY_WELL_IDS, {
 				wellIds: wellIds,
-				selectedYear: '2023',
+				selectedYear: `${LOD_YEAR}`,
 			});
 		}
 

@@ -1,9 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { Fragment, useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { Grid } from '@material-ui/core';
-import { CircularProgress, Menu, MenuItem, TextField, InputAdornment, IconButton } from '@material-ui/core';
+import { Grid, CircularProgress, Menu, MenuItem, TextField, InputAdornment, IconButton } from '@material-ui/core';
 import CardHeader from '@material-ui/core/CardHeader';
 import List from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
@@ -26,6 +24,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import CheckCircleIcon from 'components/Shared/svgIcons/CheckCircleIcon';
 import EventCalendarIcon from 'components/Shared/svgIcons/EventCalendarIcon';
@@ -36,7 +35,7 @@ import { UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
 import { GETALLACTIVITIES } from '../../../graphQL/useQueryGetAllActivities';
 import ActivitiesModal from '../../Activities/components/ActivitiesModal';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	header: {
 		padding: '8px 8px 0 16px',
 		backgroundColor: '#FFFFF',
@@ -58,9 +57,6 @@ const useStyles = makeStyles(theme => ({
 		'& .MuiIconButton-root': {
 			padding: '10px !important',
 		},
-		// "& .MuiPaper-elevation1": {
-		//   boxShadow: "none !important",
-		// },
 	},
 	title: {
 		fontSize: '16px',
@@ -113,12 +109,6 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-// const DragHandle = sortableHandle(() => (
-//   <IconButton aria-label="drag">
-//     <DragIndicatorOutlinedIcon fontSize="default" htmlColor="#808080" />
-//   </IconButton>
-// ));
-
 const activityIcons = {
 	call: <CallIcon />,
 	meeting: <MeetingIcon />,
@@ -142,10 +132,6 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 		setAnchorEl(event.currentTarget);
 	};
 
-	useEffect(() => {
-		searchTask();
-	}, [search, copyData]);
-
 	const searchTask = () => {
 		if (search?.length && copyData?.length) {
 			setDefaultData(copyData);
@@ -158,6 +144,10 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 			setData(copyData);
 		}
 	};
+
+	useEffect(() => {
+		searchTask();
+	}, [search, copyData]);
 
 	return (
 		<Grid container className={classes.gridStyle}>
@@ -315,6 +305,7 @@ const Tasks = () => {
 			getAllActivities({
 				variables: {
 					category: 'CRM',
+					openOnly: true,
 				},
 			});
 		}
@@ -334,7 +325,6 @@ const Tasks = () => {
 	return (
 		<Fragment>
 			<CardHeader
-				// action={<DragHandle />}
 				title={
 					<Title
 						tab={tab}
@@ -351,9 +341,9 @@ const Tasks = () => {
 				<CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
 			) : (
 				<List style={{ maxHeight: 'calc(100% - 120px)', overflow: 'auto' }}>
-					{data.map((activity, i) => {
+					{data.map(activity => {
 						return (
-							<Paper key={i} className={classes.paper}>
+							<Paper key={activity._id} className={classes.paper}>
 								<Grid
 									container
 									direction="row"
@@ -418,4 +408,14 @@ const Tasks = () => {
 		</Fragment>
 	);
 };
+
+Title.propTypes = {
+	tab: PropTypes.number.isRequired,
+	setTab: PropTypes.func.isRequired,
+	setData: PropTypes.func.isRequired,
+	copyData: PropTypes.array.isRequired,
+	stateApp: PropTypes.object.isRequired,
+	setStateApp: PropTypes.func.isRequired,
+};
+
 export default Tasks;

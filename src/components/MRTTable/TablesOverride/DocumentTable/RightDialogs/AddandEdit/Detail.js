@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { IconButton, TextField, withStyles, Typography, Grid } from '@material-ui/core';
+import { IconButton, TextField, withStyles, Typography, Grid, Divider, Box, Container } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -15,6 +15,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { BlockBlobClient } from '@azure/storage-blob';
 import _ from 'lodash';
 import loadashFilter from 'lodash/filter';
+import PropTypes from 'prop-types';
 
 import Loader from 'components/Loaders';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
@@ -30,7 +31,7 @@ import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
-import { BYTE, CREATED_STATUS } from 'utils/consts';
+import { CREATED_STATUS, ONE_MB } from 'utils/consts';
 
 import { showErrorMessage } from 'actions';
 
@@ -225,6 +226,11 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	});
 
 	const [fileUpload, setFileUpload] = useState({ upload: false, fileExtension: null, fileInformation: '' });
+	const [url, setUrl] = useState({
+		isValid: selectedDocument?.url ? true : false,
+		value: selectedDocument?.url,
+		error: false,
+	});
 	const [inputFile, setInputFile] = useState(null);
 	const [fileDownload, setFileDownload] = useState(false);
 
@@ -267,7 +273,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 				const blockBlobClient = new BlockBlobClient(uri);
 				blockBlobClient
 					.uploadBrowserData(inputFile, {
-						maxSingleShotSize: MBS * BYTE * BYTE,
+						maxSingleShotSize: MBS * ONE_MB,
 						blobHTTPHeaders: {
 							blobContentDisposition: `attachment; filename="${file_name}"`,
 						},
@@ -289,27 +295,8 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 				};
 
 				Loader.createToast('DocumentUpdating', 'Document Updating in Progress');
-				updateDocument({
-					variables: {
-						document,
-					},
-					refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
-					awaitRefetchQueries: true,
-				}).then(res => {
-					if (res?.data?.updateDocumentFile) {
-						const { success, message } = res.data.updateDocumentFile;
-						if (success) {
-							Loader.successToast('DocumentUpdating', message);
-						} else {
-							Loader.errorToast('DocumentUpdating', message);
-						}
-					} else {
-						Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
-					}
 
-					tableGlobalController.refetch();
-				});
-
+				saveDocument(document);
 				handleClose();
 			}
 		}
@@ -325,7 +312,35 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		return () => {
 			formController?.reset();
 		};
-	}, []);
+	}, [selectedDocument]);
+
+	useEffect(() => {
+		const value = url?.isValid ? url?.value : null;
+		formState?.url?.set(value);
+	}, [url]);
+
+	const saveDocument = document => {
+		updateDocument({
+			variables: {
+				document,
+			},
+			refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
+			awaitRefetchQueries: true,
+		}).then(res => {
+			if (res?.data?.updateDocumentFile) {
+				const { success, message } = res.data.updateDocumentFile;
+				if (success) {
+					Loader.successToast('DocumentUpdating', message);
+				} else {
+					Loader.errorToast('DocumentUpdating', message);
+				}
+			} else {
+				Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
+			}
+
+			tableGlobalController.refetch();
+		});
+	};
 
 	const uploadFile = () => {
 		Loader.createToast('FileUploading', 'File Uploading in Progress');
@@ -385,7 +400,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 					flexGrow: 1,
 					overflow: 'auto',
 					minHeight: '2em',
-					maxHeight: 'calc(100vh - 310px)',
+					maxHeight: 'calc(100vh - 400px)',
 				}}
 			>
 				<List>
@@ -584,7 +599,14 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 
 				{!fileUpload?.fileExtension ? (
 					<div className={classes.Uploadcomp}>
-						<UploadZone userId={getUser?._id} fileId={selectedDocument?._id} setFileUpload={setFileUpload} />
+						<UploadZone
+							userId={getUser?._id}
+							fileId={selectedDocument?._id}
+							setFileUpload={setFileUpload}
+							title={'Upload Document'}
+							setUrl={setUrl}
+							url={url}
+						/>
 					</div>
 				) : null}
 				<div className={classes.dialogFooter}>
@@ -610,10 +632,14 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						color="secondary"
 						size="medium"
 						disableElevation
-						disabled={!fileUpload?.upload}
+						disabled={!fileUpload?.upload && !url?.isValid}
 						onClick={() => {
 							if (fileUpload?.upload) {
 								uploadFile();
+							} else {
+								delete formStateValues.tableKey;
+								saveDocument({ ...formStateValues, fileId: null });
+								handleClose();
 							}
 						}}
 						className={classes.footerButton}
@@ -735,4 +761,16 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			{...other}
 		/>
 	);
+};
+
+DocumentDetails.propTypes = {
+	selectedDocument: PropTypes.object,
+	handleClose: PropTypes.func.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+DocumentType.propTypes = {
+	setDocumentType: PropTypes.func.isRequired,
+	value: PropTypes.string,
+	documentTypes: PropTypes.object,
 };

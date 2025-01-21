@@ -523,7 +523,7 @@ export default function ParcelInstrument(props) {
 						userId: stateApp.user.mongoId,
 						parcelId: props.parcelId,
 					},
-					refetchQueries: ['getParcelAgreement', 'getESSimpleSearch'],
+					refetchQueries: ['getParcelAgreement', 'getDbData'],
 					awaitRefetchQueries: true,
 				},
 			}).then(() => {

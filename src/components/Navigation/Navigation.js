@@ -46,6 +46,7 @@ import DocumentSearch from './components/DocumentSearch';
 import SearchBarWithToggleButton from './components/SearchBarWithToggleButton';
 import SupportCenterModal from './components/SupportCenter';
 import SideNavigation from './SideNavigation';
+import { NavigationContext } from './NavigationContext';
 
 const TabPanel = props => {
 	const { children, value, index, ...other } = props;
@@ -72,6 +73,7 @@ TabPanel.propTypes = {
 
 export default function Navigation(props) {
 	const [stateApp] = useContext(AppContext);
+	const [, setStateNav] = useContext(NavigationContext);
 
 	const [openSupportCenter, setOpenSupportCenter] = useState(false);
 	const [openContactForm, setOpenContactForm] = useState(false);
@@ -91,6 +93,8 @@ export default function Navigation(props) {
 		isCalendar: location.pathname.startsWith('/calendar'),
 	});
 
+	const isCustomAssetDetailPage = /^\/land\/customAsset\/[^/]+\/details/.test(location.pathname);
+
 	useEffect(() => {
 		Object.values(ROUTES).forEach(value => {
 			if (
@@ -102,7 +106,7 @@ export default function Navigation(props) {
 				});
 			}
 		});
-	}, [location]);
+	}, [location, setStateNav]);
 
 	useEffect(() => {
 		if (location.pathname === '/track') {
@@ -127,7 +131,7 @@ export default function Navigation(props) {
 		} else {
 			setMatchFind(false); // Set matchFind to false if component is not on the map page
 		}
-	}, [location.pathname]);
+	}, [location.pathname, props.isMap]);
 
 	const handleDrawerClose = () => {
 		setOpenDrawer(false);
@@ -164,23 +168,13 @@ export default function Navigation(props) {
 			location.pathname.startsWith('/revenue/property/details') ||
 			location.pathname.startsWith('/analytics/property/details') ||
 			location.pathname.startsWith('/land/agreement/details') ||
-			location.pathname.startsWith('/contacts/campaign/details')
+			location.pathname.startsWith('/contacts/campaign/details') ||
+			isCustomAssetDetailPage
 		) {
 			return true;
 		}
 		return false;
 	};
-
-	// const checkIfShowBackgroundOnHeader = () => {
-	//   if (location.pathname.startsWith("/revenue/statements") || location.pathname.startsWith("/revenue/properties")) {
-	//     return true;
-	//   }
-	//   return false;
-	// };
-
-	// const matchAgreements = () => {
-	//   return location.pathname === "/landmanagement/agreements";
-	// };
 
 	return (
 		<div className={classes.root}>
@@ -213,7 +207,7 @@ export default function Navigation(props) {
 									<ActivityDashboardSearch showLabel={location.pathname === '/contacts/activityDashboard'} />
 								</>
 							)}
-							{location.pathname === '/documents' && (
+							{location.pathname.startsWith('/documents') && (
 								<>
 									<DocumentSearch />
 								</>

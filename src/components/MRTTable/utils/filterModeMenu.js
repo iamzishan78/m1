@@ -1,16 +1,16 @@
 import React from 'react';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { tableController } from 'hookstate/tableController';
 
 import FilterModeMenuItems from '../Common/FilterModeMenuItems';
+import { viewStateController } from '../Common/GridView/ViewController';
 
 export const columnFilterModesFnRefs = {};
 
 const filterModeMenu =
 	({ options, tableKey, name, schemaColumn, controller, layerIdentifier }) =>
 	({ onSelectFilterMode }) => {
-		const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
+		const selectedMapView = viewStateController('MapView').getValue('selectedView');
 		const mapViewFilter = selectedMapView?.filters?.find(
 			filter => filter?.fieldName?.replace('.keyword', '') === name && filter?.dataSourceName === layerIdentifier
 		);
@@ -20,7 +20,7 @@ const filterModeMenu =
 			? schemaColumn.type === 'number'
 				? 'equals'
 				: 'singleselect'
-			: mapViewFilter?.filterType;
+			: mapViewFilter?.filterType || schemaColumn.type;
 
 		if (!columnFilterModesFnRefs?.[tableKey]) {
 			columnFilterModesFnRefs[tableKey] = {};

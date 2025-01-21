@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { FormControl, Input, InputAdornment } from '@material-ui/core';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 
-import _, { set } from 'lodash';
+import { set } from 'lodash';
 import { ColorBox } from 'material-ui-color';
+import PropTypes from 'prop-types';
 import { v4 as uuid } from 'uuid';
 
 import { copy } from 'components/Shared/functions';
@@ -13,19 +14,23 @@ function trim(str) {
 	return str.replace(/^\s+|\s+$/gm, '');
 }
 
+const TWO = 2;
+const ALPHA_INDEX = 3;
+const HEX_LENGTH = 16;
+const ROUND = 255;
 export function RGBAToHexA(rgba) {
 	var inParts = rgba.substring(rgba.indexOf('(')).split(','),
 		r = parseInt(trim(inParts[0].substring(1)), 10),
 		g = parseInt(trim(inParts[1]), 10),
-		b = parseInt(trim(inParts[2]), 10),
-		a = parseFloat(trim(inParts[3].substring(0, inParts[3].length - 1))).toFixed(2);
+		b = parseInt(trim(inParts[TWO]), 10),
+		a = parseFloat(trim(inParts[ALPHA_INDEX].substring(0, inParts[ALPHA_INDEX].length - 1))).toFixed(TWO);
 	var outParts = [
-		r.toString(16),
-		g.toString(16),
-		b.toString(16),
-		Math.round(a * 255)
-			.toString(16)
-			.substring(0, 2),
+		r.toString(HEX_LENGTH),
+		g.toString(HEX_LENGTH),
+		b.toString(HEX_LENGTH),
+		Math.round(a * ROUND)
+			.toString(HEX_LENGTH)
+			.substring(0, TWO),
 	];
 
 	// Pad single-digit output values
@@ -38,15 +43,16 @@ export function RGBAToHexA(rgba) {
 	return '#' + outParts.join('');
 }
 
+const FOUR = 4;
 export const ifRgbaConvt = color => {
-	if (color?.slice(0, 4) === 'rgba') {
+	if (color?.slice(0, FOUR) === 'rgba') {
 		return RGBAToHexA(color);
 	} else {
 		return color;
 	}
 };
 
-export const ColorPickerStyledBox = withStyles(theme => ({
+export const ColorPickerStyledBox = withStyles(() => ({
 	root: {
 		width: 'auto',
 		'& .MuiBox-root': {
@@ -62,7 +68,7 @@ export const ColorPickerStyledBox = withStyles(theme => ({
 	},
 }))(ColorBox);
 
-export const useStyles = makeStyles(theme => ({
+export const useStyles = makeStyles(() => ({
 	gridOnIcon: {
 		color: '#7f7f80',
 		borderRadius: '0px',
@@ -110,7 +116,8 @@ export const WidthPicker = ({ width, setWidth, layerType }) => {
 				value={width}
 				onChange={e => {
 					if (e.target.value) {
-						if (e.target.value >= 0 && e.target.value <= 50) {
+						const MAX_WIDTH = 50;
+						if (e.target.value >= 0 && e.target.value <= MAX_WIDTH) {
 							setWidth(e.target.value);
 						}
 					} else {
@@ -122,6 +129,11 @@ export const WidthPicker = ({ width, setWidth, layerType }) => {
 			/>
 		</FormControl>
 	);
+};
+WidthPicker.propTypes = {
+	width: PropTypes.number.isRequired,
+	setWidth: PropTypes.func.isRequired,
+	layerType: PropTypes.string.isRequired,
 };
 
 export const useLayerStyle = layer => {
@@ -136,7 +148,8 @@ export const useLayerStyle = layer => {
 	const initialLayerAttributeBasedStrokeColors = layer.layerSettings?.attributeBasedStrokeColors || {};
 	const initialLayerSelectedAttribute = layer.layerSettings?.selectedAttribute || null;
 	const initialLayerSelectedStrokeAttribute = layer.layerSettings?.selectedStrokeAttribute || null;
-	const initialStrokeWidth = layer.layerPaintProps[0]?.paintProps?.strokeWidth || 20;
+	const DEFAULT_STROKE_WIDTH = 20;
+	const initialStrokeWidth = layer.layerPaintProps[0]?.paintProps?.strokeWidth || DEFAULT_STROKE_WIDTH;
 	const initialFillColor =
 		layerType === 'fill'
 			? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps['fill-color'])
@@ -183,7 +196,6 @@ export const useLayerStyle = layer => {
 	useEffect(() => {
 		setFillColor(initialFillColor);
 		setStrokeColor(initialStrokeColor);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedValue, selectedStrokeValue]);
 
 	useEffect(() => {
@@ -203,8 +215,6 @@ export const useLayerStyle = layer => {
 			layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
 			layer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
 			layer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
-			!_.isEqual(layer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
-			!_.isEqual(layer.layerSettings?.attributeBasedStrokeColors, attributeBasedStrokeColors) ||
 			layer.layerSettings?.selectedAttribute?.label !== selectedValue?.label ||
 			layer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label
 		) {
@@ -216,7 +226,9 @@ export const useLayerStyle = layer => {
 
 			if (fillColor && fillColor.rgb) {
 				fColor =
-					fillColor.rgb.length === 3 ? 'rgb(' + fillColor.rgb.join() + ')' : 'rgba(' + fillColor.rgb.join() + ')';
+					fillColor.rgb.length === ALPHA_INDEX
+						? 'rgb(' + fillColor.rgb.join() + ')'
+						: 'rgba(' + fillColor.rgb.join() + ')';
 			}
 
 			if (fillColor && (fillColor.alpha || fillColor.alpha === 0)) {
@@ -228,7 +240,9 @@ export const useLayerStyle = layer => {
 
 			if (strokeColor && strokeColor.rgb) {
 				sColor =
-					strokeColor.rgb.length === 3 ? 'rgb(' + strokeColor.rgb.join() + ')' : 'rgba(' + strokeColor.rgb.join() + ')';
+					strokeColor.rgb.length === ALPHA_INDEX
+						? 'rgb(' + strokeColor.rgb.join() + ')'
+						: 'rgba(' + strokeColor.rgb.join() + ')';
 			}
 			const layerSettings = copy(currentLayer.layerSettings);
 			layerSettings.interaction.interactionDetail.click = layerClickability;
@@ -328,7 +342,7 @@ export const useLayerStyle = layer => {
 								layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops &&
 								layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[0] &&
 								layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[1] &&
-								layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[2]
+								layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[TWO]
 							) {
 								layerPaintProps[i] = {
 									...layerPaintProps[i],
@@ -346,7 +360,7 @@ export const useLayerStyle = layer => {
 												stops: [
 													[layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[0][0], fColor],
 													[layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[1][0], fColor],
-													[layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[2][0], fColor],
+													[layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[TWO][0], fColor],
 												],
 											},
 										},
@@ -492,6 +506,7 @@ export const useLayerStyle = layer => {
 				layerSettings: currentLayer.layerSettings,
 			};
 		}
+		return null;
 	};
 
 	return {

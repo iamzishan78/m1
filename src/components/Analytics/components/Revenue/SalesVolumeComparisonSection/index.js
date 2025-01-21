@@ -10,7 +10,7 @@ import { tableController } from 'hookstate/tableController';
 
 import AnalyticsCharts from './AnalyticsCharts';
 
-export default function SalesVolumeComparisonSection({ checkDetailsData, esFilters, loadMore }) {
+export default function SalesVolumeComparisonSection({ checkDetailsData, esFilters }) {
 	const [propertiesIds, setPropertiesIds] = useState([]);
 	const tableState = tableController('SalesVolumeComparisonTable').useState(['filters', 'data']);
 	const tableStateValues = tableState.stateValues;

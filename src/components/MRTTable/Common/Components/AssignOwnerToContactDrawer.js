@@ -456,6 +456,7 @@ export default function AssignOwnerToContactDrawer({
 
 	const onAssign = () => {
 		const contactIds = rows.map(row => row.contactId || row._id);
+		const shapeOwnerIds = rest.header !== 'ContactTable' ? rows.map(row => row._id) : [];
 
 		const errorMsg = 'Failed to assign to contact owner';
 		Loader.createToast(
@@ -465,7 +466,7 @@ export default function AssignOwnerToContactDrawer({
 
 		if (field === 'Contact Owner') {
 			assignOwnerToContact({
-				variables: { contactIds, contactOwner, userId: getUser?._id },
+				variables: { contactIds, shapeOwnerIds, contactOwner, userId: getUser?._id },
 				refetchQueries: ['getESContacts'],
 				awaitRefetchQueries: true,
 			}).then(

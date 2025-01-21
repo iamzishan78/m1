@@ -47,6 +47,8 @@ const useMRTTable = tableKey => {
 		}),
 		...(isClientSide && {
 			filterSingleselect: 'Single Select', // adding label custom for filter mode
+			filterDateGreaterThanOrEqualTo: 'Greater Than or Equal To',
+			filterDateLessThanOrEqualTo: 'Less Than or Equal To',
 		}),
 	};
 
@@ -54,6 +56,24 @@ const useMRTTable = tableKey => {
 		// custom implementation for Single Select
 		singleselect: (row, id, filterValue) => {
 			return row.getValue(id) === filterValue;
+		},
+		// custom implementation for date comparison
+		dateGreaterThanOrEqualTo: (row, id, filterValue) => {
+			const rowValue = row.getValue(id);
+
+			const rowDate = new Date(rowValue);
+			const filterDate = new Date(filterValue);
+
+			return rowDate >= filterDate;
+		},
+		// custom implementation for date comparison
+		dateLessThanOrEqualTo: (row, id, filterValue) => {
+			const rowValue = row.getValue(id);
+
+			const rowDate = new Date(rowValue);
+			const filterDate = new Date(filterValue);
+
+			return rowDate <= filterDate;
 		},
 	};
 
@@ -140,6 +160,12 @@ const useMRTTable = tableKey => {
 				onCreatingRowCancel: tableStateValues.onCreatingRowCancel,
 				onCreatingRowSave: tableStateValues.onCreatingRowSave,
 				renderRowActions: EditRowActions(tableStateValues.onDelete),
+				enableSorting: false, // Disable sorting
+				enableFilters: false, // Disable filtering
+				enableColumnActions: false, // Disable column actions menu
+				enableGlobalFilter: false, // Disable global filtering (search)
+				enableRowSelection: false, // Disable row selection
+				enableColumnDragging: false, // Disable row ordering
 			}),
 
 			muiTableBodyRowProps: row => {
@@ -178,7 +204,7 @@ const useMRTTable = tableKey => {
 			columns: tableStateValues?.TableSchema,
 			data: tableStateValues?.data?.rows || [],
 			enableRowNumbers: true,
-			rowNumberDisplayMode: 'original',
+			rowNumberDisplayMode: 'static',
 			muiToolbarAlertBannerProps: tableStateValues?.isError
 				? {
 						color: 'error',
@@ -330,15 +356,7 @@ const useMRTTable = tableKey => {
 
 							const _newFilters = filtersFunc(formattedColumnFilters);
 
-							const newFilters = _.values(
-								_.merge(
-									_.keyBy(_newFilters, 'id'),
-									_.keyBy(
-										formattedColumnFilters.filter(filter => filter.isMapViewFilter),
-										'id'
-									)
-								)
-							);
+							const newFilters = _newFilters;
 
 							const result = [];
 							newFilters.forEach(item => {
@@ -381,6 +399,7 @@ const useMRTTable = tableKey => {
 								if (columnType === 'date') {
 									value = filter.value;
 								}
+
 								Controller.setFilter({
 									field: filter.id,
 									columnType,

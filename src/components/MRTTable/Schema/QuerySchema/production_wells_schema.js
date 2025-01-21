@@ -1,10 +1,6 @@
-/* eslint-disable react/prop-types */
-import React from 'react';
-
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 import { PRODUCTIONDETAILQUERY } from 'graphQL/useQueryProductionDetail';
-import { formatDate } from 'components/Shared/functions';
 
 const tableKey = 'ProductionWellsTable';
 
@@ -49,10 +45,6 @@ const ProductionWellsMeta = {
 			header: 'Date',
 			id: 'ReportDate',
 			name: 'ReportDate',
-			type: 'date',
-			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.ReportDate)}</>;
-			},
 		},
 		{
 			...CommonSchema.NUMBER_COLUMN,

@@ -8,49 +8,46 @@ import moment from 'moment';
 
 import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { tableController } from 'hookstate/tableController';
 
-import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED } from 'utils/consts';
+import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED, TO_FIXED } from 'utils/consts';
+
+import OwnerTypeCell from '../Common/TableCells/OwnerTypeCell';
+
+const ACTION_COLUMN = {
+	header: ' ',
+	isPinned: false,
+	hidden: false,
+	filter: false,
+	isSearchField: false,
+	enableSorting: false,
+	enableColumnActions: false,
+	enableHiding: false,
+	type: 'string',
+	enableColumnFilter: false,
+	isExport: false,
+	enableColumnOrdering: false,
+	enableColumnDragging: false,
+	enableResizing: false,
+	showInLast: true,
+};
 
 export const CommonSchema = {
+	ACTION_COLUMN,
 	COMMENTS: {
+		...ACTION_COLUMN,
 		name: 'comments',
 		id: 'comments',
-		header: '',
 		size: 120,
-		isPinned: false,
-		hidden: false,
-		filter: false,
-		isSearchField: false,
-		enableSorting: false,
-		type: 'string',
-		enableColumnActions: false,
-		enableHiding: false,
-		enableColumnFilter: false,
-		isExport: false,
-		enableColumnOrdering: false,
-		enableColumnDragging: false,
-		enableResizing: false,
-		showInLast: true,
 	},
 	TAGS: {
+		...ACTION_COLUMN,
 		name: 'tags',
 		id: 'tags',
 		header: 'Tags',
 		size: 250,
-		isPinned: false,
-		hidden: false,
-		filter: true,
-		isSearchField: true,
-		enableSorting: true,
-		type: 'string',
-		enableColumnFilter: false,
-		enableColumnActions: false,
-		enableColumnOrdering: false,
-		enableColumnDragging: false,
-		enableResizing: false,
-		showInLast: true,
 		isExport: 'tags',
 		handleArrayExport: {
 			esType: 'collection',
@@ -58,22 +55,10 @@ export const CommonSchema = {
 		},
 	},
 	IS_TRACKED: {
+		...ACTION_COLUMN,
 		name: 'isTracked',
 		id: 'isTracked',
-		header: '',
 		size: 120,
-		isPinned: false,
-		hidden: false,
-		filter: true,
-		isSearchField: true,
-		enableSorting: true,
-		type: 'string',
-		enableColumnFilter: false,
-		enableColumnActions: false,
-		enableColumnOrdering: false,
-		enableColumnDragging: false,
-		enableResizing: false,
-		showInLast: true,
 	},
 	HIDDEN: {
 		header: ' ',
@@ -121,23 +106,6 @@ export const CommonSchema = {
 		enableSorting: true,
 		type: 'string',
 	},
-	ACTION_COLUMN: {
-		header: ' ',
-		isPinned: false,
-		hidden: false,
-		filter: true,
-		isSearchField: false,
-		enableSorting: false,
-		enableColumnActions: false,
-		enableHiding: false,
-		type: 'string',
-		enableColumnFilter: false,
-		isExport: false,
-		enableColumnOrdering: false,
-		enableColumnDragging: false,
-		enableResizing: false,
-		showInLast: true,
-	},
 	SELECT_SOME: {
 		name: 'over-ride-checkbox',
 		id: 'over-ride-checkbox',
@@ -172,6 +140,25 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		type: 'string',
+		Cell: ({ row }) => {
+			// Passing contact owner in common component
+			let contactOwner = row.original?.createBy;
+			return <OwnerTypeCell contactOwner={contactOwner} />;
+		},
+	},
+	OWNER: {
+		name: 'owner.name.keyword',
+		accessorKey: 'owner.name',
+		header: 'Owner',
+		size: 250,
+		filter: true,
+		isSearchField: false,
+		type: 'string',
+		Cell: ({ row }) => {
+			// Passing contact owner in common component
+			let contactOwner = row.original?.owner;
+			return <OwnerTypeCell contactOwner={contactOwner} />;
+		},
 	},
 	CREATED_DATE: {
 		name: 'createAt',
@@ -193,6 +180,11 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		type: 'string',
+		Cell: ({ row }) => {
+			// Passing contact owner in common component
+			let contactOwner = row.original?.lastUpdateBy;
+			return <OwnerTypeCell contactOwner={contactOwner} />;
+		},
 	},
 	LAST_UPDATED_DATE: {
 		name: 'lastUpdateAt',
@@ -275,7 +267,7 @@ export const CommonSchema = {
 				return null;
 			}
 
-			return <>{!value ? `$${value}` : vf_currency_to_fixed(value, CURRENCY_TO_FIXED)}</>;
+			return <>{vf_currency_to_fixed(value, CURRENCY_TO_FIXED)}</>;
 		},
 	},
 	SELECT_STRING_COLUMN: {
@@ -303,11 +295,6 @@ export const CommonSchema = {
 		enableSorting: true,
 		type: 'date',
 		filterVariant: 'autocomplete',
-		muiFilterAutocompleteProps: {
-			getOptionLabel: option => {
-				return option.label ? formatDate(option.label) : '';
-			},
-		},
 	},
 
 	NUMBER_COLUMN: {
@@ -319,6 +306,15 @@ export const CommonSchema = {
 		enableSorting: true,
 		type: 'number',
 		filterVariant: 'equals',
+		Cell: ({ row, column }) => {
+			const value = row.getValue(column.id);
+
+			if (!value && value !== 0) {
+				return null;
+			}
+
+			return <>{vf_number(value, TO_FIXED)}</>;
+		},
 	},
 	CUMULATIVE_FOOTER: (field, tableKey, toFixed = INTEREST_TO_FIXED) => ({
 		Footer: () => {
@@ -335,7 +331,7 @@ export const CommonSchema = {
 export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);
 
 export const editFieldProps =
-	(tableKey, type, validate, { isSelect = false, required = true } = {}) =>
+	({ tableKey, type, validate, isSelect = false, required = true, onChange }) =>
 	({ cell, row }) => {
 		const Controller = tableController(tableKey);
 
@@ -357,7 +353,12 @@ export const editFieldProps =
 			set(rowData, cell.column.id, target.value);
 
 			Controller.setValidationErrors(row.id, cell.column.id, validationError);
-			Controller.setEditedData(row.id, rowData);
+
+			if (onChange) {
+				onChange(target.value, cell.column.id, rowData, row.id);
+			} else {
+				Controller.setEditedData(row.id, rowData);
+			}
 		};
 
 		return {

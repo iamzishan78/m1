@@ -18,7 +18,9 @@ export const KEYBOARD_KEYS = {
 	CAPITAL_N: 78,
 };
 
-export const BYTE = 1024;
+export const ONE_BYTE = 1024;
+
+export const ONE_MB = 1 * ONE_BYTE * ONE_BYTE;
 
 export const SUCCESS_STATUS = 200;
 export const CREATED_STATUS = 201;
@@ -105,3 +107,6 @@ export const colorPallete = [
 		textColor: 'white',
 	},
 ];
+
+export const LOD_YEAR = 2024;
+export const LOD_YEAR_OPTIONS = [2019, 2020, 2021, 2022, 2023, 2024];

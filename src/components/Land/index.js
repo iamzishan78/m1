@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Switch, Route, useLocation, Redirect } from 'react-router-dom';
 
 import * as Components from 'components/Land/components';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 import { replaceLinkId } from 'components/Shared/functions';
+import { ALL_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
+import { useLazyQuery } from '@apollo/client';
+import { removeSpaces } from 'components/MRTTable/utils/helper';
 
 //Actions
 import { toggleQuickActionsPanel, setActiveModule } from 'store/actions/commonActions';
@@ -68,9 +71,15 @@ export default function Land() {
 	const location = useLocation();
 	const dispatch = useDispatch();
 	const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
+	const [sidePanelMenuList, setSidePanelMenuList] = useState(SIDE_PANEL_MENU_ITEMS_LIST);
+
+	// Query for getting all custom assets
+	const [getAllCustomAsset, { data: allCustomAsset }] = useLazyQuery(ALL_CUSTOM_ASSET_INFO, {
+		fetchPolicy: 'no-cache',
+	});
 
 	useEffect(() => {
-		const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find(item => {
+		const option = Object.values(sidePanelMenuList).find(item => {
 			const path = location.pathname;
 			if (item.link.includes(':id')) {
 				return replaceLinkId(item.link, path);
@@ -78,11 +87,59 @@ export default function Land() {
 			return path.startsWith(item.link);
 		});
 		if (option?.parent) {
-			dispatch(setActiveModule(SIDE_PANEL_MENU_ITEMS_LIST[option.parent]));
+			dispatch(setActiveModule(sidePanelMenuList[option.parent]));
 		} else if (option) {
 			dispatch(setActiveModule(option));
 		}
-	}, [location.pathname, dispatch]);
+	}, [location.pathname, dispatch, sidePanelMenuList]);
+
+	useEffect(() => {
+		// Get all custom assets
+		getAllCustomAsset();
+	}, [getAllCustomAsset]);
+
+	useEffect(() => {
+		if (allCustomAsset) {
+			const dynamicAsset = allCustomAsset?.getAllCustomAssetInfo?.res;
+
+			// Set dynamic assets in side panel
+			setSidePanelMenuList(prevList => {
+				const newList = { ...prevList };
+				dynamicAsset?.forEach(item => {
+					const key = item.tableName.replace(/\s+/g, '_').toUpperCase();
+					newList[key] = {
+						featureFlag: 'LANDMODULE',
+						title: item.tableName,
+						link: `/land/customAsset/${removeSpaces(item.tableName)}`,
+						component: 'DynamicAssetGrid',
+					};
+
+					newList[`${key}_DETAIL`] = {
+						featureFlag: 'LANDMODULE',
+						link: `/land/customAsset/:tableName/details/:id`,
+						component: 'GenericDetailCardContainer',
+						value: 'GenericDetailCardContainer',
+						hideSearch: true,
+						isDefault: true,
+						isExcluded: true,
+						parent: key,
+					};
+
+					newList[`${key}_DETAIL_DOCUMENTS`] = {
+						featureFlag: 'LANDMODULE',
+						link: `/land/customAsset/:tableName/details/:id/documents`,
+						component: 'DocumentsCardContainer',
+						value: 'DocumentsCardContainer',
+						hideSearch: true,
+						isDefault: true,
+						isExcluded: true,
+						parent: `${key}_DETAIL`,
+					};
+				});
+				return newList;
+			});
+		}
+	}, [allCustomAsset]);
 
 	const handlePanelStateChange = state => {
 		dispatch(toggleQuickActionsPanel(state));
@@ -94,18 +151,18 @@ export default function Land() {
 			handlePanelStateChange={handlePanelStateChange}
 			quickActionsPanelState={quickActionsPanelState}
 			activeModule={activeModule}
-			actions={SIDE_PANEL_MENU_ITEMS_LIST}
+			actions={sidePanelMenuList}
 		>
 			<Switch>
-				{Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map(option => (
+				{Object.keys(sidePanelMenuList).map(option => (
 					<Route
 						key={option.title}
 						exact
-						path={SIDE_PANEL_MENU_ITEMS_LIST[option].link}
-						component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]}
+						path={sidePanelMenuList[option].link}
+						component={Components[sidePanelMenuList[option].component]}
 					/>
 				))}
-				<Redirect to={'/land/agreements'} />
+				<Redirect to={`/land/agreements`} />
 			</Switch>
 		</QuickActionPanel>
 	);

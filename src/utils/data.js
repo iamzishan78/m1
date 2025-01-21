@@ -1,3 +1,5 @@
+import { UserSession } from './user';
+
 export const campaignVariables = {
 	esIndex: 'contacts_flat',
 	filterKey: 'campaignName.keyword',
@@ -565,6 +567,14 @@ export const AdminManagementRoutes = {
 		noCheck: true,
 		showSettingString: false,
 	},
+	EXTERNALTOOLS: {
+		featureFlag: 'AlWAYSSHOW',
+		title: 'External Tools',
+		link: '/admin/externalTools',
+		component: 'ExternalTools',
+		noCheck: true,
+		showSettingString: false,
+	},
 	// CUSTOMIZATIONS: {
 	//   featureFlag: "CONTACTSUBMENU",
 	//   title: "Customization",
@@ -659,6 +669,14 @@ export const AdminManagementRoutes = {
 		isDefault: true,
 		isExcluded: true,
 	},
+	ASSET_MANAGEMENT: {
+		featureFlag: 'AlWAYSSHOW',
+		title: 'Asset Management',
+		link: '/admin/assetmanagement',
+		component: 'AssetManagement',
+		noCheck: true,
+		showSettingString: false,
+	},
 };
 
 export const dataManagementRoutes = {
@@ -724,6 +742,7 @@ export const bypassTenants = [
 	'm1dev',
 	'm1cypress',
 	'm1staging',
+	'wildbasin',
 	// "m1Production",
 	// "m1Development",
 	// "GHR",
@@ -763,7 +782,7 @@ export const esIndexFilterKeyMap = {
 };
 
 export const baseTenantsMaps = () => {
-	const tenantId = window.sessionStorage?.getItem('tenantName').toLowerCase();
+	const tenantId = UserSession.getStorageItem('tenantName').toLowerCase();
 	const defaultStyles = ['Satellite', 'Basic', 'Light', 'Outdoors']; // Default for most clients
 	const testNewStyles = [
 		...defaultStyles,

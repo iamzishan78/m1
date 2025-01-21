@@ -26,6 +26,7 @@ import useStyles from 'components/ContactDetailCard/components/FieldContent/styl
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import { formatDate } from 'components/Shared/functions';
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
 import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
 
@@ -343,6 +344,19 @@ export default function FieldContent({
 		setEdit(null);
 	};
 
+	const formatFieldValue = (val, metaField) => {
+		if (metaField?.type === 'date') {
+			return formatDate(val);
+		} else if (metaField?.type === 'link') {
+			return (
+				<Link href={val} target="_blank">
+					{val}
+				</Link>
+			);
+		}
+		return val;
+	};
+
 	let inputsArray = [];
 	if (edit) {
 		for (const fieldName in editContent) {
@@ -473,6 +487,32 @@ export default function FieldContent({
 								handleUpdating(value);
 							}}
 						/>
+					) : fieldName.startsWith('custom_data') && metaField?.type === 'date' ? (
+						<>
+							<TextField
+								key={'fieldContentInput' + fieldName}
+								id={'fieldContentInput' + fieldName}
+								data-testid={fieldName}
+								className={classes.editTextField}
+								variant="outlined"
+								size="small"
+								autoComplete="nope"
+								fullWidth
+								label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+								multiline={false} // For date fields, multiline should be false
+								type="date" // Use date type for date picker
+								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+								onChange={e => {
+									e.persist();
+									setEditContent(editContent => ({
+										...editContent,
+										[fieldName]: e.target.value, // Ensure value is in YYYY-MM-DD format
+									}));
+								}}
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+								onBlur={() => onBlurHandler([fieldName])}
+							/>
+						</>
 					) : fieldName === 'ownerType' ? (
 						<EntityType
 							className={classes.maxWidth}
@@ -572,63 +612,74 @@ export default function FieldContent({
 			onBlur={() => onBlurHandler(['campaigns'])}
 		/>
 	) : (
-		<span>
-			{childrenLeft && !onlyChildren && children ? children : ''}
-			{/* Wrap the contact details tab title inside span to fix it position */}
-			<span
-				style={{
-					marginTop: '4px',
-					display: 'inline-block',
-				}}
-			>
-				{textArray.length > 0
-					? onlyChildren
-						? children
-							? children
-							: ''
-						: textArray.join(', ')
-					: `${name ? name + ' ' : ''} Not Available`}{' '}
-			</span>
-			{!onlyChildren && !disabled && (
-				<PencilEditIcon
-					handleUpdating={handleUpdating}
-					anchorEl={edit}
-					setAnchorEl={setEdit}
-					content={inputsArray}
-					onClick={handleEditClick}
-					isCopy={true}
-					setEditContent={setEditContent}
-					editContent={content}
-					row={row}
-					handleQuickActionActivity={handleQuickActionActivity}
-				/>
-			)}
-			{fieldType === FieldTypes.Contact && isMerged && (
-				<MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
-			)}
-			{isPurchased && (
-				<CopyPurchaseInfo
-					updateContact={updateContact}
-					userId={stateApp.user.mongoId}
-					content={content}
-					contactId={id}
-				/>
-			)}
-			{textArray.length > 0 && name === 'Address' ? ( // show google map and zillow icon when address exists
-				<>
-					<Link onClick={() => window.open(getAddressUrl(content), '_blank')}>
-						<GoogleMapIcon />
-					</Link>
-					<Link onClick={() => window.open(getZillowAddressUrl(content), '_blank')}>
-						<ZillowIcon />
-					</Link>
-				</>
-			) : (
-				''
-			)}
-			{!childrenLeft && !onlyChildren && children ? children : ''}
-			{isCurEdited ? ' (edited)' : ''}
-		</span>
+		(() => {
+			// Find the metafield object with an eskey matching a key in content
+			const metaField = metafields
+				? metafields.find(metafield => {
+						return Object.keys(content).includes(metafield.esKey);
+					})
+				: null;
+
+			return (
+				<span>
+					{childrenLeft && !onlyChildren && children ? children : ''}
+					{/* Wrap the contact details tab title inside span to fix it position */}
+					<span
+						style={{
+							marginTop: '4px',
+							display: 'inline-block',
+						}}
+					>
+						{textArray.length > 0
+							? onlyChildren
+								? children
+									? children
+									: ''
+								: formatFieldValue(textArray.join(', '), metaField)
+							: `${name ? name + ' ' : ''} Not Available`}{' '}
+					</span>
+					{!onlyChildren && !disabled && (
+						<PencilEditIcon
+							handleUpdating={handleUpdating}
+							anchorEl={edit}
+							setAnchorEl={setEdit}
+							content={inputsArray}
+							onClick={handleEditClick}
+							isCopy={true}
+							setEditContent={setEditContent}
+							editContent={content}
+							row={row}
+							handleQuickActionActivity={handleQuickActionActivity}
+						/>
+					)}
+					{fieldType === FieldTypes.Contact && isMerged && (
+						<MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
+					)}
+					{isPurchased && (
+						<CopyPurchaseInfo
+							updateContact={updateContact}
+							userId={stateApp.user.mongoId}
+							content={content}
+							contactId={id}
+						/>
+					)}
+					{textArray.length > 0 && name === 'Address' ? ( // show google map and zillow icon when address exists
+						<>
+							<Link onClick={() => window.open(getAddressUrl(content), '_blank')}>
+								<GoogleMapIcon />
+							</Link>
+							<Link onClick={() => window.open(getZillowAddressUrl(content), '_blank')}>
+								<ZillowIcon />
+							</Link>
+						</>
+					) : (
+						''
+					)}
+					{!childrenLeft && !onlyChildren && children ? children : ''}
+					{isCurEdited ? ' (edited)' : ''}
+				</span>
+			);
+		})()
 	);
 
 	return (

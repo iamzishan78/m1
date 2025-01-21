@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -7,11 +7,7 @@ import TabPanels from 'components/Shared/TabPanels';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
-import { AppContext } from 'AppContext';
-
-const ValidationGrids = ({ propertyId }) => {
-	const [stateApp] = useContext(AppContext);
-
+const ValidationGrids = ({ propertyId, associatedWellIds }) => {
 	const {
 		stateValues: { tabKey: selectedTab },
 	} = tableGlobalController.useState(['tabKey']);
@@ -19,22 +15,23 @@ const ValidationGrids = ({ propertyId }) => {
 	const defaultTabLabels = ['Sales vs Production Volumes'];
 
 	const overrideMeta = useMemo(() => {
-		const tabLabels = stateApp.associatedWellIds ? ['Well Production', ...defaultTabLabels] : defaultTabLabels;
+		const tabLabels = associatedWellIds?.length > 0 ? ['Well Production', ...defaultTabLabels] : defaultTabLabels;
 
 		const salesVolumeMeta = {
 			defaultFilters: [{ field: 'property._id', value: propertyId }],
 			tabLabels,
 		};
 
-		const wellProductionMeta = stateApp.associatedWellIds
-			? {
-					defaultFilters: [{ field: 'well._id', value: stateApp.associatedWellIds }],
-					tabLabels,
-				}
-			: null;
+		const wellProductionMeta =
+			associatedWellIds?.length > 0
+				? {
+						defaultFilters: [{ field: 'well._id', value: associatedWellIds }],
+						tabLabels,
+					}
+				: null;
 
 		return { salesVolumeMeta, wellProductionMeta };
-	}, [propertyId, stateApp.associatedWellIds]);
+	}, [propertyId, associatedWellIds, selectedTab]);
 
 	// Create panels dynamically based on the presence of associatedWellIds
 	const panels = useMemo(() => {
@@ -46,16 +43,19 @@ const ValidationGrids = ({ propertyId }) => {
 			/>,
 		];
 
-		if (overrideMeta.wellProductionMeta) {
+		if (associatedWellIds?.length > 0) {
 			panelsArray.unshift(
 				<MRTTable key="WellProductionTable" name="WellProductionTable" overrideMeta={overrideMeta.wellProductionMeta} />
 			);
 		}
 
 		return panelsArray;
-	}, [overrideMeta]);
+	}, [overrideMeta, associatedWellIds, selectedTab]);
 
-	return <TabPanels key={overrideMeta.salesVolumeMeta.tabLabels[0]} value={selectedTab} panels={panels} />;
+	console.log('overrideMeta: ', overrideMeta);
+	console.log('panels: ', panels);
+
+	return <TabPanels key="ValidationGridsTabPanels" value={selectedTab} panels={panels} />;
 };
 
 ValidationGrids.propTypes = {

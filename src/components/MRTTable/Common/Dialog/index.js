@@ -9,29 +9,29 @@ import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loader from 'components/Loaders';
 import BuyContactsInfoDialogContent from 'components/MRTTable/Common/Components/BuyContactsInfoDialogContent';
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
+import Comments from 'components/Shared/Comments';
 
-import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
+import { REMOVECOMMONGRIDFUNCTIONALITY } from 'graphQL/useMutationCommonGridRemove';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
-import CommentDialog from './CommentDialog';
 import DeleteConfirmationDialog from './ConfirmationDialog/DeleteConfirmationDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmationDialog';
 import TagDialog from './TagDialog';
 
 function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
-	const { type, ...rest } = stateValues.dialog || {};
+	const { type, assetName, associatedAssetName, ...rest } = stateValues.dialog || {};
 	const tableKey = rest?.tableKey || props.tableKey;
 
 	const {
-		stateValues: { refetchQueries, isClientSide },
+		stateValues: { refetchQueries = [], isClientSide },
 	} = tableController(props.tableKey).useState(['refetchQueries', 'isClientSide']);
 
-	const [gridGenericRemove] = useMutation(GRID_GENERIC_REMOVE, {
+	const [gridGenericRemove] = useMutation(REMOVECOMMONGRIDFUNCTIONALITY, {
 		awaitRefetchQueries: true,
 		refetchQueries,
 	});
@@ -67,12 +67,16 @@ function AllDialogs(props) {
 		gridGenericRemove({
 			variables: {
 				tableKey,
+				mainAssetName: assetName,
+				associatedAssetName,
 				deletedData: dataToDelete,
 				userId: user?.mongoId,
 				ESVariables: rest?.ESVariables,
 				isSelectAll: rest?.isSelectAll,
 				cypressDelete: testCase?.cypressDelete,
 			},
+			refetchQueries: ['getDbData', 'getDbDataTotal', ...refetchQueries],
+			awaitRefetchQueries: true,
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {
@@ -100,7 +104,9 @@ function AllDialogs(props) {
 		}
 	};
 
-	if (rest?.tableKey && rest?.tableKey !== props?.tableKey) return null;
+	if (rest?.tableKey && rest?.tableKey !== props?.tableKey) {
+		return null;
+	}
 
 	return (
 		<>
@@ -112,15 +118,18 @@ function AllDialogs(props) {
 					/>
 				</Dialog>
 			)}
-			{type === 'comments' && (
+			{type === 'commentsWithTags' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<CommentDialog
+					<Comments
 						{...rest}
+						hideSharedCommentCheck={props.hideSharedCommentCheck}
+						containsComments={true}
+						isHelperTextAllow={true}
+						isSaveAllowed={false}
 						refetch={isClientSide ? tableGlobalController.refetchAdditionalQueries : tableGlobalController.refetch}
 					/>
 				</Dialog>
 			)}
-
 			{type === 'convertContactSlideout' && (
 				<MultipleOwnerToContactDrawerContainer
 					onClose={() => {

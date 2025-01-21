@@ -4,12 +4,12 @@ import { Grid, Button, Select, MenuItem, TextField, Dialog, FormControl, InputLa
 import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
-import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
-import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
+import { UPSERT_GRID_VIEW } from 'graphQL/useMutationUpsertGridView';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 
 import { KEYBOARD_KEYS } from 'utils/consts';
@@ -17,6 +17,9 @@ import { KEYBOARD_KEYS } from 'utils/consts';
 import { AppContext } from 'AppContext';
 
 import { copy } from '../functions';
+
+const THREE = 3;
+const SEVEN = 7;
 
 const useStyles = makeStyles(() => ({
 	actionBar: ({ isBackground, noPadding }) => ({
@@ -63,9 +66,8 @@ export default function ReportGroupHeader({
 	const classes = useStyles({ isBackground, isShrink, noPadding });
 	const [stateApp] = useContext(AppContext);
 
+	const [upsertGridView] = useMutation(UPSERT_GRID_VIEW);
 	const [getGridViews, { data: gridViews }] = useLazyQuery(GET_GRID_VIEWS);
-	const [addGridView] = useMutation(ADD_GRID_VIEW);
-	const [updateGridView] = useMutation(UPDATE_GRID_VIEW);
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const [config, setConfig] = useState({});
 
@@ -88,7 +90,7 @@ export default function ReportGroupHeader({
 				const gridViewId = gridViews?.getGridViews?.gridViews.find(view => view.name === reportingGroup)._id;
 				const name = config.name || updatedConfig.name;
 				const isDeleted = actionType === 'update' ? false : true;
-				updateGridView({
+				upsertGridView({
 					variables: {
 						gridView: {
 							_id: gridViewId,
@@ -116,9 +118,10 @@ export default function ReportGroupHeader({
 					setConfig({ show: false });
 				});
 			} else if (config.type === 'new') {
-				addGridView({
+				upsertGridView({
 					variables: {
 						gridView: {
+							_id: null,
 							name: config.name,
 							module: type,
 							type: 'Custom',
@@ -177,7 +180,11 @@ export default function ReportGroupHeader({
 	return (
 		<>
 			<Grid container direction="row" display="flex" justify="space-between" className={classes.actionBar}>
-				<Grid item xs={strechedWidth ? true : fullWidth ? 7 : 3} md={strechedWidth ? true : fullWidth ? 7 : 3}>
+				<Grid
+					item
+					xs={strechedWidth ? true : fullWidth ? SEVEN : THREE}
+					md={strechedWidth ? true : fullWidth ? SEVEN : THREE}
+				>
 					{config.show ? (
 						<TextField
 							fullWidth={true}
@@ -230,7 +237,9 @@ export default function ReportGroupHeader({
 									<MenuItem value={All_TYPE}>{All_TYPE}</MenuItem>
 								)}
 								{gridViews?.getGridViews?.gridViews.map(view => (
-									<MenuItem value={view.name}>{view.name}</MenuItem>
+									<MenuItem value={view.name} key={view._id}>
+										{view.name}
+									</MenuItem>
 								))}
 							</Select>
 						</FormControl>
@@ -284,3 +293,16 @@ export default function ReportGroupHeader({
 		</>
 	);
 }
+
+ReportGroupHeader.propTypes = {
+	type: PropTypes.string.isRequired,
+	esFilters: PropTypes.arrayOf(PropTypes.object).isRequired,
+	setESFilters: PropTypes.func.isRequired,
+	setFilterToggle: PropTypes.func.isRequired,
+	isBackground: PropTypes.bool,
+	fullWidth: PropTypes.bool,
+	isShrink: PropTypes.bool,
+	noUpdate: PropTypes.bool,
+	noPadding: PropTypes.bool,
+	strechedWidth: PropTypes.bool,
+};
