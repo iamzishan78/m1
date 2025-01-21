@@ -1,40 +1,53 @@
 import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
+
+import {
+	CircularProgress,
+	Dialog,
+	DialogTitle,
+	IconButton,
+	TextField,
+	withStyles,
+	Menu,
+	MenuItem,
+	ListItemIcon,
+	ListItemText,
+	Typography,
+	Grid,
+} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { AppContext } from 'AppContext';
-import { Typography, Grid } from '@material-ui/core';
-import loadashFilter from 'lodash/filter';
-import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-
-import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from '@material-ui/core';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import UploadZone from 'components/Shared/UploadZone';
+import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import joinAddress from 'components/Shared/valueformatters/join-address.js';
-import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { DELETEDESCRIPTORRELATEDFILE } from 'graphQL/useMutationDeleteDescriptorFile';
+import clsx from 'clsx';
+import loadashFilter from 'lodash/filter';
+
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
+import get_file_icon from 'components/Shared/functions/get_file_icon.js';
+import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import UploadZone from 'components/Shared/UploadZone';
+import joinAddress from 'components/Shared/valueformatters/join-address.js';
+
 import { ADD_PARCEL_AGREEMENT } from 'graphQL/useMutationAddParcelAgreement';
+import { DELETEDESCRIPTORRELATEDFILE } from 'graphQL/useMutationDeleteDescriptorFile';
+import { DELETE_PARCEL_RUNSHEET } from 'graphQL/useMutationDeleteParcelAgreement';
 import { UPDATE_PARCEL_AGREEMENT } from 'graphQL/useMutationUpdateParcelAgreement';
+import { GET_VIEW_TOKEN_URI } from 'graphQL/useQueryGetViewTokenUri';
 import { INSTRUMENT_TYPE } from 'graphQL/useQueryInstrumentType';
 import { RECORD_TYPE } from 'graphQL/useQueryRecordType';
+import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
-// functions
-import get_file_icon from 'components/Shared/functions/get_file_icon.js';
-import { GET_VIEW_TOKEN_URI } from 'graphQL/useQueryGetViewTokenUri';
-import moment from 'moment';
-import { parseDate } from 'utils/helper';
-import { DELETE_PARCEL_RUNSHEET } from 'graphQL/useMutationDeleteParcelAgreement';
-import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 const filter = createFilterOptions();
 
@@ -219,7 +232,7 @@ export default function ParcelInstrument(props) {
 	const [getInstrumentTypes, { data: instrumentTypes }] = useLazyQuery(INSTRUMENT_TYPE, {
 		fetchPolicy: 'no-cache',
 	});
-	const [getViewTokenUri, { data: viewTokenUri }] = useLazyQuery(GET_VIEW_TOKEN_URI, {
+	const [getViewTokenUri] = useLazyQuery(GET_VIEW_TOKEN_URI, {
 		fetchPolicy: 'no-cache',
 	});
 	const [getRecordTypes, { data: recordTypes }] = useLazyQuery(RECORD_TYPE, {
@@ -227,16 +240,34 @@ export default function ParcelInstrument(props) {
 	});
 	const [deleteFile] = useMutation(DELETEDESCRIPTORRELATEDFILE);
 	const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
+		onCompleted: () => {
+			tableGlobalController.refetch();
+			tableGlobalController.updateState({
+				selectedInstrument: null,
+			});
+		},
 	});
 	const [updateParcelAgreement] = useMutation(UPDATE_PARCEL_AGREEMENT, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
+		onCompleted: () => {
+			tableGlobalController.refetch();
+			tableGlobalController.updateState({
+				selectedInstrument: null,
+			});
+		},
 	});
 	const [deleteParcelRunsheet] = useMutation(DELETE_PARCEL_RUNSHEET, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
+		onCompleted: () => {
+			tableGlobalController.refetch();
+			tableGlobalController.updateState({
+				selectedInstrument: null,
+			});
+		},
 	});
 
 	useEffect(() => {
@@ -338,7 +369,7 @@ export default function ParcelInstrument(props) {
 					parcelId: selectedInstrument.customLayerId,
 					fileId: selectedInstrument.fileId,
 				},
-				refetchQueries: ['getESSimpleSearch'],
+				refetchQueries: ['getDbData'],
 				awaitRefetchQueries: true,
 			}).then(() => {
 				props.setShowSlider(false);
@@ -355,7 +386,7 @@ export default function ParcelInstrument(props) {
 					descriptorObjectId: selectedInstrument.fileId,
 					relatedObjectId: selectedInstrument._id,
 				},
-				refetchQueries: ['getESSimpleSearch'],
+				refetchQueries: ['getDbData'],
 				awaitRefetchQueries: true,
 			}).then(() => {
 				setFileData(null);
@@ -389,6 +420,9 @@ export default function ParcelInstrument(props) {
 	const handleClose = () => {
 		props.setShowSlider(false);
 		setSelectedInstrument(null);
+		tableGlobalController.updateState({
+			selectedInstrument: null,
+		});
 		setStateApp(stateApp => ({
 			...stateApp,
 			selectedAgreement: null,
@@ -456,7 +490,7 @@ export default function ParcelInstrument(props) {
 						parcelId: props.parcelId,
 					},
 				},
-				refetchQueries: ['getESSimpleSearch'],
+				refetchQueries: ['getDbData'],
 				awaitRefetchQueries: true,
 			}).then(() => {
 				props.setShowSlider(false);
@@ -489,7 +523,7 @@ export default function ParcelInstrument(props) {
 						userId: stateApp.user.mongoId,
 						parcelId: props.parcelId,
 					},
-					refetchQueries: ['getParcelAgreement'],
+					refetchQueries: ['getParcelAgreement', 'getDbData'],
 					awaitRefetchQueries: true,
 				},
 			}).then(() => {
@@ -513,15 +547,13 @@ export default function ParcelInstrument(props) {
 					onClose={handleDeleteCancel}
 					style={{ zIndex: 99999999999 }}
 				>
-					<DeleteConfirmationDialogContent
+					<DeleteConfirmationDialog
 						header={`Delete  ${DELETE_OPTIONS_ENUMS[initiateDeleteDialogForFileOrAgreement]}`}
 						onClose={handleDeleteCancel}
 						deleteFunc={handleDeleteAccept}
-						m1nSelectedRowsIds={[document._id]}
-						setM1nSelectedRowsIndexes={() => {}}
 					>
 						{`Do you want to delete the selected ${DELETE_OPTIONS_ENUMS[initiateDeleteDialogForFileOrAgreement]}?`}
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 				<Dialog open={loader} style={{ zIndex: 99999999999 }}>
 					<DialogTitle id="alert-dialog-title">
@@ -863,6 +895,7 @@ export default function ParcelInstrument(props) {
 											</div>
 										);
 									}
+									return undefined;
 								})}
 							</div>
 						</ListItem>
@@ -962,15 +995,19 @@ const AutoCompleteField = ({ setValue, value, options, ...other }) => {
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
-					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				if (option._id === 'newEntity') {
+					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -1006,9 +1043,14 @@ const AutoCompleteField = ({ setValue, value, options, ...other }) => {
 			}}
 			onChange={(event, newValue) => {
 				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') setValue(newValue);
-					else setValue({ _id: 'newEntity', name: newValue.name });
-				} else setValue('');
+					if (newValue._id !== 'newEntity') {
+						setValue(newValue);
+					} else {
+						setValue({ _id: 'newEntity', name: newValue.name });
+					}
+				} else {
+					setValue('');
+				}
 			}}
 			renderInput={params => (
 				<TextField

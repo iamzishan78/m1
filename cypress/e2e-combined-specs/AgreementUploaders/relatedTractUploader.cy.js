@@ -9,7 +9,7 @@ describe('Related Tracts Uploader Spec', () => {
 
 		cy.viewport(1536, 960);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/land/agreements');
 
 		cy.checkAndLogin();
@@ -76,18 +76,20 @@ describe('Related Tracts Uploader Spec', () => {
 							cy.log(`==== STEP: VERIFYING RELATED TRACTS FOR AGREEMENT : ${agreementName} ====`);
 							cy.wait(5000);
 
-							cy.gridSearch(agreementName, 'getESSimpleSearch').then(response => {
-								const hits = response.response.body.data.getESSimpleSearch.hits;
+							cy.gridSearch(agreementName, 'getDbData').then(response => {
+								const hits = response.response.body.data.getDbData.hits;
 
 								const cypressAgreement = hits.find(hit => hit.agreementName === agreementName);
 
-								if (!cypressAgreement) throw new Error('Agreement added by cypress Uploader not found');
+								if (!cypressAgreement) {
+									throw new Error('Agreement added by cypress Uploader not found');
+								}
 
 								const indexOfcypressAgreement = hits.findIndex(hit => hit._id === cypressAgreement._id) + 1;
 
 								cy.log('==== STEP: OPEN CYPRESS AGREEMENT DETAIL  ====');
 								cy.getTableCell('Agreement', indexOfcypressAgreement).then($agreementNameCell => {
-									cy.interceptApiByIndex('getESSimpleSearch', 'shapeowners_flat');
+									cy.interceptApiByIndex('getDbData', 'shapeowners_flat');
 									cy.wrap($agreementNameCell)
 										.contains(`${agreementNumber} - ${agreementName}`)
 										.scrollIntoView()
@@ -96,7 +98,7 @@ describe('Related Tracts Uploader Spec', () => {
 
 									cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(
 										result => {
-											const filesNames = result.response?.body?.data?.getESSimpleSearch.hits.map(hit => hit.name);
+											const filesNames = result.response?.body?.data?.getDbData.hits.map(hit => hit.name);
 											cy.log(JSON.stringify(filesNames));
 
 											cy.get('@gridData').then(gridData => {

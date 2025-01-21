@@ -1,17 +1,26 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Grid, Card, CardContent } from '@material-ui/core';
+
 import { useLazyQuery } from '@apollo/client';
 import get from 'lodash/get';
-import { copy, getFilters } from 'utils/helper';
+import PropTypes from 'prop-types';
 
-import { AppContext } from 'AppContext';
-import { GET_ACTIVITY_ANALYTICS } from 'graphQL/useQueryActivityAnalytics';
-import { GET_CONTACT_ANALYTICS } from 'graphQL/useQueryContactDetail';
+import { getFilters } from 'components/AuditReporting/AuditReporting';
 import DonutChart from 'components/Shared/Charts/DonutChart';
 import StackedBarChart from 'components/Shared/Charts/StackedBarChart';
-import { useSelector } from 'react-redux';
+
+import { GET_ACTIVITY_ANALYTICS } from 'graphQL/useQueryActivityAnalytics';
+import { GET_CONTACT_ANALYTICS } from 'graphQL/useQueryContactDetail';
+
+import { TO_FIXED } from 'utils/consts';
+import { copy } from 'utils/helper';
+
 import { getActivityFilters } from './ActivitiesDashboard';
+
+const MD = 6;
+const CRM_MD = 4;
 
 const defaultSeriesActivities = [
 	{
@@ -38,6 +47,12 @@ const defaultSeriesActivities = [
 		color: '#F5B296',
 		data: [],
 	},
+	{
+		key: 'others',
+		name: 'Others',
+		color: '#D2B48C',
+		data: [],
+	},
 ];
 
 const defaultSeriesDeals = [
@@ -62,8 +77,15 @@ const defaultUpdateUsers = [
 		data: [],
 	},
 ];
-const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilters, tableData }) => {
-	const [stateApp] = useContext(AppContext);
+const ActivityAnalytics = ({
+	appliedFilters,
+	tableFilters,
+	module,
+	setTableFilters,
+	tableData,
+	searchFields,
+	globalFilter,
+}) => {
 	const [analyticsData, setAnalyticsData] = useState([]);
 	const [contactData, setContactData] = useState([]);
 	const [activitiesPerQualifier, setActivitiesPerQualifier] = useState({
@@ -98,6 +120,36 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 		},
 	});
 	const { activeModule } = useSelector(({ common }) => common);
+
+	const countOthersData = (series, data, indexKey) => {
+		// Create an array of keys present in the series
+		const seriesKeys = series.map(s => s.key);
+		// Initialize total count
+		let othersTotal = 0;
+		// Loop through the keys of data
+		for (let key in data) {
+			// Skip 'name' or keys that exist in seriesKeys array
+			if (key !== 'name' && !seriesKeys.includes(key) && indexKey === 'others') {
+				othersTotal += data[key]; // Add value to total if the key is not in seriesKeys
+			}
+		}
+		return othersTotal;
+	};
+
+	const countOthersForDonut = (analyticsData, series) => {
+		// Initialize total count
+		let total = 0;
+		const seriesKeys = series.map(s => s.key);
+		// Loop through the keys of activitiesCount
+		for (let key in analyticsData) {
+			// Check if the key is not in seriesKeys
+			if (key !== 'name' && !seriesKeys.includes(key)) {
+				total += analyticsData[key]; // Add the value to total
+			}
+		}
+		return total;
+	};
+
 	const getAllFilters = () => {
 		let rangeFilters = [];
 		if (!tableFilters.find(filter => filter.type === 'range')) {
@@ -129,8 +181,8 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 			getAuditReportingAnalytics({
 				variables: {
 					search: {
-						fields: ['name', '_all'],
-						query: stateApp.landAnalyticsSearchQuery,
+						fields: searchFields,
+						query: globalFilter,
 					},
 					filters: getAllFilters(),
 				},
@@ -139,14 +191,14 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 			getActivityAnalytics({
 				variables: {
 					search: {
-						fields: ['name', '_all'],
-						query: stateApp.activitySearchQuery || stateApp.landAnalyticsSearchQuery,
+						fields: searchFields,
+						query: globalFilter,
 					},
 					filters: getAllFilters(),
 				},
 			});
 		}
-	}, [stateApp.activitySearchQuery, appliedFilters, tableFilters, stateApp.landAnalyticsSearchQuery, tableData]);
+	}, [appliedFilters, tableFilters, tableData, searchFields, globalFilter]);
 
 	useEffect(() => {
 		setTableFilters && setTableFilters(getActivityFilters(appliedFilters));
@@ -155,13 +207,15 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 	useEffect(() => {
 		if (analyticsData?.activitiesCountByTypePerOwner) {
 			const chartData = { series: copy(defaultSeriesActivities), xaxis: [] };
-			Object.entries(analyticsData?.activitiesCountByTypePerOwner).forEach((data, value) => {
+			Object.entries(analyticsData?.activitiesCountByTypePerOwner).forEach(data => {
 				if (data[1]?.name) {
 					chartData.xaxis.push(data[1].name.substring(0, 10));
 				}
 				for (let i = 0; i < chartData.series.length; i++) {
 					if (data[1]) {
-						const count = data[1][chartData.series[i].key] ? data[1][chartData.series[i].key] : 0;
+						const count = data[1][chartData.series[i].key]
+							? data[1][chartData.series[i].key]
+							: countOthersData(chartData.series, data[1], chartData.series[i].key);
 						chartData.series[i].data.push(count);
 					} else {
 						chartData.series[i].data.push(0);
@@ -172,7 +226,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 		}
 		if (analyticsData?.dealAmountByStatusPerOwner) {
 			const chartData = { series: copy(defaultSeriesDeals), xaxis: [] };
-			Object.entries(analyticsData?.dealAmountByStatusPerOwner).forEach((data, value) => {
+			Object.entries(analyticsData?.dealAmountByStatusPerOwner).forEach(data => {
 				if (data[1]?.name) {
 					chartData.xaxis.push(data[1].name.substring(0, 10));
 				}
@@ -189,7 +243,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 		}
 		if (contactData?.updatesCountByTypePerOwner) {
 			const chartData = { series: copy(defaultUpdateUsers), xaxis: [] };
-			Object.entries(contactData?.updatesCountByTypePerOwner).forEach((data, value) => {
+			Object.entries(contactData?.updatesCountByTypePerOwner).forEach(data => {
 				if (data[1]?.name) {
 					chartData.xaxis.push(data[1].name.substring(0, 10));
 				}
@@ -207,7 +261,9 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 	}, [analyticsData, contactData]);
 
 	const formatter = function (val) {
-		return (val / 1000000).toFixed(2) + 'MM';
+		const DIVISOR = 1000000;
+
+		return (val / DIVISOR).toFixed(TO_FIXED) + 'MM';
 	};
 	return (
 		<Grid
@@ -220,7 +276,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 			style={{ padding: '30px' }}
 		>
 			{
-				<Grid item md={activeModule.value === 'CRM' ? 4 : 6} style={{ padding: '10px' }}>
+				<Grid item md={activeModule.value === 'CRM' ? CRM_MD : MD} style={{ padding: '10px' }}>
 					<Card variant="outlined">
 						<CardContent style={{ height: '265px' }}>
 							<label>{activeModule.value === 'CRM' ? 'Total Activities' : 'Total Updates'}</label>
@@ -258,6 +314,11 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 											value: get(analyticsData, 'activitiesCount.mailer', 0),
 											color: '#F5B296',
 										},
+										{
+											title: 'Others',
+											value: countOthersForDonut(analyticsData.activitiesCount, defaultSeriesActivities),
+											color: '#D2B48C',
+										},
 									]}
 								/>
 							)}
@@ -281,7 +342,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 			}
 
 			{
-				<Grid item md={activeModule.value === 'CRM' ? 4 : 6} style={{ padding: '10px' }}>
+				<Grid item md={activeModule.value === 'CRM' ? CRM_MD : MD} style={{ padding: '10px' }}>
 					<Card variant="outlined">
 						<CardContent style={{ height: '265px', overflow: 'auto' }}>
 							<label>{activeModule.value === 'CRM' ? 'Activities Per Qualifier' : 'Updates Per User'}</label>
@@ -311,6 +372,16 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 			)}
 		</Grid>
 	);
+};
+
+ActivityAnalytics.propTypes = {
+	appliedFilters: PropTypes.array.isRequired,
+	tableFilters: PropTypes.array.isRequired,
+	module: PropTypes.string.isRequired,
+	setTableFilters: PropTypes.func,
+	tableData: PropTypes.array.isRequired,
+	searchFields: PropTypes.array.isRequired,
+	globalFilter: PropTypes.string.isRequired,
 };
 
 export default ActivityAnalytics;

@@ -1,15 +1,15 @@
+// QUERIES
 import React, { useState, useEffect } from 'react';
 
-// QUERIES
-import { useLazyQuery } from '@apollo/client';
-import loadashFilter from 'lodash/filter';
-
+import { Popper, Typography } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import parse from 'autosuggest-highlight/parse';
+
+import { useLazyQuery } from '@apollo/client';
 import match from 'autosuggest-highlight/match';
-import { Popper, Typography } from '@material-ui/core';
+import parse from 'autosuggest-highlight/parse';
+import loadashFilter from 'lodash/filter';
 
 // const styles = (theme) => ({
 //   popper: {
@@ -56,7 +56,7 @@ const AutoCompleteField = ({
 	useEffect(() => {
 		if (filtersData) {
 			const keys = Object.keys(filtersData);
-			if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits)
+			if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits) {
 				setOptions(
 					filtersData[keys[0]].hits.map(hit => ({
 						doc_count: hit.doc_count,
@@ -64,6 +64,7 @@ const AutoCompleteField = ({
 						key_as_string: hit.key_as_string,
 					}))
 				);
+			}
 		}
 	}, [filtersData]);
 
@@ -73,7 +74,9 @@ const AutoCompleteField = ({
 	};
 
 	const getFiltersAction = search => {
-		if (search) search = type === 'number' ? search : search.includes('-') ? `"*${search}*"` : `*${search}*`;
+		if (search) {
+			search = type === 'number' ? search : search.includes('-') ? `"*${search}*"` : `*${search}*`;
+		}
 		getFilters({
 			variables: {
 				esIndex,
@@ -112,13 +115,17 @@ const AutoCompleteField = ({
 					// const spliteData = option?.key.split(" ");
 					const filterSpace = option?.key?.filter(item => item !== '');
 
-					if (!filterSpace) return '';
+					if (!filterSpace) {
+						return '';
+					}
 
 					return `#-${filterSpace[0]}${filterSpace[1] ? ` - ${filterSpace[1]}` : ''}`;
 				}
 			}}
 			onChange={(e, value, reason) => {
-				if (reason === 'clear' || !value?.key) return setSearch('');
+				if (reason === 'clear' || !value?.key) {
+					return setSearch('');
+				}
 
 				if (typeof value.key === 'string') {
 					setSearch(value.key);
@@ -138,8 +145,9 @@ const AutoCompleteField = ({
 			options={options}
 			loading={loading}
 			renderOption={(props, value) => {
-				if (props?.id === 'newEntity')
+				if (props?.id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{props.key}'</Typography>;
+				}
 				const matches = match(props.key, value?.inputValue);
 				const parts = parse(props.key, matches);
 

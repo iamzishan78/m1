@@ -1,12 +1,14 @@
 import React from 'react';
-import FilterDatePickerPermit from './FilterDatePickerPermit';
+
+import Grid from '@material-ui/core/Grid';
+
 import FilterDatePickerCompletetion from './FilterDatePickerCompletetion';
-import FilterDatePickerSpud from './FilterDatePickerSpud';
 import FilterDatePickerFirstProd from './FilterDatePickerFirstProd';
-import FilterTVD from './FilterTVD';
+import FilterDatePickerPermit from './FilterDatePickerPermit';
+import FilterDatePickerSpud from './FilterDatePickerSpud';
 import FilterLateralLength from './FilterLateralLength';
 import FilterMeasuredDistance from './FilterMeasuredDistance';
-import Grid from '@material-ui/core/Grid';
+import FilterTVD from './FilterTVD';
 
 export default function FilterFormWell() {
 	return (

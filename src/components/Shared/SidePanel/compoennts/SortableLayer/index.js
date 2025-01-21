@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import { isMobile } from 'react-device-detect';
-import FileTree from './FileTree';
 import { ContextProvider } from 'react-sortly';
-import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
-import { useLazyQuery } from '@apollo/client';
+
 import { Box, CircularProgress } from '@material-ui/core';
+
+import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
+
+import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import { deepEqual } from 'components/Shared/functions';
+
+import FileTree from './FileTree';
 
 const getEmptyGroupAndLayer = (group, type) => {
-	if (type === 'layer')
+	if (type === 'layer') {
 		return {
 			emptyLayer: true,
 			collapsed: true,
@@ -25,8 +30,9 @@ const getEmptyGroupAndLayer = (group, type) => {
 			type: 'layer',
 			id: group.groupId + 'layer',
 		};
+	}
 
-	if (type === 'group')
+	if (type === 'group') {
 		return {
 			depth: 0,
 			type: 'group',
@@ -36,6 +42,9 @@ const getEmptyGroupAndLayer = (group, type) => {
 			name: group.name,
 			id: group.groupId,
 		};
+	}
+
+	return null;
 };
 
 const dnd = isMobile ? TouchBackend : HTML5Backend;
@@ -84,7 +93,7 @@ const SortableLayer = ({ mongoId, search }) => {
 									visiable: item.layerSettings.visiable,
 									depth: 1,
 									type: 'layer',
-									id: item._id,
+									id: item.layerId,
 								});
 							});
 						}
@@ -99,7 +108,7 @@ const SortableLayer = ({ mongoId, search }) => {
 								name: item.layerName === 'Parcels' ? 'Tracts' : item.layerName,
 								depth: 0,
 								type: 'layer',
-								id: item._id,
+								id: item.layerId,
 							});
 						}
 					}
@@ -120,14 +129,17 @@ const SortableLayer = ({ mongoId, search }) => {
 					}
 
 					const index = layerAndGroups.findIndex(layerAndGroup => layerAndGroup.id === emptyGroup.above);
+					const TWO = 2;
+					const THREE = 3;
 					if (index && layerAndGroups[index]?.type === 'layer') {
 						layerAndGroups.splice(index + 1, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
-						layerAndGroups.splice(index + 2, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
+						layerAndGroups.splice(index + TWO, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
 						return;
 					}
 					if (index && layerAndGroups[index]?.type === 'group') {
-						layerAndGroups.splice(index + 2, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
-						layerAndGroups.splice(index + 3, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
+						layerAndGroups.splice(index + TWO, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
+						layerAndGroups.splice(index + THREE, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
+
 						return;
 					}
 				});
@@ -140,11 +152,11 @@ const SortableLayer = ({ mongoId, search }) => {
 	}, [layers, layerGroupData?.getLayerGroups]);
 
 	useEffect(() => {
-		if (search)
+		if (search) {
 			setLayerMap(
 				stateValues.panelItems.filter(i => (i.layerName ?? i.name).toLowerCase().includes(search.toLowerCase()))
 			);
-		else {
+		} else {
 			setLayerMap(stateValues.panelItems);
 		}
 	}, [panelItems, search]);
@@ -164,6 +176,10 @@ const SortableLayer = ({ mongoId, search }) => {
 			)}
 		</>
 	);
+};
+SortableLayer.propTypes = {
+	mongoId: PropTypes.string.isRequired,
+	search: PropTypes.string,
 };
 
 export default React.memo(SortableLayer);

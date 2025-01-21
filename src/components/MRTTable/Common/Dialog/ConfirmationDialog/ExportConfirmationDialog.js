@@ -1,19 +1,26 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+
+import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import Button from '@material-ui/core/Button';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import _ from 'lodash';
-import { useDispatch } from 'react-redux';
+
 import { useApolloClient } from '@apollo/client';
-import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
-import { globalStateController } from 'hookstate/globalStateController';
-import { Modals } from '../../../../../styles/Modal';
+import _ from 'lodash';
+import PropTypes from 'prop-types';
+
 import { excludeFilters } from 'components/MRTTable/Common/CommonToolBarActions';
 
-export default function ExportConfirmationDialog({ table, tableKey, header, onClose, children, controller }) {
+import { globalStateController } from 'hookstate/globalStateController';
+
+import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
+
+import { Modals } from '../../../../../styles/Modal';
+
+function ExportConfirmationDialog({ table, tableKey, header, onClose, children, controller }) {
 	const dispatch = useDispatch();
 	const client = useApolloClient();
 	const modalClass = Modals();
@@ -31,7 +38,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		let excludedIds = [];
 		let total = tableStateValues?.data.total;
 		let customProps = tableStateValues.customProps;
-		if (rows.length !== 0 && !!!tableStateValues?.isAllRowsSelected && !tableStateValues?.isSubSetSelect) {
+		if (rows.length !== 0 && !tableStateValues?.isAllRowsSelected && !tableStateValues?.isSubSetSelect) {
 			isSelectAll = false;
 		} else if (!!tableStateValues?.isAllRowsSelected || tableStateValues?.isSubSetSelect) {
 			excludedIds = excludeFilters(tableKey, tableStateValues?.isSubSetSelect?.total);
@@ -43,7 +50,8 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		let filteredTableSchema = tableStateValues?.TableSchema.filter(obj => {
 			const accessorKey = obj?.accessorKey || obj?.id;
 			return (
-				(filteredColumns[accessorKey] === true && !obj.hasOwnProperty('enableColumnFilter')) || obj?.isHiddenFieldExport
+				(filteredColumns[accessorKey] === true && !Object.prototype.hasOwnProperty.call(obj, 'enableColumnFilter')) ||
+				obj?.isHiddenFieldExport
 			);
 		});
 
@@ -100,6 +108,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 					search,
 					filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters, ...excludedIds],
 					esIndex: tableStateValues.esIndex,
+					modelName: tableStateValues.modelName,
 					extraExportValues: tableStateValues?.customProps?.exportValues,
 					columns: filteredTableSchema,
 					sortOrder,
@@ -146,3 +155,14 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		</Dialog>
 	);
 }
+
+ExportConfirmationDialog.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+	header: PropTypes.string.isRequired,
+	onClose: PropTypes.func.isRequired,
+	children: PropTypes.node.isRequired,
+	controller: PropTypes.object.isRequired,
+};
+
+export default ExportConfirmationDialog;

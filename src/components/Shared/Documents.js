@@ -1,29 +1,32 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import { useMutation, useLazyQuery } from '@apollo/client';
-import moment from 'moment';
-import Divider from '@material-ui/core/Divider';
-import Tooltip from '@material-ui/core/Tooltip';
-import InputBase from '@material-ui/core/InputBase';
-import SearchIcon from '@material-ui/icons/Search';
+
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import IconButton from '@material-ui/core/IconButton';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import InputBase from '@material-ui/core/InputBase';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import SearchIcon from '@material-ui/icons/Search';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
+import moment from 'moment';
+
 import DeleteDocumentConfirmation from './DeleteDocumentConfirmation';
-import { AppContext } from '../../AppContext';
-import { GETRECENTCONTACTFILES } from '../../graphQL/useQueryGetContactFiles';
-import { DELETEDESCRIPTORFILE } from '../../graphQL/useMutationDeleteDescriptorFile';
-import { VIEWFILEQUERY, VIEWFILESQUERY } from '../../graphQL/useQueryViewFile';
 import UploadZone from './UploadZone';
+import { AppContext } from '../../AppContext';
 
 // functions
 import get_file_icon from '../../components/Shared/functions/get_file_icon.js';
+import { DELETEDESCRIPTORFILE } from '../../graphQL/useMutationDeleteDescriptorFile';
+import { GETRECENTCONTACTFILES } from '../../graphQL/useQueryGetContactFiles';
+import { VIEWFILEQUERY, VIEWFILESQUERY } from '../../graphQL/useQueryViewFile';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -239,8 +242,11 @@ export default function Documents(props) {
 	const userId = stateApp.user.mongoId;
 
 	const [relatedObjectType, limit] = useMemo(() => {
-		if (props.isTransactPage) return ['Deal', 99];
-		else return ['Contact', 3];
+		if (props.isTransactPage) {
+			return ['Deal', 99];
+		} else {
+			return ['Contact', 3];
+		}
 	}, [props.isTransactPage]);
 
 	const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
@@ -248,13 +254,14 @@ export default function Documents(props) {
 		onCompleted: ({ getFileDescriptors }) => {
 			let allActive = true;
 
-			if (getFileDescriptors)
+			if (getFileDescriptors) {
 				for (let i = 0; i < getFileDescriptors.length; i++) {
 					if (getFileDescriptors[i].fileState !== 'active') {
 						allActive = false;
 						break;
 					}
 				}
+			}
 
 			if (!allActive) {
 				if (fileRequestCounter <= 20) {
@@ -277,7 +284,9 @@ export default function Documents(props) {
 					//   )
 					// );
 				}
-			} else setFileRequestCounter(1);
+			} else {
+				setFileRequestCounter(1);
+			}
 		},
 	});
 	const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
@@ -506,7 +515,9 @@ export default function Documents(props) {
 															<div
 																className={classes.forImageContainer}
 																onClick={() => {
-																	if (file.state !== 'active') return;
+																	if (file.state !== 'active') {
+																		return;
+																	}
 
 																	if (fileExtension === 'pdf') {
 																		setStateApp({
@@ -527,7 +538,9 @@ export default function Documents(props) {
 												<div
 													className="DocumentTitle"
 													onClick={() => {
-														if (file.state !== 'active') return;
+														if (file.state !== 'active') {
+															return;
+														}
 
 														if (fileExtension === 'pdf') {
 															setStateApp({

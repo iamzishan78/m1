@@ -1,5 +1,7 @@
 import { hookstate } from '@hookstate/core';
+
 import { copy } from 'components/Shared/functions';
+
 import { hookStateController } from 'hookstate/hookStateController';
 
 export const commonIterestOwnerStates = {
@@ -130,7 +132,9 @@ export const sideDialogState = {};
 const sideDialogStateControllerHandler = () => ({});
 
 export const sideDialogController = DialogKey => {
-	if (!sideDialogState[DialogKey]) sideDialogState[DialogKey] = hookstate(copy(initialStates[DialogKey]));
+	if (!sideDialogState[DialogKey]) {
+		sideDialogState[DialogKey] = hookstate(copy(initialStates[DialogKey]));
+	}
 
 	return {
 		...sideDialogStateControllerHandler(sideDialogState[DialogKey]),

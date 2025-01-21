@@ -20,23 +20,25 @@ describe('Campaign Unit Grid Spec', () => {
 
 		cy.log('==== STEP: CLICK ON UNIT BY NAME ====');
 		const unitName = 'GEP - Tate Locklear'; //GEP - Tate Locklear
-		cy.gridSearch(unitName, 'getESSimpleSearch');
+		cy.gridSearch(unitName, 'getDbData');
 		cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: longTimeout })
 			.contains(unitName, { timeout: longTimeout })
 			.should('be.visible')
 			.click({ force: true });
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.log('==== STEP: CLICK ON UNITS ====');
 		cy.get('#Units', { timeout: longTimeout }).click();
 		cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
-			const totalUnits = response.response.body.data.getESSimpleSearch.total;
+			const totalUnits = response.response.body.data.getDbData.total;
 
 			cy.get('#unitCounts')
 				.invoke('text')
 				.then(unitCount => {
 					cy.log('==== STEP: MATCHING UNITS COUNT ====');
-					if (parseInt(unitCount) !== totalUnits) throw new Error(`Total Unit Count is not showing correctly`);
+					if (parseInt(unitCount) !== totalUnits) {
+						throw new Error('Total Unit Count is not showing correctly');
+					}
 				});
 		});
 		cy.wait(1000);

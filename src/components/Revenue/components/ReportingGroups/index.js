@@ -1,7 +1,10 @@
 import React, { useState, useContext, useEffect } from 'react';
+
 import { makeStyles } from '@material-ui/styles';
-import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
+import { deepEqual } from 'components/Shared/functions';
 import MRTTable from 'components/MRTTable';
+import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
+
 import { tableController } from 'hookstate/tableController';
 
 // actions
@@ -23,10 +26,25 @@ export default function ReportingGroups() {
 
 	const [filterToggle, setFilterToggle] = React.useState(false);
 	// props to pass in table
-	const [esFilters, setESFilters] = useState([]);
+	const [esFilters, ESFilters] = useState([]);
+
+	const setESFilters = newFilter => {
+		// If the new filter is an empty array, reset `esFilters` to an empty array
+		if (newFilter?.length === 0) {
+			ESFilters([]); // Reset filters
+		}
+		// Check if the new filter is deeply equal to the current state; if not, update `esFilters`
+		if (!deepEqual(ESFilters, newFilter)) {
+			ESFilters(newFilter); // Update filters only if they are different
+		}
+	};
 
 	useEffect(() => {
-		tableController('RevenuePropertiesTable').setFilters(esFilters);
+		// Check if `tableStateValues?.filters` differs from the current `esFilters`
+		if (!deepEqual(tableStateValues?.filters, esFilters)) {
+			// Update the filters in the table controller if they differ
+			tableController('RevenuePropertiesTable').setFilters(esFilters);
+		}
 	}, [esFilters, filterToggle]);
 
 	useEffect(() => {

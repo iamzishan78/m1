@@ -1,8 +1,10 @@
 import { area, convertArea, length } from '@turf/turf';
+import * as turf from '@turf/turf';
+
+import { calculateShapeCenter } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+
 import { drawController } from 'hookstate/drawStateController';
 import { popupController } from 'hookstate/popupStateController';
-import * as turf from '@turf/turf';
-import { calculateShapeCenter } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 export const showIfUserDefinedLayer = () => {
 	const currentFeature = drawController.getValue('currentFeature');
@@ -22,7 +24,7 @@ export const showIfUserDefinedLayer = () => {
 };
 
 export const layersWithSelectedShapeKey = () => {
-	const layers = ['units', 'agreements', 'contracts', 'deeds', 'leases', 'surfaces'];
+	const layers = ['units', 'agreements', 'contracts', 'deeds', 'leases', 'surfaces', 'parcels'];
 	const keys = {};
 	layers.forEach(key => {
 		keys[key] = 'selectedShape';
@@ -67,8 +69,8 @@ export const ifGenericShapeSource = source => {
 	);
 };
 
-const genericShapeIdentifiers = ['Units', 'Agreements', 'Contracts', 'Deeds', 'Leases', 'Surfaces'];
-const defaultIdentifiers = [...genericShapeIdentifiers, 'Parcels', 'Interests'];
+const genericShapeIdentifiers = ['Parcels', 'Units', 'Agreements', 'Contracts', 'Deeds', 'Leases', 'Surfaces'];
+const defaultIdentifiers = [...genericShapeIdentifiers, 'Interests'];
 
 export const ifGenericShapeIdentifier = identifier => genericShapeIdentifiers.includes(identifier);
 export const ifDefaultIdentifier = identifier => defaultIdentifiers.includes(identifier);
@@ -200,6 +202,7 @@ export const calculateLandArea = selectedFeature => {
 			return `${formatNumber(Math.round(distanceInMiles * 100) / 100)} miles`;
 		}
 	}
+	return null;
 };
 
 export const parseUserDefinedLayerFeature = (feature, layer) => {

@@ -1,20 +1,26 @@
 import React, { useState, useEffect, useContext } from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
-import moment from 'moment';
-import { uniqueId } from 'lodash';
-import { useLazyQuery } from '@apollo/client';
 import { useHistory } from 'react-router-dom';
 
-import { GETALLACTIVITIES } from '../../graphQL/useQueryGetAllActivities';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery } from '@apollo/client';
+import { uniqueId } from 'lodash';
+import moment from 'moment';
+
+import MRTTable from 'components/MRTTable';
+
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-import ActivitiesToolbar from './components/ActivitiesToolbar';
+
+import { tableController } from 'hookstate/tableController';
+
 import ActivitiesEvent from './components/ActivitiesEvent';
 import ActivitiesModal from './components/ActivitiesModal';
+import ActivitiesToolbar from './components/ActivitiesToolbar';
 import { AppContext } from '../../AppContext';
-import MRTTable from 'components/MRTTable';
-import { tableController } from 'hookstate/tableController';
+import { GETALLACTIVITIES } from '../../graphQL/useQueryGetAllActivities';
+
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './index.css';
 
@@ -111,10 +117,10 @@ const Activities = () => {
 	const classes = useStyles();
 	let history = useHistory();
 	const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
-		fetchPolicy: `network-only`,
+		fetchPolicy: 'network-only',
 	});
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-		fetchPolicy: `network-only`,
+		fetchPolicy: 'network-only',
 	});
 
 	const [stateApp, setStateApp] = useContext(AppContext);

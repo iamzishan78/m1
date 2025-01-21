@@ -255,16 +255,6 @@ export const analyticsManagementRoutes = {
 	// 	isDefault: true,
 	// 	hideSearch: true,
 	// },
-	Data: {
-		featureFlag: 'CONTACTSUBMENU',
-		title: 'Data',
-		link: '/analytics/data',
-		component: 'Data',
-		value: 'Data',
-		search: true,
-		isDefault: true,
-		hideSearch: true,
-	},
 	REVENUE_PROPERTY_DETAILS: {
 		featureFlag: 'CONTACTSUBMENU',
 		title: 'Revenue',
@@ -575,6 +565,14 @@ export const AdminManagementRoutes = {
 		noCheck: true,
 		showSettingString: false,
 	},
+	EXTERNALTOOLS: {
+		featureFlag: 'AlWAYSSHOW',
+		title: 'External Tools',
+		link: '/admin/externalTools',
+		component: 'ExternalTools',
+		noCheck: true,
+		showSettingString: false,
+	},
 	// CUSTOMIZATIONS: {
 	//   featureFlag: "CONTACTSUBMENU",
 	//   title: "Customization",
@@ -669,6 +667,65 @@ export const AdminManagementRoutes = {
 		isDefault: true,
 		isExcluded: true,
 	},
+	ASSET_MANAGEMENT: {
+		featureFlag: 'AlWAYSSHOW',
+		title: 'Asset Management',
+		link: '/admin/assetmanagement',
+		component: 'AssetManagement',
+		noCheck: true,
+		showSettingString: false,
+	},
+};
+
+export const dataManagementRoutes = {
+	PlatformWells: {
+		featureFlag: 'DATA',
+		title: 'Platform Wells',
+		link: '/data/wells',
+		value: 'PlatformWells',
+		isDefault: true,
+		hideSearch: true,
+	},
+	Agreements: {
+		featureFlag: 'DATA',
+		title: 'Agreements',
+		link: '/data/agreements',
+		value: 'Agreements',
+		isDefault: true,
+		hideSearch: true,
+	},
+	Units: {
+		featureFlag: 'DATA',
+		title: 'Units',
+		link: '/data/units',
+		value: 'Units',
+		isDefault: true,
+		hideSearch: true,
+	},
+	Tracts: {
+		featureFlag: 'DATA',
+		title: 'Tracts',
+		link: '/data/tracts',
+		value: 'Tracts',
+		isDefault: true,
+		hideSearch: true,
+	},
+	MyWells: {
+		featureFlag: 'DATA',
+		title: 'My Wells',
+		link: '/data/mywells',
+		value: 'MyWells',
+		isDefault: true,
+		hideSearch: true,
+	},
+	ShapeFile: {
+		featureFlag: 'DATA',
+		title: 'Shape File',
+		link: '/data/shapefiles',
+		value: 'ShapeFile',
+		isDefault: true,
+		hideSearch: true,
+	},
 };
 
 export const paymentGridsInitialData = [
@@ -683,6 +740,7 @@ export const bypassTenants = [
 	'm1dev',
 	'm1cypress',
 	'm1staging',
+	'wildbasin',
 	// "m1Production",
 	// "m1Development",
 	// "GHR",
@@ -751,3 +809,8 @@ export const baseTenantsMaps = () => {
 };
 
 export const PaymentFeatureTenants = ['m1dev', 'frontier', 'localhost'];
+
+export const statusData = [
+	{ label: 'Not in Pay', value: 'NotInPay' },
+	{ label: 'In Pay', value: 'InPay' },
+];

@@ -1,9 +1,12 @@
-import { spatialDataAttributes } from './constants';
 import { area, convertArea, length } from '@turf/turf';
 import * as turf from '@turf/turf';
 import { SRCenter } from 'mapbox-gl-draw-scale-rotate-mode';
-import { drawController } from 'hookstate/drawStateController';
+
 import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
+
+import { drawController } from 'hookstate/drawStateController';
+
+import { spatialDataAttributes } from './constants';
 
 export const calculateShapeCenter = geo => {
 	const center = turf.center(geo);
@@ -83,11 +86,15 @@ export const createShapeLabelLayer = feature => {
 };
 
 export const drawWellBoundary = coordinates => {
-	if (!window.mapRef) return;
+	if (!window.mapRef) {
+		return;
+	}
 
 	const layerId = 'boundary-layer';
 
-	if (window.mapRef.getLayer(layerId)) window.mapRef.removeLayer(layerId);
+	if (window.mapRef.getLayer(layerId)) {
+		window.mapRef.removeLayer(layerId);
+	}
 
 	if (coordinates && coordinates.length > 0 && coordinates[0]) {
 		new DeckGlLayer({
@@ -119,11 +126,15 @@ export const drawWellBoundary = coordinates => {
 
 export const drawPlaceBoundary = coordinates => {
 	// Add separate fn for draw place highlight with larger dot
-	if (!window.mapRef) return;
+	if (!window.mapRef) {
+		return;
+	}
 
 	const layerId = 'boundary-layer';
 
-	if (window.mapRef.getLayer(layerId)) window.mapRef.removeLayer(layerId);
+	if (window.mapRef.getLayer(layerId)) {
+		window.mapRef.removeLayer(layerId);
+	}
 
 	if (coordinates && coordinates.length > 0 && coordinates[0]) {
 		new DeckGlLayer({
@@ -157,11 +168,15 @@ export const drawPlaceBoundary = coordinates => {
 };
 
 export const drawBoundary = (selectedUserDefinedLayer, layer_Id) => {
-	if (!window.mapRef) return;
+	if (!window.mapRef) {
+		return;
+	}
 
 	const layerId = layer_Id || 'boundary-layer';
 
-	if (window.mapRef.getLayer(layerId)) window.mapRef.removeLayer(layerId);
+	if (window.mapRef.getLayer(layerId)) {
+		window.mapRef.removeLayer(layerId);
+	}
 
 	if (selectedUserDefinedLayer?.geometry) {
 		const type = selectedUserDefinedLayer.geometry.type;
@@ -197,7 +212,9 @@ export const drawBoundary = (selectedUserDefinedLayer, layer_Id) => {
 
 // Function to draw boundaries for multiple shapes
 export const drawBoundaries = shapes => {
-	if (!window.mapRef || !Array.isArray(shapes) || shapes.length === 0) return; // Ensure mapRef exists and shapes is a valid array
+	if (!window.mapRef || !Array.isArray(shapes) || shapes.length === 0) {
+		return;
+	} // Ensure mapRef exists and shapes is a valid array
 
 	shapes.forEach((shape, index) => {
 		const uniqueLayerId = `boundary-layer-${index}`; // Generate a unique layer ID for each shape
@@ -206,7 +223,9 @@ export const drawBoundaries = shapes => {
 };
 
 export const clearSelectedAbstracts = () => {
-	if (window.mapRef?.getLayer('Land Grid_selection')) window.mapRef.removeLayer('Land Grid_selection');
+	if (window.mapRef?.getLayer('Land Grid_selection')) {
+		window.mapRef.removeLayer('Land Grid_selection');
+	}
 	drawController.updateState({
 		selectedAbstracts: [],
 	});
@@ -374,7 +393,9 @@ export const getRotateAbleShapeFromSelectedQuarters = (currentFeature, draw) => 
 };
 
 export const changeModeToScaleRotate = draw => {
-	if (!draw) return;
+	if (!draw) {
+		return;
+	}
 	const all = draw.getAll();
 	const feature = all.features.find(f => f.properties.isrotate);
 	if (feature) {

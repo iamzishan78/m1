@@ -1,7 +1,9 @@
 import React from 'react';
-import { DocumentContextProvider } from './DocumentContext';
+
 import { makeStyles } from '@material-ui/core/styles';
+
 import Document from './Document';
+import { DocumentContextProvider } from './DocumentContext';
 
 const useStyles = makeStyles(theme => ({
 	DocumentWrapper: {

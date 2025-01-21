@@ -1,20 +1,24 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Switch, Route, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { Switch, Route, useLocation } from 'react-router-dom';
+
+import AdminOperation from 'components/Admin/AdminOperation';
+import AssetManagement from 'components/Admin/components/AssetManagement';
+import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
+import ExternalTools from 'components/ExternalTools';
+import QuickActionPanel from 'components/Land/components/QuickActionPanel';
+import AdminSettings from 'components/Shared/AdminSettings';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
-import { AppContext } from 'AppContext';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 
 import { AdminManagementRoutes } from 'utils/data';
-import Map from './components/Map';
-import AdminSettings from 'components/Shared/AdminSettings';
-import AdminOperation from 'components/Admin/AdminOperation';
-import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
+
+import { AppContext } from 'AppContext';
+
 import BulkDataEditingDetail from './components/BulkDataEditingDetail';
+import Map from './components/Map';
 
 const Components = {
 	Map,
@@ -22,10 +26,20 @@ const Components = {
 	AdminOperation,
 	BulkDataEditing,
 	BulkDataEditingDetail,
+	ExternalTools,
+	AssetManagement,
 };
 
 function isM1neralAddress(email) {
 	return email.endsWith('@m1neral.com');
+}
+
+function isTestEnv() {
+	let tenantName = window.sessionStorage.getItem('tenantName');
+
+	let validTenants = ['frontier', 'm1development', 'localhost'];
+	let isValidTenant = validTenants.map(tenant => tenant.toLowerCase()).includes(tenantName.toLowerCase());
+	return isValidTenant;
 }
 
 export default function Admin() {
@@ -46,7 +60,6 @@ export default function Admin() {
 		if (option) {
 			dispatch(setActiveModule(option));
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [location.pathname]);
 
 	const handlePanelStateChange = state => {
@@ -67,6 +80,10 @@ export default function Admin() {
 		const allPaths = JSON.parse(JSON.stringify(AdminManagementRoutes));
 		if (!isM1neralAddress(stateApp.user.email)) {
 			delete allPaths['ADMINOPERATION'];
+		}
+
+		if (!isTestEnv()) {
+			delete allPaths['ASSET_MANAGEMENT'];
 		}
 		const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.CONTACTSUBMENU);
 		// const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);
@@ -104,7 +121,7 @@ export default function Admin() {
 				actions={sidePanelOptions}
 			>
 				{Object.values(allowedPaths).map(option => (
-					<Switch>
+					<Switch key={option.title}>
 						<Route exact path={option.link} component={Components[option.component]} />
 					</Switch>
 				))}

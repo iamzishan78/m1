@@ -1,7 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { useMutation, useLazyQuery } from '@apollo/client';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Grid,
 	Typography,
@@ -16,29 +17,31 @@ import {
 	ListItemIcon,
 	ListItemText,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import {
 	Delete as DeleteIcon,
 	NavigateNext as NavigateNextIcon,
 	MoreHoriz as MoreHorizIcon,
 } from '@material-ui/icons/';
-import { makeStyles } from '@material-ui/core/styles';
 
-import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from 'actions';
+import { useMutation, useLazyQuery } from '@apollo/client';
+
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import BaicInfoPanel from 'components/Transact/components/PipelineCustomizeDialog/BasicInfo';
-import DealStagesPanel from 'components/Transact/components/PipelineCustomizeDialog/Stages';
-import StageDetails from 'components/Transact/components/PipelineCustomizeDialog/StageDetails';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import { deepEqualObjects } from 'components/Shared/functions';
+import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import BaicInfoPanel from 'components/Transact/components/PipelineCustomizeDialog/BasicInfo';
+import StageDetails from 'components/Transact/components/PipelineCustomizeDialog/StageDetails';
+import DealStagesPanel from 'components/Transact/components/PipelineCustomizeDialog/Stages';
 
-import { AppContext } from 'AppContext';
-import { DEALSCOUNTINAPIPE } from 'graphQL/useQueryNonDeletedDealsCountInAPipeline';
-import { UPDATEPIPELINES, UPDATE_PIPELINE } from 'graphQL/useMutationUpdatePipelines';
 import { ADD_PIPELINE } from 'graphQL/useMutationAddPipeline';
 import { ADDSTAGES } from 'graphQL/useMutationAddStages';
+import { UPDATEPIPELINES, UPDATE_PIPELINE } from 'graphQL/useMutationUpdatePipelines';
 import { UPDATESTAGES } from 'graphQL/useMutationUpdateStages';
-import { useHistory } from 'react-router-dom';
+import { DEALSCOUNTINAPIPE } from 'graphQL/useQueryNonDeletedDealsCountInAPipeline';
+
+import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 const DIALOG_WIDTHS = {
 	BASIC: '450px',
@@ -111,7 +114,7 @@ const a11yProps = index => ({
 	'aria-controls': `full-width-tabpanel-${index}`,
 });
 
-const PipelineCustomDialog = props => {
+const PipelineCustomDialog = () => {
 	const history = useHistory();
 	const dispatch = useDispatch();
 	const [tab, setTab] = useState(0);
@@ -149,13 +152,12 @@ const PipelineCustomDialog = props => {
 				...state,
 				uniuniversalCircularLoaderAct: false,
 			}));
-			if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
+			if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0) {
 				dispatch(showWarningMessage('There are deals associated to this flowline, please remove them first.'));
-			else {
+			} else {
 				setDeleteDialogOpen('pipe');
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataDealsCountByPipeline]);
 
 	useEffect(() => {
@@ -173,7 +175,9 @@ const PipelineCustomDialog = props => {
 			});
 			client.reFetchObservableQueries(['getPipelines', 'getPipeline']);
 
-			if (openPipeDialog === 'newPipe') dispatch(setFlowState({ openPipeDialog: true }));
+			if (openPipeDialog === 'newPipe') {
+				dispatch(setFlowState({ openPipeDialog: true }));
+			}
 		}
 	}, [data, loading, called]);
 
@@ -183,7 +187,9 @@ const PipelineCustomDialog = props => {
 	const handleChange = (event, tab) => {
 		if (tab === 0) {
 			setDialogWidth(DIALOG_WIDTHS.BASIC);
-		} else setDialogWidth(DIALOG_WIDTHS.LANES);
+		} else {
+			setDialogWidth(DIALOG_WIDTHS.LANES);
+		}
 		setTab(tab);
 	};
 
@@ -285,12 +291,16 @@ const PipelineCustomDialog = props => {
 							};
 
 							//// checking if the descriptor position changed
-							if (dbStage.position !== frontEndStage.position) stageToUpdate.position = frontEndStage.position;
+							if (dbStage.position !== frontEndStage.position) {
+								stageToUpdate.position = frontEndStage.position;
+							}
 
 							//// checking if something change in the real stage object
 							delete dbStage.position;
 							delete frontEndStage.position;
-							if (!deepEqualObjects(dbStage, frontEndStage)) stageToUpdate = { ...stageToUpdate, ...frontEndStage };
+							if (!deepEqualObjects(dbStage, frontEndStage)) {
+								stageToUpdate = { ...stageToUpdate, ...frontEndStage };
+							}
 
 							////
 							stagesToUpdate.push(stageToUpdate);
@@ -314,7 +324,9 @@ const PipelineCustomDialog = props => {
 					}
 				}
 
-				if (!found) stagesToUpdate.push({ _id: dbStage._id, IsDeleted: true });
+				if (!found) {
+					stagesToUpdate.push({ _id: dbStage._id, IsDeleted: true });
+				}
 			}
 
 			//// pipeToUpdate ////
@@ -325,13 +337,14 @@ const PipelineCustomDialog = props => {
 			let allPromises = [];
 
 			if (pipeToUpdate) {
-				if (pipeToUpdate.IsDefault) pipeToUpdate = { ...pipeToUpdate, position: 0 };
-				else {
+				if (pipeToUpdate.IsDefault) {
+					pipeToUpdate = { ...pipeToUpdate, position: 0 };
+				} else {
 					pipeToUpdate = { ...pipeToUpdate, position: pipeToUpdate.projectPipelinePosition };
 				}
 
 				allPromises.push(
-					new Promise((resolve, reject) => {
+					new Promise(resolve => {
 						updatePipeline({
 							variables: {
 								pipeline: pipeToUpdate,
@@ -343,7 +356,9 @@ const PipelineCustomDialog = props => {
 								data: { updatePipeline },
 							} = result;
 
-							if (updatePipeline?.success === false) success = false;
+							if (updatePipeline?.success === false) {
+								success = false;
+							}
 
 							resolve();
 						});
@@ -351,7 +366,7 @@ const PipelineCustomDialog = props => {
 				);
 			}
 
-			if (stagesToAdd && stagesToAdd.length > 0)
+			if (stagesToAdd && stagesToAdd.length > 0) {
 				allPromises.push(
 					new Promise(resolve => {
 						addStages({
@@ -367,16 +382,19 @@ const PipelineCustomDialog = props => {
 								data: { addStages },
 							} = result;
 
-							if (addStages?.success === false) success = false;
+							if (addStages?.success === false) {
+								success = false;
+							}
 
 							resolve();
 						});
 					})
 				);
+			}
 
-			if (stagesToUpdate && stagesToUpdate.length > 0)
+			if (stagesToUpdate && stagesToUpdate.length > 0) {
 				allPromises.push(
-					new Promise((resolve, reject) => {
+					new Promise(resolve => {
 						updateStages({
 							variables: {
 								stages: stagesToUpdate,
@@ -388,19 +406,25 @@ const PipelineCustomDialog = props => {
 								data: { updateStages },
 							} = result;
 
-							if (updateStages?.success === false) success = false;
+							if (updateStages?.success === false) {
+								success = false;
+							}
 
 							resolve();
 						});
 					})
 				);
+			}
 
 			Promise.all(allPromises)
-				.then(values => {
-					if (success === true) dispatch(showSuccessMessage('Flowline was successfully updated.'));
-					else dispatch(showErrorMessage('An error occurred during the update.'));
+				.then(() => {
+					if (success === true) {
+						dispatch(showSuccessMessage('Flowline was successfully updated.'));
+					} else {
+						dispatch(showErrorMessage('An error occurred during the update.'));
+					}
 				})
-				.catch(reason => {});
+				.catch(() => {});
 		}
 	};
 
@@ -482,7 +506,7 @@ const PipelineCustomDialog = props => {
 									textColor="primary"
 									variant="fullWidth"
 								>
-									{FLOWLINE_CUSTOM_TABS.map((tab, index) => (
+									{FLOWLINE_CUSTOM_TABS.map(tab => (
 										<Tab label={tab.label} {...a11yProps(tab.value)} />
 									))}
 								</Tabs>
@@ -554,17 +578,15 @@ const PipelineCustomDialog = props => {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
-						header={deleteDialogOpen === 'pipe' ? `Delete Flowline` : `Delete Stage`}
+					<DeleteConfirmationDialog
+						header={deleteDialogOpen === 'pipe' ? 'Delete Flowline' : 'Delete Stage'}
 						onClose={handleCloseDeleteDialog}
 						deleteFunc={deleteFunc ? deleteFunc : () => {}}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
 					>
 						{deleteDialogOpen === 'pipe'
 							? 'Are you sure you want to delete the flowline?'
 							: 'Are you sure you want to delete the stage?'}
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 		</>

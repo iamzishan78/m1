@@ -1,7 +1,12 @@
 import React from 'react';
-import { Autocomplete, TextField, Chip } from '@mui/material';
 import { useController } from 'react-hook-form';
+
+import { makeStyles } from '@material-ui/core/styles';
+
 import CloseIcon from '@mui/icons-material/Close';
+import { Autocomplete, TextField, Chip, IconButton } from '@mui/material';
+
+import moment from 'moment';
 
 /**
  * CustomAutocomplete component integrates MUI Autocomplete with react-hook-form using useController.
@@ -13,7 +18,44 @@ import CloseIcon from '@mui/icons-material/Close';
  * @param {string} className - Additional class styles for the input field.
  * @param {boolean} isTextFieldOnly - If true, the component will behave as a TextField and not show dropdown options.
  * @param {boolean} multiple - If true, allows the user to select multiple options.
+ * @param {string} type - The type of the field (e.g., "date" for date pickers).
  */
+
+const useStyles = makeStyles(() => ({
+	datesRow: {
+		display: 'flex',
+		flexDirection: 'row',
+	},
+	datePicker: {
+		margin: '5px',
+		'& .MuiInputLabel-root': {
+			color: 'white', // Change the label color to white
+		},
+		'& .MuiInputLabel-root.Mui-focused': {
+			color: 'white', // Ensure it remains white when focused
+		},
+		'&& span': {
+			pointerEvents: 'none',
+		},
+		'& .MuiIconButton-root': {
+			padding: '10px 0px',
+		},
+		'& input::-webkit-calendar-picker-indicator': {
+			filter: 'invert(1)',
+		},
+	},
+	blue: {
+		'& .MuiInputBase-input': { color: '#17AADD' },
+	},
+	dateRoot: {
+		color: '#ffffff',
+		'& input': {
+			marginLeft: 8,
+		},
+		minWidth: '150px',
+	},
+}));
+
 const CustomAutocomplete = ({
 	defaultValue,
 	name,
@@ -22,50 +64,152 @@ const CustomAutocomplete = ({
 	label,
 	className,
 	onChange,
-	isTextFieldOnly = false, // New prop to toggle behavior
+	isTextFieldOnly = false,
 	searchText,
 	handleChange,
-	multiple = false, // New prop to enable multiselect
+	multiple = false,
+	type,
 }) => {
-	// Using the useController hook to bind the input to react-hook-form's control
 	const { field } = useController({
-		name, // Name of the field
-		control, // The control object from react-hook-form
-		defaultValue: defaultValue || (multiple ? [] : ''), // Provide a default value based on multiselect
+		name,
+		control,
+		defaultValue: defaultValue || (multiple ? [] : ''),
 	});
 
-	// Conditionally render TextField when isTextFieldOnly is true
+	const classes = useStyles();
+
+	if (type === 'date') {
+		const handleDateChange = (key, value) => {
+			const updatedValue = { ...field.value, [key]: value }; // Use `gte` or `lte` as keys
+			field.onChange(updatedValue);
+			onChange?.(updatedValue);
+		};
+
+		return (
+			<div style={{ display: 'flex', gap: '3em' }}>
+				<TextField
+					type="date"
+					label={'Date From'}
+					value={field.value?.gte || '1970-01-01'}
+					onChange={e => handleDateChange('gte', e.target.value)}
+					style={{ width: '160px' }}
+					InputLabelProps={{ shrink: true }}
+					InputProps={{
+						inputProps: {
+							max: moment().subtract(1, 'day').format('YYYY-MM-DD'),
+						},
+						endAdornment: field.value?.gte && (
+							<IconButton onClick={() => handleDateChange('gte', '')}>
+								<CloseIcon />
+							</IconButton>
+						),
+						classes: {
+							root: classes.dateRoot,
+						},
+					}}
+					variant="standard"
+					className={className}
+				/>
+				<TextField
+					type="date"
+					label={'Date To'}
+					value={field.value?.lte || moment().format('YYYY-MM-DD')}
+					onChange={e => handleDateChange('lte', e.target.value)}
+					style={{ width: '160px' }}
+					InputLabelProps={{ shrink: true }}
+					InputProps={{
+						inputProps: {
+							max: moment().format('YYYY-MM-DD'),
+						},
+						endAdornment: field.value?.lte && (
+							<IconButton onClick={() => handleDateChange('lte', '')}>
+								<CloseIcon />
+							</IconButton>
+						),
+						classes: {
+							root: classes.dateRoot,
+						},
+					}}
+					variant="standard"
+					className={className}
+				/>
+			</div>
+		);
+	}
+
+	if (type === 'range') {
+		// Handle changes for min and max fields
+		const handleNumberChange = (index, value) => {
+			const updatedValue = [...(field.value || [])]; // Ensure the array is initialized
+			updatedValue[index] = value; // Update the specific index (0 for "min", 1 for "max")
+			field.onChange(updatedValue);
+			onChange?.(updatedValue);
+		};
+
+		return (
+			<div style={{ display: 'flex', gap: '4em' }}>
+				<TextField
+					type="number"
+					label={'Min'}
+					value={field.value?.[0] || ''}
+					onChange={e => handleNumberChange(0, e.target.value)}
+					InputLabelProps={{ shrink: true }}
+					InputProps={{
+						classes: {
+							root: classes.dateRoot, // Reusing dateRoot styles for consistency
+						},
+					}}
+					variant="standard"
+					className={className}
+				/>
+				<TextField
+					type="number"
+					label={'Max'}
+					value={field.value?.[1] || ''}
+					onChange={e => handleNumberChange(1, e.target.value)}
+					InputLabelProps={{ shrink: true }}
+					InputProps={{
+						classes: {
+							root: classes.dateRoot, // Reusing dateRoot styles for consistency
+						},
+					}}
+					variant="standard"
+					className={className}
+				/>
+			</div>
+		);
+	}
+
 	if (isTextFieldOnly) {
 		return (
 			<TextField
 				fullWidth
-				label={label} // Display the label provided in props
-				className={className} // Apply custom styles to the input field
-				variant="standard" // MUI TextField variant
-				value={field.value} // Controlled input value
-				onChange={e => field.onChange(e.target.value)} // Update the form state on change
+				label={label}
+				className={className}
+				variant="standard"
+				value={field.value}
+				onChange={e => field.onChange(e.target.value)}
 			/>
 		);
 	}
 
-	// Default Autocomplete behavior with multiselect support
 	return (
 		<Autocomplete
 			{...field}
-			multiple={multiple} // Enable multiple selection if true
-			options={options} // The options to show in the dropdown
+			multiple={multiple}
+			options={options.filter(option => (multiple ? !field?.value?.includes(option) : true))}
 			onChange={(e, v, r) => {
-				onChange?.(e, v, r);
-				field.onChange(v); // Update the form state with the selected value(s)
+				onChange?.(e, v, r, field?.value);
+				field.onChange(v);
 			}}
-			value={(multiple && typeof field?.value === 'string' ? [field?.value] : field?.value) || (multiple ? [] : '')} // Controlled input for Autocomplete
+			value={(multiple && typeof field?.value === 'string' ? [field?.value] : field?.value) || (multiple ? [] : '')}
 			renderInput={params => (
 				<TextField
 					{...params}
-					label={label} // Display the label provided in props
-					className={className} // Apply custom styles to the input field
+					label={label}
+					className={className}
 					value={searchText}
-					variant="standard" // MUI TextField variant
+					variant="standard"
 					onChange={e => {
 						handleChange(e);
 					}}
@@ -78,12 +222,10 @@ const CustomAutocomplete = ({
 						label={option}
 						{...getTagProps({ index })}
 						style={{
-							backgroundColor: 'darkgray', // Background color for the Chip
-							color: 'white', // Text color for the Chip
+							backgroundColor: 'darkgray',
+							color: 'white',
 						}}
-						deleteIcon={
-							<CloseIcon style={{ color: 'white' }} /> // Custom color for the delete icon (cross)
-						}
+						deleteIcon={<CloseIcon style={{ color: 'white' }} />}
 					/>
 				))
 			}

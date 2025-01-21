@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import moment from 'moment';
-import { useParams, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { get, set } from 'lodash';
-import { makeStyles, withStyles } from '@material-ui/styles';
+import { useParams, useHistory } from 'react-router-dom';
+
 import {
 	Typography,
 	IconButton,
@@ -21,43 +19,49 @@ import {
 	Delete as DeleteIcon,
 	MoreHoriz as MoreHorizIcon,
 } from '@material-ui/icons';
+import { makeStyles, withStyles } from '@material-ui/styles';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { get, set } from 'lodash';
+import moment from 'moment';
+
+import LegalDescription from 'components/Land/components/Agreements/detailComponents/legalDescription';
+import Provisions from 'components/Land/components/Agreements/detailComponents/provisions';
+import RelatedAgreementsTable from 'components/Land/components/Agreements/detailComponents/relatedAgreements';
+import AddNewRelatedAgreementDialog from 'components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog';
+import RelatedParties from 'components/Land/components/Agreements/detailComponents/relatedParties';
+import RelatedWells from 'components/Land/components/Agreements/detailComponents/relatedWells';
+import Summary from 'components/Land/components/Agreements/detailComponents/summary';
+import NavHeader from 'components/Land/components/Common/NavHeader';
+import MapProvider from 'components/Map/MapProvider';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
+import DocViewer from 'components/Shared/DocViewer';
+import { copy } from 'components/Shared/functions';
+import MapImgViewIcon from 'components/Shared/svgIcons/MapImgViewIcon';
 import Tags from 'components/Shared/Tagger';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
+import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
+import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
+
+import { detailCardController } from 'hookstate/detailCardController';
+import { jobController } from 'hookstate/jobStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { PaymentFeatureTenants } from 'utils/data';
 
 import { setLandReduxKey } from 'actions';
 import { AppContext } from 'AppContext';
 
-import { copy } from 'components/Shared/functions';
-// Components
-import NavHeader from 'components/Land/components/Common/NavHeader';
-import DocViewer from 'components/Shared/DocViewer';
-import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
-import Summary from 'components/Land/components/Agreements/detailComponents/summary';
-import RelatedParties from 'components/Land/components/Agreements/detailComponents/relatedParties';
-import Provisions from 'components/Land/components/Agreements/detailComponents/provisions';
-import LegalDescription from 'components/Land/components/Agreements/detailComponents/legalDescription';
-import RelatedWells from 'components/Land/components/Agreements/detailComponents/relatedWells';
-import RelatedAgreementsTable from 'components/Land/components/Agreements/detailComponents/relatedAgreements';
-import AddNewRelatedAgreementDialog from 'components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog';
-
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
-import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
-import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-// import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
-import MapImgViewIcon from 'components/Shared/svgIcons/MapImgViewIcon';
-import MapProvider from 'components/Map/MapProvider';
 import { DrawerContext } from './DrawerContext';
 import RelatedDocumets from './relatedDocuments';
-import { jobController } from 'hookstate/jobStateController';
 import RelatedPayments from './relatedPayments';
-import { detailCardController } from 'hookstate/detailCardController';
-import { tableGlobalController } from 'hookstate/tableController';
-import { PaymentFeatureTenants } from 'utils/data';
+import { popupController } from 'hookstate/popupStateController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	mapProvider: {
 		position: 'relative',
 		zIndex: '9999',
@@ -147,7 +151,7 @@ const useStyles = makeStyles(theme => ({
 	metaButton: ({ drawer }) => ({
 		backgroundColor: drawer === 'meta' ? '#eceded' : '#fff',
 		'&:hover': {
-			backgroundColor: !!drawer ? '#eceded' : '#fff',
+			backgroundColor: drawer ? '#eceded' : '#fff',
 		},
 	}),
 	mapButton: ({ mapCollapse }) => ({
@@ -184,7 +188,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	tabsDetailContainer: ({ drawer }) => ({
 		padding: 20,
-		width: '100%',
+		width: drawer ? 'calc(100% - 644px)' : '100%',
 	}),
 	menuIcon: {
 		marginLeft: 10,
@@ -311,15 +315,17 @@ export function DetailComponents(props) {
 		if (dataCustomLayer && dataCustomLayer.customLayer) {
 			detailCardController.updateState({ customLayer: dataCustomLayer.customLayer });
 			let shape = JSON.parse(dataCustomLayer.customLayer.shape);
-			if (dataCustomLayer.customLayer.shapeJson) shape = copy(dataCustomLayer.customLayer.shapeJson);
+			if (dataCustomLayer.customLayer.shapeJson) {
+				shape = copy(dataCustomLayer.customLayer.shapeJson);
+			}
 
 			shape.id = dataCustomLayer.customLayer._id;
 			shape.properties.id = dataCustomLayer.customLayer._id;
 			shape.layer = { id: dataCustomLayer.customLayer.layer };
-			setStateApp(state => ({
-				...state,
+			popupController.updateState({
 				selectedShape: { ...shape.properties, shape },
-			}));
+			});
+
 			dispatch(
 				setLandReduxKey('agreement', {
 					activeAgreement: {
@@ -329,13 +335,14 @@ export function DetailComponents(props) {
 				})
 			);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataCustomLayer?.customLayer]);
 
 	useEffect(() => {
 		if (activeAgreement) {
 			let shape = activeAgreement.shape;
-			if (activeAgreement.shapeJson) shape = copy(activeAgreement.shapeJson);
+			if (activeAgreement.shapeJson) {
+				shape = copy(activeAgreement.shapeJson);
+			}
 			setUniObj({
 				...activeAgreement,
 				shape,
@@ -369,11 +376,12 @@ export function DetailComponents(props) {
 			});
 			detailCardController.updateState({ customLayer: null });
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const updateAgreement = (field, value, isCustom) => {
-		if (agreementDetails[field] === value) return;
+	const updateAgreement = (field, value) => {
+		if (agreementDetails[field] === value) {
+			return;
+		}
 		const shape = activeAgreement.shape;
 		if (field === 'agreementTerm' || field === 'effectiveDate') {
 			if (field === 'agreementTerm') {
@@ -406,11 +414,13 @@ export function DetailComponents(props) {
 		set(shape, `properties.${field}`, value);
 		const customLayer = {};
 		let shapeLabel = shape.properties.shapeLabel;
-		if (field === 'agreementNumber')
+		if (field === 'agreementNumber') {
 			shapeLabel = `${value}${shape.properties.agreementName ? `-${shape.properties.agreementName}` : ''}`;
+		}
 
-		if (field === 'agreementName')
+		if (field === 'agreementName') {
 			shapeLabel = `${shape.properties.agreementNumber ? `${shape.properties.agreementNumber}-` : ''}${value}`;
+		}
 
 		if (field === 'agreementType') {
 			customLayer.layer = value;
@@ -469,12 +479,16 @@ export function DetailComponents(props) {
 
 		// Observe all sections
 		sectionsRef.current.forEach(section => {
-			if (section) observer.current.observe(section);
+			if (section) {
+				observer.current.observe(section);
+			}
 		});
 
 		// Cleanup observer on unmount
 		return () => {
-			if (observer.current) observer.current.disconnect();
+			if (observer.current) {
+				observer.current.disconnect();
+			}
 		};
 	}, []);
 
@@ -492,7 +506,9 @@ export function DetailComponents(props) {
 			awaitRefetchQueries: true,
 		}).then(({ data }) => {
 			jobController.toggleBulkUpload();
-			if (data.updateCustomLayer?.success) history.push('/land/agreements');
+			if (data.updateCustomLayer?.success) {
+				history.push('/land/agreements');
+			}
 		});
 	};
 
@@ -584,7 +600,7 @@ export function DetailComponents(props) {
 								className={classes.metaButton}
 								onClick={handleMetaToggle}
 							>
-								Metadata
+								Meta Data
 							</Button>
 							<IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
 								<MoreHorizIcon id="moreHorizIcon" size="medium" />
@@ -679,7 +695,11 @@ export function DetailComponents(props) {
 							</div>
 							<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
 							<div id="related-wells-div" className={classes.tabDetailSection} ref={el => sectionsRef.current.push(el)}>
-								<RelatedWells uniObj={uniObj} shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails} />
+								<RelatedWells
+									agreementId={agreementId}
+									uniObj={uniObj}
+									shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails}
+								/>
 							</div>
 							<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
 							<div id="related-docs-div" className={classes.tabDetailSection} ref={el => sectionsRef.current.push(el)}>
@@ -754,15 +774,13 @@ export function DetailComponents(props) {
 			 * Delete Custom Layer confirmation dialog
 			 * */}
 			{openDialog && (
-				<DeleteConfirmationDialogContent
+				<DeleteConfirmationDialog
 					header="Delete Agreement"
 					onClose={() => setOpenDialog(false)}
 					deleteFunc={handleDeleteAgreement}
-					m1nSelectedRowsIds={null}
-					setM1nSelectedRowsIndexes={() => {}}
 				>
 					Are you sure you want to delete this agreement?
-				</DeleteConfirmationDialogContent>
+				</DeleteConfirmationDialog>
 			)}
 		</NavHeader>
 	);

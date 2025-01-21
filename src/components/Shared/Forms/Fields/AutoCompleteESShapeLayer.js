@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
+
 import { Grid, Typography } from '@material-ui/core';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import SearchIcon from '@material-ui/icons/Search';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery } from '@apollo/client';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { capitalize } from 'lodash';
+
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles({
 	inputRoot: {
@@ -25,7 +28,7 @@ const useStyles = makeStyles({
 const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer, searchFields }) => {
 	const [search, setSearch] = useState('');
 
-	const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getDbData, { data: elasticData }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 		onCompleted: () => {
 			// setLoading(false);
@@ -33,7 +36,7 @@ const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer
 	});
 
 	useEffect(() => {
-		getESSimpleSearch({
+		getDbData({
 			variables: {
 				index: 'shapes_flat',
 				pagination: {
@@ -47,7 +50,7 @@ const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer
 				filters,
 			},
 		});
-	}, [getESSimpleSearch, search]);
+	}, [getDbData, search]);
 
 	const onInputChange = e => {
 		if (e?.target?.value) {
@@ -60,7 +63,7 @@ const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer
 	};
 	const classes = useStyles();
 
-	const layerList = elasticData?.getESSimpleSearch?.hits || [];
+	const layerList = elasticData?.getDbData?.hits || [];
 
 	return (
 		<Autocomplete
@@ -79,8 +82,11 @@ const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;

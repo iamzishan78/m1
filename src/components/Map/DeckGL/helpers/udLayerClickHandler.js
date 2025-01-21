@@ -1,12 +1,13 @@
-import polylabel from 'polylabel';
 import * as turf from '@turf/turf';
+import polylabel from 'polylabel';
 
-import { ifDefaultIdentifier, ifGenericShapeIdentifier } from 'components/Shared/functions/shapeLayer';
-import { popupController } from 'hookstate/popupStateController';
-import { drawController } from 'hookstate/drawStateController';
-import { layerController } from 'hookstate/layerStateController';
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { ifDefaultIdentifier, ifGenericShapeIdentifier } from 'components/Shared/functions/shapeLayer';
+
+import { drawController } from 'hookstate/drawStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { popupController } from 'hookstate/popupStateController';
 
 const udLayerClickHandler = (feature, stateLayer) => {
 	const history = layerController.getValue('history');
@@ -23,7 +24,9 @@ const udLayerClickHandler = (feature, stateLayer) => {
 		'shapeEditMode',
 	]);
 
-	if (isDrawing) return;
+	if (isDrawing) {
+		return;
+	}
 
 	let popupStateVal;
 	let isFileLayer = false;
@@ -31,16 +34,13 @@ const udLayerClickHandler = (feature, stateLayer) => {
 
 	if (ifGenericShapeIdentifier(feature.identifier)) {
 		const newPath = `/map/${feature.identifier.toLowerCase()}/${feature.properties.id}`;
-		if (history?.location.pathname !== newPath) history?.replace(newPath);
+		if (history?.location.pathname !== newPath) {
+			history?.replace(newPath);
+		}
 
 		popupStateVal = {
 			expandedCard: true,
 			selectedShape: { ...feature.properties, feature: selectedUserDefinedLayer },
-		};
-	} else if (feature.identifier === 'Parcels') {
-		popupStateVal = {
-			expandedCard: true,
-			selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
 		};
 	} else if (isAoi) {
 		let drawStateVal;
@@ -62,7 +62,9 @@ const udLayerClickHandler = (feature, stateLayer) => {
 			drawController.reset();
 		}
 
-		if (drawStateVal) drawController.updateState(drawStateVal);
+		if (drawStateVal) {
+			drawController.updateState(drawStateVal);
+		}
 
 		findBoundsMap([feature], window.mapRef, {
 			top: 300,
@@ -114,10 +116,13 @@ const udLayerClickHandler = (feature, stateLayer) => {
 		};
 	}
 
-	if ((!showDrawShapesPopup || ifDefaultIdentifier(feature.identifier)) && shapeEditMode !== 'redraw')
+	if ((!showDrawShapesPopup || ifDefaultIdentifier(feature.identifier)) && shapeEditMode !== 'redraw') {
 		popupController.createUDPopUp(feature.properties);
+	}
 
-	if (!isFileLayer) findBoundsMap([feature], window.mapRef);
+	if (!isFileLayer) {
+		findBoundsMap([feature], window.mapRef);
+	}
 	popupController.setState(popupStateVal);
 
 	window.mapRef?.resize();

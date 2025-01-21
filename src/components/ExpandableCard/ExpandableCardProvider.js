@@ -1,7 +1,7 @@
 import React from 'react';
-import { ExpandableCardContextProvider } from './ExpandableCardContext';
 
 import ExpandableCard from './ExpandableCard';
+import { ExpandableCardContextProvider } from './ExpandableCardContext';
 
 function ExpandableCardProvider(props) {
 	return (

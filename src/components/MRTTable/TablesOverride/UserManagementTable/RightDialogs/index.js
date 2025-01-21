@@ -1,7 +1,10 @@
 import React, { memo } from 'react';
-import { tableGlobalController } from 'hookstate/tableController';
+
 import Dialog from '@material-ui/core/Dialog';
-import InviteUserDialog from 'components/Shared/M1nTable/components/SubComponents/InviteUserDialog';
+
+import InviteUserDialog from 'components/MRTTable/Common/Components/InviteUserDialog';
+
+import { tableGlobalController } from 'hookstate/tableController';
 
 function UserManagementTableDialogs() {
 	const { stateValues } = tableGlobalController.useState(['dialog']);

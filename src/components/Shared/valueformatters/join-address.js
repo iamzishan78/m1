@@ -16,7 +16,9 @@ export default function joinAddress(value) {
 			if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== '') {
 				if (key === 'Zip' || key === 'Country' || key === 'zip' || key === 'country') {
 					textArray = [[textArray.join(', '), capitalizeFirstLetter(rowData[key])].join(' ')];
-				} else textArray.push(capitalizeFirstLetter(rowData[key]));
+				} else {
+					textArray.push(capitalizeFirstLetter(rowData[key]));
+				}
 			}
 		}
 

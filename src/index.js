@@ -1,13 +1,14 @@
-import './wdyr';
-
 import React from 'react';
 import ReactDOM from 'react-dom';
+
+import { Auth0Provider } from '@auth0/auth0-react';
+
 import './index.css';
 import App from './App';
 import 'components/MRTTable/Common/common.css';
 import * as serviceWorker from './serviceWorker';
+
 import 'react-toastify/dist/ReactToastify.min.css';
-import { Auth0Provider } from '@auth0/auth0-react';
 
 ReactDOM.render(
 	<Auth0Provider

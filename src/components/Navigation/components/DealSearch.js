@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Grid, InputAdornment, TextField, IconButton, Tooltip } from '@material-ui/core';
-import { fade, makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import SearchIcon from '@material-ui/icons/Search';
+import { Grid, InputAdornment, TextField, IconButton, Tooltip } from '@material-ui/core';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import { fade, makeStyles } from '@material-ui/core/styles';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ClearIcon from '@material-ui/icons/Clear';
 import List from '@material-ui/icons/List';
+import SearchIcon from '@material-ui/icons/Search';
 import TableChartIcon from '@material-ui/icons/TableChart';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { AppContext } from '../../../AppContext';
 
 const useStyles = makeStyles(theme => ({
@@ -73,8 +74,11 @@ const DealSearch = () => {
 	const { pipeToShowTab } = useSelector(({ Flow }) => Flow);
 
 	useEffect(() => {
-		if (pipeToShowTab) setAllDeals(pipeToShowTab);
-		else setAllDeals([]);
+		if (pipeToShowTab) {
+			setAllDeals(pipeToShowTab);
+		} else {
+			setAllDeals([]);
+		}
 	}, [pipeToShowTab]);
 
 	const handleSelectDeal = deal => {

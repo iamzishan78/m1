@@ -1,29 +1,33 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
+import { useForm } from 'react-hook-form';
+
+import { CircularProgress, Dialog, DialogTitle, IconButton } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { CircularProgress, Dialog, DialogTitle, IconButton } from '@material-ui/core';
-import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import { makeStyles } from '@material-ui/core/styles';
 
-// functions
+import clsx from 'clsx';
+import { isEmpty, isString } from 'lodash';
 import { grey600, grey400 } from 'material-ui/styles/colors';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { useForm } from 'react-hook-form';
-import { sideDialogController } from 'hookstate/sideDialogController';
-import payeeForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PayeeGrid/payee_form_schema';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import billingPartiesForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/BillingPartyGrid/billing_parties_form_schema';
 import costAllocationForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/CostAllocationGrid/cost_allocation_schema';
+import payeeForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PayeeGrid/payee_form_schema';
 import paymentForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PaymentGrid/payment_form_schema';
-import { isEmpty, isString } from 'lodash';
-import { checkFormRequireField } from 'utils/helper';
+import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
+// functions
+
+import { detailCardController } from 'hookstate/detailCardController';
+import { sideDialogController } from 'hookstate/sideDialogController';
 import { tableGlobalController } from 'hookstate/tableController';
+
+import { checkFormRequireField } from 'utils/helper';
 
 const useStyles = makeStyles({
 	list: {
@@ -236,7 +240,9 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 			setError(false);
 		}
 		Object.keys(data)?.forEach(key => {
-			if (isString(data[key])) data[key] = data[key].replace(/^\s+|\s+$/g, '').replace(/\s{2,}/g, ' ');
+			if (isString(data[key])) {
+				data[key] = data[key].replace(/^\s+|\s+$/g, '').replace(/\s{2,}/g, ' ');
+			}
 		});
 		addNewData(data, setLoader);
 	};

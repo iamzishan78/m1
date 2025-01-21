@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/styles';
+
 import { Grid, Card, CardContent, Typography, IconButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+
 import FilterIcon from 'components/Common/SvgIcons/Filter';
 
 const useStyles = makeStyles(() => ({
@@ -88,12 +90,20 @@ export default function AnalyticsCards(props) {
 
 	const handleFilterActions = type => {
 		let filter = ' ';
-		if (type === 'approved') filter = { field: 'approvalStatus.keyword', value: 'Approved' };
-		if (type === 'unapproved') filter = { field: 'approvalStatus.keyword', value: 'Unapproved' };
-		if (type === 'potentialIssues') filter = { field: 'isAmountValidated', value: 'false', type: 'term' };
+		if (type === 'approved') {
+			filter = { field: 'approvalStatus.keyword', value: 'Approved' };
+		}
+		if (type === 'unapproved') {
+			filter = { field: 'approvalStatus.keyword', value: 'Unapproved' };
+		}
+		if (type === 'potentialIssues') {
+			filter = { field: 'isAmountValidated', value: 'false', type: 'term' };
+		}
 
 		let revert = {};
-		if (type !== 'potentialIssues') revert = { [type === 'approved' ? 'unapproved' : 'approved']: false };
+		if (type !== 'potentialIssues') {
+			revert = { [type === 'approved' ? 'unapproved' : 'approved']: false };
+		}
 		props.setAnalyticFilters(filter, !filtersState[type]);
 		setFiltersState({ ...filtersState, ...revert, [type]: !filtersState[type] });
 	};

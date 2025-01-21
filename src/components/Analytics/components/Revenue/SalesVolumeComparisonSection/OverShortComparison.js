@@ -1,7 +1,9 @@
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
+
 import Button from '@material-ui/core/Button';
+
+import moment from 'moment';
 
 const data = {
 	series: [
@@ -97,7 +99,9 @@ const ApexChart = ({ esFilters, checkData }) => {
 				});
 			}
 
-			if (stateFilter) filteredCheckData = filteredCheckData.filter(check => check.state === stateFilter.value);
+			if (stateFilter) {
+				filteredCheckData = filteredCheckData.filter(check => check.state === stateFilter.value);
+			}
 
 			const dateData = filteredCheckData.map(check => {
 				let pVolume = 0;
@@ -151,11 +155,15 @@ const ApexChart = ({ esFilters, checkData }) => {
 			labels.forEach((monthYear, index) => {
 				let monthlySum = parseFloat(parseFloat(sumByLabel[monthYear]).toFixed(2));
 				if (monthlySum > 0) {
-					if (max < monthlySum) max = monthlySum;
+					if (max < monthlySum) {
+						max = monthlySum;
+					}
 					chartData[0].data[index] = monthlySum;
 					chartData[1].data[index] = 0;
 				} else {
-					if (min > monthlySum) min = monthlySum;
+					if (min > monthlySum) {
+						min = monthlySum;
+					}
 					chartData[0].data[index] = 0;
 					chartData[1].data[index] = monthlySum;
 				}

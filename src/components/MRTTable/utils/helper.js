@@ -26,8 +26,12 @@ export const formatGridViewToMRT = selectedGridView => {
 
 // Helper for extracting values
 export const extractValueRecursively = obj => {
-	if (obj === null || obj === undefined) return undefined;
-	if (obj === 'NaN') return null;
+	if (obj === null || obj === undefined) {
+		return undefined;
+	}
+	if (obj === 'NaN') {
+		return null;
+	}
 
 	if (typeof obj === 'object' && !Array.isArray(obj)) {
 		return Object.keys(obj).reduce((acc, key) => {
@@ -74,4 +78,16 @@ export const getArrayValue = (array, valueKey, id, idKey) => {
 			return val[valueKey];
 		}
 	}
+};
+
+// Helper for removing spaces
+export const removeSpaces = key => key?.replace(/\s+/g, '_')?.toLowerCase();
+
+export const replaceUnderscoreAndCapitalize = str => {
+	return str
+		?.toLowerCase()
+		?.replace(/_/g, ' ')
+		?.split(' ')
+		?.map(word => word?.charAt(0)?.toUpperCase() + word?.slice(1)) // Capitalize the first letter of each word
+		?.join(' ');
 };

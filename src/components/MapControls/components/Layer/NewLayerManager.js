@@ -1,6 +1,5 @@
 import React, { useContext, useState, useMemo, useEffect } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { v4 as uuid } from 'uuid';
+
 import {
 	Typography,
 	Paper,
@@ -14,16 +13,23 @@ import {
 	TextField,
 } from '@material-ui/core';
 import { Close as CloseIcon } from '@material-ui/icons';
-import { getDefaultSettings } from '../SourceLayerManager/fileUploadHelper';
-import { ADDLAYER } from 'graphQL/useMutationAddLayer';
-import { AppContext } from 'AppContext';
-import { ColorPickerStyledBox, useLayerStyle, WidthPicker } from './Common';
 import { Autocomplete } from '@material-ui/lab';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { globalStateController } from 'hookstate/globalStateController';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { v4 as uuid } from 'uuid';
+
+import { ADDLAYER } from 'graphQL/useMutationAddLayer';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 
-function NewLayerManager(props) {
+import { globalStateController } from 'hookstate/globalStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { AppContext } from 'AppContext';
+
+import { ColorPickerStyledBox, useLayerStyle, WidthPicker } from './Common';
+import { getDefaultSettings } from '../SourceLayerManager/fileUploadHelper';
+
+function NewLayerManager() {
 	const [stateApp] = useContext(AppContext);
 	const sourceProps = '' + uuid() + '_source';
 
@@ -50,6 +56,7 @@ function NewLayerManager(props) {
 		setLayerClickability,
 		strokeColor,
 		setStrokeColor,
+		handleLayerChange,
 	} = useLayerStyle(layer);
 
 	const [source, setSource] = useState();
@@ -57,14 +64,16 @@ function NewLayerManager(props) {
 
 	const { globalStateValues } = globalStateController.useState(['datasets'], 'globalStateValues');
 
+	const handleClose = () => {
+		mapControlsController.updateState({ manageLayer: false });
+	};
+
 	const createLayer = () => {
 		const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
 		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
 		const layerShapeName = source.name === 'M1 Platform' ? null : selectCategory.name;
 		const identifier =
 			source.name === 'M1 Platform' ? selectCategory.label.replace('Tracts', 'Parcels') + uuid() : layerName + uuid();
-
-		const sourceProps = identifier + '_source';
 
 		addLayer({
 			variables: {
@@ -80,12 +89,10 @@ function NewLayerManager(props) {
 					layerName: layerName,
 					layerGeometry: selectCategory.layerGeometry,
 					originalFile: source.originalFile,
-					defaultSettings: getDefaultSettings(
-						selectCategory.layerGeometry,
-						layerName,
-						sourceProps,
-						selectCategory.bbox
-					),
+					defaultSettings: {
+						...handleLayerChange(),
+						bbox: selectCategory?.bbox || [],
+					},
 					layerSchema: shapeFileSchema?.getShapeFileSchema || [],
 					layerPaintProps: undefined,
 					layerSettings: undefined,
@@ -99,18 +106,15 @@ function NewLayerManager(props) {
 		});
 	};
 
-	const handleClose = () => {
-		mapControlsController.updateState({ manageLayer: false });
-	};
-
 	useEffect(() => {
-		if (source && selectCategory)
+		if (source && selectCategory) {
 			getShapeFileSchema({
 				variables: {
 					file: source.file,
 					layerShapeName: selectCategory.layerShapeName,
 				},
 			});
+		}
 	}, [source, selectCategory, getShapeFileSchema]);
 
 	const _datasets = useMemo(() => {
@@ -209,7 +213,7 @@ function NewLayerManager(props) {
 										control={
 											<Switch
 												checked={layerClickability}
-												onChange={e => setLayerClickability(!layerClickability)}
+												onChange={() => setLayerClickability(!layerClickability)}
 												size="small"
 											/>
 										}

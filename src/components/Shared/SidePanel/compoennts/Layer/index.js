@@ -1,21 +1,24 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
+
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import List from '@material-ui/core/List';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
 import RootRef from '@material-ui/core/RootRef';
-import { Droppable, Draggable } from 'react-beautiful-dnd';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import DragIndicator from '@material-ui/icons/DragIndicator';
-import { AppContext } from 'AppContext';
-import List from '@material-ui/core/List';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { createTheme } from '@material-ui/core/styles';
-import { deepEqualObjects } from '../../../functions';
+import Typography from '@material-ui/core/Typography';
+import DragIndicator from '@material-ui/icons/DragIndicator';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
+import { AppContext } from 'AppContext';
+
 import LayerItem from './LayerItem';
+import { deepEqualObjects } from '../../../functions';
 
 const theme = createTheme({
 	overrides: {

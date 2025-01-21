@@ -1,19 +1,26 @@
 import React, { useState, useEffect, useContext } from 'react';
-import moment from 'moment';
-import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/styles';
-import { Typography, TextField, Grid, FormControl, Select, MenuItem } from '@material-ui/core';
-import { useLazyQuery } from '@apollo/client';
-import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
-import { AppContext } from 'AppContext';
 import { useForm, Controller } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
 
-import ArrowForwardIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import CommentComponent from 'components/Shared/CommentComponent';
+import { Typography, TextField, Grid, FormControl, Select, MenuItem } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
+import moment from 'moment';
+import PropTypes from 'prop-types';
+
 import AddDialogeUploadZone from 'components/ContactDetailCard/components/AddDialogUploadZone';
-import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
+import CommentComponent from 'components/Shared/CommentComponent';
 import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
+import ArrowForwardIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
+
+import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
+import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+
+import { AppContext } from 'AppContext';
+
+const THEME_SPACING = 3;
 
 const useStyles = makeStyles(theme => ({
 	titleText: {
@@ -66,8 +73,8 @@ const useStyles = makeStyles(theme => ({
 		marginBottom: '7px',
 	},
 	dealOwnerAvatar: {
-		width: theme.spacing(3),
-		height: theme.spacing(3),
+		width: theme.spacing(THEME_SPACING),
+		height: theme.spacing(THEME_SPACING),
 		color: '#fff',
 		fontSize: '0.6rem',
 		backgroundColor: '#4880F6',
@@ -134,7 +141,6 @@ export default function MetadataDrawer(props) {
 	// States
 	const [ownerId, setOwnerId] = useState('');
 	const [description, setDescription] = useState('');
-	const [, setFocusSate] = useState(false);
 	const [fileRequestCounter, setFileRequestCounter] = useState(1);
 	const [uploadedFiles, setUploadedFiles] = useState([]);
 	const [, setStateApp] = useContext(AppContext);
@@ -145,6 +151,7 @@ export default function MetadataDrawer(props) {
 		targetSourceId,
 		targetLabel,
 		viewAllDocuments,
+		pageLink,
 		ownerTitle,
 		ownerPlaceHolder,
 		isApproval,
@@ -159,17 +166,19 @@ export default function MetadataDrawer(props) {
 		fetchPolicy: 'cache-and-network',
 		onCompleted: ({ getFileDescriptors }) => {
 			let allActive = true;
+			const DEFAULT_COUNTER = 40;
 
-			if (getFileDescriptors)
+			if (getFileDescriptors) {
 				for (let i = 0; i < getFileDescriptors.length; i++) {
 					if (getFileDescriptors[i].fileState !== 'active') {
 						allActive = false;
 						break;
 					}
 				}
+			}
 
 			if (!allActive) {
-				if (fileRequestCounter <= 40) {
+				if (fileRequestCounter <= DEFAULT_COUNTER) {
 					let waitBeforeRequestAgain = setTimeout(() => {
 						setFileRequestCounter(fileRequestCounter + 1);
 						getRecentFiles({
@@ -183,7 +192,9 @@ export default function MetadataDrawer(props) {
 				} else {
 					setFileRequestCounter(1);
 				}
-			} else setFileRequestCounter(1);
+			} else {
+				setFileRequestCounter(1);
+			}
 		},
 	});
 
@@ -204,7 +215,7 @@ export default function MetadataDrawer(props) {
 				},
 			});
 		}
-	}, [targetSourceId]);
+	}, [targetSourceId, targetLabel, getRecentFiles]);
 
 	useEffect(() => {
 		if (files?.getFileDescriptors) {
@@ -228,8 +239,9 @@ export default function MetadataDrawer(props) {
 						...descriptor,
 						dateTime: moment(descriptor.dateTime, 'MM/DD/YYYY HH:mm Z'),
 					};
-					if (index === 0) recentFile = descriptor;
-					else {
+					if (index === 0) {
+						recentFile = descriptor;
+					} else {
 						if (recentFile.dateTime < descriptor.dateTime) {
 							recentFile = descriptor;
 						}
@@ -291,16 +303,18 @@ export default function MetadataDrawer(props) {
 								)}
 								{isOwner && targetLabel !== 'Shape' && (
 									<UsersListWithIcon
+										field={{ key: 'owner' }}
 										label={ownerTitle}
 										placeholder={ownerPlaceHolder}
 										selectedUserId={ownerId}
 										onChangeUser={user => {
 											setOwnerId(user?.value);
-											if (props.onUpdate)
+											if (props.onUpdate) {
 												props.onUpdate({
 													owner: user?.value,
 													ownerName: user?.text,
 												});
+											}
 										}}
 									/>
 								)}
@@ -377,9 +391,7 @@ export default function MetadataDrawer(props) {
 								onChange={e => {
 									setDescription(e.target.value);
 								}}
-								onFocus={() => setFocusSate(true)}
 								onBlur={({ target }) => {
-									setFocusSate(false);
 									if (props.onUpdate)
 										props.onUpdate({
 											[props.descriptionKey]: target.value,
@@ -389,31 +401,6 @@ export default function MetadataDrawer(props) {
 						</Grid>
 					)}
 
-					{/* hiding for now until we get custom metadata added to statements and properties - kc 20220123 */}
-					{/* <div
-          onClick={() => {
-            setStateApp((stateApp) => ({
-              ...stateApp,
-              showFieldModal: true,
-            }));
-          }}
-          className="flex alignCenter"
-          style={{
-            background: "#f2f2f2",
-            borderRadius: 8,
-            padding: "6px 16px",
-            marginLeft: 4,
-            marginTop: 8,
-            maxWidth: "max-content",
-            cursor: "pointer",
-          }}
-        >
-          <span>
-            <AddIcon style={{ marginTop: 4, marginRight: 4, fontSize: 16, alignItems: "center" }} htmlColor="#000000" />
-          </span>
-          {` Add`}
-        </div> */}
-
 					<div className="flex justifyBetween alignCenter" style={{ padding: '20px 10px 16px 0px', marginBottom: -56 }}>
 						<h4 style={{ padding: '0px' }}>{props.documentsTitle}</h4>
 						{viewAllDocuments && (
@@ -421,7 +408,8 @@ export default function MetadataDrawer(props) {
 								id="viewAllDocuments"
 								className={classes.viewAll}
 								onClick={() => {
-									history.push(`/contact/details/${targetSourceId}/documents`);
+									const link = pageLink ?? `/contact/details/${targetSourceId}/documents`;
+									history.push(link);
 									setStateApp(stateApp => ({ ...stateApp, viewDoc: null, isExpanded: true }));
 								}}
 							>
@@ -439,8 +427,7 @@ export default function MetadataDrawer(props) {
 				</div>
 				<div
 					style={{
-						flex: '1 1 auto',
-						overflow: 'hidden',
+						height: '500px',
 					}}
 				>
 					<CommentComponent
@@ -469,4 +456,27 @@ MetadataDrawer.defaultProps = {
 	isOwner: true,
 	isSource: true,
 	data: {},
+};
+
+MetadataDrawer.propTypes = {
+	setCollapse: PropTypes.func,
+	onUpdate: PropTypes.func,
+	targetSourceId: PropTypes.string,
+	targetLabel: PropTypes.string,
+	viewAllDocuments: PropTypes.func,
+	ownerTitle: PropTypes.string,
+	showDescription: PropTypes.string,
+	ownerPlaceHolder: PropTypes.string,
+	isApproval: PropTypes.bool,
+	isOwner: PropTypes.bool,
+	isSource: PropTypes.bool,
+	data: PropTypes.array,
+	shapeType: PropTypes.string,
+	descriptionKey: PropTypes.string,
+	documentsTitle: PropTypes.string,
+	title: PropTypes.string,
+	shapeData: PropTypes.array,
+	showCommentType: PropTypes.bool,
+	menuComponent: PropTypes.bool,
+	activityLog: PropTypes.array,
 };

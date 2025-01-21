@@ -1,9 +1,11 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
-import _ from 'lodash';
+
+import _, { get } from 'lodash';
+
 import DataType from 'components/Common/DataType';
-import { tableController } from 'hookstate/tableController';
-import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import {
 	customFilterOptions,
 	dateFilterOptions,
@@ -13,9 +15,14 @@ import {
 	simpleStringFilterOptions,
 	stringFilterOptions,
 } from 'components/MRTTable/utils/data';
-import { globalStateController } from './globalStateController';
-import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
+import { formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+
+import { tableController } from 'hookstate/tableController';
+
+import { SMALL_TIMEOUT } from 'utils/consts';
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -23,7 +30,7 @@ export const handleVisiblityMenu = () => {
 		// || element?.className.includes('Mui-disabled')
 		if (elements) {
 			elements.forEach(element => {
-				if (['Select', 'Row Numbers'].includes(element.outerText) || element.outerText === '')
+				if (['Select', 'Row Numbers'].includes(element.outerText) || element.outerText === '') {
 					while (element !== null) {
 						if (element.tagName === 'LI') {
 							element.style.display = 'none';
@@ -31,6 +38,7 @@ export const handleVisiblityMenu = () => {
 						}
 						element = element.parentNode;
 					}
+				}
 			});
 			clearInterval(interval2);
 		}
@@ -81,39 +89,83 @@ export const handleColumnMenuClick = () => {
 				element.addEventListener('click', clickListner);
 			});
 		}
-	}, 300);
+	}, SMALL_TIMEOUT);
 };
 
 export const handleMRTSchema = ({
 	_Schema,
 	tableKey,
 	esIndex,
+	modelName,
 	defaultFlterMode,
 	search,
-	columnVirtualization,
 	globalFilter,
 	layerIdentifier,
 	isClientSide,
+	excludeFields,
 }) => {
 	_Schema = _.uniqBy(_Schema, item => item.accessorKey || item.id);
 
+	if (excludeFields) {
+		_Schema = _Schema.filter(item => !excludeFields.includes(item.accessorKey || item.id));
+	}
+
 	// Syncing map views with generic grids
-	const mapView = globalStateController.getValue('mapView');
-	const selectedMapViewFilters = mapView?.selectedMapView?.filters || [];
+	const selectedMapView = viewStateController('MapView').getValue('selectedView');
+	const selectedMapViewFilters = selectedMapView?.filters || [];
 
 	const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
 	const mapViewFilters =
 		dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
 		[];
 	const _TableSchema = _Schema.map(schemaColumn => {
+		if (!schemaColumn.accessorFn) {
+			let defaultValue = null;
+
+			switch (schemaColumn.type) {
+				case 'string':
+				case 'number':
+				case 'mongoID':
+				case 'boolean':
+				case 'date':
+					defaultValue = '';
+					break;
+
+				case 'array':
+					defaultValue = [];
+					break;
+
+				default:
+					break;
+			}
+
+			schemaColumn.accessorFn = row => {
+				let value = get(row, schemaColumn.id) ?? defaultValue;
+
+				if (isClientSide) {
+					switch (schemaColumn.type) {
+						case 'date':
+							value = formatDate(value);
+							break;
+
+						default:
+							break;
+					}
+				}
+				return value;
+			};
+		}
+
 		if (schemaColumn.header && !schemaColumn.showInLast) {
-			schemaColumn.Header = () => {
+			const HeaderComp = () => {
 				const { header, type } = schemaColumn;
 				const {
 					stateValues: { showTypes },
 				} = tableController(tableKey).useState(['showTypes']);
 				return <DataType title={header} type={type || 'unknown'} showType={showTypes} />;
 			};
+
+			schemaColumn.Header = HeaderComp;
 		}
 
 		if (isClientSide) {
@@ -126,18 +178,28 @@ export const handleMRTSchema = ({
 				} else if (schemaColumn.type === 'date') {
 					options = simpleDateFilterOptions;
 				}
-				if (schemaColumn.isComposite) options = options.filter(option => option !== 'multiselect');
+				if (schemaColumn.isComposite) {
+					options = options.filter(option => option !== 'multiselect');
+				}
 
 				schemaColumn.columnFilterModeOptions = options;
 				schemaColumn.renderColumnFilterModeMenuItems = filterModeMenu({
 					options,
 					tableKey,
 					name: schemaColumn.accessorKey || schemaColumn.id,
+					schemaColumn,
 					controller: tableController,
+					layerIdentifier,
 				});
 			}
 
-			return schemaColumn;
+			const updatedFilterModes = tableController(tableKey).setInitialFilterMode(
+				schemaColumn,
+				schemaColumn.type === 'number' ? 'equals' : 'singleselect',
+				schemaColumn.id
+			);
+
+			return { ...schemaColumn, ...updatedFilterModes };
 		}
 
 		if (schemaColumn.filter && !schemaColumn.Filter) {
@@ -147,11 +209,13 @@ export const handleMRTSchema = ({
 						<ESAutoCompleteFilter
 							tableKey={tableKey}
 							esIndex={esIndex}
+							modelName={modelName}
 							column={{
 								field: column.columnDef.name,
 								isComposite: column.columnDef.isComposite,
 								label: column.columnDef.header,
 								type: column.columnDef.type,
+								subType: column.columnDef.subType,
 								defaultFilterOptions: column.columnDef.defaultFilterOptions,
 								setFilterValue: column.setFilterValue,
 								filterSelectOptions: column.columnDef.filterSelectOptions,
@@ -184,10 +248,12 @@ export const handleMRTSchema = ({
 						<ESAutoCompleteFilter
 							tableKey={tableKey}
 							esIndex={esIndex}
+							modelName={modelName}
 							column={{
 								field: column.columnDef.name,
 								label: column.columnDef.header,
 								type: column.columnDef.type,
+								subType: column.columnDef.subType,
 								defaultFilterOptions: column.columnDef.defaultFilterOptions,
 								setFilterValue: column.setFilterValue,
 								filterSelectOptions: column.columnDef.filterSelectOptions,
@@ -225,14 +291,18 @@ export const handleMRTSchema = ({
 					break;
 			}
 
-			if (schemaColumn.isComposite) options = options.filter(option => option !== 'multiselect');
+			if (schemaColumn.isComposite) {
+				options = options.filter(option => option !== 'multiselect');
+			}
 
 			schemaColumn.columnFilterModeOptions = options;
 			schemaColumn.renderColumnFilterModeMenuItems = filterModeMenu({
 				options,
 				tableKey,
 				name: schemaColumn.accessorKey || schemaColumn.id,
+				schemaColumn,
 				controller: tableController,
+				layerIdentifier,
 			});
 		}
 
@@ -240,7 +310,9 @@ export const handleMRTSchema = ({
 		const columnMapView = mapViewFilters.find(
 			filter => filter?.field?.replace('.keyword', '') === schemaColumn?.name?.replace('.keyword', '')
 		);
-		if (!columnMapView || customLayersFieldAccessors[layerIdentifier]) return schemaColumn;
+		if (!columnMapView || customLayersFieldAccessors[layerIdentifier]) {
+			return schemaColumn;
+		}
 
 		const updatedFilterModes = tableController(tableKey).setInitialFilterMode(
 			schemaColumn,
@@ -269,7 +341,9 @@ export const handleMRTSchema = ({
 
 	const columnOrder = _TableSchema.map(column => {
 		let col = column.accessorKey || column.id;
-		if (Array.isArray(col)) col = col[0];
+		if (Array.isArray(col)) {
+			col = col[0];
+		}
 		return col;
 	});
 
@@ -277,11 +351,11 @@ export const handleMRTSchema = ({
 		'& .MuiDialog-root': {
 			zIndex: '99999',
 		},
-		'& .MuiToolbar-root': {
+		'& .Mui-ToolbarDropZone': {
 			backgroundColor: '#F2F2F2',
 			borderBottom: '1px solid rgba(224, 224, 224, 1)',
 		},
-		'& th.MuiToolbar-root, .MuiTableRow-head, th.MuiTableCell-head': {
+		'& th.MuiToolbar-root, .MuiTableRow-head, th.MuiTableCell-head,th.MuiTableCell-head::before': {
 			backgroundColor: '#F2F2F2',
 		},
 		'& .Mui-TableHeadCell-Content-Labels': {
@@ -305,16 +379,6 @@ export const handleMRTSchema = ({
 	handleVisiblityMenuClick();
 	handleColumnMenuClick();
 
-	if (pinnedColumns.length > 0 && columnVirtualization) {
-		let size = 60;
-		// let size = 120;
-		pinnedColumns.forEach(column => {
-			size += column.size;
-		});
-		tableCss['& .MuiTableRow-root>:nth-child(2)'] = {
-			marginLeft: `-${size}px !important`,
-		};
-	}
 	const groupedField =
 		_TableSchema.find(column => column.isGrouped)?.accessorKey || _TableSchema.find(column => column.isGrouped)?.id;
 
@@ -325,6 +389,10 @@ export const handleMRTSchema = ({
 	const filterModes = _TableSchema
 		.filter(column => column.filter)
 		.reduce((acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: 'custom' }), {});
+
+	if (!isClientSide) {
+		columnVisibility['mrt-row-select'] = false;
+	}
 
 	return {
 		_TableSchema,

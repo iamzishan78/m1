@@ -9,7 +9,7 @@ describe('Related Agreements Spec', () => {
 
 		cy.viewport(1536, 960);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/land/agreements');
 
 		cy.checkAndLogin();
@@ -43,7 +43,7 @@ describe('Related Agreements Spec', () => {
 				cy.get('body').type('{enter}');
 				cy.verifyApiResponse('@getCustomLayerApi', { responseTimeout: longTimeout });
 
-				cy.interceptApiByIndex('getESSimpleSearch', 'shapes_flat');
+				cy.interceptApiByIndex('getDbData', 'shapes_flat');
 				cy.log('==== STEP: CLICK ON ADD BUTTON ====');
 				cy.interceptApi('upsertRelatedAgreementDescriptor');
 				cy.get('#addAgreementButton').click();
@@ -54,11 +54,13 @@ describe('Related Agreements Spec', () => {
 
 						cy.log('==== STEP: VERIFY IF AGREEENT WAS ADDED  ====');
 						cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(response => {
-							const hits = response.response.body.data.getESSimpleSearch.hits;
+							const hits = response.response.body.data.getDbData.hits;
 
 							const indexOfRelatedAgreement = hits.findIndex(hit => hit?._id === relatedAgreementID);
 
-							if (indexOfRelatedAgreement < 0) throw new Error('Related Agreement not found');
+							if (indexOfRelatedAgreement < 0) {
+								throw new Error('Related Agreement not found');
+							}
 
 							cy.log('==== STEP: CLICK ON CHECKBOX OF AGREEMENT ====');
 							cy.get("[id='related-agrmt-div']")
@@ -66,7 +68,7 @@ describe('Related Agreements Spec', () => {
 								.scrollIntoView()
 								.check();
 
-							cy.interceptApiByIndex('getESSimpleSearch', 'shapes_flat');
+							cy.interceptApiByIndex('getDbData', 'shapes_flat');
 
 							cy.log('==== STEP: DELETE RELATED AGREEMENT====');
 							cy.interceptApi('deleteRelatedAgreements');
@@ -76,10 +78,11 @@ describe('Related Agreements Spec', () => {
 
 							cy.log('==== STEP: VERIFY IF RELATED AGREEMENT WAS DELETED ====');
 							cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(response => {
-								const hits = response.response.body.data.getESSimpleSearch.hits;
+								const hits = response.response.body.data.getDbData.hits;
 
-								if (hits && hits.length && hits.some(hit => hit?._id === relatedAgreementID))
+								if (hits && hits.length && hits.some(hit => hit?._id === relatedAgreementID)) {
 									throw new Error('Related Agreement still exist after delete');
+								}
 							});
 							cy.wait(5000);
 						});

@@ -1,9 +1,14 @@
+import { get, isEqual, isInteger, isObject } from 'lodash';
 import moment from 'moment';
 
-import { getSession } from 'utils/user';
-import { wellsKeys } from 'utils/data';
 import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
+
 import { globalStateController } from 'hookstate/globalStateController';
+
+import { wellsKeys } from 'utils/data';
+import { getSession } from 'utils/user';
+
+import { TO_FIXED, WEEK_DAYS } from './consts';
 
 export const apolloClientEndpointDev = 'http://localhost:7071/api/m1graph';
 export const isDev = process.env.REACT_APP_NODE_ENV === 'development';
@@ -53,13 +58,15 @@ export const dateIsValid = date => {
 			}).format(date)
 		);
 		return date instanceof Date && !isNaN(date);
-	} catch (e) {
+	} catch {
 		return false;
 	}
 };
 
 export const getIdFromPath = path => {
-	if (path.slice(-1) === '/') path = path.substring(0, path.length - 1);
+	if (path.slice(-1) === '/') {
+		path = path.substring(0, path.length - 1);
+	}
 
 	return path.split('/')[path.split('/').length - 1];
 };
@@ -70,6 +77,7 @@ export const getURL = () => {
 		let tenant = tenantsCredentials(tenantName);
 		return isDev ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
 	}
+	return null;
 };
 
 export const getHeaders = () => {
@@ -162,11 +170,14 @@ export const formatTaxOwners = (owners, formData) => {
 };
 
 export const parseDate = dateValue => {
+	const SPLIT_LENGTH = 3;
+
 	const splittedDate = dateValue.split('-');
-	if (splittedDate.length === 3) {
+	if (splittedDate.length === SPLIT_LENGTH) {
 		const newDate = new Date();
 		newDate.setFullYear(Number(splittedDate[0])); // Use setFullYear instead of setYear
 		newDate.setMonth(Number(splittedDate[1]) - 1);
+
 		newDate.setDate(Number(splittedDate[2]));
 
 		return newDate;
@@ -186,7 +197,7 @@ export const downloadPdfsFile = viewFile => {
 
 export const getSearchQuery = (extendSearchQuery, filters) => {
 	let query = extendSearchQuery;
-	Object.entries(filters).map((filter, index) => {
+	Object.entries(filters).map(filter => {
 		for (let i = 0; i < filter[1]?.length; i++) {
 			if (query && i === 0) {
 				query = query + ' AND ';
@@ -200,7 +211,7 @@ export const getSearchQuery = (extendSearchQuery, filters) => {
 
 export const getTermsFilters = filters => {
 	return Object.entries(filters)
-		.filter(([key, value]) => {
+		.filter(([, value]) => {
 			return Array.isArray(value) && value.length > 0;
 		})
 		.map(([key, value]) => {
@@ -214,7 +225,7 @@ export const getTermsFilters = filters => {
 
 export const getRangeFilters = (filters, format) => {
 	const customFilters = [];
-	Object.entries(filters).map((filter, index) => {
+	Object.entries(filters).map(filter => {
 		if (filter[1].from || filter[1].to) {
 			customFilters.push({
 				type: 'range',
@@ -260,10 +271,18 @@ export const getShapeFilter = polygon => {
 
 export const getContactsAddress = contact => {
 	let address = 'https://www.google.com/maps/search/';
-	if (contact.address1) address = `${address}${contact.address1.replace(/ /g, '+')}`;
-	if (contact.city) address = `${address},+${contact.city.replace(/ /g, '+')}`;
-	if (contact.state) address = `${address},+${contact.state}`;
-	if (contact.zip) address = `${address}+${contact.zip}`;
+	if (contact.address1) {
+		address = `${address}${contact.address1.replace(/ /g, '+')}`;
+	}
+	if (contact.city) {
+		address = `${address},+${contact.city.replace(/ /g, '+')}`;
+	}
+	if (contact.state) {
+		address = `${address},+${contact.state}`;
+	}
+	if (contact.zip) {
+		address = `${address}+${contact.zip}`;
+	}
 	return {
 		...contact,
 		fullContactAddress: address,
@@ -272,14 +291,30 @@ export const getContactsAddress = contact => {
 
 export const getAddressUrl = owner => {
 	let address = 'https://www.google.com/maps/search/';
-	if (owner.StreetAddress) address = `${address}${owner.StreetAddress.replace(/ /g, '+')}`;
-	if (owner.address1) address = `${address}${owner.address1.replace(/ /g, '+')}`;
-	if (owner.City) address = `${address},+${owner.City.replace(/ /g, '+')}`;
-	if (owner.city) address = `${address},+${owner.city.replace(/ /g, '+')}`;
-	if (owner.State) address = `${address},+${owner.State}`;
-	if (owner.state) address = `${address},+${owner.state}`;
-	if (owner.Zip) address = `${address}+${owner.Zip}`;
-	if (owner.zip) address = `${address},+${owner.zip}`;
+	if (owner.StreetAddress) {
+		address = `${address}${owner.StreetAddress.replace(/ /g, '+')}`;
+	}
+	if (owner.address1) {
+		address = `${address}${owner.address1.replace(/ /g, '+')}`;
+	}
+	if (owner.City) {
+		address = `${address},+${owner.City.replace(/ /g, '+')}`;
+	}
+	if (owner.city) {
+		address = `${address},+${owner.city.replace(/ /g, '+')}`;
+	}
+	if (owner.State) {
+		address = `${address},+${owner.State}`;
+	}
+	if (owner.state) {
+		address = `${address},+${owner.state}`;
+	}
+	if (owner.Zip) {
+		address = `${address}+${owner.Zip}`;
+	}
+	if (owner.zip) {
+		address = `${address},+${owner.zip}`;
+	}
 	return address;
 };
 
@@ -288,10 +323,18 @@ export const getZillowAddressUrl = owner => {
 	let address = 'https://www.zillow.com/homes/';
 	const { address1, city, state, zip } = owner;
 
-	if (address1) address += `${encodeURIComponent(address1)},`;
-	if (city) address += `${encodeURIComponent(city)},`;
-	if (state) address += `${encodeURIComponent(state)},`;
-	if (zip) address += `${encodeURIComponent(zip)}`;
+	if (address1) {
+		address += `${encodeURIComponent(address1)},`;
+	}
+	if (city) {
+		address += `${encodeURIComponent(city)},`;
+	}
+	if (state) {
+		address += `${encodeURIComponent(state)},`;
+	}
+	if (zip) {
+		address += `${encodeURIComponent(zip)}`;
+	}
 
 	// Adding '_rb' to the end of the Zillow link
 	address += '_rb/';
@@ -536,7 +579,7 @@ export const handleCustomDateTypeChange = (
 			setToDate(`${moment().format('yyyy-MM-DD')}`);
 			break;
 		case CUSTOM_DATES.LAST_WEEK:
-			setFromDate(`${moment().startOf('week').subtract(7, 'days').format('yyyy-MM-DD')}`);
+			setFromDate(`${moment().startOf('week').subtract(WEEK_DAYS, 'days').format('yyyy-MM-DD')}`);
 			setToDate(`${moment().startOf('week').subtract(1, 'days').format('yyyy-MM-DD')}`);
 			break;
 		default:
@@ -583,25 +626,42 @@ export function generateColor() {
 	return randomColor || '#B6D0E2'; // Default "powder blue" color
 }
 
+// Helper function to convert a hex color to an RGB array
+function hexToRgb(hex) {
+	const RED_SS_START = 1;
+	const GREEN_SS_START = 3;
+	const BLUE_SS_START = 5;
+	const SS_LENGTH = 2;
+
+	const r = parseInt(hex.substr(RED_SS_START, SS_LENGTH), 16);
+	const g = parseInt(hex.substr(GREEN_SS_START, SS_LENGTH), 16);
+	const b = parseInt(hex.substr(BLUE_SS_START, SS_LENGTH), 16);
+	return [r, g, b];
+}
+
 export function getOppositeHexColor(inputColor) {
+	const RED_LUMINANCE = 0.2126;
+	const RED_INDEX = 0;
+	const GREEN_LUMINANCE = 0.2126;
+	const GREEN_INDEX = 1;
+	const BLUE_LUMINANCE = 0.2126;
+	const BLUE_INDEX = 2;
+
+	const HALF = 0.5;
+
 	// Convert the background color to an RGB array
 	const rgbArray = hexToRgb(inputColor);
 
 	// Calculate the relative luminance of the color using the formula
 	// from the WCAG 2.0 spec: https://www.w3.org/TR/WCAG20-TECHS/G18.html#G18-tests
-	const relativeLuminance = 0.2126 * rgbArray[0] + 0.7152 * rgbArray[1] + 0.0722 * rgbArray[2];
+	const relativeLuminance =
+		RED_LUMINANCE * rgbArray[RED_INDEX] +
+		GREEN_LUMINANCE * rgbArray[GREEN_INDEX] +
+		BLUE_LUMINANCE * rgbArray[BLUE_INDEX];
 
 	// Return "black" if the relative luminance is less than 0.5,
 	// "white" otherwise
-	return relativeLuminance < 0.5 ? 'black' : 'white';
-}
-
-// Helper function to convert a hex color to an RGB array
-function hexToRgb(hex) {
-	const r = parseInt(hex.substr(1, 2), 16);
-	const g = parseInt(hex.substr(3, 2), 16);
-	const b = parseInt(hex.substr(5, 2), 16);
-	return [r, g, b];
+	return relativeLuminance < HALF ? 'black' : 'white';
 }
 
 // Function to check if a string is a valid URL
@@ -643,7 +703,9 @@ export const checkFormRequireField = (data, formSchema) => {
 };
 
 export const getFilters = appliedFilters => {
-	if (Array.isArray(appliedFilters)) return appliedFilters;
+	if (Array.isArray(appliedFilters)) {
+		return appliedFilters;
+	}
 
 	let filters = [];
 	if (appliedFilters) {
@@ -657,7 +719,9 @@ export const getFilters = appliedFilters => {
 			},
 			'simple'
 		);
-		if (range.length > 0) filters = [...filters, ...range];
+		if (range.length > 0) {
+			filters = [...filters, ...range];
+		}
 		if (appliedFilters.status) {
 			filters.push({
 				field: 'status.keyword',
@@ -678,49 +742,32 @@ export const getActivityAnalyticsFilters = appliedFilters => {
 	let filters = [];
 	if (appliedFilters) {
 		let range = [];
-		if (appliedFilters.filter !== 'audit') {
-			range = getRangeFilters(
-				{
-					dateTime: {
-						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-					},
-				},
-				'simple'
-			);
-			if (range.length > 0) filters = [...filters, ...range];
-			range = getRangeFilters(
-				{
-					endDateTime: {
-						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-					},
-				},
-				'simple'
-			);
-		} else {
-			range = getRangeFilters(
-				{
-					lastUpdateAt: {
-						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-					},
-				},
-				'simple'
-			);
-			if (range.length > 0) filters = [...filters, ...range];
-			range = getRangeFilters(
-				{
-					lastUpdateAt: {
-						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-					},
-				},
-				'simple'
-			);
-		}
 
-		if (range.length > 0) filters = [...filters, ...range];
+		range = getDateFilters(
+			{
+				lastUpdateAt: {
+					from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+					to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+				},
+			},
+			'simple'
+		);
+		if (range.length > 0) {
+			filters = [...filters, ...range];
+		}
+		range = getDateFilters(
+			{
+				lastUpdateAt: {
+					from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+					to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+				},
+			},
+			'simple'
+		);
+
+		if (range.length > 0) {
+			filters = [...filters, ...range];
+		}
 		if (appliedFilters.campaignName) {
 			filters.push({
 				field: 'contact.campaignName.keyword',
@@ -733,7 +780,140 @@ export const getActivityAnalyticsFilters = appliedFilters => {
 				value: appliedFilters.qualifier,
 			});
 		}
-		if (!filters.length && appliedFilters.length) filters = appliedFilters;
+		if (!filters.length && appliedFilters.length) {
+			filters = appliedFilters;
+		}
 	}
 	return filters;
+};
+
+export const compareObjects = (child, parent) => {
+	for (const key in child) {
+		if (child.hasOwnProperty(key)) {
+			const childValue = child[key];
+			const parentValue = get(parent, key);
+
+			// If the value is an object, recursively compare
+			if (isObject(childValue) && isObject(parentValue)) {
+				if (compareObjects(childValue, parentValue)) {
+					return true; // Found a difference
+				}
+			} else if (!isEqual(childValue, parentValue)) {
+				// If values are not equal
+				return true; // Found a difference
+			}
+		}
+	}
+	return false; // No differences found
+};
+
+export const isEven = num => isInteger(num) && num % 2 === 0;
+
+export const convertAnalyticsDataToCSV = (data = [], months = []) => {
+	const datas = data.flatMap(item => {
+		const result = [];
+		const newData = {};
+		newData.Name = item.name;
+		newData.Total = item.total?.toFixed(TO_FIXED) ?? '';
+		months.forEach(key => {
+			if (item.breakDown) {
+				newData[key] = item.data?.[key]?.total?.toFixed(TO_FIXED) ?? '';
+			} else {
+				newData[key] = item.data?.[key]?.toFixed(TO_FIXED) ?? '';
+			}
+		});
+
+		result.push(newData);
+
+		if (item.breakDown) {
+			Object.keys(item.breakDown).forEach(breakdownKey => {
+				const newData = {};
+				newData.Name = `_${breakdownKey}`;
+				newData.Total = item.breakDown?.[breakdownKey]?.toFixed(TO_FIXED) ?? '';
+				months.forEach(key => {
+					newData[key] = item.data?.[key]?.breakDown[breakdownKey]?.toFixed(TO_FIXED) ?? '';
+				});
+
+				result.push(newData);
+			});
+		}
+
+		return result;
+	});
+	return datas;
+};
+
+export const convertToTitleCase = str => {
+	if (!str || str === '' || typeof str !== 'string') {
+		return str;
+	}
+
+	// Replace underscores and hyphens with spaces
+	str = str.replace(/[_-]/g, ' ');
+
+	// Split the string by spaces
+	let words = str.split(' ');
+
+	// Capitalize the first letter of each word
+	words = words.map(word => {
+		return word.charAt(0).toUpperCase() + word.slice(1);
+	});
+
+	// Join the words with spaces
+	str = words.join(' ');
+
+	// Extract and append the number at the end of the string, if present
+	let regex = /\d+$/;
+	let match = str.match(regex);
+	if (match) {
+		let number = match[0];
+		str = str.replace(regex, '') + ' ' + number;
+	}
+
+	return str;
+};
+
+export const fuzzySearch = (items, query, queryKey = 'name') => {
+	if (!query || query === '') {
+		return items;
+	}
+
+	const search = query.split(' ');
+	const ret = items.reduce((found, i) => {
+		let matches = 0;
+		search.forEach(s => {
+			if (i[queryKey].toLowerCase().indexOf(s.toLowerCase()) > -1) {
+				matches++;
+			}
+		});
+		if (matches === search.length) {
+			found.push(i);
+		}
+		return found;
+	}, []);
+	return ret;
+};
+
+export const formatLayerForMap = layer => {
+	let jsonLayer = layer.customLayer.shapeJson;
+	if (layer.customLayer.shapeJson) {
+		jsonLayer = copy(layer.customLayer.shapeJson);
+	}
+	if (!jsonLayer?.properties?.type && layer?.customLayer?.layer !== 'parcel') {
+		jsonLayer.properties.type = layer.customLayer.layer;
+	}
+	if (!jsonLayer?.properties?.sdType && layer?.customLayer?.layer === 'parcel') {
+		jsonLayer.properties.sdType = layer.customLayer.layer;
+	}
+
+	jsonLayer.layer = { id: layer.customLayer.layer };
+	jsonLayer.id = layer.customLayer._id;
+	return {
+		jsonLayer,
+		feature: {
+			...jsonLayer.properties,
+			feature: jsonLayer,
+			id: layer.customLayer._id,
+		},
+	};
 };

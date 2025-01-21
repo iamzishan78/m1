@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import _ from 'lodash';
+
 import { Grid, makeStyles, Typography } from '@material-ui/core';
+
+import _ from 'lodash';
+
 import { StyledTextField } from '../style';
 
 const useStyles = makeStyles(theme => ({

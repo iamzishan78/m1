@@ -1,10 +1,14 @@
 import React, { useMemo } from 'react';
-import { makeStyles } from '@material-ui/styles';
+
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import { useStyles as customStyles } from '../style';
+import { makeStyles } from '@material-ui/styles';
+
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+
 import { tableController } from 'hookstate/tableController';
+
+import { useStyles as customStyles } from '../style';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -71,13 +75,14 @@ const RelatedDocumets = props => {
 	const RelatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
+			gridViewSettings: null,
+			fetchMetaData: null,
 			defaultFilters: [{ field: 'shapeObj._id', value: uniObj?._id }],
 			deletedKeys: {
 				mainRecord: { key: '_id' },
 				parentRecord: { value: uniObj?._id },
 			},
 			customValue: { parentRecord: uniObj?._id },
-			columnReordering: false,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]

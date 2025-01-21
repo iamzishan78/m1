@@ -1,10 +1,17 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 const esIndex = 'shapewellinterests_flat';
+const onClickedRow = selectedRow => {
+	window.setDrawer('relatedWell');
+	window.setStateApp(stateApp => ({ ...stateApp, selectedWell: selectedRow }));
+};
 
 const RelatedWellsMeta = {
 	esIndex,
@@ -16,20 +23,18 @@ const RelatedWellsMeta = {
 	defaultSort: { field: '_ts', order: 'desc' },
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	onClickedRow,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			header: 'Well',
-			name: 'well.wellName',
-			accessorKey: 'well.wellName',
-			filter: false,
-			enableColumnFilter: false,
-			enableSorting: false,
+			name: 'well.wellName.keyword',
+			id: 'well.wellName',
 			Cell: ({ row }) => {
 				return (
 					<div
@@ -54,52 +59,98 @@ const RelatedWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Lease Number',
 			name: 'leaseId.keyword',
-			accessorKey: 'leaseId',
+			id: 'leaseId',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Lease Name',
 			name: 'lease.keyword',
-			accessorKey: 'lease',
+			id: 'lease',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Operator',
 			name: 'operator.keyword',
-			accessorKey: 'operator',
+			id: 'operator',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Well Type',
 			name: 'wellType.keyword',
-			accessorKey: 'wellType',
+			id: 'wellType',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'WellBore Profile',
 			name: 'wellBoreProfile.keyword',
-			accessorKey: 'wellBoreProfile',
+			id: 'wellBoreProfile',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Well Status',
 			name: 'wellStatus.keyword',
-			accessorKey: 'wellStatus',
+			id: 'wellStatus',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			header: 'Last 12 (BOE)',
+			name: 'lastTwelveMonthBOE.keyword',
+			accessorKey: 'lastTwelveMonthBOE',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			header: 'MD (ft)',
+			name: 'measuredDepth.keyword',
+			accessorKey: 'measuredDepth',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			header: 'Lateral Length (ft)',
+			name: 'lateralLength.keyword',
+			accessorKey: 'lateralLength',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			header: 'Last 12 (BOE)',
+			name: 'lastTwelveMonthBOE',
+			id: 'lastTwelveMonthBOE',
+		},
+
+		{
+			...CommonSchema.NUMBER_COLUMN,
+			header: 'Measured Depth (ft)',
+			name: 'measuredDepth',
+			id: 'measuredDepth',
+		},
+
+		{
+			...CommonSchema.NUMBER_COLUMN,
+			header: 'Lateral Length (ft)',
+			name: 'lateralLength',
+			id: 'lateralLength',
 		},
 
 		{
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
-				return <TagCell id={id} targetSourceId={id} tags={row?.original?.tags} targetLabel={'well'} />;
+				return (
+					<TagCell
+						id={id}
+						targetSourceId={id}
+						tags={row?.original?.tags}
+						targetLabel={'well'}
+						tableKey={'RelatedWellsTable'}
+					/>
+				);
 			},
 		},
 
@@ -107,25 +158,20 @@ const RelatedWellsMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('_id');
-				return <CommentCell id={id} value={renderedCellValue?.length} targetLabel={'well'} />;
+				return (
+					<CommentCell id={id} value={renderedCellValue?.length} targetLabel={'well'} tableKey={'RelatedWellsTable'} />
+				);
 			},
 		},
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'coordinates',
-			accessorKey: 'coordinates',
+			id: 'coordinates',
 			header: '',
 			size: 70,
-			Cell: ({ row }) => {
-				return (
-					<FlyToMap
-						id={row?.original?.well?.globalWell}
-						type="shape"
-						shape="wells"
-						disabled={!row?.original?.well?.globalWell}
-					/>
-				);
-			},
+			Cell: ({ row }) => (
+				<FlyToMap id={row?.original?.well?.globalWell} type="wells" disabled={!row?.original?.well?.globalWell} />
+			),
 		},
 	],
 };

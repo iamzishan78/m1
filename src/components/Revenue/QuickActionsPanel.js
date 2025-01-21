@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
-
-import clsx from 'clsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
+
 import { IconButton } from '@material-ui/core';
-import ListItemText from '@material-ui/core/ListItemText';
 import { Divider, Grid, Typography, Drawer } from '@material-ui/core';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ListItemText from '@material-ui/core/ListItemText';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
 
-import { useStyles, StyledMenu, StyledMenuItem } from './styles';
+import clsx from 'clsx';
+
 import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Revenue/Revenue';
+
 import { toggleQuickActionsPanel } from 'store/actions/commonActions';
+
+import { useStyles, StyledMenu, StyledMenuItem } from './styles';
 
 export default function QuickActionsPanel({ children, handlePanelStateChange, expandedPanel, activeModule }) {
 	const classes = useStyles();

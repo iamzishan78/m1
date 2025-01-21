@@ -1,12 +1,15 @@
 import React, { useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+
 import FormControl from '@material-ui/core/FormControl';
+import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { navController } from 'hookstate/navStateController';
+
 import { NavigationContext } from '../NavigationContext';
 import { statesAbbNames, statesNames } from './Utils/USAStates&Abb';
-import { navController } from 'hookstate/navStateController';
 
 const useStyles = makeStyles(theme => ({
 	formControl: {

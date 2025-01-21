@@ -1,17 +1,20 @@
-import { call, takeLatest, put, select } from 'redux-saga/effects';
 import get from 'lodash/get';
+import { call, takeLatest, put, select } from 'redux-saga/effects';
 
-import Api from 'api';
+import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
+import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
+import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { GET_JOB_UPLOAD_URI } from 'graphQL/useQueryGetJobUploadUri';
+
+import { setReduxKey, toggleBulkUploadAction } from 'store/actions/commonActions';
 import { getContactCampaignAction, convertTaxOwnerToContactAction } from 'store/actions/contactActions';
+import { GET_CONTACT_CAMPAIGN, CONVERT_TAX_OWNER_TO_CONTACT, CONVERT_MULTIPLE_OWNER_TO_CONTACT } from 'store/type';
+
 import { campaignVariables } from 'utils/data';
 import { formatTaxOwners, copy } from 'utils/helper';
-import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
-import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
-import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import { setReduxKey, toggleBulkUploadAction } from 'store/actions/commonActions';
-import { GET_JOB_UPLOAD_URI } from 'graphQL/useQueryGetJobUploadUri';
-import { GET_CONTACT_CAMPAIGN, CONVERT_TAX_OWNER_TO_CONTACT, CONVERT_MULTIPLE_OWNER_TO_CONTACT } from 'store/type';
+
+import Api from 'api';
 
 function* getContactCampaign(action) {
 	try {

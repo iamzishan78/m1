@@ -1,73 +1,23 @@
-import React, { useEffect, memo, useRef } from 'react';
-import GridViewComponent from 'components/MRTTable/Common/GridView/GridViewComponent';
-import GridViewOptions from 'components/MRTTable/Common/GridView/GridViewOptions';
-import { tableController } from 'hookstate/tableController';
-import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';
-import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
-import { useApolloClient } from '@apollo/client';
-import { globalStateController } from 'hookstate/globalStateController';
+import React, { memo, useRef } from 'react';
 
-function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, module }) {
-	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
-	const client = useApolloClient();
+import PropTypes from 'prop-types';
+
+import ViewComponent from 'components/MRTTable/Common/GridView/ViewComponent';
+import ViewOptions from 'components/MRTTable/Common/GridView/ViewOptions';
+
+function GridView({ moduleName }) {
 	const buttonRef = useRef(null);
-
-	const Controller = tableController(tableKey);
-	const tableState = Controller.useState([
-		'TableSchema',
-		'gridView',
-		'esIndex',
-		'columnPinning',
-		'sorting',
-		'showColumnFilters',
-		'columnOrdering',
-	]);
-	const tableStateValues = tableState.stateValues;
-	const gridViewState = gridViewStateController(tableKey).useState(['allGridViews']);
-	const gridViewStateValues = gridViewState.stateValues;
-
-	useEffect(() => {
-		const selectedGridView = tableStateValues?.gridView?.selectedGridView;
-		gridViewStateController(tableKey).gridViewApply(selectedGridView);
-	}, [tableState.stateValues?.gridView?.selectedGridView]);
-
-	async function fetchGridViews() {
-		const result = await client.query({
-			variables: {
-				module,
-				userId: getUser._id,
-			},
-			query: GET_GRID_VIEWS,
-		});
-		const allGridViews = result?.data?.getGridViews?.gridViews;
-		const gridViewController = gridViewStateController(tableKey);
-		gridViewController?.updateState({ allGridViews });
-	}
 
 	return (
 		<div>
-			<GridViewComponent
-				Icon={Icon}
-				buttonRef={buttonRef}
-				label={label}
-				tableKey={tableKey}
-				fetchGridViews={fetchGridViews}
-			/>
-
-			{tableStateValues?.gridView?.showViewModal && (
-				<GridViewOptions
-					module={module}
-					buttonRef={buttonRef}
-					handleDefaultView={handleDefaultView}
-					tableKey={tableKey}
-					allGridViews={gridViewStateValues?.allGridViews || []}
-					defaultView={defaultView}
-					fetchGridViews={fetchGridViews}
-				/>
-			)}
+			<ViewComponent moduleName={moduleName} buttonRef={buttonRef} />
+			<ViewOptions moduleName={moduleName} buttonRef={buttonRef} />
 		</div>
 	);
 }
+
+GridView.propTypes = {
+	moduleName: PropTypes.string.isRequired,
+};
 
 export default memo(GridView);

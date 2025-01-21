@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { copy } from 'utils/helper';
+
 import IconButton from '@material-ui/core/IconButton';
-
-import DrawPoly from 'components/Shared/svgIcons/polygon';
-import HighlightAltIcon from 'components/Shared/svgIcons/highlightAlt';
-import AspectRatioIcon from '@material-ui/icons/AspectRatio';
 import Tooltip from '@material-ui/core/Tooltip';
+import AspectRatioIcon from '@material-ui/icons/AspectRatio';
 
+import { SRCenter } from 'components/Map/MapBoxDrawRotate';
 import { drawShapeLayerToggle } from 'components/MapControls/commonHelper';
 import { getRotateAbleShapeFromSelectedQuarters } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
-import { SRCenter } from 'components/Map/MapBoxDrawRotate';
+import HighlightAltIcon from 'components/Shared/svgIcons/highlightAlt';
+import DrawPoly from 'components/Shared/svgIcons/polygon';
+
 import { drawController } from 'hookstate/drawStateController';
+
+import { copy } from 'utils/helper';
 
 export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullEdit }) {
 	const [feature, setFeature] = useState();
@@ -31,11 +33,15 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
 
 	useEffect(() => {
 		if (shapeEdit) {
-			if (shapeEditMode === 'rotate') onRotateHandle('rotate');
+			if (shapeEditMode === 'rotate') {
+				onRotateHandle('rotate');
+			}
 			if (shapeEditMode === '' && shapeEdit) {
 				drawController.updateState({ shapeEdit: false });
 			}
-			if (!feature) setFeature(drawController.getValue('currentFeature'));
+			if (!feature) {
+				setFeature(drawController.getValue('currentFeature'));
+			}
 		}
 	}, [shapeEdit, shapeEditMode]);
 

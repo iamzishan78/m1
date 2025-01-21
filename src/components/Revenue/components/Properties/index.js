@@ -1,14 +1,19 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { AppContext } from 'AppContext';
-import { makeStyles } from '@material-ui/styles';
-import AnalyticsCards from 'components/Revenue/components/Common/AnalyticsCards';
-import { setStateIfDeepEqual } from 'components/Shared/functions';
-import MRTTable from 'components/MRTTable';
 
-import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
+import { makeStyles } from '@material-ui/styles';
+
 import { useLazyQuery } from '@apollo/client';
+
+import MRTTable from 'components/MRTTable';
+import AnalyticsCards from 'components/Revenue/components/Common/AnalyticsCards';
+import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
+import { setStateIfDeepEqual } from 'components/Shared/functions';
+
 import { GET_UNMAPPED_PROPERTY_COUNT } from 'graphQL/useQueryGetProperty';
+
 import { tableController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {

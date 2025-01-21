@@ -1,47 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
+
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import ClearIcon from '@material-ui/icons/Clear';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
+
 import { UPSERT_CAMPAIGN_DESCRIPTORS } from 'graphQL/useMutationCampaign';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+
 import 'components/Shared/Tagger.css';
+
+const SPACING = 5;
 
 const useStyles = makeStyles(theme => ({
 	rootDiv: {
 		'& > * + *': {
-			marginTop: theme.spacing(5),
+			marginTop: theme.spacing(SPACING),
 		},
 		'& .MuiAutocomplete-clearIndicator': {
 			display: 'none',
 		},
-	},
-	switchButtom: {
-		float: 'right',
-		width: 'fit-content',
-		alignSelf: 'flex-end',
-		marginRight: 0,
-		'& span.MuiTypography-body1': {
-			fontSize: '0.9rem',
-		},
-	},
-	switchTextDeselected: {
-		color: 'rgb(141, 141, 141)',
-	},
-	publicLeftBottom: {
-		float: 'none',
-		flexDirection: 'row',
-		alignSelf: 'unset',
-		margin: 0,
-		'& .MuiTypography-root': {
-			display: 'none',
-		},
-		'& .h4Before': { margin: '0 13px', color: '#202020 !important' },
-		'& .h4After': { margin: '0 0 0 13px', color: '#B7B7B7 !important' },
 	},
 	chip: {
 		'& .MuiChip-root': {
@@ -138,7 +121,9 @@ export default function CampaignField(props) {
 	}, [getCampaignFilters]);
 
 	const showPlusAddIcon = () => {
-		if (tFActive || props.disabled || props.simpleChips) return false;
+		if (tFActive || props.disabled || props.simpleChips) {
+			return false;
+		}
 		return true;
 	};
 	const classes = useStyles({ ...props, showPlusAddIcon: showPlusAddIcon() });
@@ -164,13 +149,18 @@ export default function CampaignField(props) {
 			payload.isDeleted = true;
 		}
 
+		if (!payload.descriptorObject) {
+			return;
+		}
+
 		props.onChange(values, payload.descriptorObject);
-		if (payload.relatedObject)
+		if (payload.relatedObject) {
 			upsertCampaignDescriptors({
 				variables: {
 					descriptors: [payload],
 				},
 			});
+		}
 		setInputValue(values);
 	};
 
@@ -206,7 +196,7 @@ export default function CampaignField(props) {
 							<TextField
 								{...params}
 								variant={'standard'}
-								className={classes.input}
+								className={params.inputProps.value ? '' : classes.input}
 								placeholder={!showPlusAddIcon() ? '' : '+'}
 								fullWidth
 								onClick={() => {
@@ -229,3 +219,25 @@ export default function CampaignField(props) {
 		</div>
 	);
 }
+
+CampaignField.propTypes = {
+	value: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string.isRequired,
+			name: PropTypes.string.isRequired,
+		})
+	),
+	onChange: PropTypes.func.isRequired,
+	disabled: PropTypes.bool,
+	simpleChips: PropTypes.bool,
+	targetLabel: PropTypes.string.isRequired,
+	targetLabelId: PropTypes.string.isRequired,
+	type: PropTypes.string,
+};
+
+CampaignField.defaultProps = {
+	value: [],
+	disabled: false,
+	simpleChips: false,
+	type: '',
+};

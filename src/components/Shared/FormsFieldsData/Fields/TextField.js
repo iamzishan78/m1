@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, TextField } from '@mui/material';
-
 import { Controller } from 'react-hook-form';
+
+import { Grid, TextField } from '@mui/material';
 
 const classes = {
 	maxWidth: {
@@ -39,7 +39,9 @@ function TextFieldComponent({ control, item, watch, error }) {
 	const watchTextFieldValue = watch(name);
 
 	useEffect(() => {
-		if (isValueOverridden) setbaseValueChanged(isValueOverridden(watchTextFieldValue));
+		if (isValueOverridden) {
+			setbaseValueChanged(isValueOverridden(watchTextFieldValue));
+		}
 	}, [watchTextFieldValue]);
 
 	return (
@@ -62,7 +64,9 @@ function TextFieldComponent({ control, item, watch, error }) {
 						}}
 						onBlur={e => {
 							let value = e.target.value || '';
-							if (onBlur) value = onBlur(value);
+							if (onBlur) {
+								value = onBlur(value);
+							}
 							props.onChange(value);
 						}}
 						sx={baseValueChanged ? classes.baseValueChanged : classes.maxWidth}

@@ -1,17 +1,25 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import DetailsPanel from './Detail';
-import AssociatedWells from './AssociatedWells';
-import Information from './Information';
-import { useLazyQuery } from '@apollo/client';
-import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument';
-import { tableGlobalController } from 'hookstate/tableController';
+
 import Badge from '@material-ui/core/Badge';
 import HomeIcon from '@material-ui/icons/HomeOutlined';
 import InfoOutlined from '@material-ui/icons/InfoOutlined';
-import WellIcon from 'components/Shared/svgIcons/well';
+
+import { useLazyQuery } from '@apollo/client';
+
 import Slideout from 'components/MRTTable/Common/Slideout';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import WellIcon from 'components/Shared/svgIcons/well';
+
+import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { history } from 'store';
+
+import AssociatedWells from './AssociatedWells';
+import DetailsPanel from './Detail';
+import Information from './Information';
 
 function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	const [wellsCount, setWellsCount] = useState(0);
@@ -32,12 +40,13 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	}, [wellsFromDocument]);
 
 	useEffect(() => {
-		if (selectedDocument)
+		if (selectedDocument) {
 			getWellsFromDocument({
 				variables: {
 					descriptorObject: selectedDocument?._id,
 				},
 			});
+		}
 	}, [selectedDocument?._id]);
 
 	const handleClose = () => {
@@ -46,6 +55,8 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 				type: {},
 			},
 		});
+		// Remove the document ID from the URL
+		history.push('/documents'); // Navigates back to the base documents page
 	};
 
 	const views = useMemo(
@@ -67,7 +78,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 					<DetailsPanel selectedDocument={selectedDocument} handleClose={handleClose} tableKey={tableKey} />
 				),
 				props: {},
-				onClick: () => {},
+				onClick: () => { },
 			},
 			{
 				name: 'Wells',
@@ -85,7 +96,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 				),
 				Component: () => <AssociatedWells selectedDocument={selectedDocument} />,
 				props: {},
-				onClick: () => {},
+				onClick: () => { },
 			},
 			{
 				name: 'Information',
@@ -102,7 +113,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 				),
 				Component: () => <Information selectedDocument={selectedDocument} />,
 				props: {},
-				onClick: () => {},
+				onClick: () => { },
 			},
 		],
 		[selectedDocument, wellsCount]
@@ -123,7 +134,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	useEffect(() => {
 		slideOutState.views.set(views);
 		slideOutState.view.set(views[0]);
-	}, [wellsCount]);
+	}, [selectedDocument, wellsCount]);
 
 	return <Slideout show={true} deleteFunc={deleteFunc} />;
 }

@@ -1,8 +1,11 @@
 import { hookstate, useHookstate } from '@hookstate/core';
+
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
 import { copy, deepEqual } from 'components/Shared/functions';
+
 import { hookStateController } from 'hookstate/hookStateController';
+
 import { layerFiltersController } from './layerFiltersController';
 
 const initialState = {
@@ -49,10 +52,11 @@ const navStateControllerHandler = () => ({
 		}
 	},
 	handleWellsFilters: newFilters => {
-		// eslint-disable-next-line no-use-before-define
 		const { variables } = layerFiltersController.getValue('Wells');
 		let filters = copy(variables.filters);
-		if (!Array.isArray(newFilters)) newFilters = [newFilters];
+		if (!Array.isArray(newFilters)) {
+			newFilters = [newFilters];
+		}
 
 		newFilters.forEach(filter => {
 			const { field, value, type } = filter;
@@ -100,11 +104,12 @@ const navStateControllerHandler = () => ({
 			wellFilterCount: filters.filter(filter => !WellsGeographyFilters.includes(filter.field)).length,
 		});
 
-		if (!deepEqual(filters, variables.filters))
+		if (!deepEqual(filters, variables.filters)) {
 			layerFiltersController.setVariables('Wells', {
 				...variables,
 				filters,
 			});
+		}
 	},
 	clearGeographyFilters: () => {
 		navController.updateState({

@@ -1,11 +1,14 @@
-import moment from 'moment';
+/* eslint-disable react/prop-types */
+import React from 'react';
 
-import UserManagementToolbar from 'components/MRTTable/TablesOverride/UserManagementTable/UserManagementToolbar';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import UserManagementToolbar from 'components/MRTTable/TablesOverride/UserManagementTable/UserManagementToolbar';
+
+import { GET_ALL_USERS } from 'graphQL/userManagement';
 
 import { tableGlobalController } from 'hookstate/tableController';
+
 import { UserRole, RolePrivilege } from 'utils/data';
-import { GET_ALL_USERS } from 'graphQL/userManagement';
 
 const onClickedRow = selectedRow => {
 	if (selectedRow?._id) {
@@ -21,7 +24,7 @@ const onClickedRow = selectedRow => {
 const UserManagementMeta = {
 	query: GET_ALL_USERS,
 	maxTableHeight: 'calc(100vh - 495px)',
-	getVariables: tableMeta => {
+	getVariables: () => {
 		return {};
 	},
 	getDataFromRes: res => res?.data?.users || [],
@@ -32,35 +35,31 @@ const UserManagementMeta = {
 	isClientSide: true,
 	isSelectAllAllowed: true,
 	isDeleteAllowed: true,
-	isExportAllowed: false,
+	isExportDisabled: true,
 	enableFacetedValues: true,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
-			accessorFn: row => row?._id,
+			id: 'id',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Name',
-			accessorKey: 'displayName',
+			id: 'displayName',
 			name: 'displayName',
-			accessorFn: row => row?.displayName || '',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'User Email',
-			accessorKey: 'email',
+			id: 'email',
 			name: 'email',
-			accessorFn: row => row?.email,
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Role',
-			accessorKey: 'role',
+			id: 'role',
 			name: 'role',
-			accessorFn: row => UserRole[row?.role] || '',
 			Cell: ({ row }) => {
 				const value = row?.original?.role;
 				// Use the enum to get the user-friendly name for the role
@@ -69,11 +68,10 @@ const UserManagementMeta = {
 			},
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Role Privileges',
-			accessorKey: 'rolePrivileges',
+			id: 'rolePrivileges',
 			name: 'rolePrivileges',
-			accessorFn: row => RolePrivilege[row?.rolePrivileges] || '',
 			Cell: ({ row }) => {
 				const value = row?.original?.rolePrivileges;
 				// Use the enum to get the user-friendly name for the role privileges
@@ -82,11 +80,10 @@ const UserManagementMeta = {
 			},
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Last Login',
-			accessorKey: 'lastLogin',
+			id: 'lastLogin',
 			name: 'lastLogin',
-			accessorFn: row => (row?.lastLogin ? moment(row?.lastLogin).format('MM/DD/YYYY') || '' : ''),
 		},
 	],
 };

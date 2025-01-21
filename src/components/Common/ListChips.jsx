@@ -1,5 +1,6 @@
-import { Chip } from '@material-ui/core';
 import * as React from 'react';
+
+import { Chip } from '@material-ui/core';
 
 const ListChips = ({ list, ...rest }) => {
 	return (

@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
-import get from 'lodash/get';
 
 import { useMutation, useLazyQuery } from '@apollo/client';
+import get from 'lodash/get';
+
+import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
+
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
-import { setStateIfDeepEqual } from '../../functions';
-import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
+
 import { AppContext } from 'AppContext';
+
+import { setStateIfDeepEqual } from '../../functions';
 
 export default function AutocompEntityNamesList({ nameAutValue, setNameAutValue, ...rest }) {
 	const [stateApp] = useContext(AppContext);
@@ -42,7 +46,7 @@ export default function AutocompEntityNamesList({ nameAutValue, setNameAutValue,
 
 	useEffect(() => {
 		if (allContacts?.paginatedContacts) {
-			setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map(el => el.node)]);
+			setMongoEntitiesArray([...(allContacts?.paginatedContacts?.edges?.map(el => el.node) || [])]);
 			setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
 		}
 		setIsNextPageLoading(false);

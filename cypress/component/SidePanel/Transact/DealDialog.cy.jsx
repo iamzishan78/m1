@@ -1,14 +1,18 @@
 /* global cy */
 
-import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
-import { AppContext } from '../../../../src/AppContext';
 import { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setFlowState } from 'actions';
+
+import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
+
 import { GETPIPELINE } from 'graphQL/useQueryPipeline';
 import { GETPIPELINES } from 'graphQL/useQueryPipelines';
-import ldata from '../../../fixtures/ldata.json';
+
+import { setFlowState } from 'actions';
+
+import { AppContext } from '../../../../src/AppContext';
 import { headers } from '../../../cypressUtils/cypressHeaders';
+import ldata from '../../../fixtures/ldata.json';
 
 const TestComponent = ({ pipe, deals, pipelines }) => {
 	const [, setStateApp] = useContext(AppContext);

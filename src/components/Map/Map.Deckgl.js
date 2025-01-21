@@ -1,76 +1,75 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// react imports
+/* eslint-disable no-magic-numbers */
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-// custom components
-import './popup.css';
-import gjv from 'geojson-validation';
-
-// 3rd party packages
-import mapboxgl from 'mapbox-gl';
-import * as turf from '@turf/turf';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
-import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
-import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
-
-// material-ui
 import { makeStyles } from '@material-ui/core/styles';
+import MapIcon from '@material-ui/icons/Map';
 
+import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
+import * as turf from '@turf/turf';
+import gjv from 'geojson-validation';
 import _ from 'lodash';
-
+import mapboxgl from 'mapbox-gl';
+import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
+import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import parseLinkHeader from 'parse-link-header';
-import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
-import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
+import PropTypes from 'prop-types';
 
-import './Map.css';
-import { popupController } from 'hookstate/popupStateController';
-import { navController } from 'hookstate/navStateController';
+import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
+import MapControls from 'components/MapControls/MapControls';
+import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
+import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
+import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
+
+import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
+import { navController } from 'hookstate/navStateController';
+import { popupController } from 'hookstate/popupStateController';
+import { detailCardController } from 'hookstate/detailCardController';
+
+import { baseTenantsMaps } from 'utils/data';
+import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
+
 import { layerRefs } from 'hookstate';
-import { setMainMapState } from '../../actions';
-import { copy } from '../Shared/functions';
+
+import HugeRequest from './components/HugeRequest';
+import DeckGL from './DeckGL';
+import onRightClick from './DeckGL/helpers/onRightClick';
 import DefaultFiltersTest from './filtersDefaultTest';
+import { setMainMapState } from '../../actions';
+import { SRMode } from './MapBoxDrawRotate/index';
+import { AppContext } from '../../AppContext';
+import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
+import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
+import { copy } from '../Shared/functions';
+import ZoomFault from './components/ZoomFault';
+import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
+import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
+import onFeatureClick from './DeckGL/helpers/onFeatureClick';
+import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import MarkerIcon from './sprites/marker-icon.png';
-import MapGridCardProvider from '../MapGridCard/MapGridProvider';
 import {
 	drawBoundary,
 	drawWellBoundary,
 	drawPlaceBoundary,
 } from '../MapControls/components/DrawShapes/drawShapesHelpers';
-import HugeRequest from './components/HugeRequest';
-import ZoomFault from './components/ZoomFault';
-import { SRMode } from './MapBoxDrawRotate/index';
+import MapGridCardProvider from '../MapGridCard/MapGridProvider';
 
-// queries
-import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
-import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
-
-// contexts
-import { AppContext } from '../../AppContext';
-
-import DeckGL from './DeckGL';
-import onFeatureClick from './DeckGL/helpers/onFeatureClick';
-import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
-import { layerController } from 'hookstate/layerStateController';
-import MapControls from 'components/MapControls/MapControls';
-import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
-import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
-import onRightClick from './DeckGL/helpers/onRightClick';
-import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
-import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import { drawController } from 'hookstate/drawStateController';
-import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
-import { baseTenantsMaps } from 'utils/data';
-import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+import './Map.css';
+import './popup.css';
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -144,6 +143,10 @@ function Map({
 		'mapStateValues'
 	);
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
+	const {
+		stateValues: { currentAssetRecord },
+	} = detailCardController.useState(['currentAssetRecord'], 'stateValues');
+
 	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const client = useApolloClient();
@@ -157,8 +160,11 @@ function Map({
 	});
 
 	const dispatch = useDispatch();
-	const { searchInputValue } = useSelector(({ MapGridCard }) => MapGridCard);
 	const removeLayerFromMap = useSelector(({ MainMap }) => MainMap.removeLayerFromMap);
+
+	const {
+		stateValues: { searchValue },
+	} = mapControlsController.useState(['searchValue']);
 
 	const [mapStyles, MapStyles] = useState([]);
 	const setMapStyles = state => {
@@ -205,23 +211,25 @@ function Map({
 		useLazyQuery(ALLLAYERSETTINGSBYUSER);
 
 	// Query to fetch map views from the GraphQL API
-	useQuery(GET_MAP_VIEWS, {
+	useQuery(GET_GRID_VIEWS, {
 		variables: {
 			userId: globalStateController.getValue('user').mongoId,
+			module: 'MapView',
 		},
 		onCompleted: data => {
-			const mapViews = data?.getMapViews?.mapViews;
-			const currentMapView = mapViews?.find(view => view.isCurrent);
-			if (!globalStateController.getValue('mapView')?.selectedMapView) {
-				globalStateController.updateState({
-					mapView: {
-						selectedMapView: currentMapView,
-					},
-				});
-			}
+			const allViews = data?.getGridViews?.gridViews;
+			viewStateController('MapView').initialize({
+				client,
+				allViews,
+				Icon: MapIcon,
+				label: 'Map',
+				styleOverride: {
+					bgColor: { backgroundColor: '#0E111A' },
+					color: { color: 'white' },
+				},
+			});
 		},
 	});
-
 	/// //end/////////temporary
 
 	const fitOverBounds = () => {
@@ -315,7 +323,7 @@ function Map({
 			});
 
 		popupController.updateState({
-			popupOpen: !!(popupController.getValue('wellSelectedCoordinates')?.length > 0 && searchInputValue),
+			popupOpen: !!(popupController.getValue('wellSelectedCoordinates')?.length > 0 && searchValue),
 			expandedCard: false,
 		});
 
@@ -338,7 +346,7 @@ function Map({
 
 	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
-			query: GET_ES_SIMPLE_SEARCH,
+			query: GET_DB_DATA,
 			variables: {
 				index: 'platformData:wells',
 				pagination: {
@@ -354,8 +362,10 @@ function Map({
 				sort: [],
 			},
 		});
-		const wellFeature = { ...well.getESSimpleSearch.hits[0] };
-		if (wellFeature?.Id) wellFeature.id = wellFeature.Id;
+		const wellFeature = { ...well.getDbData.hits[0] };
+		if (wellFeature?.Id) {
+			wellFeature.id = wellFeature.Id;
+		}
 		const interval = setInterval(() => {
 			if (window.mapRef) {
 				layerController.updateState({ clickedFeature: { object: { id: paramId } } });
@@ -365,7 +375,9 @@ function Map({
 					popupOpen: false,
 					expandedCard: true,
 				});
-				if (wellFeature?.longitude) drawWellBoundary([wellFeature.longitude, wellFeature.latitude]);
+				if (wellFeature?.longitude) {
+					drawWellBoundary([wellFeature.longitude, wellFeature.latitude]);
+				}
 				popupController.fitWellBounds(wellFeature);
 				clearInterval(interval);
 			}
@@ -373,7 +385,7 @@ function Map({
 	};
 
 	async function getCustomLayer(paramId) {
-		const keys = { parcels: 'selectedParcel', ...layersWithSelectedShapeKey(), wells: 'selectedWell' };
+		const keys = { ...layersWithSelectedShapeKey(), wells: 'selectedWell' };
 		const { data: layer } = await client.query({
 			query: CUSTOMLAYER,
 			variables: {
@@ -398,11 +410,7 @@ function Map({
 				}
 			}
 
-			let jsonLayer = JSON.parse(layer.customLayer.shape);
-			if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
-
-			jsonLayer.layer = { id: layer.customLayer.layer };
-			jsonLayer.id = layer.customLayer._id;
+			const { jsonLayer, feature } = formatLayerForMap(layer);
 
 			const interval = setInterval(() => {
 				if (window.mapRef) {
@@ -411,12 +419,7 @@ function Map({
 
 					layerController.updateState({ clickedFeature: { object: { id: paramId } } });
 					popupController.updateState({
-						[keys[type]]: {
-							...jsonLayer.properties,
-							feature: jsonLayer,
-							id: layer.customLayer._id,
-						},
-						...(type === 'parcels' ? { selectedShape: null } : {}),
+						[keys[type]]: feature,
 						popupOpen: false,
 						expandedCard: true,
 						customLayerId: layer.customLayer._id,
@@ -430,7 +433,9 @@ function Map({
 	}
 
 	useEffect(() => {
-		if (!window.mapRef || !popupStateValues.selectedShapeFile) return;
+		if (!window.mapRef || !popupStateValues.selectedShapeFile) {
+			return;
+		}
 
 		popupController.updateState({ popupOpen: false });
 
@@ -453,11 +458,12 @@ function Map({
 
 	useEffect(() => {
 		const clickedFeature = layerController.getValue('clickedFeature');
+		const isGenericAsset = currentAssetRecord?.assetShape?.isGenericAssetShape;
 		if (paramId && clickedFeature?.object?.id !== paramId) {
 			try {
 				if (type === 'wells') {
 					getElasticWell(paramId);
-				} else {
+				} else if (!isGenericAsset) {
 					getCustomLayer(paramId);
 				}
 			} catch (e) {
@@ -469,10 +475,11 @@ function Map({
 	useEffect(() => {
 		if (stateApp.user && stateApp.user.mongoId) {
 			setLoading(true);
-
+			const applyShowableFilter = true;
 			getAllLayerSettingsByUser({
 				variables: {
 					userId: stateApp.user.mongoId,
+					applyShowableFilter,
 				},
 			});
 		}
@@ -492,7 +499,7 @@ function Map({
 			globalState.layers.set(layers);
 			stateApp.layers = layers;
 
-			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
+			const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
 			// for of loop on mapViewFilters
 			for (const filter of mapViewFilters) {
 				const dataSource = filter?.dataSourceName;
@@ -512,28 +519,42 @@ function Map({
 	/// / remove the layer and it's source from the map after it's deleted
 	const removeLayer = layer => {
 		const paintProps = layer.layerPaintProps;
-		if (!paintProps?.length) return;
+		if (!paintProps?.length) {
+			return;
+		}
 
 		for (let i = paintProps.length - 1; i >= 0; i--) {
 			const prop = paintProps[i];
 
 			// -> remove layer
 			const layerId = layer.layerType === 'file layer' ? layer.identifier : prop.id;
-			if (map.getLayer(layerId)) map.removeLayer(layerId);
+			if (map.getLayer(layerId)) {
+				map.removeLayer(layerId);
+			}
 
 			if (prop.clusterProps) {
-				if (map.getLayer(`${layerId}-clusters-counts`)) map.removeLayer(`${layerId}-clusters-counts`);
+				if (map.getLayer(`${layerId}-clusters-counts`)) {
+					map.removeLayer(`${layerId}-clusters-counts`);
+				}
 
-				if (map.getLayer(`${layerId}-clusters`)) map.removeLayer(`${layerId}-clusters`);
+				if (map.getLayer(`${layerId}-clusters`)) {
+					map.removeLayer(`${layerId}-clusters`);
+				}
 			}
 
 			const { layers } = map.getStyle();
 			// -> remove source
 			const sourceId = prop.sourceProps;
 			const sourceLayers = layers.filter(layer => layer.source === sourceId);
-			if (map?.getSource(sourceId) && sourceLayers.length === 0) map.removeSource(sourceId);
-			if (map?.getSource(`${sourceId}_point`)) map.removeSource(`${sourceId}_point`);
-			if (map?.getSource(`${sourceId}_filter`)) map.removeSource(`${sourceId}_filter`);
+			if (map?.getSource(sourceId) && sourceLayers.length === 0) {
+				map.removeSource(sourceId);
+			}
+			if (map?.getSource(`${sourceId}_point`)) {
+				map.removeSource(`${sourceId}_point`);
+			}
+			if (map?.getSource(`${sourceId}_filter`)) {
+				map.removeSource(`${sourceId}_filter`);
+			}
 		}
 	};
 
@@ -549,7 +570,9 @@ function Map({
 	useEffect(() => {
 		// USE EFFECT FOR BASEMAP LAYER HANDLING
 		const mapLayers = copy(globalState.stateValues.layers);
-		if (!stateApp.baseMapLayers || stateApp.baseMapLayers.length === 0 || !map) return;
+		if (!stateApp.baseMapLayers || stateApp.baseMapLayers.length === 0 || !map) {
+			return;
+		}
 		const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
 		const baseMapLandIndex = stateApp.baseMapLayers.findIndex(layer => layer.name === 'Land Grid');
 		const landLayerVisible = landLayer?.layerSettings?.visiable && landLayer?.layerSettings?.showable;
@@ -603,7 +626,7 @@ function Map({
 							continue;
 						}
 						const currentLayerArray = stateApp.baseMapLayers[i].id;
-						// eslint-disable-next-line no-loop-func
+
 						currentLayerArray.forEach(j => {
 							const mapLayer = map.getLayer(j);
 							if (typeof mapLayer !== 'undefined') {
@@ -641,7 +664,7 @@ function Map({
 					for (let k = layers.length - 1; k >= 0; k--) {
 						const i = layers[k];
 						const currentLayerArray = stateApp.heatLayers[i].id;
-						// eslint-disable-next-line no-loop-func
+
 						currentLayerArray.forEach(j => {
 							const mapLayer = map.getLayer(j);
 							if (typeof mapLayer !== 'undefined') {
@@ -683,7 +706,9 @@ function Map({
 	useEffect(() => {
 		const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
 
-		if (!sourceId) return;
+		if (!sourceId) {
+			return;
+		}
 
 		if (map) {
 			const featuresList = map?.getSource(sourceId)?._data.features || [];
@@ -699,7 +724,9 @@ function Map({
 	// if it is on the tile boundary we know that the vector feature "may" cross tile boundaries so don't know the true
 	// length from a single tile
 	async function findBadLinestrings(map, tile) {
-		if (!tile) return;
+		if (!tile) {
+			return;
+		}
 		let repaint = false;
 		const renderedLineStrings = [];
 		tile.querySourceFeatures(renderedLineStrings, {
@@ -734,7 +761,9 @@ function Map({
 	}
 
 	useEffect(() => {
-		if (mapStyles.length <= 0) return;
+		if (mapStyles.length <= 0) {
+			return;
+		}
 
 		const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
 			const { id } = mapEl.current;
@@ -797,14 +826,13 @@ function Map({
 				// if state.startPoint exist, means its second click
 				// change to  simple_select mode
 				if (state.startPoint && state.startPoint[0] !== e.lngLat.lng && state.startPoint[1] !== e.lngLat.lat) {
-					// eslint-disable-next-line react/no-this-in-sfc
 					this.updateUIClasses({ mouse: 'pointer' });
 					state.endPoint = [e.lngLat.lng, e.lngLat.lat];
-					// eslint-disable-next-line react/no-this-in-sfc
+
 					this.changeMode('simple_select', {
 						featuresId: state.rectangle.id,
 					});
-					// eslint-disable-next-line react/no-this-in-sfc
+
 					this.setSelected(state.rectangle.id); /// / selecting the rect after draw
 				}
 				// on first click, save clicked point coords as starting for  rectangle
@@ -879,11 +907,14 @@ function Map({
 									popupController.reset();
 								}
 								// If the path is not '/' or ' ' and the map is not rendered through deal dialog
-								if (!['', '/'].includes(window.location.pathname) && stateApp.transactBarView !== 'Map')
+								if (!['', '/'].includes(window.location.pathname) && stateApp.transactBarView !== 'Map') {
 									history.replace({ pathname: '/' });
+								}
 								return;
 							}
-							if (!getLandGrid) drawBoundary(clickedFeature.object);
+							if (!getLandGrid) {
+								drawBoundary(clickedFeature.object);
+							}
 
 							layerController.updateState({ clickedFeature });
 							onFeatureClick(clickedFeature, layer);
@@ -906,11 +937,14 @@ function Map({
 				}));
 
 				newMap.loadImage(MarkerIcon, (error, image) => {
-					if (error) throw error;
+					if (error) {
+						throw error;
+					}
 					// add image to the active style and make it SDF-enabled
 					newMap.addImage('marker-icon', image, { sdf: true });
 				});
 				setTimeout(() => {
+					// eslint-disable-next-line no-new
 					new DeckGlLayer({
 						layerId: 'top_deck_layer',
 						type: 'ScatterplotLayer',
@@ -919,6 +953,7 @@ function Map({
 						},
 					});
 
+					// eslint-disable-next-line no-new
 					new DeckGlLayer({
 						layerId: 'first_deck_layer',
 						type: 'ScatterplotLayer',
@@ -954,7 +989,9 @@ function Map({
 	useEffect(() => {
 		if (!loading) {
 			if (navStateValues.filterDrawing && navStateValues.filterDrawing.length === 0) {
-				if (draw) draw.delete(drawingFilterFeatureId);
+				if (draw) {
+					draw.delete(drawingFilterFeatureId);
+				}
 				navController.updateState({ drawingMode: null });
 				setDrawingFilterFeatureId(null);
 				popupController.updateState({
@@ -997,7 +1034,9 @@ function Map({
 
 	useEffect(
 		() => () => {
-			if (!map) return;
+			if (!map) {
+				return;
+			}
 
 			const list = document.getElementById('searchBar');
 			if (list && list.childNodes && list.childNodes.length > 0) {
@@ -1060,7 +1099,7 @@ function Map({
 		) {
 			const bounds = fitOverBounds();
 			try {
-				if (typeof bounds?.minLong !== 'undefined')
+				if (typeof bounds?.minLong !== 'undefined') {
 					map.fitBounds(
 						[
 							[bounds.minLong, bounds.minLat],
@@ -1070,7 +1109,8 @@ function Map({
 							easing: () => 1,
 						}
 					);
-			} catch (e) {
+				}
+			} catch {
 				//
 			}
 		}
@@ -1147,7 +1187,9 @@ function Map({
 			const places = selectedPlaces.get({
 				noproxy: true,
 			});
-			if (!places) return;
+			if (!places) {
+				return;
+			}
 			const longitude = places?.geometry?.coordinates[0];
 			const latitude = places?.geometry?.coordinates[1];
 			drawPlaceBoundary([longitude, latitude]); // show dot on searched places coordinates
@@ -1180,8 +1222,10 @@ function Map({
 					},
 				],
 			};
-			if (map?.getSource('find_location')) map?.getSource('find_location').setData(findLocationGeoJson);
-			map.moveLayer(`find_location_layer`);
+			if (map?.getSource('find_location')) {
+				map?.getSource('find_location').setData(findLocationGeoJson);
+			}
+			map.moveLayer('find_location_layer');
 
 			map.jumpTo({
 				center: {
@@ -1297,5 +1341,32 @@ function Map({
 		</div>
 	);
 }
+
+Map.propTypes = {
+	type: PropTypes.string.isRequired,
+	paramId: PropTypes.string,
+	expandedPanel: PropTypes.bool, // Boolean, defaults to true
+	mapControls: PropTypes.bool, // Boolean, defaults to true
+	openSpeedDial: PropTypes.bool, // Boolean, defaults to true
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), // Can be a string or number
+	hideShape: PropTypes.bool, // Boolean, defaults to false
+	layerPadding: PropTypes.oneOfType([
+		PropTypes.number,
+		PropTypes.shape({
+			top: PropTypes.number,
+			bottom: PropTypes.number,
+			left: PropTypes.number,
+			right: PropTypes.number,
+		}),
+	]), // Null or an object with padding values
+};
+
+Map.defaultProps = {
+	expandedPanel: true,
+	mapControls: true,
+	openSpeedDial: true,
+	hideShape: false,
+	layerPadding: null,
+};
 
 export default React.memo(Map);

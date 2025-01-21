@@ -1,10 +1,14 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
 import Avatar from 'react-avatar';
+
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
-import ContactDettailRelatedContactsToolBar from 'components/MRTTable/TablesOverride/ContactDetailRelatedContactsTable/ContactDetailRelatedContactsToolbar';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import ContactDettailRelatedContactsToolBar from 'components/MRTTable/TablesOverride/ContactDetailRelatedContactsTable/ContactDetailRelatedContactsToolbar';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
 const esIndex = 'contacts_flat';
 
@@ -27,16 +31,17 @@ const ContactDetailRelatedContactMeta = {
 			...CommonSchema.HIDDEN,
 			name: '_id.keyword',
 			id: '_id',
-			accessorKey: '_id',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorKey: 'name',
+			id: 'name',
 			header: 'Name',
 			size: 400,
 			Cell: ({ renderedCellValue, row }) => {
+				const NAME_SPLICE_LENGTH = 2;
+
 				return (
 					<div
 						style={{
@@ -55,7 +60,7 @@ const ContactDetailRelatedContactMeta = {
 									'#d7d6fb',
 								])}
 								fgColor="#000"
-								name={renderedCellValue.split(' ').splice(0, 2).join(' ')}
+								name={renderedCellValue.split(' ').splice(0, NAME_SPLICE_LENGTH).join(' ')}
 								size="35"
 								round
 							/>
@@ -72,8 +77,9 @@ const ContactDetailRelatedContactMeta = {
 						>
 							<ColumnWithLink
 								value={renderedCellValue}
-								link={`/contact/details/${row.getValue('_id')}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+								link={`/contact/details/${row.getValue('_id')}`}
 								onClick={e => {
+									window.location.reload();
 									e.stopPropagation();
 								}}
 							/>
@@ -94,37 +100,37 @@ const ContactDetailRelatedContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'address1.keyword',
-			accessorKey: 'address1',
+			id: 'address1',
 			header: 'Address',
 			size: 400,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'mobilePhone.keyword',
-			accessorKey: 'mobilePhone',
+			id: 'mobilePhone',
 			header: 'Mobile Phone',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'homePhone.keyword',
-			accessorKey: 'homePhone',
+			id: 'homePhone',
 			header: 'Home Phone',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'primaryEmail.keyword',
-			accessorKey: 'primaryEmail',
+			id: 'primaryEmail',
 			header: 'Email',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedContacts.relationshipType.keyword',
-			accessorKey: 'relatedContacts.relationshipType',
+			id: 'relatedContacts.relationshipType',
 			header: 'Relationship Type',
 			isArrayKey: true,
 			handleArrayExport: {

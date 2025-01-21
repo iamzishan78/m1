@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import ClearIcon from '@material-ui/icons/Clear';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery } from '@apollo/client';
 
 import 'components/Shared/Tagger.css';
-import { OPENDEALS } from 'graphQL/useQueryOpenDeals';
+
 import { uniqBy } from 'lodash';
+
+import React, { useState, useEffect } from 'react';
+
+import { OPENDEALS } from 'graphQL/useQueryOpenDeals';
 
 const useStyles = makeStyles(theme => ({
 	rootDiv: {
@@ -114,7 +118,9 @@ export default function AssociatedDealField(props) {
 	}, [getOpenDeals]);
 
 	const showPlusAddIcon = () => {
-		if (tFActive || props.disabled || props.simpleChips) return false;
+		if (tFActive || props.disabled || props.simpleChips) {
+			return false;
+		}
 		return true;
 	};
 	const classes = useStyles({ ...props, showPlusAddIcon: showPlusAddIcon() });

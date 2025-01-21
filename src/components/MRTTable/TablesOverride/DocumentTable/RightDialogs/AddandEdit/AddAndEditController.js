@@ -1,6 +1,8 @@
 import { hookstate, useHookstate } from '@hookstate/core';
-import { hookStateController } from 'hookstate/hookStateController';
+
 import { copy } from 'components/Shared/functions';
+
+import { hookStateController } from 'hookstate/hookStateController';
 
 export const initialState = {
 	documentNumber: '',
@@ -12,6 +14,7 @@ export const initialState = {
 	instrument: '',
 	custom_data: null,
 	fileId: null,
+	url: null
 };
 
 export const createViewFormState = hookstate({});

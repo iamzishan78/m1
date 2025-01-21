@@ -7,7 +7,7 @@ describe('Agreement Uploader Spec', () => {
 	it('passes', () => {
 		cy.viewport(1400, 900);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/land/agreements');
 
 		cy.checkAndLogin();

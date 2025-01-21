@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import TextField from '@material-ui/core/TextField';
-import { useMutation } from '@apollo/client';
-import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
-import { UPDATE_CONTACT_PURCHASE_DATA } from 'graphQL/useMutationContactPurchaseData';
-import { UPDATEMELISSA, UPDATEMELISSAADDRESS } from 'graphQL/useMutationUpdateMelissaRecords';
+
+import { Typography, Grid } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { AppContext } from 'AppContext';
-import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
-import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
-import MergeHistory from 'components/ContactDetailCard/components/FieldContent/MergeHistory';
+import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { get } from 'lodash';
+import loadashFilter from 'lodash/filter';
+
+import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import CopyPurchaseInfo from 'components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo';
 import {
 	textFieldLabels,
@@ -17,25 +20,29 @@ import {
 	FieldTypes,
 	outcomeOptions,
 } from 'components/ContactDetailCard/components/FieldContent/helper';
+import MergeHistory from 'components/ContactDetailCard/components/FieldContent/MergeHistory';
+import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import { timeZoneOptions } from './timeZoneList';
-import { useLazyQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Grid } from '@material-ui/core';
-import loadashFilter from 'lodash/filter';
-import { get } from 'lodash';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
-import EntityType from './EntityType';
-import CampaignField from './CampaignField';
-import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
-import AutoCompleteAddNewField from './AutoCompleteAddNewField';
-import Link from '@material-ui/core/Link';
-import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
+import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
+import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
 import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+
+import { UPDATE_CONTACT_PURCHASE_DATA } from 'graphQL/useMutationContactPurchaseData';
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
+import { UPDATEMELISSA, UPDATEMELISSAADDRESS } from 'graphQL/useMutationUpdateMelissaRecords';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+
+import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
+
+import AutoCompleteAddNewField from './AutoCompleteAddNewField';
+import CampaignField from './CampaignField';
+import EntityType from './EntityType';
+import { timeZoneOptions } from './timeZoneList';
+import { formatDate } from 'components/Shared/functions';
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -59,7 +66,6 @@ export default function FieldContent({
 	row,
 	handleQuickActionActivity,
 	metafields,
-	...props
 }) {
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 	const [edit, setEdit] = useState(null);
@@ -127,7 +133,6 @@ export default function FieldContent({
 
 	useEffect(() => {
 		editContent.ownerType && handleUpdating();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [editContent.ownerType]);
 
 	useEffect(() => {
@@ -137,10 +142,10 @@ export default function FieldContent({
 				fieldName = key;
 				break;
 			}
-			if (document.getElementById('fieldContentInput' + fieldName))
+			if (document.getElementById('fieldContentInput' + fieldName)) {
 				document.getElementById('fieldContentInput' + fieldName).focus();
+			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [edit]);
 
 	const getOrganizedContent = () => {
@@ -162,8 +167,12 @@ export default function FieldContent({
 				} else if (key === 'jobTitle') {
 					textArray = [[textArray.join(', '), showContent[key]].join(' - ')];
 				} else if (key === 'contactOwner' || key === 'contactOwnerId') {
-					if (key === 'contactOwner') textArray.push(showContent[key] || '');
-				} else textArray.push(showContent[key]);
+					if (key === 'contactOwner') {
+						textArray.push(showContent[key] || '');
+					}
+				} else {
+					textArray.push(showContent[key]);
+				}
 			}
 		}
 
@@ -175,7 +184,9 @@ export default function FieldContent({
 		e.preventDefault();
 		if (isCopy) {
 			navigator.clipboard.writeText(getOrganizedContent() || '');
-		} else setEdit(!edit ? e.currentTarget : null);
+		} else {
+			setEdit(!edit ? e.currentTarget : null);
+		}
 	};
 
 	const keyDownHandler = (event, fieldNames) => {
@@ -199,7 +210,9 @@ export default function FieldContent({
 		fieldNames.forEach(field => (fields[field] = content[field]));
 		// Check if editContent exists and has more than one property, return if true
 		// if editContent has more than one property we don't need to close popup on blur
-		if (Object.keys(editContent || {})?.length > 1) return;
+		if (Object.keys(editContent || {})?.length > 1) {
+			return;
+		}
 
 		// Reset edit state and update editContent with field values
 		setEdit(null); // It closes popup on blur
@@ -235,7 +248,9 @@ export default function FieldContent({
 				lastUpdateBy: stateApp.user.mongoId,
 			};
 
-			if (entity) trimmedEditContent.entity = entity;
+			if (entity) {
+				trimmedEditContent.entity = entity;
+			}
 			let differences = false;
 			for (const field in editContent) {
 				const value = val ? val : editContent[field];
@@ -247,7 +262,9 @@ export default function FieldContent({
 					} else {
 						trimmedEditContent[field] = typeof value === 'string' ? value.trim() : value;
 					}
-					if (trimmedEditContent[field] !== content[field]) differences = true;
+					if (trimmedEditContent[field] !== content[field]) {
+						differences = true;
+					}
 				}
 			}
 
@@ -268,7 +285,7 @@ export default function FieldContent({
 						},
 						refetchQueries: ['getPaginatedContacts', 'getContact', 'getparcelOwners'],
 						awaitRefetchQueries: false,
-					}).then(res => {
+					}).then(() => {
 						let entries = Object.entries(editContent);
 						entries.forEach(entry => {
 							content = { ...content, [entry[0]]: entry[1] };
@@ -292,7 +309,7 @@ export default function FieldContent({
 				},
 				refetchQueries: ['getLastMelissaRecord'],
 				awaitRefetchQueries: true,
-			}).then(res => {
+			}).then(() => {
 				setIsCurEdited(true);
 				let entries = Object.entries(editContent);
 				entries.forEach(entry => {
@@ -314,7 +331,7 @@ export default function FieldContent({
 				},
 				refetchQueries: ['getLastMelissaRecord'],
 				awaitRefetchQueries: true,
-			}).then(res => {
+			}).then(() => {
 				setIsCurEdited(true);
 				let entries = Object.entries(editContent);
 				entries.forEach(entry => {
@@ -327,11 +344,18 @@ export default function FieldContent({
 		setEdit(null);
 	};
 
+	const formatFieldValue = (val, metaField) => {
+		if (metaField?.type === 'date') {
+			return formatDate(val);
+		}
+		return val;
+	};
+
 	let inputsArray = [];
 	if (edit) {
 		for (const fieldName in editContent) {
 			if (fieldName === 'contactOwner' || fieldName === 'contactOwnerId') {
-				if (fieldName === 'contactOwner')
+				if (fieldName === 'contactOwner') {
 					inputsArray.push(
 						<ContactAutoComplete
 							value={editContent.contactOwnerId ? editContent.contactOwnerId : ''}
@@ -342,6 +366,7 @@ export default function FieldContent({
 							onBlur={() => onBlurHandler(['contactOwner', 'contactOwnerId'])}
 						/>
 					);
+				}
 			} else if (editContent.hasOwnProperty(fieldName)) {
 				const metaField = metafields ? metafields.find(meta => meta?.esKey === fieldName) : null;
 				inputsArray.push(
@@ -456,6 +481,32 @@ export default function FieldContent({
 								handleUpdating(value);
 							}}
 						/>
+					) : fieldName.startsWith('custom_data') && metaField?.type === 'date' ? (
+						<>
+							<TextField
+								key={'fieldContentInput' + fieldName}
+								id={'fieldContentInput' + fieldName}
+								data-testid={fieldName}
+								className={classes.editTextField}
+								variant="outlined"
+								size="small"
+								autoComplete="nope"
+								fullWidth
+								label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+								multiline={false} // For date fields, multiline should be false
+								type="date" // Use date type for date picker
+								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+								onChange={e => {
+									e.persist();
+									setEditContent(editContent => ({
+										...editContent,
+										[fieldName]: e.target.value, // Ensure value is in YYYY-MM-DD format
+									}));
+								}}
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+								onBlur={() => onBlurHandler([fieldName])}
+							/>
+						</>
 					) : fieldName === 'ownerType' ? (
 						<EntityType
 							className={classes.maxWidth}
@@ -555,63 +606,74 @@ export default function FieldContent({
 			onBlur={() => onBlurHandler(['campaigns'])}
 		/>
 	) : (
-		<span>
-			{childrenLeft && !onlyChildren && children ? children : ''}
-			{/* Wrap the contact details tab title inside span to fix it position */}
-			<span
-				style={{
-					marginTop: '4px',
-					display: 'inline-block',
-				}}
-			>
-				{textArray.length > 0
-					? onlyChildren
-						? children
-							? children
-							: ''
-						: textArray.join(', ')
-					: `${name ? name + ' ' : ''} Not Available`}{' '}
-			</span>
-			{!onlyChildren && !disabled && (
-				<PencilEditIcon
-					handleUpdating={handleUpdating}
-					anchorEl={edit}
-					setAnchorEl={setEdit}
-					content={inputsArray}
-					onClick={handleEditClick}
-					isCopy={true}
-					setEditContent={setEditContent}
-					editContent={content}
-					row={row}
-					handleQuickActionActivity={handleQuickActionActivity}
-				/>
-			)}
-			{fieldType === FieldTypes.Contact && isMerged && (
-				<MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
-			)}
-			{isPurchased && (
-				<CopyPurchaseInfo
-					updateContact={updateContact}
-					userId={stateApp.user.mongoId}
-					content={content}
-					contactId={id}
-				/>
-			)}
-			{textArray.length > 0 && name === 'Address' ? ( // show google map and zillow icon when address exists
-				<>
-					<Link onClick={() => window.open(getAddressUrl(content), '_blank')}>
-						<GoogleMapIcon />
-					</Link>
-					<Link onClick={() => window.open(getZillowAddressUrl(content), '_blank')}>
-						<ZillowIcon />
-					</Link>
-				</>
-			) : (
-				''
-			)}
-			{!childrenLeft && !onlyChildren && children ? children : ''}
-			{isCurEdited ? ' (edited)' : ''}
-		</span>
+		(() => {
+			// Find the metafield object with an eskey matching a key in content
+			const metaField = metafields
+				? metafields.find(metafield => {
+						return Object.keys(content).includes(metafield.esKey);
+					})
+				: null;
+
+			return (
+				<span>
+					{childrenLeft && !onlyChildren && children ? children : ''}
+					{/* Wrap the contact details tab title inside span to fix it position */}
+					<span
+						style={{
+							marginTop: '4px',
+							display: 'inline-block',
+						}}
+					>
+						{textArray.length > 0
+							? onlyChildren
+								? children
+									? children
+									: ''
+								: formatFieldValue(textArray.join(', '), metaField)
+							: `${name ? name + ' ' : ''} Not Available`}{' '}
+					</span>
+					{!onlyChildren && !disabled && (
+						<PencilEditIcon
+							handleUpdating={handleUpdating}
+							anchorEl={edit}
+							setAnchorEl={setEdit}
+							content={inputsArray}
+							onClick={handleEditClick}
+							isCopy={true}
+							setEditContent={setEditContent}
+							editContent={content}
+							row={row}
+							handleQuickActionActivity={handleQuickActionActivity}
+						/>
+					)}
+					{fieldType === FieldTypes.Contact && isMerged && (
+						<MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
+					)}
+					{isPurchased && (
+						<CopyPurchaseInfo
+							updateContact={updateContact}
+							userId={stateApp.user.mongoId}
+							content={content}
+							contactId={id}
+						/>
+					)}
+					{textArray.length > 0 && name === 'Address' ? ( // show google map and zillow icon when address exists
+						<>
+							<Link onClick={() => window.open(getAddressUrl(content), '_blank')}>
+								<GoogleMapIcon />
+							</Link>
+							<Link onClick={() => window.open(getZillowAddressUrl(content), '_blank')}>
+								<ZillowIcon />
+							</Link>
+						</>
+					) : (
+						''
+					)}
+					{!childrenLeft && !onlyChildren && children ? children : ''}
+					{isCurEdited ? ' (edited)' : ''}
+				</span>
+			);
+		})()
 	);
 
 	return (
@@ -690,15 +752,19 @@ export const Status = ({ setDocumentType, value, options, ...other }) => {
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
-			getOptionSelected={(option, value) => {
+			getOptionSelected={option => {
 				return option?._id === search;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
-					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				if (option._id === 'newEntity') {
+					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -731,8 +797,11 @@ export const Status = ({ setDocumentType, value, options, ...other }) => {
 			}}
 			onChange={(event, newValue) => {
 				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') setDocumentType(newValue);
-					else setDocumentType({ _id: 'newEntity', name: newValue.name });
+					if (newValue._id !== 'newEntity') {
+						setDocumentType(newValue);
+					} else {
+						setDocumentType({ _id: 'newEntity', name: newValue.name });
+					}
 				} else {
 					setSearch('');
 					setDocumentType({ _id: '', name: '' });

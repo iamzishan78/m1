@@ -1,14 +1,17 @@
-import { Grid, IconButton, InputAdornment, MenuItem, Select, makeStyles } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
-import NumberField from 'components/Shared/components/Fields/NumberField';
-import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
-import { get } from 'lodash';
 import React, { Fragment, useState } from 'react';
 import { Controller } from 'react-hook-form';
-import DateField from 'components/Shared/components/Fields/DateField';
 
-const useStyles = makeStyles(theme => ({
+import { Grid, IconButton, InputAdornment, MenuItem, Select, makeStyles } from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
+
+import { get } from 'lodash';
+
+import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
+import DateField from 'components/Shared/components/Fields/DateField';
+import NumberField from 'components/Shared/components/Fields/NumberField';
+
+const useStyles = makeStyles(() => ({
 	text: {
 		'& div': {
 			paddingRight: 0,
@@ -21,7 +24,9 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 
 	const [isHovered, setIsHovered] = useState(false);
 
-	if (!fields || fields.length === 0) return null;
+	if (!fields || fields.length === 0) {
+		return null;
+	}
 
 	return fields.map((field, index) => {
 		const fieldKey = (field.key || field.esKey).replaceAll('.keyword', '');

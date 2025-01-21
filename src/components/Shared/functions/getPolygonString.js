@@ -14,7 +14,9 @@ export const getPolygonString = feature => {
 					});
 				});
 				polygonString += '))';
-				if (index !== feature.geometry.coordinates.length - 1) polygonString += ',';
+				if (index !== feature.geometry.coordinates.length - 1) {
+					polygonString += ',';
+				}
 			});
 			polygonString += ')';
 		} else {

@@ -1,8 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
+
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import OwnershipIcon from './components/svgIcons/OwnershipIcon';
+
 import { AppContext } from '../../AppContext';
+import OwnershipIcon from './components/svgIcons/OwnershipIcon';
 
 const useStyles = makeStyles(theme => ({
 	iconContainer: {

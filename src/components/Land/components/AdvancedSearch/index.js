@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+
 import { Box, TextField } from '@mui/material';
+
+import { tableGlobalController } from 'hookstate/tableController';
 
 import IndexAutoCompleteFilter from './IndexAutoCompleteFilter';
 import Result from './Result';
-import { tableGlobalController } from 'hookstate/tableController';
 
 const AdvancedSearch = () => {
 	const [indices, setIndices] = useState([]);

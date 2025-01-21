@@ -1,59 +1,52 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { NavigationContext } from './NavigationContext';
-// contexts
-import { AppContext } from 'AppContext';
-
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import clsx from 'clsx';
 
-//3rd party packages
-import PropTypes from 'prop-types';
-
-//@material-ui components
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import CardHeader from '@material-ui/core/CardHeader';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { contactManagementRoutes } from 'utils/data';
-import SupportCenterModal from './components/SupportCenter';
-import { useStyles } from './Common';
-
-//icons
-import HeadsetIcon from '@material-ui/icons/Headset';
-import DesktopWindowsIcon from '@material-ui/icons/DesktopWindows';
-
-import DealSearch from './components/DealSearch';
-import SearchBarWithToggleButton from './components/SearchBarWithToggleButton';
-
-import ContactFormModal from './components/ContactFormModal';
-import { useSelector } from 'react-redux';
-
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import Add from '@material-ui/icons/Add';
+import DesktopWindowsIcon from '@material-ui/icons/DesktopWindows';
+import HeadsetIcon from '@material-ui/icons/Headset';
 
-import ActivitySearch from './components/ActivitySearch';
-import ActivityDashboardSearch from './components/ActivityDashboardSearch';
-import DocumentSearch from './components/DocumentSearch';
-import AnalyticsSearch from './components/AnalyticsSearch';
-import ContactSearch from './components/ContactSearch';
-import ContactBreadcrumbs from './components/ContactBreadcrumbs';
-import SideNavigation from './SideNavigation';
-import ProfileMenu from 'components/Profile/ProfileMenu';
+import clsx from 'clsx';
+import PropTypes from 'prop-types';
 
-// App Bars
-import LandAppBar from './AppBar/Land';
-import RevenueAppBar from 'components/Navigation/AppBar/Revenue';
 import AdminSettingsAppBar from 'components/Navigation/AppBar/AdminSettings';
+import RevenueAppBar from 'components/Navigation/AppBar/Revenue';
+import ProfileMenu from 'components/Profile/ProfileMenu';
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
+
 import { navController } from 'hookstate/navStateController';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
+
+import { contactManagementRoutes } from 'utils/data';
+
+import { AppContext } from 'AppContext';
+
+import DataAppBar from './AppBar/DataAppBar';
+import LandAppBar from './AppBar/Land';
+import { useStyles } from './Common';
+import ActivityDashboardSearch from './components/ActivityDashboardSearch';
+import ActivitySearch from './components/ActivitySearch';
+import AnalyticsSearch from './components/AnalyticsSearch';
+import ContactBreadcrumbs from './components/ContactBreadcrumbs';
+import ContactFormModal from './components/ContactFormModal';
+import ContactSearch from './components/ContactSearch';
+import DealSearch from './components/DealSearch';
+import DocumentSearch from './components/DocumentSearch';
+import SearchBarWithToggleButton from './components/SearchBarWithToggleButton';
+import SupportCenterModal from './components/SupportCenter';
+import SideNavigation from './SideNavigation';
+import { NavigationContext } from './NavigationContext';
 
 const TabPanel = props => {
 	const { children, value, index, ...other } = props;
@@ -79,11 +72,8 @@ TabPanel.propTypes = {
 };
 
 export default function Navigation(props) {
-	const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
-
-	// contexts
-	const [stateApp, setStateApp] = useContext(AppContext);
-	const [stateNav, setStateNav] = useContext(NavigationContext);
+	const [stateApp] = useContext(AppContext);
+	const [, setStateNav] = useContext(NavigationContext);
 
 	const [openSupportCenter, setOpenSupportCenter] = useState(false);
 	const [openContactForm, setOpenContactForm] = useState(false);
@@ -97,12 +87,13 @@ export default function Navigation(props) {
 	let history = useHistory();
 	let location = useLocation();
 	const classes = useStyles({
-		mapGridCardActivated,
 		user: stateApp.user,
 		// Determine if the component is rendered on the map page based on location pathname and props
 		isMap: location.pathname === '/' || location.pathname.startsWith('/map/') || props.isMap,
 		isCalendar: location.pathname.startsWith('/calendar'),
 	});
+
+	const isCustomAssetDetailPage = /^\/land\/customAsset\/[^/]+\/details/.test(location.pathname);
 
 	useEffect(() => {
 		Object.values(ROUTES).forEach(value => {
@@ -140,8 +131,11 @@ export default function Navigation(props) {
 		} else {
 			setMatchFind(false); // Set matchFind to false if component is not on the map page
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [location.pathname]);
+	}, [location.pathname, props.isMap]);
+
+	const handleDrawerClose = () => {
+		setOpenDrawer(false);
+	};
 
 	const handleListItemClick = path => {
 		history.push(path);
@@ -156,10 +150,6 @@ export default function Navigation(props) {
 		setOpenDrawer(false);
 		setSupportDrawer(false);
 		setOpenSupportCenter(true);
-	};
-
-	const handleDrawerClose = () => {
-		setOpenDrawer(false);
 	};
 
 	const handleOpenContactForm = () => {
@@ -178,23 +168,13 @@ export default function Navigation(props) {
 			location.pathname.startsWith('/revenue/property/details') ||
 			location.pathname.startsWith('/analytics/property/details') ||
 			location.pathname.startsWith('/land/agreement/details') ||
-			location.pathname.startsWith('/contacts/campaign/details')
+			location.pathname.startsWith('/contacts/campaign/details') ||
+			isCustomAssetDetailPage
 		) {
 			return true;
 		}
 		return false;
 	};
-
-	// const checkIfShowBackgroundOnHeader = () => {
-	//   if (location.pathname.startsWith("/revenue/statements") || location.pathname.startsWith("/revenue/properties")) {
-	//     return true;
-	//   }
-	//   return false;
-	// };
-
-	// const matchAgreements = () => {
-	//   return location.pathname === "/landmanagement/agreements";
-	// };
 
 	return (
 		<div className={classes.root}>
@@ -227,7 +207,7 @@ export default function Navigation(props) {
 									<ActivityDashboardSearch showLabel={location.pathname === '/contacts/activityDashboard'} />
 								</>
 							)}
-							{location.pathname === '/documents' && (
+							{location.pathname.startsWith('/documents') && (
 								<>
 									<DocumentSearch />
 								</>
@@ -262,6 +242,9 @@ export default function Navigation(props) {
 							{location.pathname.startsWith('/land') && <LandAppBar classes={classes} user={stateApp.user} />}
 							{location.pathname.startsWith('/revenue') && <RevenueAppBar classes={classes} />}
 							{location.pathname.startsWith('/admin') && <AdminSettingsAppBar />}
+
+							{location.pathname.startsWith('/data') && <DataAppBar />}
+
 							{matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 							{(matchFind || matchDocument) && (
 								<div className={classes.search} id="searchBarDivParent">
@@ -302,9 +285,6 @@ export default function Navigation(props) {
 			{stateApp.user && (
 				<SideNavigation
 					openDrawer={openDrawer}
-					stateNav={stateNav}
-					setStateNav={setStateNav}
-					setStateApp={setStateApp}
 					handleListItemClick={handleListItemClick}
 					handleDrawerClose={handleDrawerClose}
 					handleDrawerOpen={handleDrawerOpen}
@@ -349,3 +329,8 @@ export default function Navigation(props) {
 		</div>
 	);
 }
+
+Navigation.propTypes = {
+	children: PropTypes.node.isRequired, // Ensures `children` is a valid React node and required
+	isMap: PropTypes.bool,
+};

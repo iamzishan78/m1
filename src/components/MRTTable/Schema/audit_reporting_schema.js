@@ -1,6 +1,10 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
+
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 const esIndex = 'contacts_flat';
 const useStyles = makeStyles(() => ({
@@ -34,7 +38,7 @@ const AuditReportingMeta = {
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 			header: 'M1neral Contact System ID',
 			isHiddenFieldExport: true,
 		},
@@ -42,7 +46,7 @@ const AuditReportingMeta = {
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorKey: 'name',
+			id: 'name',
 			header: 'Entity Name ',
 			size: 450,
 			Cell: ({ renderedCellValue, row }) => {
@@ -67,10 +71,10 @@ const AuditReportingMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
-			accessorKey: 'entityType.keyword',
+			...CommonSchema.STRING_COLUMN,
+			id: 'entityType.keyword',
 			header: 'Entity Type',
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ renderedCellValue }) => {
 				renderedCellValue = 'contacts';
 				return (
 					<div

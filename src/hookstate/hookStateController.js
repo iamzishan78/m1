@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 import { useHookstate } from '@hookstate/core';
 
 const statesHelper = (keys, keysVal, stateValuesKey = 'stateValues') => {
@@ -218,4 +219,5 @@ export const hookStateController = (state, initialState) => ({
 		});
 		return keysValue;
 	},
+	getAllValues: () => state.get({ noproxy: true }), // used by functions or any thing that don't require a re render to get a value from state
 });

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext, Component } from 'react';
-import { Link } from 'react-router-dom';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import EmailSuccess from './EmailSuccess';
-import { fade, ThemeProvider, withStyles, makeStyles, createTheme } from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
+import { Link } from 'react-router-dom';
+
 import { Card, Button } from '@material-ui/core';
+import InputBase from '@material-ui/core/InputBase';
 import Paper from '@material-ui/core/Paper';
+import { fade, ThemeProvider, withStyles, makeStyles, createTheme } from '@material-ui/core/styles';
+
+import EmailSuccess from './EmailSuccess';
 import { AppContext } from '../../AppContext';
 
 const useStyles = makeStyles(theme => ({

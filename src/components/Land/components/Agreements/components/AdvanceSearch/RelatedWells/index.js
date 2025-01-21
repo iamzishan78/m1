@@ -1,12 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import FormControl from '@material-ui/core/FormControl';
-import debounce from 'lodash/debounce';
-import { copy } from 'components/Shared/functions';
 
-import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+
+import debounce from 'lodash/debounce';
+
+import { copy } from 'components/Shared/functions';
+import { AutoCompleteFilter } from 'components/Common/AutoCompleteFilter';
+
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { AppContext } from 'AppContext';
 
@@ -79,7 +82,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 		},
 		index,
 		onChange,
-		query: GET_ES_SIMPLE_FILTER,
+		query: GET_DB_FILTERS,
 		searchFields: filter.searchFields,
 		filters: [
 			{ field: 'shapeJson.properties.type.keyword', value: 'agreement' },
@@ -88,7 +91,9 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 		extendSearchQuery: '',
 		custom: filter.custom,
 	};
-	if (filter.getOptionLabel) params['getOptionLabel'] = filter.getOptionLabel;
+	if (filter.getOptionLabel) {
+		params['getOptionLabel'] = filter.getOptionLabel;
+	}
 	return (
 		<FormControl variant="outlined" className={classes.formControl}>
 			<AutoCompleteFilter {...params} />
@@ -114,9 +119,13 @@ export default function RelatedWellsFilters(props) {
 				const { filterKey } = callback;
 				const landWellssFilters = [...stateApp.landSearchFilters?.relatedWells];
 				const _index = landWellssFilters.findIndex(f => f.field === filterKey);
-				if (_index === -1 && request[0] !== null) landWellssFilters.push({ field: filterKey, value: request[0] });
-				else if (request.length > 0 && request[0] !== null) landWellssFilters[_index].value = request[0];
-				else if (_index !== -1) landWellssFilters.splice(_index, 1);
+				if (_index === -1 && request[0] !== null) {
+					landWellssFilters.push({ field: filterKey, value: request[0] });
+				} else if (request.length > 0 && request[0] !== null) {
+					landWellssFilters[_index].value = request[0];
+				} else if (_index !== -1) {
+					landWellssFilters.splice(_index, 1);
+				}
 				setStateApp(stateApp => ({
 					...stateApp,
 					landSearchFilters: { ...stateApp.landSearchFilters, relatedWells: landWellssFilters },
@@ -131,7 +140,9 @@ export default function RelatedWellsFilters(props) {
 		setFilterList(_filterList);
 
 		const _request = copy(request);
-		if (filter.customOnChange) _request[0] = filter.customOnChange(_request[0]);
+		if (filter.customOnChange) {
+			_request[0] = filter.customOnChange(_request[0]);
+		}
 		changeLandWells(_request, callback, index);
 	};
 

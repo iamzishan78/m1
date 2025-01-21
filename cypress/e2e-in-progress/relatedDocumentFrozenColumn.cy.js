@@ -9,7 +9,7 @@ describe('Related Document Frozen Column Spec', () => {
 
 		cy.viewport(1536, 960);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/land/agreements');
 
 		cy.checkAndLogin();
@@ -19,7 +19,7 @@ describe('Related Document Frozen Column Spec', () => {
 		cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
 			cy.getTableCell('Agreement', 1).then($row => {
 				cy.log('==== STEP: OPEN Agreement ====');
-				cy.interceptApiByIndex('getESSimpleSearch', 'documents_flat');
+				cy.interceptApiByIndex('getDbData', 'documents_flat');
 				cy.wrap($row).scrollIntoView().children().eq(1).children().children().children().click();
 
 				cy.get('.MuiTypography-root', { timeout: longTimeout }).contains('Summary').should('be.visible');
@@ -32,7 +32,7 @@ describe('Related Document Frozen Column Spec', () => {
 				cy.log('==== STEP: ADD DOCUMENT IF NONE ====');
 				cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(
 					relatedDocumentsResponse => {
-						let hits = relatedDocumentsResponse.response.body.data.getESSimpleSearch.hits;
+						let hits = relatedDocumentsResponse.response.body.data.getDbData.hits;
 						let documentName = 'sample.pdf';
 						if (hits && hits.length < 1) {
 							cy.log('==== STEP: ADDING DOCUMENT ====');
@@ -48,7 +48,9 @@ describe('Related Document Frozen Column Spec', () => {
 							cy.get('#saveDocumentButton', { timeout: longTimeout }).click();
 							cy.verifyApiResponse('@viewFilesApi', { responseTimeout: longTimeout });
 							cy.verifyApiResponse('@AddDescriptorFileApi', { responseTimeout: longTimeout });
-						} else documentName = hits[0].name;
+						} else {
+							documentName = hits[0].name;
+						}
 
 						cy.log('==== STEP: GET TABLE CELL FILE NAME ====');
 						cy.get('#addRelatedDcmnButton').scrollIntoView();

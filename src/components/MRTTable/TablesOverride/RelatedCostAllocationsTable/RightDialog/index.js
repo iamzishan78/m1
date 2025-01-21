@@ -1,10 +1,14 @@
 import React from 'react';
-import { detailCardController } from 'hookstate/detailCardController';
-import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
-import { tableGlobalController } from 'hookstate/tableController';
+
 import { useMutation } from '@apollo/client';
-import { ADD_PAYMENT_PROPERTY_DESCRIPTOR } from 'graphQL/useMutationAddPaymentContactDescriptor';
 import { toNumber } from 'lodash';
+
+import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
+
+import { ADD_PAYMENT_PROPERTY_DESCRIPTOR } from 'graphQL/useMutationAddPaymentContactDescriptor';
+
+import { detailCardController } from 'hookstate/detailCardController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 // This component is used in the RelatedPayeesTable component for the toolbar
 export const CostAllocationRightDialog = () => {
@@ -17,7 +21,7 @@ export const CostAllocationRightDialog = () => {
 	const { paymentId } = paymentMultiGrid || {};
 
 	const [addPaymentPropertyDescriptor] = useMutation(ADD_PAYMENT_PROPERTY_DESCRIPTOR, {
-		refetchQueries: ['getESSimpleSearch', 'getAgreementPaymentSummary'],
+		refetchQueries: ['getDbData', 'getAgreementPaymentSummary'],
 		awaitRefetchQueries: true,
 	});
 

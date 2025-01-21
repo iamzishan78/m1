@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
-import { TextField, Grid, Avatar, InputAdornment } from '@material-ui/core';
+import { TextField, Grid, Avatar, InputAdornment, CircularProgress } from '@material-ui/core';
 import { useLazyQuery } from '@apollo/client';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 import { getRandomColor } from 'components/Shared/functions/ui';
+import { detailCardController } from 'hookstate/detailCardController';
 
 const useStyles = makeStyles(theme => ({
 	gridStyle: {
@@ -13,39 +14,16 @@ const useStyles = makeStyles(theme => ({
 		flexDirection: 'row',
 		alignItems: 'center',
 	},
-	dealOwnerRoot: {
-		border: '1px solid #EBEBEB',
-		'&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
-			paddingLeft: 26,
-		},
-
-		'& .MuiOutlinedInput-notchedOutline': {
-			border: 0,
-		},
-		'&:hover.MuiOutlinedInput-root': {
-			backgroundColor: '#EBEBEB',
-		},
-		'&:hover .MuiAutocomplete-popupIndicator': {
-			visibility: 'visible',
-			padding: '2px',
-			marginRight: '-2px',
-		},
-	},
-	dealOwnerRootFocused: {
-		'& .MuiOutlinedInput-notchedOutline': {
-			border: '1px solid black',
-		},
-	},
-	popupIndicator: {
-		visibility: 'hidden',
-		padding: '2px',
-		marginRight: '-2px',
-		'&:hover': {
-			visibility: 'visible',
-		},
-	},
 	inputFieldOwner: {
-		marginBottom: '7px',
+		'& .MuiFormControl-marginNormal': {
+			margin: '0px',
+		},
+		'& .MuiFormControl-marginDense': {
+			margin: '0px',
+		},
+		'& .MuiInputBase-root': {
+			borderRadius: '7px',
+		},
 	},
 	dealOwnerAvatar: {
 		width: theme.spacing(3),
@@ -54,23 +32,32 @@ const useStyles = makeStyles(theme => ({
 		fontSize: '0.6rem',
 		backgroundColor: '#4880F6',
 		padding: '0.5em',
+		'&:hover': {
+			cursor: 'pointer',
+			opacity: 0.85,
+		},
 	},
 	dealOwnerLabel: {
-		marginLeft: 4,
+		fontWeight: 'bold',
+		fontSize: '15px',
 	},
 }));
 
 const UsersListWithIcon = ({
+	field,
 	label,
 	placeholder,
 	selectedUserId,
 	onChangeUser,
-	onBlur,
 	labelSize = 3,
 	fieldSize = 9,
 }) => {
 	const classes = useStyles();
 	const [users, setUsers] = useState([]);
+
+	const {
+		stateValues: { loadingField },
+	} = detailCardController.useState(['loadingField']);
 
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
 		fetchPolicy: 'no-cache',
@@ -96,25 +83,17 @@ const UsersListWithIcon = ({
 		<Grid container className={classes.gridStyle}>
 			{label && (
 				<Grid item xs={labelSize}>
-					<div>{label}</div>
+					<div className={classes.dealOwnerLabel}>{label}</div>
 				</Grid>
 			)}
-			<Grid item xs={`${label ? fieldSize : fieldSize + labelSize}`}>
+			<Grid item xs={fieldSize} style={{ maxWidth: '100%', flex: '1' }}>
 				<Autocomplete
 					id="userList"
 					options={users.filter(u => u.text)}
-					onBlur={() => {
-						if (onBlur) onBlur();
-					}}
 					onChange={(e, user) => onChangeUser(user)}
 					value={users.find(user => user?.value === selectedUserId) || null}
 					getOptionLabel={option => option.text}
 					getOptionSelected={option => option.value === selectedUserId}
-					classes={{
-						inputRoot: classes.dealOwnerRoot,
-						focused: classes.dealOwnerRootFocused,
-						popupIndicator: classes.popupIndicator,
-					}}
 					renderInput={params => (
 						<TextField
 							margin="dense"
@@ -162,6 +141,12 @@ const UsersListWithIcon = ({
 										</InputAdornment>
 										{params.InputProps.startAdornment}
 									</>
+								),
+								endAdornment: (
+									<React.Fragment>
+										{params.InputProps.endAdornment}
+										{loadingField && loadingField === field?.key && <CircularProgress size={22} color="secondary" />}
+									</React.Fragment>
 								),
 							}}
 						/>

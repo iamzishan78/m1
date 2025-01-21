@@ -1,9 +1,12 @@
-import UnitIcon from 'components/Shared/svgIcons/unit';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import ListChips from 'components/Common/ListChips';
-import { CommonSchema } from './common_schema';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import UnitIcon from 'components/Shared/svgIcons/unit';
+
+import { CommonSchema } from './common_schema';
 import ContactNameLink from '../Common/TableCells/ContactNameLink';
 
 const esIndex = 'shapeowners_flat';
@@ -52,295 +55,266 @@ const UnitInterestMeta = {
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.HIDDEN,
 			name: 'contact._id.keyword',
-			accessorKey: 'contact._id',
+			id: 'contact._id',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'contact.entityDetail.name.keyword',
-			accessorKey: 'contact.entityDetail.name',
+			id: 'contact.entityDetail.name',
 			header: 'Contact Name',
 			size: 500,
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <ContactNameLink contact={row?.original?.contact} />;
 			},
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.currentAddress.keyword',
-			accessorKey: 'contact.entityDetail.currentAddress',
+			id: 'contact.entityDetail.currentAddress',
 			header: 'Current Address',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.primaryAddress.keyword',
-			accessorKey: 'contact.entityDetail.primaryAddress',
+			id: 'contact.entityDetail.primaryAddress',
 			header: 'Primary Address - Full',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.address1.keyword',
-			accessorKey: 'contact.entityDetail.address1',
+			id: 'contact.entityDetail.address1',
 			header: 'Primary Address 1',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.address2.keyword',
-			accessorKey: 'contact.entityDetail.address2',
+			id: 'contact.entityDetail.address2',
 			header: 'Primary Address 2',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.city.keyword',
-			accessorKey: 'contact.entityDetail.city',
+			id: 'contact.entityDetail.city',
 			header: 'Primary Address City',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.state.keyword',
-			accessorKey: 'contact.entityDetail.state',
+			id: 'contact.entityDetail.state',
 			header: 'Primary Address State',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.zip.keyword',
-			accessorKey: 'contact.entityDetail.zip',
+			id: 'contact.entityDetail.zip',
 			header: 'Primary Address Zip Code',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.uName.keyword',
-			accessorKey: 'shape.shapeJson.properties.uName',
+			id: 'shape.shapeJson.properties.uName',
 			header: 'Unit Name',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.uNumber.keyword',
-			accessorKey: 'shape.shapeJson.properties.uNumber',
+			id: 'shape.shapeJson.properties.uNumber',
 			header: 'Unit #',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.State.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.State',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.State,
 			header: 'State',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.County',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.County,
 			header: 'County',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.surveyMerdian.keyword',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.surveyMerdian,
 			id: 'shape.shapeJson.properties.originalProperties.surveyMerdian',
 			header: 'Survey/ Meridian',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.blockTownship.keyword',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.blockTownship,
 			id: 'shape.shapeJson.properties.originalProperties.blockTownship',
 			header: 'Block/ Township',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.rangeSection.keyword',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.rangeSection,
 			id: 'shape.shapeJson.properties.originalProperties.rangeSection',
 			header: 'Section/ Range',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.abstractNameShortName.keyword',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.abstractNameShortName,
 			id: 'shape.shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.uAcres.keyword',
-			accessorKey: 'shape.shapeJson.properties.uAcres',
+			id: 'shape.shapeJson.properties.uAcres',
 			header: 'Unit Acres',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'unitTractId.keyword',
-			accessorKey: 'unitTractId',
+			id: 'unitTractId',
 			header: 'Unit Tract ID',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tractAcres',
-			accessorKey: 'tractAcres',
+			id: 'tractAcres',
 			header: 'Unit Tract Acres',
 			isSearchField: false,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'working_interest',
-			accessorKey: 'working_interest',
+			id: 'working_interest',
 			header: 'WI',
 			isSearchField: false,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'royalty_interest',
-			accessorKey: 'royalty_interest',
+			id: 'royalty_interest',
 			header: 'RI',
 			isSearchField: false,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'orri',
-			accessorKey: 'orri',
+			id: 'orri',
 			header: 'ORRI',
 			isSearchField: false,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'nri',
-			accessorKey: 'nri',
+			id: 'nri',
 			header: 'NRI',
 			isSearchField: false,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'net_acres',
-			accessorKey: 'net_acres',
+			id: 'net_acres',
 			header: 'Net Acres',
 			isSearchField: false,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'nra',
-			accessorKey: 'nra',
+			id: 'nra',
 			header: 'NRA',
 			isSearchField: false,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'offer_price',
-			accessorKey: 'offer_price',
+			id: 'offer_price',
 			header: 'Target Offer Price',
-			isSearchField: false,
-			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.offer_price, 2)}</p>;
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'uUnitPricingInterest',
-			accessorKey: 'uUnitPricingInterest',
+			id: 'uUnitPricingInterest',
 			header: 'Target Price/NRA',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.uUnitPricingInterest, 2)}</p>;
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'max_offer_price',
-			accessorKey: 'max_offer_price',
+			id: 'max_offer_price',
 			header: 'Max Offer Price',
-			isSearchField: false,
-			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.max_offer_price, 2)}</p>;
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'uMaxUnitPricingInterest',
-			accessorKey: 'uMaxUnitPricingInterest',
+			id: 'uMaxUnitPricingInterest',
 			header: 'Max Price/NRA',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.uMaxUnitPricingInterest, 2)}</p>;
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'actual_offer_price',
-			accessorKey: 'actual_offer_price',
+			id: 'actual_offer_price',
 			header: 'Actual Offer Price',
-			isSearchField: false,
-			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.actual_offer_price, 2)}</p>;
-			},
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.contactStatus.keyword',
-			accessorKey: 'contact.contactStatus',
+			id: 'contact.contactStatus',
 			header: 'Contact Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contactOwners.keyword',
-			accessorKey: 'contactOwners',
+			id: 'contactOwners',
 			header: 'Contact Owner',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.status.keyword',
-			accessorKey: 'contact.status',
+			id: 'contact.status',
 			header: 'Stage',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'campaigns',
-			accessorFn: row => row?.campaigns,
 			id: 'campaigns',
 			header: 'Campaigns',
 			Cell: ({ row }) => {
@@ -349,29 +323,29 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'campaignPriority.keyword',
-			accessorKey: 'campaignPriority',
+			id: 'campaignPriority',
 			header: 'Campaign Priority',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.reviewer.name.keyword',
-			accessorKey: 'shape.shapeJson.properties.reviewer.name',
+			id: 'shape.shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.qualifier.name.keyword',
-			accessorKey: 'shape.shapeJson.properties.qualifier.name',
+			id: 'shape.shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deals.name.keyword',
-			accessorKey: 'deals.name',
+			id: 'deals.name',
 			header: 'Associated Deals',
 			handleArrayExport: {
 				esType: 'collection',
@@ -397,16 +371,16 @@ const UnitInterestMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'dataSource.keyword',
-			accessorKey: 'dataSource',
+			id: 'dataSource',
 			header: 'Data Source',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'taxYear',
 			type: 'number',
-			accessorKey: 'taxYear',
+			id: 'taxYear',
 			header: 'Tax Year',
 			isSearchField: false,
 		},

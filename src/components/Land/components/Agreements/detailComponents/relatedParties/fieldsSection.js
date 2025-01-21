@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { v4 as uuid } from 'uuid';
 import { useHistory } from 'react-router-dom';
-import { useMutation } from '@apollo/client';
-import { useStyles as customStyles } from '../style';
-import { makeStyles } from '@material-ui/styles';
+
 import {
 	Grid,
 	Button,
@@ -22,15 +19,22 @@ import {
 import { DeleteOutline as DeleteIcon, MoreVert as MoreVertIcon } from '@material-ui/icons';
 import AddIcon from '@material-ui/icons/Add';
 import ChatIcon from '@material-ui/icons/Chat';
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
-import { copy } from 'utils/helper';
+import { makeStyles } from '@material-ui/styles';
 
-import Comments from 'components/Shared/Comments';
-import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
-import AutoComplete from 'components/Shared/components/Fields/AutoComplete';
+import { useMutation } from '@apollo/client';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import { v4 as uuid } from 'uuid';
+
 import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';
+import Comments from 'components/Shared/Comments';
+import AutoComplete from 'components/Shared/components/Fields/AutoComplete';
+import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 
 import { UPSERT_CONTACT_RELATED_AGREEMENT, UPSERT_RELATED_PARTY } from 'graphQL/useMutationRelatedParty';
+
+import { copy } from 'utils/helper';
+
+import { useStyles as customStyles } from '../style';
 
 const useStyles = makeStyles(theme => ({
 	icons: {
@@ -101,11 +105,15 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 					const index = fields.findIndex(f => f.id === party.id);
 					if (index !== -1) {
 						parties[index] = party;
-					} else parties.push(party);
+					} else {
+						parties.push(party);
+					}
 				}
 			});
 			parties = parties.filter(p => (relatedPartiesIds.includes(p.id) || p.id) && p.isDeleted !== true);
-			if (relatedParties.length === 0 && parties.length === 0) parties.push({ id: uuid() });
+			if (relatedParties.length === 0 && parties.length === 0) {
+				parties.push({ id: uuid() });
+			}
 			setFields(parties);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,9 +123,13 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 		if (relatedParties.length > 0) {
 			const types = copy(partyTypes);
 			relatedParties.forEach(party => {
-				if (party.type && !types.includes(party.type)) types.push(party.type);
+				if (party.type && !types.includes(party.type)) {
+					types.push(party.type);
+				}
 			});
-			if (types.length !== partyTypes.length) setPartyTypes(types);
+			if (types.length !== partyTypes.length) {
+				setPartyTypes(types);
+			}
 		}
 	}, [relatedParties]);
 
@@ -164,8 +176,9 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 											}
 										}}
 										renderOption={option => {
-											if (option.id === 'newEntity')
+											if (option.id === 'newEntity') {
 												return <Typography style={{ color: 'midnightblue' }}>Add '{option.value}'</Typography>;
+											}
 
 											return (
 												<Grid container spacing={0}>
@@ -347,6 +360,9 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 							targetSourceId={openCommentsDialog.targetSourceId}
 							targetLabel="contact"
 							refetchQueries={['getRelatedParties']}
+							placeholder={"Add a question or post an update"}
+							isSaveAllowed={true}
+							isHelperTextAllow={false}
 						/>
 					)}
 				</Dialog>

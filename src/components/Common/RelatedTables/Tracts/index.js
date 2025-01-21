@@ -1,9 +1,13 @@
 import React, { useContext, useMemo } from 'react';
+
 import { Container, Button, ButtonGroup } from '@material-ui/core';
-import { AppContext } from 'AppContext';
-import MRTTable from 'components/MRTTable';
+
+import AddAgreementOwnerAndTractDialog from 'components/Common/TableAddDialog/AddAgreementOwnerAndTractDialog';
 import { DrawerContext } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
-import AddAgreementOwnerAndTractDialog from 'components/Table/TableAddDialog/AddAgreementOwnerAndTractDialog';
+import MRTTable from 'components/MRTTable';
+
+import { AppContext } from 'AppContext';
+import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
 function RelatedTractsTable(props) {
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -32,26 +36,13 @@ function RelatedTractsTable(props) {
 			onClickedRow: onClickedRow,
 			CustomToolBar: () => {
 				return (
-					<ButtonGroup
-						variant="contained"
-						style={{ height: '30px', marginBottom: '8px' }}
-						color="primary"
-						aria-label="split button"
-					>
-						<Button
-							id="addRelatedDocumentButton"
-							size="small"
-							color="primary"
-							aria-label="select merge strategy"
-							aria-haspopup="menu"
-							onClick={() => {
-								setDrawer('relatedTract');
-								setStateApp(stateApp => ({ ...stateApp, selectedTract: null }));
-							}}
-						>
-							+ ADD TRACT
-						</Button>
-					</ButtonGroup>
+					<ToolbarButton
+						label={'+ ADD TRACT'}
+						onClick={() => {
+							setDrawer('relatedTract');
+							setStateApp(stateApp => ({ ...stateApp, selectedTract: null }));
+						}}
+					/>
 				);
 			},
 		}),

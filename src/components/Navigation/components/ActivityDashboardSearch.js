@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
-import { Grid, InputAdornment, TextField, Tooltip, IconButton } from '@material-ui/core';
-import { fade, makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 
+import { Grid, InputAdornment, TextField, Tooltip, IconButton } from '@material-ui/core';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
+import SearchIcon from '@material-ui/icons/Search';
+
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
 import { AppContext } from '../../../AppContext';

@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { AppContext } from 'AppContext';
-import AnalyticsCards from 'components/Revenue/components/Statements/AnalyticsCards';
-import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
 
 import { makeStyles } from '@material-ui/core/styles';
+
 import { useLazyQuery } from '@apollo/client';
-import { copy } from 'components/Shared/functions';
+
 import MRTTable from 'components/MRTTable';
+import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
+import AnalyticsCards from 'components/Revenue/components/Statements/AnalyticsCards';
+import { copy } from 'components/Shared/functions';
+
 import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+
 import { tableController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -71,7 +76,9 @@ export default function RevenueStatements() {
 	const setAnalyticFilters = (filter, status) => {
 		let filters = copy(esFilters);
 		filters = filters.filter(f => f.field !== filter.field);
-		if (status) filters.push(filter);
+		if (status) {
+			filters.push(filter);
+		}
 		setESFilters(filters);
 		setFilterToggle(!filterToggle);
 	};

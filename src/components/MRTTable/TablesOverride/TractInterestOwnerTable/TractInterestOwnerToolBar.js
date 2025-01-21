@@ -1,22 +1,27 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { useApolloClient } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
+
 import Button from '@material-ui/core/Button';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import { makeStyles } from '@material-ui/core/styles';
+
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { navController } from 'hookstate/navStateController';
-import TractInterestTableDialogs from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/RightDialogs';
-import { popupController } from 'hookstate/popupStateController';
+
+import { useApolloClient } from '@apollo/client';
+import PropTypes from 'prop-types';
+
 import {
 	BulkUpdate,
 	ViewContactData,
 	openSideDialog,
 	ExportData,
 } from 'components/MRTTable/Common/CommonToolBarActions';
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
+import TractInterestTableDialogs from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/RightDialogs';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
+
+import { navController } from 'hookstate/navStateController';
+import { popupController } from 'hookstate/popupStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -86,14 +91,14 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 				navController.updateState({
 					bulkUploadShape: null,
 					bulkUploadFromMap: true,
-					bulkUploadParcel: popupController.getValue('selectedParcel'),
+					bulkUploadParcel: popupController.getValue('selectedShape'),
 				});
 
 				setStateNav(state => ({
 					...state,
 					bulkUploadShape: null,
 					bulkUploadFromMap: true,
-					bulkUploadParcel: popupController.getValue('selectedParcel'),
+					bulkUploadParcel: popupController.getValue('selectedShape'),
 				}));
 				history.push('/bulkupload');
 			},
@@ -206,4 +211,9 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 	);
 }
 
-export default memo(TractInterestOwnerToolBar);
+TractInterestOwnerToolBar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+export default TractInterestOwnerToolBar;

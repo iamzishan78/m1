@@ -1,23 +1,35 @@
-import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useContext } from 'react';
 import { Flipper } from 'react-flip-toolkit';
-import { Box, Paper } from '@material-ui/core';
-import update from 'immutability-helper';
-
 import Sortly, { findDescendants, findParent } from 'react-sortly';
-import LayerItem from './LayerItem';
+
+import { Box, Paper } from '@material-ui/core';
+
+import { useMutation } from '@apollo/client';
+import update from 'immutability-helper';
+import PropTypes from 'prop-types';
+
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
+import { UPDATEUSERLAYERMETA } from 'graphQL/useMutationupdateLayersMeta';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
-import { useMutation } from '@apollo/client';
-import { useStyles } from '../style';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
+
+import { AppContext } from 'AppContext';
+
+import { useStyles } from '../style';
+import LayerItem from './LayerItem';
 
 const FileTree = ({ layerMap, panelItems }) => {
 	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 	const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
+	const [updateUserLayersMeta] = useMutation(UPDATEUSERLAYERMETA);
+
+	const [stateApp] = useContext(AppContext);
 	const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, {
 		refetchQueries: ['getLayerGroups'],
 		awaitRefetchQueries: true,
@@ -68,12 +80,16 @@ const FileTree = ({ layerMap, panelItems }) => {
 							groupName: { $set: current.groupName },
 							layerName: { $set: current.layerName },
 							name: { $set: current.name },
+							position: { $set: current.position },
+							_id: { $set: current._id },
 						};
 					}
 				}
 			});
 			setItems(update(previousLayers, updateFn));
-		} else setItems(currentLayers);
+		} else {
+			setItems(currentLayers);
+		}
 	};
 
 	useEffect(() => {
@@ -81,7 +97,7 @@ const FileTree = ({ layerMap, panelItems }) => {
 	}, [layerMap]);
 
 	const handleChange = useCallback(newItems => {
-		const index = newItems.findIndex(item => item.id === currentItem.current.id);
+		const index = newItems.findIndex(item => item.layerId === currentItem.current.layerId);
 		if (newItems[index].depth === 1) {
 			const parent = findParent(newItems, index);
 			if (parent.type !== 'group' || parent.collapsed) {
@@ -150,7 +166,6 @@ const FileTree = ({ layerMap, panelItems }) => {
 					manySettings: layersToUpdate.map(layer => ({ _id: layer._id, layerSettings: layer.layerSettings })),
 				},
 			});
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		},
 		[items]
 	);
@@ -182,7 +197,6 @@ const FileTree = ({ layerMap, panelItems }) => {
 				visibleLayers[visibleIndex + 1]
 			);
 
-			const layersToUpdate = [];
 			const itemIndex = items.findIndex(item => item.id === newItem.id);
 			const descendants = findDescendants(items, itemIndex).filter(item => !item.emptyLayer);
 
@@ -207,21 +221,6 @@ const FileTree = ({ layerMap, panelItems }) => {
 					items[itemIndex].groupId = null;
 				}
 			}
-			const sortedLayers = globalStateController
-				.getValue('layers')
-				.sort((a, b) => (a.position > b.position ? 1 : b.position > a.position ? -1 : 0));
-			layersWithoutGroup.forEach((layer, i) => {
-				if (layer._id === newItem._id || sortedLayers[i]._id !== layer._id) {
-					layersToUpdate.push({
-						_id: layer._id,
-						position: i,
-						groupName: layer.groupName,
-						groupId: layer.groupId,
-					});
-				}
-				layer.position = i;
-			});
-
 			if (newItem.type === 'group' && descendants.length === 0) {
 				updateUserMapSettings({
 					variables: {
@@ -235,11 +234,45 @@ const FileTree = ({ layerMap, panelItems }) => {
 			} else {
 				updateStateLayers([...layersWithoutGroup]);
 			}
+			const newIndex = layersWithoutGroup.findIndex(layer => layer.id === newItem.id);
+			if (newIndex === -1) {
+				return revert();
+			}
+			// Determine movement direction and target layer
+			let direction = null;
+			let targetId = null;
+			if (newIndex > 0) {
+				const layerAbove = layersWithoutGroup[newIndex - 1];
+				if (newItem.position < layerAbove.position) {
+					// Moved down
+					direction = 'below';
+					targetId = layerAbove.id;
+				}
+			}
+			if (newIndex < layersWithoutGroup.length - 1) {
+				const layerBelow = layersWithoutGroup[newIndex + 1];
+				if (newItem.position > layerBelow.position) {
+					// Moved up
+					direction = 'above';
+					targetId = layerBelow.id;
+				}
+			}
 
-			updateManyUserLayerSettings({
-				variables: { manySettings: layersToUpdate },
+			updateUserLayersMeta({
+				variables: {
+					userId: stateApp.user.mongoId,
+					layersMeta: {
+						layerId: newItem.id,
+						direction,
+						targetId,
+						groupName: newItem.groupName,
+						groupId: newItem.groupId,
+					},
+				},
+				refetchQueries: ['getAllLayerSettingsByUser'],
+				awaitRefetchQueries: true,
 			});
-			// eslint-disable-next-line react-hooks/exhaustive-deps
+			return null;
 		},
 		[items]
 	);
@@ -248,7 +281,7 @@ const FileTree = ({ layerMap, panelItems }) => {
 		layer => {
 			const currentLayers = [...items];
 			// saving to stateApp
-			const index = panelItems.findIndex(item => item._id === layer._id);
+			const index = panelItems.findIndex(item => item.layerId === layer.layerId);
 			currentLayers[index] = layer;
 			updateItems(items, currentLayers);
 
@@ -260,11 +293,15 @@ const FileTree = ({ layerMap, panelItems }) => {
 				variables: {
 					settings: {
 						_id: layer._id,
+						user: stateApp.user.mongoId,
+						layer: layer.layerId,
 						layerSettings: layer.layerSettings,
+						layerPaintProps: layer.layerPaintProps,
 					},
 				},
+				refetchQueries: ['getAllLayerSettingsByUser'],
+				awaitRefetchQueries: true,
 			});
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		},
 		[items, panelItems]
 	);
@@ -329,6 +366,11 @@ const FileTree = ({ layerMap, panelItems }) => {
 			</Paper>
 		</Box>
 	);
+};
+FileTree.propTypes = {
+	layerMap: PropTypes.array.isRequired,
+	panelItems: PropTypes.array.isRequired,
+	data: PropTypes.object,
 };
 
 export default memo(FileTree);

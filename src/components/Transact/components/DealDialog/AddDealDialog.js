@@ -1,83 +1,69 @@
 import React, { useState, useEffect, useContext, Fragment, useCallback } from 'react';
-import { get } from 'lodash';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { useLazyQuery, useMutation } from '@apollo/client';
+
+import { TextField, FormControl, Grid, Dialog, Avatar, CircularProgress } from '@material-ui/core';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import { makeStyles } from '@material-ui/core/styles';
-import { TextField, FormControl, Grid } from '@material-ui/core';
-import { AppContext } from 'AppContext';
-import { TransactContext } from 'components/Transact/TransactContext';
-import { CONTACT } from 'graphQL/useQueryContact';
-import { ADDCONTACT } from 'graphQL/useMutationAddContact';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Dialog, Avatar, CircularProgress } from '@material-ui/core';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { get } from 'lodash';
+import moment from 'moment';
+import PropTypes from 'prop-types';
+import { createPortal } from 'react-dom/cjs/react-dom.production.min';
+
+import AddDialogeUploadZone from 'components/ContactDetailCard/components/AddDialogUploadZone';
+import DealTasksProgressZone from 'components/ContactDetailCard/components/DealTasksProgressZone';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import Contacts from 'components/FlowDrawer/Contacts';
+import MapProvider from 'components/Map/MapProvider';
+import { findBoundsMap } from 'components/MapControls/commonHelper';
+import { drawBoundaries } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import CommentComponent from 'components/Shared/CommentComponent';
+import Documents from 'components/Shared/Documents';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
+import { getRandomColor } from 'components/Shared/functions/ui';
+import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 import DealDialogHeader from 'components/Transact/components/DealDialog/DealDialogHeader';
 import Drawer from 'components/Transact/components/Drawer';
-import moment from 'moment';
+import { TransactContext } from 'components/Transact/TransactContext';
 
-import DealTasksProgressZone from 'components/ContactDetailCard/components/DealTasksProgressZone';
-import DealComments from 'components/Transact/components/DealComments';
-import DealTasksDetails from '../DealTasksDetails';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { useDispatch, useSelector } from 'react-redux';
+import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { ADDDEAL, CREATE_DEAL_DEFAULT_SETTINGS } from 'graphQL/useMutationAddDeal';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { UPDATEDEAL } from 'graphQL/useMutationUpdateDeal';
-import { UPSERTDEALDESCRIPTOR } from 'graphQL/useMutationUpsertDealDescriptor';
 import { REMOVEDEALDESCRIPTOR } from 'graphQL/useMutationRemoveDealDescriptor';
+import { UPDATEDEAL } from 'graphQL/useMutationUpdateDeal';
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
 import { UPDATESTAGEDEALDESCRIPTORS } from 'graphQL/useMutationUpdateStageDealDescriptors';
-import { showErrorMessage, showSuccessMessage } from 'actions';
-
-import PropTypes from 'prop-types';
-import NumberFormat from 'react-number-format';
-import Documents from 'components/Shared/Documents';
-import AddDialogeUploadZone from 'components/ContactDetailCard/components/AddDialogUploadZone';
-import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
-import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-import { GET_DEAL_SETTINGS } from 'graphQL/useQueryGetDealSettings';
+import { UPSERTDEALDESCRIPTOR } from 'graphQL/useMutationUpsertDealDescriptor';
+import { CONTACT } from 'graphQL/useQueryContact';
 import { GETDEAL } from 'graphQL/useQueryDeal';
-import Contacts from 'components/FlowDrawer/Contacts';
+import { GET_DEAL_SHAPES } from 'graphQL/useQueryDealShapes';
+import { GET_FLOW_ASSOCIATED_SUMMARY } from 'graphQL/useQueryFlowAssociatedData';
+import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
+import { GET_DEAL_SETTINGS } from 'graphQL/useQueryGetDealSettings';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { mapStateController } from 'hookstate/mapStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
+import DealTasksDetails from '../DealTasksDetails';
+import ExistingDeal from './ExistingDeal';
+import AssociatedFlowDealDetails from '../AssociatedFlowDealDetails';
+
 import './dialog.css';
 
-import CustomAvatar from 'components/Shared/ui/CustomAvatar';
-
-import MapProvider from 'components/Map/MapProvider';
-import { getRandomColor } from 'components/Shared/functions/ui';
-import AssociatedFlowDealDetails from '../AssociatedFlowDealDetails';
-import { createPortal } from 'react-dom/cjs/react-dom.production.min';
-import ExistingDeal from './ExistingDeal';
-import { GET_FLOW_ASSOCIATED_SUMMARY } from 'graphQL/useQueryFlowAssociatedData';
-import { mapStateController } from 'hookstate/mapStateController';
-import { GET_DEAL_SHAPES } from 'graphQL/useQueryDealShapes';
-import { globalStateController } from 'hookstate/globalStateController';
-import { findBoundsMap } from 'components/MapControls/commonHelper';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { drawBoundaries } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
-
-function NumberFormatCustom(props) {
-	const { inputRef, onChange, ...other } = props;
-
-	return (
-		<NumberFormat
-			{...other}
-			getInputRef={inputRef}
-			onValueChange={values => {
-				onChange({
-					target: {
-						name: props.name,
-						value: values.value,
-					},
-				});
-			}}
-			thousandSeparator
-			isNumericString
-			prefix="$"
-		/>
-	);
-}
+const THREE = 3;
+const FIVE = 5;
+const FOURTY = 40;
 
 const formatIt = mdata => {
 	return {
@@ -161,12 +147,6 @@ export const useDealMapFlyto = mapReady => {
 	}, [dataDealShapes, stateApp.transactBarView, mapReady]);
 
 	return { handleFlyto };
-};
-
-NumberFormatCustom.propTypes = {
-	inputRef: PropTypes.func.isRequired,
-	name: PropTypes.string.isRequired,
-	onChange: PropTypes.func.isRequired,
 };
 
 const useStyles = makeStyles(theme => ({
@@ -341,8 +321,8 @@ const useStyles = makeStyles(theme => ({
 		},
 	},
 	dealOwnerAvatar: {
-		width: theme.spacing(3),
-		height: theme.spacing(3),
+		width: theme.spacing(THREE),
+		height: theme.spacing(THREE),
 		color: '#fff',
 		fontSize: '0.6rem',
 		backgroundColor: '#4880F6',
@@ -373,7 +353,7 @@ const useStyles = makeStyles(theme => ({
 	rootDiv: {
 		width: ({ width }) => (width ? width : '500px'),
 		'& > * + *': {
-			marginTop: theme.spacing(5),
+			marginTop: theme.spacing(FIVE),
 		},
 		'& .MuiAutocomplete-clearIndicator': {
 			display: 'none',
@@ -521,11 +501,12 @@ function AddDealDialog(props) {
 			const {
 				updateStageDealDescriptor: { stageDealDescriptors },
 			} = updatedStageDealDescriptor;
-			if (stageDealDescriptors)
+			if (stageDealDescriptors) {
 				setStateTransact(stateTransact => ({
 					...stateTransact,
 					dealToCreate: { _id: stageDealDescriptors.descriptorObject },
 				}));
+			}
 		}
 	}, [setStateTransact, updatedStageDealDescriptor]);
 
@@ -560,8 +541,9 @@ function AddDealDialog(props) {
 						variables: {
 							stageDealDescriptors,
 							dealId: deal._id,
+							stageId,
 						},
-					}).then(result => {
+					}).then(() => {
 						setStateApp(stateApp => ({
 							...stateApp,
 							activeDeal: deal,
@@ -614,9 +596,9 @@ function AddDealDialog(props) {
 					stateApp.activeDeal?.laneId &&
 					stateApp.activeDeal?.descriptorId === localPipelineId &&
 					stateApp.activeDeal?.laneId === stageId
-				)
+				) {
 					setDealPosition(stateApp.activeDeal?.position);
-				else {
+				} else {
 					if (pipeToShow?._id === localPipelineId) {
 						let position = -1;
 
@@ -631,12 +613,14 @@ function AddDealDialog(props) {
 						}
 
 						setDealPosition(position + 1);
-					} else setDealPosition(null);
+					} else {
+						setDealPosition(null);
+					}
 				}
 			}
 		},
 		// TODO: requires code refactoring which will take time disabling lint rule for hotfix
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+
 		[
 			pipeToShow?._id,
 			pipeToShow?.lanes,
@@ -674,14 +658,17 @@ function AddDealDialog(props) {
 			const isExist = !!pipelines.find(p => p._id === selectedPipe?._id);
 			if (selectedPipe && isExist) {
 				activePipeline = pipelines.find(p => p._id === selectedPipe._id);
-			} else activePipeline = pipelines[0];
+			} else {
+				activePipeline = pipelines[0];
+			}
 			settingNewPipeWithDefaultStage(activePipeline._id, true);
 		}
 	}, [pipelines, props.contactId, selectedPipe, settingNewPipeWithDefaultStage]);
 
 	useEffect(() => {
-		if (stateApp.dealDialog && !stateApp.activeDeal?.cardId && selectedPipe?._id)
+		if (stateApp.dealDialog && !stateApp.activeDeal?.cardId && selectedPipe?._id) {
 			settingNewPipeWithDefaultStage(selectedPipe._id, true);
+		}
 	}, [selectedPipe?._id, settingNewPipeWithDefaultStage, stateApp.activeDeal?.cardId, stateApp.dealDialog]);
 
 	useEffect(() => {
@@ -700,7 +687,7 @@ function AddDealDialog(props) {
 		}
 	}, [nameAutValue]);
 
-	const addUpdateDeal = async (newContact = null, closeAfterUpdate = true) => {
+	const addUpdateDeal = async (newContact = null) => {
 		let tempContact = newContact ? newContact?.addContact?.contact : contact;
 		let contactId = tempContact?._id;
 
@@ -757,7 +744,7 @@ function AddDealDialog(props) {
 				) {
 					//// updating the contact
 					allPromises.push(
-						new Promise((resolve, reject) => {
+						new Promise(resolve => {
 							upsertDealDescriptor({
 								variables: {
 									dealId: cardId,
@@ -767,7 +754,7 @@ function AddDealDialog(props) {
 								},
 								refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
 								awaitRefetchQueries: true,
-							}).then(result => {
+							}).then(() => {
 								resolve();
 							});
 						})
@@ -783,7 +770,7 @@ function AddDealDialog(props) {
 
 					if (ownerId) {
 						allPromises.push(
-							new Promise((resolve, reject) => {
+							new Promise(resolve => {
 								upsertDealDescriptor({
 									variables: {
 										dealId: cardId,
@@ -794,7 +781,7 @@ function AddDealDialog(props) {
 									refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
 
 									awaitRefetchQueries: true,
-								}).then(result => {
+								}).then(() => {
 									resolve();
 								});
 							})
@@ -803,7 +790,7 @@ function AddDealDialog(props) {
 					// removing the owner
 					else if (!ownerId && stateApp.activeDeal?.owners?.length > 0) {
 						allPromises.push(
-							new Promise((resolve, reject) => {
+							new Promise(resolve => {
 								removeDealDescriptor({
 									variables: {
 										id: stateApp.activeDeal?.owners[0]?._id,
@@ -812,7 +799,7 @@ function AddDealDialog(props) {
 									refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
 
 									awaitRefetchQueries: true,
-								}).then(result => {
+								}).then(() => {
 									resolve();
 								});
 							})
@@ -827,7 +814,7 @@ function AddDealDialog(props) {
 				) {
 					//// updating the stageDealDescriptor
 					allPromises.push(
-						new Promise((resolve, reject) => {
+						new Promise(resolve => {
 							const movedCardDescriptor = {
 								// _id: stateApp.activeDeal.descriptorId,
 								descriptorObject: stateApp.activeDeal._id,
@@ -859,7 +846,7 @@ function AddDealDialog(props) {
 								},
 								refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
 								awaitRefetchQueries: true,
-							}).then(result => {
+							}).then(() => {
 								resolve();
 							});
 						})
@@ -878,14 +865,15 @@ function AddDealDialog(props) {
 					//// updating the deal
 					deal._id = cardId;
 					allPromises.push(
-						new Promise((resolve, reject) => {
+						new Promise(resolve => {
 							updateDeal({
 								variables: {
 									deal,
 								},
 								refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
 								awaitRefetchQueries: true,
-							}).then(result => {
+							}).then(() => {
+								tableGlobalController.refetch();
 								resolve();
 							});
 						})
@@ -893,9 +881,9 @@ function AddDealDialog(props) {
 				}
 
 				////////////////////////////////////////////
-				if (allPromises.length > 0)
+				if (allPromises.length > 0) {
 					Promise.all(allPromises)
-						.then(values => {
+						.then(() => {
 							// if (success === true)
 							// 	dispatch(
 							// 		showSuccessMessage("The Deal was successfully updated.")
@@ -908,6 +896,7 @@ function AddDealDialog(props) {
 						.catch(reason => {
 							console.log(reason);
 						});
+				}
 			} else if (!addDealLoading) {
 				//// add a new deal
 				let variables = {
@@ -963,9 +952,11 @@ function AddDealDialog(props) {
 					awaitRefetchQueries: true,
 				}).then(result => {
 					finishCreatingDeal(result?.data);
+					tableGlobalController.refetch();
 				});
 			}
 		}
+		tableGlobalController.refetch();
 		setUploadedFiles([]);
 	};
 
@@ -982,7 +973,6 @@ function AddDealDialog(props) {
 			const contactIds = stateApp?.activeDeal?.contacts?.map(contact => contact._id) || [];
 			handleFlyto(contactIds, dealId);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [handleFlyto, stateApp.activeDeal, stateApp.transactBarView, globalStateValues.mapReady]);
 
 	useEffect(() => {
@@ -1032,13 +1022,15 @@ function AddDealDialog(props) {
 
 			setOwnerId(card.owners[0]?.relatedObject?._id || card.ownerId);
 
-			if (card.contacts?.length > 0)
+			if (card.contacts?.length > 0) {
 				// setting contact
 				setNameAutValue({
 					name: card.contacts[0]?.relatedObject?.entity?.name,
 					_id: card.contacts[0]?.relatedObject?._id,
 				});
-			else setNameAutValue(null);
+			} else {
+				setNameAutValue(null);
+			}
 		} else if (props.contact) {
 			setNameAutValue({ name: props.contact.name, _id: props.contact._id });
 		} else if (props.contactId) {
@@ -1060,72 +1052,6 @@ function AddDealDialog(props) {
 	]);
 	// }, [stateApp.activeDeal, props.contact, stateApp.dealDialog, stateApp.user]);
 
-	const handleClose = async () => {
-		// handleValidate();
-		await handleUpdate();
-		setTitle('');
-		setLabel('');
-		setClosedPrice('');
-		setTotalNRA('');
-		setDescription('');
-		setStageId(null);
-		setDealState(null);
-		if (props.isTransactPage) setNameAutValue(null);
-		setPipelineId(null);
-		setOwnerId(null);
-		setReceivedDate('');
-		setBidDate('');
-		setCloseDate('');
-		setMapSettings(null);
-		setDealPosition(null);
-		if (props.isTransactPage) setContact({});
-		setStateApp(stateApp => ({
-			...stateApp,
-			dealDialog: false,
-			addExistingDeal: false,
-			activeDeal: { cardId: null, laneId: null },
-			transactBarView: 'Deal',
-			viewDoc: null,
-		}));
-	};
-
-	useEffect(() => {
-		if (addContactData) {
-			addUpdateDeal(addContactData);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [addContactData]);
-
-	useEffect(() => {
-		if (
-			stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
-			mapStateValues?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition
-		) {
-			mapStateController.updateState({ mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition });
-		}
-	}, [mapSettings, mapStateValues?.mapVars, stateApp?.activeDeal?.mapSettings?.mapDefaultPosition]);
-
-	const deleteDeal = async () => {
-		const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
-
-		if (cardId)
-			await updateDeal({
-				variables: {
-					deal: { _id: cardId, IsDeleted: true },
-				},
-				refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
-				awaitRefetchQueries: true,
-			}).then(result => {
-				const {
-					data: { updateDeal },
-				} = result;
-				if (updateDeal?.success === true) {
-					dispatch(showSuccessMessage('The Deal was successfully deleted.'));
-					handleClose();
-				} else dispatch(showErrorMessage('An error occurred.'));
-			});
-	};
-
 	const handleUpdate = async () => {
 		if (transactData && contact && contact._id === 'newEntity') {
 			await addContact({
@@ -1145,6 +1071,78 @@ function AddDealDialog(props) {
 		}
 	};
 
+	const handleClose = async () => {
+		// handleValidate();
+		await handleUpdate();
+		setTitle('');
+		setLabel('');
+		setClosedPrice('');
+		setTotalNRA('');
+		setDescription('');
+		setStageId(null);
+		setDealState(null);
+		if (props.isTransactPage) {
+			setNameAutValue(null);
+		}
+		setPipelineId(null);
+		setOwnerId(null);
+		setReceivedDate('');
+		setBidDate('');
+		setCloseDate('');
+		setMapSettings(null);
+		setDealPosition(null);
+		if (props.isTransactPage) {
+			setContact({});
+		}
+		setStateApp(stateApp => ({
+			...stateApp,
+			dealDialog: false,
+			addExistingDeal: false,
+			activeDeal: { cardId: null, laneId: null },
+			transactBarView: 'Deal',
+			viewDoc: null,
+		}));
+	};
+
+	useEffect(() => {
+		if (addContactData) {
+			addUpdateDeal(addContactData);
+		}
+	}, [addContactData]);
+
+	useEffect(() => {
+		if (
+			stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
+			mapStateValues?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition
+		) {
+			mapStateController.updateState({ mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition });
+		}
+	}, [mapSettings, mapStateValues?.mapVars, stateApp?.activeDeal?.mapSettings?.mapDefaultPosition]);
+
+	const deleteDeal = async () => {
+		const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
+
+		if (cardId) {
+			await updateDeal({
+				variables: {
+					deal: { _id: cardId, IsDeleted: true },
+				},
+				refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
+				awaitRefetchQueries: true,
+			}).then(result => {
+				const {
+					data: { updateDeal },
+				} = result;
+				if (updateDeal?.success === true) {
+					dispatch(showSuccessMessage('The Deal was successfully deleted.'));
+					handleClose();
+				} else {
+					dispatch(showErrorMessage('An error occurred.'));
+				}
+			});
+		}
+	};
+
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
 	const openConfirmationDialog = () => {
@@ -1158,7 +1156,9 @@ function AddDealDialog(props) {
 		try {
 			await deleteDeal();
 			history.push(`${history.location.pathname.split('/lane')[0]}`);
-		} catch {}
+		} catch (err) {
+			throw new Error(err);
+		}
 	};
 
 	const sortedPipelines = [...pipelines].sort((a, b) => {
@@ -1191,7 +1191,7 @@ function AddDealDialog(props) {
 			},
 			refetchQueries: ['getPipeline', 'getContactDeals'],
 			awaitRefetchQueries: true,
-		}).then(result => {
+		}).then(() => {
 			getDeal({
 				variables: { id: stateApp.activeDeal._id },
 			});
@@ -1204,7 +1204,7 @@ function AddDealDialog(props) {
 				...stateApp,
 				activeDeal: {
 					...stateApp.activeDeal,
-					contacts: [...getDealResult?.deal?.deal?.contacts?.map(c => c)],
+					contacts: [...(getDealResult?.deal?.deal?.contacts?.map(c => c) || [])],
 					activity: getDealResult.deal.deal.activity,
 				},
 			}));
@@ -1235,6 +1235,8 @@ function AddDealDialog(props) {
 				/>
 			);
 		}
+
+		return null;
 	};
 
 	const [fileRequestCounter, setFileRequestCounter] = useState(1);
@@ -1244,16 +1246,17 @@ function AddDealDialog(props) {
 		onCompleted: ({ getFileDescriptors }) => {
 			let allActive = true;
 
-			if (getFileDescriptors)
+			if (getFileDescriptors) {
 				for (let i = 0; i < getFileDescriptors.length; i++) {
 					if (getFileDescriptors[i].fileState !== 'active') {
 						allActive = false;
 						break;
 					}
 				}
+			}
 
 			if (!allActive) {
-				if (fileRequestCounter <= 40) {
+				if (fileRequestCounter <= FOURTY) {
 					let waitBeforeRequestAgain = setTimeout(() => {
 						setFileRequestCounter(fileRequestCounter + 1);
 						getRecentFiles({
@@ -1268,7 +1271,9 @@ function AddDealDialog(props) {
 				} else {
 					setFileRequestCounter(1);
 				}
-			} else setFileRequestCounter(1);
+			} else {
+				setFileRequestCounter(1);
+			}
 		},
 	});
 	const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
@@ -1277,11 +1282,17 @@ function AddDealDialog(props) {
 	const [dealAssociatedSummary, { data: dealSummaryData }] = useLazyQuery(GET_FLOW_ASSOCIATED_SUMMARY);
 
 	useEffect(() => {
+		const variables = {
+			dealId: stateApp?.activeDeal?.cardId,
+		};
+
+		const contactIds = stateApp.activeDeal?.contacts?.map(contact => contact._id) || [];
+		if (contactIds.length > 0) {
+			variables.contactIds = contactIds;
+		}
+
 		dealAssociatedSummary({
-			variables: {
-				contactIds: stateApp.activeDeal?.contacts?.map(contact => contact._id),
-				dealId: stateApp?.activeDeal?.cardId,
-			},
+			variables,
 		});
 	}, [dealAssociatedSummary, stateApp.activeDeal?.cardId, stateApp.activeDeal?.contacts]);
 
@@ -1329,7 +1340,9 @@ function AddDealDialog(props) {
 	const handleClickDialogClose = () => {
 		setStateApp(state => {
 			const newState = { ...state, transactBarShowGrid: false, addType: null, interestsIds: null };
-			if (state.transactBarView === 'Map') newState.transactBarView = 'Deal';
+			if (state.transactBarView === 'Map') {
+				newState.transactBarView = 'Deal';
+			}
 
 			return newState;
 		});
@@ -1352,15 +1365,9 @@ function AddDealDialog(props) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
-						header={`Delete Deal`}
-						onClose={handleCloseDialog}
-						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
-					>
+					<DeleteConfirmationDialog header={'Delete Deal'} onClose={handleCloseDialog} deleteFunc={deleteFunc}>
 						Do you want to delete the selected deal?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 			<div className={classes.dealDetailRoot}>
@@ -1641,7 +1648,7 @@ function AddDealDialog(props) {
 																		setLabel(e.target.value);
 																	}}
 																	InputProps={{
-																		inputComponent: NumberFormatCustom,
+																		inputComponent: CurrencyFormatCustom,
 																		classes: {
 																			root: classes.customDataTextInputRoot,
 																			focused: classes.focused,
@@ -1670,7 +1677,7 @@ function AddDealDialog(props) {
 																		setClosedPrice(e.target.value);
 																	}}
 																	InputProps={{
-																		inputComponent: NumberFormatCustom,
+																		inputComponent: CurrencyFormatCustom,
 																		classes: {
 																			root: classes.customDataTextInputRoot,
 																			focused: classes.focused,
@@ -1748,8 +1755,8 @@ function AddDealDialog(props) {
 															{selectedPipe && <option value={selectedPipe._id}>{selectedPipe.name}</option>}
 															{sortedPipelines
 																.filter(pipeline => selectedPipe?._id !== pipeline?._id)
-																.map((pipeline, i) => (
-																	<option value={pipeline._id} key={i}>
+																.map(pipeline => (
+																	<option value={pipeline._id} key={pipeline._id}>
 																		{pipeline.name}
 																	</option>
 																))}
@@ -1790,8 +1797,8 @@ function AddDealDialog(props) {
 															fullWidth
 														>
 															{stagesToChoose &&
-																stagesToChoose.map((stage, i) => (
-																	<option value={stage._id} key={i}>
+																stagesToChoose.map(stage => (
+																	<option value={stage._id} key={stage._id}>
 																		{stage.name}
 																	</option>
 																))}
@@ -1843,11 +1850,13 @@ function AddDealDialog(props) {
 								</div>
 							)}
 							{['Deal', 'Map'].includes(stateApp.transactBarView) && (
-								<div style={{ marginTop: 2 }}>
-									<DealComments
+								<div style={{ marginTop: 2, height: '40vh', width: '25vw' }}>
+									<CommentComponent
 										setNewCommentId={setNewCommentId}
 										targetLabel="deal"
 										targetSourceId={stateApp.activeDeal?.cardId}
+										activityLog={stateApp?.activeDeal?.activity}
+										showCommentType
 									/>
 								</div>
 							)}
@@ -1892,5 +1901,16 @@ function AddDealDialog(props) {
 		</>
 	);
 }
+
+AddDealDialog.propTypes = {
+	transactData: PropTypes.object,
+	contactId: PropTypes.string,
+	contact: PropTypes.shape({
+		name: PropTypes.string,
+		_id: PropTypes.string,
+	}),
+	isTransactPage: PropTypes.bool,
+	open: PropTypes.bool,
+};
 
 export default AddDealDialog;

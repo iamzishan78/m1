@@ -19,7 +19,7 @@ describe('Add and Remove Comments on Tract Details Spec', () => {
 			.contains('Units')
 			.trigger('click');
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.get('#cognitive-search-autocomplete').should('be.visible').type('a');
 
 		cy.verifyApiResponse('@getESSimpleSearchApi', { reponseTimeout: longTimeout }).then(response => {
@@ -35,7 +35,9 @@ describe('Add and Remove Comments on Tract Details Spec', () => {
 
 				cy.verifyApiResponse('@getCommentsByObjectIdApi', { responseTimeout: longTimeout }).then(result => {
 					const comments = result.response.body.data.commentsByObjectId;
-					if (comments.lenth > 1) cy.get('#commentsContainer').scrollTo('bottom');
+					if (comments.lenth > 1) {
+						cy.get('#commentsContainer').scrollTo('bottom');
+					}
 				});
 
 				cy.interceptApi('removeComment');

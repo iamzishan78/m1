@@ -1,6 +1,8 @@
 import { hookstate } from '@hookstate/core';
-import { copy } from 'components/Shared/functions';
+
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
+import { copy } from 'components/Shared/functions';
+
 import { simpleAuthBypass } from 'utils/data';
 
 /* -------------------------------------------------------------------------- */
@@ -51,6 +53,9 @@ export const tableInitialState = {
 	isIncludeInactive: false,
 	gridView: {},
 	showTypes: false,
+	editedData: {},
+	validationErrors: {},
+	isCreateMode: false,
 };
 export const tableESState = {};
 export const tableGlobalState = hookstate({
@@ -65,6 +70,7 @@ export const tableGlobalState = hookstate({
 /* -------------------------------------------------------------------------- */
 
 export const layerStateInitialState = {
+	projectedLayers: [],
 	client: null,
 	history: null,
 	boundingStates: null,
@@ -319,6 +325,7 @@ export const layerFilters = hookstate(copy(layerFilterInitialState));
 /* -------------------------------------------------------------------------- */
 
 export const mapControlsInitialState = {
+	searchValue: '',
 	fileUploadedContent: null,
 	fileUploaded: null,
 	selectedControl: 'layer',
@@ -407,7 +414,6 @@ export const popupInitialState = {
 	layerSelectionPopup: false,
 	selectedUserDefinedLayer: null,
 	selectedShape: null,
-	selectedParcel: null,
 	selectedShapeFile: null,
 	selectedWell: null,
 	selectedWellId: null,
@@ -472,5 +478,29 @@ export const adminOperationsInitialState = {
 	createNewFlatData: 'No',
 	warning: null,
 	message: null,
+	apiKeys: { dialpad: '' },
 };
 export const adminOperationsState = hookstate(copy(adminOperationsInitialState));
+
+/* -------------------------------------------------------------------------- */
+/*                              View Controller                               */
+/* -------------------------------------------------------------------------- */
+
+export const viewInitialState = {
+	client: null,
+	moduleName: null,
+	isTable: false,
+	icon: { jsxEl: null },
+	label: null,
+	allViews: [],
+	selectedView: null,
+	isViewOpen: false,
+	fetchViewSettings: false,
+	styleOverride: {
+		bgColor: {},
+		color: {},
+	},
+	isLoading: false,
+	shouldSyncView: true,
+};
+export const viewStates = {};

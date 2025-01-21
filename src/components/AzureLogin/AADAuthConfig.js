@@ -1,18 +1,26 @@
 import * as msal from '@azure/msal-browser';
+
 import { globalStateController } from 'hookstate/globalStateController';
+
 import { copy } from 'utils/helper';
 
 const tenants = JSON.parse(process.env.REACT_APP_TENANS_CREDENTIALS);
 
 export const tenantsCredentials = tenantName => {
-	if (!tenantName) return null;
+	if (!tenantName) {
+		return null;
+	}
 
 	let found;
 	for (let i = 0; i < tenants.length; i++) {
-		if (tenants[i].name.toUpperCase() === tenantName.toUpperCase()) found = tenants[i];
+		if (tenants[i].name.toUpperCase() === tenantName.toUpperCase()) {
+			found = tenants[i];
+		}
 	}
 
-	if (found?.name) globalStateController.setBypassLogin(found);
+	if (found?.name) {
+		globalStateController.setBypassLogin(found);
+	}
 
 	return copy(found);
 };
@@ -66,16 +74,4 @@ export const authGraphQLRequest = graphqlScope => {
 		// scopes: ["https://mineralb2c.onmicrosoft.com/api/user_impersonation", "openid", "offline_access"],
 		// scopes: ["https://management.azure.com/user_impersonation", "openid", "offline_access"],
 	};
-};
-
-// Add here the endpoints for MS Graph API services you would like to use.
-const graphConfig = {
-	graphMeEndpoint: 'https://graph.microsoft.com/v1.0/me',
-	graphMailEndpoint: 'https://graph.microsoft.com/v1.0/me/messages',
-};
-
-// Add here scopes for access token to be used at MS Graph API endpoints.
-const tokenRequest = {
-	scopes: ['Mail.Read'],
-	forceRefresh: false, // Set this to "true" to skip a cached token and go to the server to get a new token
 };

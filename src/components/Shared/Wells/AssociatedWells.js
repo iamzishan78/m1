@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { get, isEmpty } from 'lodash';
+
 import {
 	Grid,
 	ListItemText,
@@ -12,27 +12,31 @@ import {
 	Tooltip,
 	InputBase,
 } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import SearchIcon from '@material-ui/icons/Search';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
+import { get, isEmpty } from 'lodash';
 
 //Contexts
-import { AppContext } from 'AppContext';
 import { DocumentContextProvider } from 'components/Document/DocumentContext';
-
-//Components
 import WellSearchApiFieldES from 'components/Shared/Forms/Fields/WellSearchApiFieldES';
 
-// Hooks
-import { useMutation, useLazyQuery } from '@apollo/client';
-
-import { GET_WELL_DESCRIPTORS } from 'graphQL/useQueryWellDescriptors';
-// Mutations
 import { DELETE_WELL_DESCRIPTOR, UPSERT_WELL_DESCRIPTOR } from 'graphQL/useMutationWellDescriptor';
+import { GET_WELL_DESCRIPTORS } from 'graphQL/useQueryWellDescriptors';
+
+import { AppContext } from 'AppContext';
+
+//Components
+
+// Hooks
+
+// Mutations
 
 const useStyles = makeStyles(theme => ({
 	rootPadding: {

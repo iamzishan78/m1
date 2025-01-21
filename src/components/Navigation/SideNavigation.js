@@ -1,41 +1,47 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import clsx from 'clsx';
-import { useLazyQuery } from '@apollo/client';
 
 import { IconButton, List, ListItem, ListItemIcon, ListItemText, Tooltip, Badge } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import PersonIcon from '@material-ui/icons/Person';
-import DescriptionIcon from '@material-ui/icons/Description';
-import DashboardIcon from '@material-ui/icons/Dashboard';
+import { useTheme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import { Storage } from '@material-ui/icons';
+import BarChartIcon from '@material-ui/icons/BarChart';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import MenuIcon from '@material-ui/icons/Menu';
-import Typography from '@material-ui/core/Typography';
-import FlowIcon from '@material-ui/icons/Repeat';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import DescriptionIcon from '@material-ui/icons/Description';
+import EditIcon from '@material-ui/icons/Edit';
 import ActivityIcon from '@material-ui/icons/Event';
 import MapIcon from '@material-ui/icons/Map';
-import BarChartIcon from '@material-ui/icons/BarChart';
-import EditIcon from '@material-ui/icons/Edit';
+import MenuIcon from '@material-ui/icons/Menu';
+import PersonIcon from '@material-ui/icons/Person';
+import FlowIcon from '@material-ui/icons/Repeat';
+
+import { useLazyQuery } from '@apollo/client';
+import clsx from 'clsx';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+
+import WorkspaceEditModal from 'components/Navigation/components/WorkSpaceEditModal';
+import { FEATURES, ROUTES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import { workspaceTenantName } from 'components/Shared/functions';
+import Analytics from 'components/Shared/svgIcons/analytics';
 import LandScapeIcon from 'components/Shared/svgIcons/LandscapeBlackIcon';
 
-import { AppContext } from 'AppContext';
-import { M1neralLogoNavNoAuth, useStyles } from './Common';
 import { GET_NOTIFICATIONS } from 'graphQL/useQueryGetNotifications';
-import { GET_WORKSPACE_SETTINGS } from 'graphQL/useQueryWorkspaceSettings';
 import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
+import { GET_WORKSPACE_SETTINGS } from 'graphQL/useQueryWorkspaceSettings';
 
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { FEATURES, ROUTES } from 'components/Shared/FeatureFlag/common';
-import WorkspaceEditModal from 'components/Navigation/components/WorkSpaceEditModal';
-import Analytics from 'components/Shared/svgIcons/analytics';
-import AdminIcon from '.././Shared/svgIcons/admin-setting';
-import { workspaceTenantName } from 'components/Shared/functions';
-import { navController } from 'hookstate/navStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
+import { navController } from 'hookstate/navStateController';
+
+import { AppContext } from 'AppContext';
+
+import { M1neralLogoNavNoAuth, useStyles } from './Common';
+import AdminIcon from '.././Shared/svgIcons/admin-setting';
 
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
 	width: 260px;
@@ -43,15 +49,7 @@ const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
 	padding-right: 15px;
 `;
 
-const SideNavigation = ({
-	openDrawer,
-	stateNav,
-	setStateNav,
-	setStateApp,
-	handleListItemClick,
-	handleDrawerClose,
-	handleDrawerOpen,
-}) => {
+const SideNavigation = ({ openDrawer, handleListItemClick, handleDrawerClose, handleDrawerOpen }) => {
 	const [stateApp] = useContext(AppContext);
 	const [notificationsLength, setNotificationsLength] = useState([]);
 	const [showWorkspaceModal, setWorkspaceModal] = useState(false);
@@ -178,7 +176,7 @@ const SideNavigation = ({
 						}}
 						button
 						selected={selectedModule === ROUTES.DASHBOARD.module}
-						onClick={event => handleListItemClick('/dashboard')}
+						onClick={() => handleListItemClick('/dashboard')}
 						key="dashboard"
 					>
 						<div className={classes.tabContent}>
@@ -201,7 +199,7 @@ const SideNavigation = ({
 						}}
 						button
 						selected={selectedModule === ROUTES.MAP.module}
-						onClick={event => handleListItemClick('/')}
+						onClick={() => handleListItemClick('/')}
 						key="home"
 					>
 						<div className={classes.tabContent}>
@@ -221,13 +219,13 @@ const SideNavigation = ({
 						}}
 						button
 						selected={selectedModule === ROUTES.CONTACT.module}
-						onClick={event => {
-							setStateApp(stateApp => ({
+						onClick={() => {
+							window.setStateApp(stateApp => ({
 								...stateApp,
 								selectedContact: null,
 								contactSearchQuery: null,
 							}));
-							setStateNav(stateApp => ({
+							window.setStateNav(stateApp => ({
 								...stateApp,
 								contactFromMap: false,
 							}));
@@ -252,7 +250,7 @@ const SideNavigation = ({
 						}}
 						button
 						selected={selectedModule === ROUTES.FLOW.module}
-						onClick={event => handleListItemClick('/flow')}
+						onClick={() => handleListItemClick('/flow')}
 						key="flow"
 					>
 						<div className={classes.tabContent}>
@@ -278,7 +276,7 @@ const SideNavigation = ({
 							}}
 							button
 							selected={selectedModule === ROUTES.LANDMODULE.module}
-							onClick={event => {
+							onClick={() => {
 								handleListItemClick('/land/agreements');
 							}}
 							key="land"
@@ -307,7 +305,7 @@ const SideNavigation = ({
 							}}
 							button
 							selected={selectedModule === ROUTES.REVENUEMODULE.module}
-							onClick={event => {
+							onClick={() => {
 								handleListItemClick('/revenue/properties');
 							}}
 							key="Revenue"
@@ -335,8 +333,8 @@ const SideNavigation = ({
 						}}
 						button
 						selected={selectedModule === ROUTES.FILES.module}
-						onClick={event => {
-							setStateApp(stateApp => ({
+						onClick={() => {
+							window.setStateApp(stateApp => ({
 								...stateApp,
 								selectedContact: null,
 							}));
@@ -370,7 +368,7 @@ const SideNavigation = ({
 						}}
 						button
 						selected={selectedModule === ROUTES.CALENDER.module}
-						onClick={event => handleListItemClick('/calendar/activities')}
+						onClick={() => handleListItemClick('/calendar/activities')}
 						key="calendar"
 					>
 						<div className={classes.tabContent}>
@@ -427,13 +425,13 @@ const SideNavigation = ({
 							}}
 							button
 							selected={selectedModule === ROUTES.ANALYTICS.module}
-							onClick={event => {
-								setStateApp(stateApp => ({
+							onClick={() => {
+								window.setStateApp(stateApp => ({
 									...stateApp,
 									selectedContact: null,
 									contactSearchQuery: null,
 								}));
-								setStateNav(stateApp => ({
+								window.setStateNav(stateApp => ({
 									...stateApp,
 									contactFromMap: false,
 								}));
@@ -457,6 +455,39 @@ const SideNavigation = ({
 						</ListItem>
 					</FeatureFlag>
 
+					<FeatureFlag feature={FEATURES.DATA}>
+						<ListItem
+							classes={{
+								root: classes.menuListItem,
+								selected: classes.menuListItemSelected,
+							}}
+							button
+							selected={selectedModule === ROUTES.DATA.module}
+							onClick={() => {
+								window.setStateApp(stateApp => ({
+									...stateApp,
+									selectedContact: null,
+									contactSearchQuery: null,
+								}));
+								window.setStateNav(stateApp => ({
+									...stateApp,
+									contactFromMap: false,
+								}));
+								handleListItemClick('/data/wells');
+							}}
+							key="data"
+						>
+							<div className={classes.tabContent}>
+								<Tooltip title="Data" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+									<ListItemIcon className={classes.sideNavIcon}>
+										<Storage />
+									</ListItemIcon>
+								</Tooltip>
+								<ListItemText className={`${classes.sideNavText} uppercase`} primary="Data" />
+							</div>
+						</ListItem>
+					</FeatureFlag>
+
 					{(stateApp.user.roles.includes('Admin') || stateApp.user.roles.includes('Owner')) && (
 						<ListItem
 							classes={{
@@ -466,12 +497,12 @@ const SideNavigation = ({
 							button
 							selected={selectedModule === ROUTES.ADMIN_SETTINGS.module}
 							onClick={() => {
-								setStateApp(stateApp => ({
+								window.setStateApp(stateApp => ({
 									...stateApp,
 									selectedContact: null,
 									contactSearchQuery: null,
 								}));
-								setStateNav(stateApp => ({
+								window.setStateNav(stateApp => ({
 									...stateApp,
 									contactFromMap: false,
 								}));
@@ -505,6 +536,13 @@ const SideNavigation = ({
 			)}
 		</div>
 	);
+};
+
+SideNavigation.propTypes = {
+	openDrawer: PropTypes.bool.isRequired,
+	handleListItemClick: PropTypes.func.isRequired,
+	handleDrawerClose: PropTypes.func.isRequired,
+	handleDrawerOpen: PropTypes.func.isRequired,
 };
 
 export default SideNavigation;

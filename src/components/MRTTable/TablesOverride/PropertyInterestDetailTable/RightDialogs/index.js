@@ -1,9 +1,12 @@
 import React, { memo } from 'react';
-import { tableGlobalController } from 'hookstate/tableController';
-import InterestDetailForm from './InterestDetailForm';
-import { ConvertOwnerToContactContainer } from 'store/containers/entity';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { ConvertOwnerToContactContainer } from 'store/containers/entity';
+
+import InterestDetailForm from './InterestDetailForm';
 
 function PropertyInterestDetaillDialog() {
 	const { stateValues } = tableGlobalController.useState(['propertyInterestDetaillDialog']);

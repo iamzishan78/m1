@@ -1,17 +1,22 @@
+/* eslint-disable no-magic-numbers */
 /* eslint-disable no-undef */
-import MRTTable from 'components/MRTTable';
-import { basic_timeouts } from '../../cypressUtils/data';
+import React from 'react';
+
 import _ from 'lodash';
+
+import MRTTable from 'components/MRTTable';
+
+import { basic_timeouts } from '../../cypressUtils/data';
 
 let responseHits;
 describe('Unit Interest Owners Table', () => {
 	beforeEach(() => {
 		cy.interceptAndWait(
-			['getESSimpleSearch', 'shapeowners_flat'],
+			['getDbData', 'shapeowners_flat'],
 			alias => {
 				cy.viewport(1600, 1200).mount(
 					<MRTTable
-						name="OwnersPerUnitTable"
+						name="UnitInterestOwnerTable"
 						overrideMeta={{
 							defaultFilters: [
 								{
@@ -26,12 +31,12 @@ describe('Unit Interest Owners Table', () => {
 						}}
 					/>,
 					{
-						spec: 'OwnersPerUnitTable',
+						spec: 'UnitInterestOwnerTable',
 					}
 				);
 
 				cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-					responseHits = response.response.body.data.getESSimpleSearch.hits;
+					responseHits = response.response.body.data.getDbData.hits;
 				});
 			},
 			{ wait: false }
@@ -92,7 +97,7 @@ describe('Unit Interest Owners Table', () => {
 
 	it('should export contact and contact purchaser', () => {
 		cy.wait(1000);
-		cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
+		cy.get('[data-testid="over-ride-select-all-div"] input').click();
 		cy.get('.MuiButtonBase-root[data-testid="export-contact-and-purchse-icon-button"]').click();
 
 		cy.interceptAndWait(
@@ -132,11 +137,11 @@ describe('Unit Interest Owners Table', () => {
 			purschasedContact?.contact?.entityDetail?.name ||
 			`${purschasedContact?.firstName} ${purschasedContact?.lastName}`;
 
-		cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+		cy.get('[data-testid="MoreVertIcon"]').first().click();
 		cy.wait(basic_timeouts.shorTimeout);
 		cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
 		cy.wait(basic_timeouts.shorTimeout);
-		cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+		cy.get('[data-testid="MoreVertIcon"]').first().click();
 		cy.wait(basic_timeouts.shorTimeout);
 		cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
 		cy.wait(basic_timeouts.shorTimeout);
