@@ -240,7 +240,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		if (viewFilesResult && !fileDownload) {
 			let fileInformation = viewFilesResult?.viewFiles[0];
 			const splittedStrings = fileInformation?.name?.split('.');
-			let docExtention = splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
+			let docExtention = (selectedDocument?.url?.trim()) ? null : splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
 			setFileUpload({ upload: true, fileExtension: docExtention, fileInformation });
 		}
 
