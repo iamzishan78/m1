@@ -138,7 +138,7 @@ function Map({
 		'popupStateValues'
 	);
 	const { mapStateValues } = mapStateController.useState(
-		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut', 'isDefaultViewAllowed', 'reintializeMap'],
+		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut', 'isDefaultViewAllowed', 'reintializeMap', 'isMapRefreshing'],
 		'mapStateValues'
 	);
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
@@ -770,13 +770,16 @@ function Map({
 			if (index === -1) {
 				index = 0;
 			}
+			const { isMapRefreshing, mapVars } = mapStateValues || {};
+			const { center, zoom, pitch, bearing } = mapVars || {};
+
 			const newMap = new mapboxgl.Map({
 				container: `${id}`,
 				style: `mapbox://styles/m1neral/${mapStyles[index]?.id}`,
-				center: mapStateValues.mapVars.center,
-				zoom: mapStateValues.mapVars.zoom,
-				pitch: mapStateValues.mapVars.pitch,
-				bearing: mapStateValues.mapVars.bearing,
+				center: isMapRefreshing && map ? map.getCenter() : center,
+				zoom: isMapRefreshing && map ? map.getZoom() : zoom,
+				pitch: isMapRefreshing && map ? map.getPitch() : pitch,
+				bearing: isMapRefreshing && map ? map.getBearing() : bearing,
 			});
 
 			/// optimized interactions w/ map
@@ -932,6 +935,7 @@ function Map({
 				window.mapRef = newMap;
 				window.drawRef = Draw;
 				// Initializing overlay
+				console.log("load reload call",)
 				DeckGlLayer.initializeOverlay();
 				layerController.resetMapStates(true);
 
@@ -978,14 +982,14 @@ function Map({
 				setDraw(Draw);
 				setMap(newMap);
 				setLoading(false);
-				mapStateController.updateState({ reintializeMap: false });
+				mapStateController.updateState({ reintializeMap: false, isMapRefreshing : false });
 			});
 		};
 
-		if (!map || mapStateValues.reintializeMap) {
+		if (!map || mapStateValues.reintializeMap || mapStateValues.isMapRefreshing) {
 			initializeMap({ setMap, mapEl, setStateApp, setDraw });
 		}
-	}, [map, mapStyles, mapStateValues.mapVars.styleId]);
+	}, [map, mapStyles, mapStateValues.mapVars.styleId, mapStateValues.isMapRefreshing]);
 
 	// Use effect for removing shape filter
 	useEffect(() => {

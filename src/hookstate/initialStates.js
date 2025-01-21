@@ -378,6 +378,7 @@ export const mapStateInitialState = {
 	mapVars: defaultMapVars,
 	defaultMapVars,
 	isDefaultViewAllowed: true,
+	isMapRefreshing: false
 };
 
 export const mapState = hookstate(copy(mapStateInitialState));
