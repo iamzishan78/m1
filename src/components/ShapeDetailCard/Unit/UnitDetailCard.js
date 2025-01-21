@@ -21,11 +21,14 @@ import Taps from 'components/Shared/Taps';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 
+import { globalStateController } from 'hookstate/globalStateController';
 import { jobController } from 'hookstate/jobStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { popupController } from 'hookstate/popupStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { LOD_YEAR } from 'utils/consts';
 
 import { showSuccessMessage, showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
@@ -33,8 +36,6 @@ import { AppContext } from 'AppContext';
 import { getShapeSubtitle } from '../helper';
 import { detailCardStyles } from '../style';
 import UnitSummary from './UnitSummary';
-import { globalStateController } from 'hookstate/globalStateController';
-import { LOD_YEAR } from 'utils/consts';
 
 const setSelectedTab = tableGlobalController.setSelectedTab;
 

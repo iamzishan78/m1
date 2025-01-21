@@ -19,6 +19,8 @@ import UserManagementProvider from 'components/UserManagement/UserManagementProv
 
 import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 
+import { deleteSession } from 'utils/user';
+
 import { AppContext } from 'AppContext';
 
 export const useStyles = makeStyles(() => ({
@@ -114,14 +116,11 @@ export default function UserProfile() {
 		}
 
 		setAnchorEl(null);
-		sessionStorage.clear();
-		localStorage.clear();
 
 		if (currentAccount) {
-			stateApp.myMSALObj?.logout(logoutRequest);
+			stateApp?.myMSALObj?.logout(logoutRequest);
 		}
-
-		window.location.replace(window.location.origin);
+		deleteSession();
 	};
 
 	const handleProfileMenuOpen = event => setAnchorEl(event.currentTarget);

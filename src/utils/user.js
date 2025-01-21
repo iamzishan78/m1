@@ -16,4 +16,7 @@ export function getSession() {
 export function deleteSession() {
 	const cookies = new Cookies();
 	cookies.remove(COOKIES_USER_TOKEN, { path: '/' });
+	sessionStorage.clear();
+	localStorage.clear();
+	window.location.replace(window.location.origin);
 }

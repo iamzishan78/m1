@@ -19,7 +19,7 @@ import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions'
 
 import { simpleAuthBypass } from 'utils/data';
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
-import { saveUserSession } from 'utils/user';
+import { deleteSession, saveUserSession } from 'utils/user';
 
 import Api from 'api';
 
@@ -267,8 +267,7 @@ const Login = props => {
 						finishAADAuth(accountObj);
 					} else {
 						setLoading(false);
-						sessionStorage.clear();
-						window.location.replace(window.location.origin);
+						deleteSession();
 					}
 				})
 				.catch(error => {
@@ -298,14 +297,11 @@ const Login = props => {
 						account: currentAccount,
 					};
 
-					sessionStorage.clear();
-					localStorage.clear();
-
 					// Need to call this all the time on exception to clear msal cache
 					// in particular when cancelling login to change workspaces
 					stateApp.myMSALObj.logout(logoutRequest);
 
-					// window.location.replace(window.location.origin);
+					deleteSession();
 					setLoading(false);
 				});
 		} else {
