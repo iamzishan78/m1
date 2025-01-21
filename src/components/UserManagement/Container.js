@@ -8,6 +8,8 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 import MRTTable from 'components/MRTTable';
 
+import { UserSession } from 'utils/user';
+
 import { Modals } from '../../styles/Modal';
 import { NavigationContext } from '../Navigation/NavigationContext';
 
@@ -60,7 +62,7 @@ export default function UserManagementContainer() {
 						overrideMeta={{
 							deletedKeys: {
 								mainRecord: { key: '_id' },
-								parentRecord: { value: window.sessionStorage.getItem('tenantOrgId') },
+								parentRecord: { value: UserSession.getStorageItem('tenantOrgId') },
 							},
 						}}
 					/>

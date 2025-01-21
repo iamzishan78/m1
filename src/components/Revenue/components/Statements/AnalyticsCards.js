@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Grid, Card, CardContent, Typography, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
+import PropTypes from 'prop-types';
+
 import FilterIcon from 'components/Common/SvgIcons/Filter';
 
 const useStyles = makeStyles(() => ({
@@ -97,7 +99,7 @@ export default function AnalyticsCards(props) {
 			filter = { field: 'approvalStatus.keyword', value: 'Unapproved' };
 		}
 		if (type === 'potentialIssues') {
-			filter = { field: 'isAmountValidated', value: 'false', type: 'term' };
+			filter = { field: 'isAmountValidated', value: false, type: 'term' };
 		}
 
 		let revert = {};
@@ -194,3 +196,12 @@ export default function AnalyticsCards(props) {
 		</Grid>
 	);
 }
+
+Filter.propTypes = { status: PropTypes.string, onClick: PropTypes.func };
+AnalyticsCards.propTypes = {
+	potentialIssuesCount: PropTypes.number,
+	unapprovedCount: PropTypes.number,
+	setAnalyticFilters: PropTypes.func,
+	approvedCount: PropTypes.number,
+	checks: PropTypes.number,
+};

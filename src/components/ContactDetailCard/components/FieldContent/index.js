@@ -346,10 +346,16 @@ export default function FieldContent({
 
 	const formatFieldValue = (val, metaField) => {
 		if (metaField?.type === 'date') {
-			return formatDate(val)
+			return formatDate(val);
+		} else if (metaField?.type === 'link') {
+			return (
+				<Link href={val} target="_blank">
+					{val}
+				</Link>
+			);
 		}
 		return val;
-	}
+	};
 
 	let inputsArray = [];
 	if (edit) {
@@ -608,9 +614,11 @@ export default function FieldContent({
 	) : (
 		(() => {
 			// Find the metafield object with an eskey matching a key in content
-			const metaField = metafields ? metafields.find((metafield) => {
-				return Object.keys(content).includes(metafield.esKey)
-			}) : null;
+			const metaField = metafields
+				? metafields.find(metafield => {
+						return Object.keys(content).includes(metafield.esKey);
+					})
+				: null;
 
 			return (
 				<span>
@@ -669,8 +677,10 @@ export default function FieldContent({
 					)}
 					{!childrenLeft && !onlyChildren && children ? children : ''}
 					{isCurEdited ? ' (edited)' : ''}
-				</span>)
-		})());
+				</span>
+			);
+		})()
+	);
 
 	return (
 		<React.Fragment>

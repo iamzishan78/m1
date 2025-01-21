@@ -35,6 +35,8 @@ import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
 import { COMMENTSBYOBJECTSIDS } from 'graphQL/useQueryCommentsByObjectsIds';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
+import { UserSession } from 'utils/user';
+
 import { AppContext } from 'AppContext';
 
 const AntSwitch = withStyles(theme => ({
@@ -355,7 +357,7 @@ export default function Comments(props) {
 					objectType: props.targetLabel,
 					commentType: selectedCommentType,
 					pin: false,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 			refetchQueries: [

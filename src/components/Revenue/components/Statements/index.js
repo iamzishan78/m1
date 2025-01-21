@@ -18,13 +18,6 @@ const useStyles = makeStyles(() => ({
 	root: {
 		margin: '75px 0 10px',
 	},
-	revenueContainer: {
-		'& .MuiTableRow-root': {
-			backgroundColor: 'red',
-			color: 'red',
-			zIndex: 0,
-		},
-	},
 }));
 
 export default function RevenueStatements() {
@@ -109,6 +102,8 @@ export default function RevenueStatements() {
 		filters = filters.filter(f => f.field !== filter.field);
 		if (status) {
 			filters.push(filter);
+		} else {
+			tableController('RevenueStatementsTable').clearFilter(filter.field);
 		}
 		setESFilters(filters);
 		setFilterToggle(!filterToggle);
@@ -136,7 +131,7 @@ export default function RevenueStatements() {
 					/>
 				</div>
 
-				<div className={classes.revenueContainer} style={{}}>
+				<div>
 					<MRTTable name="RevenueStatementsTable" />
 				</div>
 			</div>

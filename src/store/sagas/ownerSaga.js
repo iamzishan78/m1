@@ -5,8 +5,7 @@ import { getPolygonString } from 'components/Shared/functions';
 
 import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
 import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
-import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
-import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { GET_DB_DATA, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 import { OWNERS_BY_WELL_IDS } from 'graphQL/useQueryOwnersByWellIds';
 import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
 import { SHAPEOWNERSCOUNT, SHAPEOWNERSINTERESTCOUNT } from 'graphQL/useQueryShapeOwnersCount';
@@ -28,9 +27,10 @@ import {
 	EXEC_ASYNC_EXPORT_JOB,
 } from 'store/type';
 
+import { LOD_YEAR } from 'utils/consts';
+
 import { showErrorMessage } from 'actions';
 import Api from 'api';
-import { LOD_YEAR } from 'utils/consts';
 
 function* getShapeOwnersAndCount(action) {
 	try {

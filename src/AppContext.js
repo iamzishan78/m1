@@ -9,6 +9,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from 'hookstate/popupStateController';
 
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
+import { UserSession } from 'utils/user';
 
 import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConfig';
 import { MSALB2CObj, B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
@@ -192,12 +193,12 @@ const AppProvider = props => {
 		async function wait() {
 			const query = queryString.parse(window.location.search);
 
-			let tenantName = query.tenant || window.sessionStorage.getItem('tenantName') || '';
+			let tenantName = query.tenant || UserSession.getStorageItem('tenantName') || '';
 			const isBypassTenant = globalStateController.isBypassTenant(tenantName);
 
 			let tenant = tenantsCredentials(tenantName);
-			if (tenant) {
-				window.sessionStorage.setItem('tenantName', tenantName);
+			if (tenant && !query.tenant) {
+				UserSession.setStorageItem('tenantName', tenantName);
 
 				tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
 				tenant.apolloClientEndpoint =
@@ -220,7 +221,7 @@ const AppProvider = props => {
 				});
 			}
 
-			let B2CTenantName = window.sessionStorage.getItem('B2CTenantName');
+			let B2CTenantName = UserSession.getStorageItem('B2CTenantName');
 
 			if (B2CTenantName) {
 				let tenant = B2CTenantCredentials(B2CTenantName);

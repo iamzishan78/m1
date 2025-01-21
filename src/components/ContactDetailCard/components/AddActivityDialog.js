@@ -28,6 +28,8 @@ import { OPENDEALS } from 'graphQL/useQueryOpenDeals';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
+import { UserSession } from 'utils/user';
+
 import { showErrorMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
@@ -382,7 +384,7 @@ function AddActivityDialog(props) {
 					isClosed: closed?.value,
 					user: stateApp.user._id,
 					createdBy: stateApp?.user?._id,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 			refetchQueries: ['getContact'],
