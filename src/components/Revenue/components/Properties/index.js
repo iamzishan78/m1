@@ -182,6 +182,7 @@ export default function Properties() {
 				filterToggle={filterToggle}
 				setFilterToggle={setFilterToggle}
 				unmappedPropertyCount={getUnmappedPropertyCountResult?.getUnmappedPropertyCount?.unmappedCount}
+				clearFilter={tableController('PropertiesTable').clearFilter}
 			/>
 			<div className={classes.propertyTableInfContainer}>
 				<MRTTable name="PropertiesTable" />
