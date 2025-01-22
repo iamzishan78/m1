@@ -505,11 +505,11 @@ export const generateFileFilters = ({
 		variables: {
 			index: 'shapefile_flat',
 			pagination,
-			...extendFilters.variables,
-			search: extendFilters.variables.search || {
+			...(extendFilters?.variables || {}),
+			search: extendFilters?.variables?.search || {
 				advanceSearch,
 			},
-			filters: extractUniqueFilters([...filters, ...(extendFilters.variables?.filters || [])]),
+			filters: extractUniqueFilters([...filters, ...(extendFilters?.variables?.filters || [])]),
 		},
 	};
 };
