@@ -142,7 +142,7 @@ const UnitInterestOwnerMeta = {
 			isExport: 'name',
 			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
-				const isPurchased = [true, 'true', 'True'].includes(row?.original?.contact?.isPurchased);
+				const isPurchased = [true, 'true', 'True'].includes(row?.original?.isPurchased);
 				return (
 					<div
 						style={{
