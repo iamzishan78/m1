@@ -387,7 +387,7 @@ const layerStateControllerHandler = state => {
 	};
 
 	const updateLayer = (layer, updatedState) => {
-		const layerId = `${layer?.identifier}_${layer._id}`;
+		const layerId = `${layer?.identifier}_${layer.layerId}`;
 		DeckGlLayer.updateLayer(updatedState, window.mapRef?.getLayer(layerId)?.implementation);
 	};
 
@@ -396,7 +396,7 @@ const layerStateControllerHandler = state => {
 			return;
 		}
 
-		const layerId = `${layer?.identifier}_${layer._id}`;
+		const layerId = `${layer?.identifier}_${layer.layerId}`;
 		DeckGlLayer.removeLayer(layerId);
 		delete deckLayers[layerId];
 
@@ -494,7 +494,7 @@ const layerStateControllerHandler = state => {
 			return identifier === dbLayer?.identifier;
 		});
 		return layerIndex > 0
-			? `${showableLayers[layerIndex - 1]?.identifier}_${showableLayers[layerIndex - 1]._id}`
+			? `${showableLayers[layerIndex - 1]?.identifier}_${showableLayers[layerIndex - 1].layerId}`
 			: 'first_deck_layer';
 	};
 
@@ -669,7 +669,7 @@ const layerStateControllerHandler = state => {
 			return null;
 		}
 
-		const layerId = `${dbLayer.identifier}_${dbLayer._id}`;
+		const layerId = `${dbLayer.identifier}_${dbLayer.layerId}`;
 		const beforeLayerId = getBeforeLayerId(dbLayer.identifier);
 
 		const isFileLayer = dbLayer.layerType === 'file layer';
@@ -874,11 +874,11 @@ const layerStateControllerHandler = state => {
 			}
 
 			if (currentLayer && !beforeLayer) {
-				DeckGlLayer.moveLayer(`${currentLayer?.identifier}_${currentLayer._id}`);
+				DeckGlLayer.moveLayer(`${currentLayer?.identifier}_${currentLayer.layerId}`);
 			} else {
 				DeckGlLayer.moveLayer(
-					`${currentLayer?.identifier}_${currentLayer._id}`,
-					`${beforeLayer?.identifier}_${beforeLayer._id}`
+					`${currentLayer?.identifier}_${currentLayer.layerId}`,
+					`${beforeLayer?.identifier}_${beforeLayer.layerId}`
 				);
 			}
 			return null;
