@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import AddDialogeUploadZone from 'components/ContactDetailCard/components/AddDialogUploadZone';
 import CommentComponent from 'components/Shared/CommentComponent';
@@ -466,6 +467,30 @@ export default function MetadataDrawer(props) {
 	);
 }
 
+MetadataDrawer.propTypes = {
+	setCollapse: PropTypes.func.isRequired,
+	targetSourceId: PropTypes.string.isRequired,
+	targetLabel: PropTypes.string.isRequired,
+	title: PropTypes.string,
+	viewAllDocuments: PropTypes.bool,
+	ownerTitle: PropTypes.string,
+	ownerPlaceHolder: PropTypes.string,
+	isApproval: PropTypes.bool,
+	isOwner: PropTypes.bool,
+	isSource: PropTypes.bool,
+	data: PropTypes.object,
+	shapeType: PropTypes.string,
+	shapeData: PropTypes.object,
+	descriptionKey: PropTypes.string,
+	onUpdate: PropTypes.func,
+	menuComponent: PropTypes.node,
+	showDescription: PropTypes.bool,
+	documentsTitle: PropTypes.string, // Added propTypes validation for documentsTitle
+	activityLog: PropTypes.array,
+	showCommentType: PropTypes.bool,
+	// other propTypes
+};
+
 MetadataDrawer.defaultProps = {
 	title: 'Metadata',
 	documentsTitle: 'Documents',
@@ -473,7 +498,7 @@ MetadataDrawer.defaultProps = {
 	commentsWidth: '570px',
 	viewAllDocuments: false,
 	ownerTitle: 'Owner',
-	ownerPlaceHolder: 'Assign Approver',
+	ownerPlaceHolder: 'Assign Owner',
 	descriptionKey: 'metaDescription',
 	isApproval: false,
 	isOwner: true,

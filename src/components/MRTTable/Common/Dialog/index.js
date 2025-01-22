@@ -13,11 +13,13 @@ import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/E
 import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
 
 import { globalStateController } from 'hookstate/globalStateController';
+
+import Comments from "components/Shared/Comments";
+
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
-import CommentDialog from './CommentDialog';
 import DeleteConfirmationDialog from './ConfirmationDialog/DeleteConfirmationDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmationDialog';
 import TagDialog from './TagDialog';
@@ -113,15 +115,13 @@ function AllDialogs(props) {
 					/>
 				</Dialog>
 			)}
-			{type === 'comments' && (
+			{type === "commentsWithTags" && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<CommentDialog
-						{...rest}
+					<Comments {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck} containsComments={true} isHelperTextAllow={true} isSaveAllowed={false}
 						refetch={isClientSide ? tableGlobalController.refetchAdditionalQueries : tableGlobalController.refetch}
 					/>
 				</Dialog>
 			)}
-
 			{type === 'convertContactSlideout' && (
 				<MultipleOwnerToContactDrawerContainer
 					onClose={() => {

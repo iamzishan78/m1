@@ -221,7 +221,7 @@ function ESAutoCompleteFilter({
 			multiple={multiple}
 			id={`${compositeFields.join(' ')}-filter-autocomplete`}
 			options={
-				multiple
+				multiple && Array.isArray(filterValue)
 					? optionsToShow?.filter(item => filterValue.find(value => isEqual(value, item.value)) == null)
 					: optionsToShow
 			}
