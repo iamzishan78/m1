@@ -146,6 +146,7 @@ const LayerMeta = {
 					data: deckLayers[layerId].getData([]),
 					getFillColor: getWellColor,
 					getLineColor: getWellColor,
+					fillPatternEnabled: false,
 					pointRadiusMinPixels: 2.5,
 					lineWidthMinPixels: 1.5,
 					pointRadiusMaxPixels: 10,
@@ -247,6 +248,7 @@ const LayerMeta = {
 				return {
 					data: deckLayers[layerId].getData([]),
 					getFillColor: [0, 0, 0, 0],
+					fillPatternEnabled: false,
 					getLineColor: [0, 0, 0, 0],
 					lineWidthMinPixels: 1.5,
 					lineWidthMaxPixels: 8,
@@ -269,6 +271,7 @@ const LayerMeta = {
 				return {
 					data: deckLayers[layerId].getData([]),
 					getFillColor: [0, 0, 0, 0],
+					fillPatternEnabled: false,
 					getLineColor: [0, 0, 0, 0],
 					lineWidthMinPixels: 1.5,
 					lineWidthMaxPixels: 8,
@@ -738,6 +741,7 @@ const layerStateControllerHandler = state => {
 				getLineWidth: newId,
 				defaultColor: newId,
 				getPointRadius: newId,
+				fillPatternEnabled: newId,
 			};
 		}
 		if (!boundingState.show?.current) {
