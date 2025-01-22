@@ -34,6 +34,8 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { sideDialogController, tractInterestOwnerState } from 'hookstate/sideDialogController';
 import { tableGlobalController } from 'hookstate/tableController';
 
+import { UserSession } from 'utils/user';
+
 import { showErrorMessage, showSuccessMessage } from '../../../../../../src/actions';
 
 const useStyles = makeStyles(theme => ({
@@ -82,7 +84,7 @@ const useStyles = makeStyles(theme => ({
 function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 	const dispatch = useDispatch();
 	const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
-	const tenantName = window.sessionStorage.getItem('tenantName');
+	const tenantName = UserSession.getStorageItem('tenantName');
 
 	const formState = sideDialogController('tractInterestDialog').useCompleteState();
 	const formStateValues = formState?.get({ noproxy: true });
@@ -253,6 +255,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 						ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
 						campaignPriority:
 							ownerToAdd.campaignPriority && (ownerToAdd.campaignPriority.value || ownerToAdd.campaignPriority),
+						isPurchased: ownerToAdd.isPurchased && (ownerToAdd.isPurchased.value || ownerToAdd.isPurchased),
 					},
 				},
 			});

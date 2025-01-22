@@ -193,12 +193,13 @@ const StyledTabs = withStyles({
 	},
 })(Tabs);
 
+const THEME_SPACING = 4;
 const StyledTab = withStyles(theme => ({
 	root: {
 		textTransform: 'uppercase',
 		minWidth: 72,
 		fontWeight: theme.typography.fontWeightRegular,
-		marginRight: theme.spacing(4),
+		marginRight: theme.spacing(THEME_SPACING),
 		fontFamily: [
 			'-apple-system',
 			'BlinkMacSystemFont',
@@ -520,6 +521,7 @@ export default function DetailComponents(props) {
 								setStateApp={setStateApp}
 								ownerTitle="Approver"
 								isApproval={true}
+								showCommentType
 							/>
 						) : (
 							<AddNewRelatedAgreementDialog

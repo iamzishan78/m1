@@ -6,7 +6,7 @@ import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 import { globalStateController } from 'hookstate/globalStateController';
 
 import { wellsKeys } from 'utils/data';
-import { getSession } from 'utils/user';
+import { UserSession } from 'utils/user';
 
 import { TO_FIXED, WEEK_DAYS } from './consts';
 
@@ -72,7 +72,7 @@ export const getIdFromPath = path => {
 };
 
 export const getURL = () => {
-	let tenantName = window.sessionStorage.getItem('tenantName');
+	let tenantName = UserSession.getStorageItem('tenantName');
 	if (tenantName) {
 		let tenant = tenantsCredentials(tenantName);
 		return isDev ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
@@ -81,7 +81,7 @@ export const getURL = () => {
 };
 
 export const getHeaders = () => {
-	const session = getSession();
+	const session = UserSession.getSession();
 	const headers = { 'X-ZUMO-AUTH': session.authToken };
 	if (isDev || globalStateController.getValue('bypassLogin')) {
 		headers['X-MS-TOKEN-AAD-ID-TOKEN'] = session.accessToken;

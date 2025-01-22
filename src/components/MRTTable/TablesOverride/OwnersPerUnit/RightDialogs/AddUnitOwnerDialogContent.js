@@ -196,12 +196,14 @@ export default function AddUnitOwnerDialogContent({
 	};
 
 	const handleUpdateContact = ownerToAdd => {
+		console.log(selectedRow);
+		console.log(ownerToAdd);
 		if (
 			((ownerToAdd.contactStatus || selectedRow?.contactStatus) &&
 				selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
 			((ownerToAdd.status || selectedRow?.status) && selectedRow?.status !== ownerToAdd.status) ||
-			((ownerToAdd?.contactOwners?.label || selectedRow?.contactOwners?.[0]) &&
-				selectedRow?.contactOwners?.[0] !== ownerToAdd?.contactOwners?.label) ||
+			((ownerToAdd?.contactOwners || selectedRow?.contactOwners?.[0]) &&
+				selectedRow?.contactOwners?.[0] !== ownerToAdd?.contactOwners) ||
 			((ownerToAdd.ownerType || selectedRow?.ownerType) && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
 			((ownerToAdd.campaignPriority || selectedRow?.campaignPriority) &&
 				selectedRow?.campaignPriority !== ownerToAdd.campaignPriority)
@@ -219,6 +221,7 @@ export default function AddUnitOwnerDialogContent({
 						ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
 						campaignPriority:
 							ownerToAdd.campaignPriority && (ownerToAdd.campaignPriority.value || ownerToAdd.campaignPriority),
+						isPurchased: ownerToAdd.isPurchased && (ownerToAdd.isPurchased.value || ownerToAdd.isPurchased),
 					},
 				},
 			});

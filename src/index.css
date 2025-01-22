@@ -258,3 +258,27 @@ body {
 .MuiChip-root.MuiChip-filled.MuiChip-deletable {
 	border-radius: 4px !important;
 }
+
+/* Hide scrollbar for other browsers */
+.hide-scrollbar {
+	scrollbar-width: none; /* Firefox */
+	padding: 4px 0px 0px 4px !important;
+}
+
+textarea#mention-input:focus + span,
+.input-helper-text.fill {
+	position: absolute !important;
+	left: 15px !important;
+	top: -11px !important;
+	width: 90px !important;
+	background: linear-gradient(to bottom, #ffff 64%, transparent 100%);
+	text-align: center !important;
+	transition: 0.3s ease all !important;
+	z-index: 999998;
+}
+
+.input-helper-text {
+	position: absolute !important;
+	left: 10px;
+	top: 5px;
+}

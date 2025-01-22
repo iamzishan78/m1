@@ -4,8 +4,7 @@ import { Grid, IconButton, Divider, FormControlLabel, Switch, Tooltip, ClickAway
 import { Close as CloseIcon } from '@material-ui/icons';
 import GridOnIcon from '@material-ui/icons/GridOn';
 
-import { Typography } from '@mui/material';
-import { Slider, TextField, Box } from '@mui/material';
+import { Typography, Slider, TextField, Box } from '@mui/material';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import _ from 'lodash';
@@ -27,10 +26,10 @@ import { AppContext } from 'AppContext';
 
 import { useLayerStyle, useStyles, WidthPicker } from './Common';
 import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
+import AttrsFillStyleDropdown from './LayerAttributes/AttrsFillStyleDropdown';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
 import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
 import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
-import AttrsFillStyleDropdown from './LayerAttributes/AttrsFillStyleDropdown';
 
 function LayerStyling() {
 	const classes = useStyles();
@@ -104,7 +103,6 @@ function LayerStyling() {
 				},
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -113,7 +111,6 @@ function LayerStyling() {
 
 	useEffect(() => {
 		const hookStateAppLayers = globalStateController.getValue('layers');
-
 		if (
 			(hookStateAppLayers &&
 				selectedLayer &&
@@ -135,9 +132,10 @@ function LayerStyling() {
 		) {
 			let { currentLayer } = handleLayerChange();
 			const currentLayers = [...hookStateAppLayers];
-			const index = currentLayers.findIndex(l => l._id === currentLayer._id);
+			const index = currentLayers.findIndex(l => l.layerId === currentLayer.layerId);
 			currentLayers[index] = currentLayer;
 
+			const TWOFIFTY = 250;
 			const debouncedUpdate = _.debounce(() => {
 				globalStateController.updateState({ layers: currentLayers });
 				layerController.resetBounds(selectedLayer?.identifier, true);
@@ -145,13 +143,23 @@ function LayerStyling() {
 					variables: {
 						settings: {
 							_id: currentLayer._id,
+							user: stateApp.user.mongoId,
+							layer: selectedLayer.layerId,
 							layerPaintProps: currentLayer.layerPaintProps,
 							layerSettings: currentLayer.layerSettings,
 						},
 					},
+					refetchQueries: ['getAllLayerSettingsByUser'],
+					awaitRefetchQueries: true,
+				}).then(({ data }) => {
+					if (data?.updateUserLayerSettings?.res && !currentLayer._id) {
+						mapControlsController.updateState({
+							selectedLayer: { ...selectedLayer, _id: data.updateUserLayerSettings.res._id },
+						});
+					}
 				});
 				// layerController.handleDeckLayer(currentLayer, true);
-			}, 250); // Adjust the debounce delay as needed
+			}, TWOFIFTY); // Adjust the debounce delay as needed
 
 			debouncedUpdate();
 
@@ -159,7 +167,7 @@ function LayerStyling() {
 				debouncedUpdate.cancel(); // Clean up on unmount or dependencies change
 			};
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		return null;
 	}, [
 		layerClickability,
 		layerLabelVisibility,
@@ -184,7 +192,6 @@ function LayerStyling() {
 			selectedLayer.layerShapeName = selectedLayer.layerShapeName || selectedLayer.layerCategory;
 			layerFeaturesCount({ variables: { fileId: selectedLayer.file, layerShapeName: selectedLayer.layerShapeName } });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [mapControlStates.selectedLayer.file, layerFeaturesCount]);
 
 	const handleClose = () => {
@@ -297,7 +304,7 @@ function LayerStyling() {
 									control={
 										<Switch
 											checked={layerClickability}
-											onChange={e => setLayerClickability(!layerClickability)}
+											onChange={() => setLayerClickability(!layerClickability)}
 											size="small"
 											data-testid="layer-pickability-toggle"
 										/>
@@ -321,7 +328,7 @@ function LayerStyling() {
 										control={
 											<Switch
 												checked={enablefillColor}
-												onChange={e => setEnableFillColor(!enablefillColor)}
+												onChange={() => setEnableFillColor(!enablefillColor)}
 												size="small"
 												data-testid="layer-fill-toggle"
 											/>
@@ -391,7 +398,7 @@ function LayerStyling() {
 											control={
 												<Switch
 													checked={enableStrokeColor}
-													onChange={e => setEnableStrokeColor(!enableStrokeColor)}
+													onChange={() => setEnableStrokeColor(!enableStrokeColor)}
 													size="small"
 													data-testid="layer-stroke-toggle"
 												/>

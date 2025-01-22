@@ -31,7 +31,7 @@ const ValidationGrids = ({ propertyId, associatedWellIds }) => {
 				: null;
 
 		return { salesVolumeMeta, wellProductionMeta };
-	}, [propertyId, associatedWellIds]);
+	}, [propertyId, associatedWellIds, selectedTab]);
 
 	// Create panels dynamically based on the presence of associatedWellIds
 	const panels = useMemo(() => {
@@ -50,9 +50,12 @@ const ValidationGrids = ({ propertyId, associatedWellIds }) => {
 		}
 
 		return panelsArray;
-	}, [overrideMeta, associatedWellIds]);
+	}, [overrideMeta, associatedWellIds, selectedTab]);
 
-	return <TabPanels key={overrideMeta.salesVolumeMeta.tabLabels[0]} value={selectedTab} panels={panels} />;
+	console.log('overrideMeta: ', overrideMeta);
+	console.log('panels: ', panels);
+
+	return <TabPanels key="ValidationGridsTabPanels" value={selectedTab} panels={panels} />;
 };
 
 ValidationGrids.propTypes = {

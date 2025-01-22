@@ -47,7 +47,7 @@ export const msalConfig = tenant => {
 			postLogoutRedirectUri: path,
 		},
 		cache: {
-			cacheLocation: 'sessionStorage', // This configures where your cache will be stored
+			cacheLocation: 'localStorage', // This configures where your cache will be stored
 			storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
 		},
 	};
@@ -58,6 +58,7 @@ export const MSALObj = tenant => new msal.PublicClientApplication(msalConfig(ten
 export const loginRequest = graphqlScope => {
 	return {
 		scopes: ['openid'].concat(graphqlScope ? [graphqlScope] : []),
+		prompt: 'login',
 		// extraScopesToConsent: ["offline_access"],
 		// forceRefresh: true
 	};

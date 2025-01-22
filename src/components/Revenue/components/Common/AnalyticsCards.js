@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 import FilterIcon from 'components/Common/SvgIcons/Filter';
 
@@ -102,6 +103,7 @@ export default function AnalyticsCards({
 	setESFilters,
 	setFilterToggle,
 	filterToggle,
+	clearFilter,
 }) {
 	const classes = useStyles();
 	const [isFiltered, setFiltered] = useState([]);
@@ -134,9 +136,14 @@ export default function AnalyticsCards({
 			}
 		});
 
+		if (!isFiltered.length) {
+			Object.values(filterInfo).forEach(item => {
+				clearFilter(item.field);
+			});
+		}
+
 		setESFilters(filters);
 		setFilterToggle(!filterToggle);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isFiltered]);
 
 	const setCardPoint = (count, index) => {
@@ -228,7 +235,6 @@ export default function AnalyticsCards({
 		} else {
 			setCards(cardsDefault);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [totalCount]);
 
 	const handleFilterClick = key => {
@@ -267,8 +273,8 @@ export default function AnalyticsCards({
 	return (
 		<Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" className={classes.root}>
 			{cards &&
-				cards.map((card, index) => (
-					<Grid item md={3}>
+				cards.map(card => (
+					<Grid key={card.key} item md={3}>
 						<Card variant="outlined" className={[classes.card, isFiltered.includes(card.key) ? 'active' : '']}>
 							<CardContent className={classes.cardContent}>
 								<Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
@@ -321,3 +327,16 @@ export default function AnalyticsCards({
 		</Grid>
 	);
 }
+
+AnalyticsCards.propTypes = {
+	esIndex: PropTypes.string,
+	esFilters: PropTypes.func,
+	totalCount: PropTypes.number,
+	cardsDefault: PropTypes.object,
+	landSearchQuery: PropTypes.func,
+	unmappedPropertyCount: PropTypes.number,
+	setESFilters: PropTypes.func,
+	setFilterToggle: PropTypes.func,
+	filterToggle: PropTypes.func,
+	clearFilter: PropTypes.func,
+};

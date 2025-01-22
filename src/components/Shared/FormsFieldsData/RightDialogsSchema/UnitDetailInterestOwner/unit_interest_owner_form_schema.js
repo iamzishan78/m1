@@ -30,7 +30,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 		contactFields.splice(-2);
 		contactFields.push(...contactArray);
 	} else {
-		unitInterestFields.push(contactForm({ getValues, setValue })[3]);
+		unitInterestFields.push(contactForm({ getValues, setValue })[3], contactForm({ getValues, setValue })[14]);
 	}
 	const formFields = [
 		{

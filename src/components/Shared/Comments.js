@@ -28,6 +28,8 @@ import CommentType from 'components/Shared/components/Comment/CommentType';
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
+import { UserSession } from 'utils/user';
+
 import { AppContext } from '../../AppContext';
 import { REMOVECOMMENT } from '../../graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from '../../graphQL/useMutationUpsertComment';
@@ -37,6 +39,8 @@ import { COMMENTSBYOBJECTSIDS } from '../../graphQL/useQueryCommentsByObjectsIds
 // import value formatters
 import capitalizeFirstLetter from '../Shared/valueformatters/capitalize-first-letter.js';
 import CommentField from './components/Fields/CommentField';
+import MentionsUser from '../Shared/MentionsUser';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const AntSwitch = withStyles(theme => ({
 	root: {
@@ -216,6 +220,12 @@ const useStyles = makeStyles(theme => ({
 		display: 'flex',
 		padding: '12px',
 	},
+	commentBtn: {
+		float: 'right',
+		// right: '15px',
+		zIndex: '999',
+		marginTop: '10px',
+	},
 }));
 
 export default function Comments(props) {
@@ -245,7 +255,12 @@ export default function Comments(props) {
 		fetchPolicy: 'cache-first',
 	});
 
-	const [upsertComment] = useMutation(UPSERTCOMMENT);
+	const [upsertComment] = useMutation(UPSERTCOMMENT, {
+		onCompleted: () => {
+			tableGlobalController.refetch();
+			props.refetch?.();
+		},
+	});
 	const [removeComment] = useMutation(REMOVECOMMENT);
 
 	///////////////////// START FETCHING COMMENTS DATA ////////////////////////////////////////////
@@ -357,7 +372,7 @@ export default function Comments(props) {
 					objectType: props.targetLabel,
 					commentType: selectedCommentType,
 					pin: false,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 			refetchQueries: [
@@ -505,7 +520,7 @@ export default function Comments(props) {
 					objectType: props.targetLabel,
 					public: publicComment,
 					pin: false,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 			refetchQueries: [
@@ -592,17 +607,15 @@ export default function Comments(props) {
 						</FormGroup>
 					</Grid>
 					<Grid item xs={12}>
-						<CommentField
-							profilesInfo={profilesInfo}
+						<MentionsUser
 							users={users}
-							upsertComment={updateComment}
 							comment={comment}
 							setComment={setComment}
-							showActions={showActions}
-							setShowActions={setShowActions}
-							// setEditCommentId={setEditCommentId}
-							// isEdit={isEdit}
-							// setIsEdit={setIsEdit}
+							updateComment={updateComment}
+							profilesInfo={profilesInfo}
+							isSaveAllowed={props?.isSaveAllowed}
+							placeholder={props.placeholder}
+							isHelperTextAllow={props.isHelperTextAllow}
 						/>
 					</Grid>
 				</Grid>

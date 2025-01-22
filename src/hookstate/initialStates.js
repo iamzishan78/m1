@@ -70,6 +70,7 @@ export const tableGlobalState = hookstate({
 /* -------------------------------------------------------------------------- */
 
 export const layerStateInitialState = {
+	projectedLayers: [],
 	client: null,
 	history: null,
 	boundingStates: null,
@@ -477,6 +478,7 @@ export const adminOperationsInitialState = {
 	createNewFlatData: 'No',
 	warning: null,
 	message: null,
+	apiKeys: { dialpad: '' },
 };
 export const adminOperationsState = hookstate(copy(adminOperationsInitialState));
 

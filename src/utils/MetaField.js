@@ -122,6 +122,7 @@ const options = [
 	{ value: 'text', label: 'Text' },
 	{ value: 'number', label: 'Number' },
 	{ value: 'date', label: 'Date' },
+	{ value: 'link', label: 'Link' },
 ];
 
 const viewOptions = [
@@ -413,7 +414,7 @@ const MetaField = ({
 		rippleEffectCall(data);
 	};
 
-	const isBasicType = ['text', 'number', 'date'].includes(type);
+	const isBasicType = ['text', 'number', 'date', 'link'].includes(type);
 	const isDisabled = isBasicType ? !title : !title || items.filter(item => !!item.value).length === 0;
 
 	const postFix = type === 'number' ? '' : customDataPostfix;
@@ -539,10 +540,20 @@ const MetaField = ({
 												render={props => (
 													<Select
 														styles={{
-															menu: provided => ({ ...provided, zIndex: 9999 }),
+															menu: provided => ({
+																...provided,
+																zIndex: 9999,
+																height: '200px',
+																overflowY: 'auto',
+															}),
+															menuPortal: base => ({
+																...base,
+																zIndex: 9999,
+															}),
 														}}
+														menuPlacement="bottom" // Ensures the menu opens below the field
+														// menuPortalTarget={document.body} // Renders the dropdown in a portal (prevents clipping issues)
 														value={options.find(op => op.value === props.value)}
-														menuPlacement="auto"
 														onChange={e => {
 															props.onChange(e.value);
 														}}

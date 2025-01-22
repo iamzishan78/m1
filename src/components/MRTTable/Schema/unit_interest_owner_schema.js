@@ -484,15 +484,16 @@ const UnitInterestOwnerMeta = {
 
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'contact.isPurchased',
+			name: 'isPurchased',
+			accessorFn: row => row?.isPurchased,
 			header: 'Purchased Data Exists',
-			id: 'contact.isPurchased',
+			id: 'isPurchased',
 			filterSelectOptions: [
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
 			Cell: ({ row }) => {
-				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
 			},
 			isSearchField: false,

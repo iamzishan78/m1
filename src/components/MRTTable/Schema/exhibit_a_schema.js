@@ -78,7 +78,7 @@ const ExhibitAMeta = {
 			...CommonSchema.INITAIL_PINNED,
 			header: 'Agreement #',
 			id: 'shape.shapeJson.properties.agreementNumber',
-			name: 'shape.shapeJson.properties.agreementNumber.keyword',
+			name: 'shape.shapeJson.properties.agreementNumber',
 			Cell: ({ row }) => {
 				let value = row?.original?.shape?.shapeJson.properties.agreementNumber;
 				let layer = row?.original?.shape?.layer;
@@ -145,13 +145,13 @@ const ExhibitAMeta = {
 			...CommonSchema.STRING_COLUMN,
 			header: 'Agreement Name',
 			id: 'shape.shapeJson.properties.agreementName',
-			name: 'shape.shapeJson.properties.agreementName.keyword',
+			name: 'shape.shapeJson.properties.agreementName',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Type',
 			id: 'shape.shapeJson.properties.agreementType',
-			name: 'shape.shapeJson.properties.agreementType.keyword',
+			name: 'shape.shapeJson.properties.agreementType',
 			Cell: ({ row }) => {
 				const value = row?.original?.shape?.shapeJson?.properties?.agreementType;
 				return <>{AgreementTypes[value] || ''}</>;
@@ -161,19 +161,19 @@ const ExhibitAMeta = {
 			...CommonSchema.STRING_COLUMN,
 			header: 'Lessor/Grantor',
 			id: 'shape.shapeJson.properties.grantor',
-			name: 'shape.shapeJson.properties.grantor.keyword',
+			name: 'shape.shapeJson.properties.grantor',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Lessee/Grantee',
 			id: 'shape.shapeJson.properties.grantee',
-			name: 'shape.shapeJson.properties.grantee.keyword',
+			name: 'shape.shapeJson.properties.grantee',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Agmt Date',
 			id: 'shape.shapeJson.properties.agreementDate',
-			name: 'shape.shapeJson.properties.agreementDate.keyword',
+			name: 'shape.shapeJson.properties.agreementDate',
 			isSearchField: false,
 			type: 'date',
 			Cell: ({ row }) => {
@@ -185,7 +185,7 @@ const ExhibitAMeta = {
 			...CommonSchema.STRING_COLUMN,
 			header: 'Efftv Date',
 			id: 'shape.shapeJson.properties.effectiveDate',
-			name: 'shape.shapeJson.properties.effectiveDate.keyword',
+			name: 'shape.shapeJson.properties.effectiveDate',
 			isSearchField: false,
 			type: 'date',
 			Cell: ({ row }) => {
@@ -197,67 +197,67 @@ const ExhibitAMeta = {
 			...CommonSchema.STRING_COLUMN,
 			header: 'Agreement Status',
 			id: 'shape.shapeJson.properties.agreementStatus',
-			name: 'shape.shapeJson.properties.agreementStatus.keyword',
+			name: 'shape.shapeJson.properties.agreementStatus',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Tract Name',
 			id: 'parcel.name',
-			name: 'parcel.name.keyword',
+			name: 'parcel.name',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'State',
 			id: 'parcel.shapeJson.properties.originalProperties.State',
-			name: 'parcel.shapeJson.properties.originalProperties.State.keyword',
+			name: 'parcel.shapeJson.properties.originalProperties.State',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'County',
 			id: 'parcel.shapeJson.properties.originalProperties.County',
-			name: 'parcel.shapeJson.properties.originalProperties.County.keyword',
+			name: 'parcel.shapeJson.properties.originalProperties.County',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Block/Twsp',
-			name: 'parcel.shapeJson.properties.originalProperties.blockTownship.keyword',
+			name: 'parcel.shapeJson.properties.originalProperties.blockTownship',
 			id: 'parcel.shapeJson.properties.originalProperties.blockTownship',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Sec/Range',
-			name: 'parcel.shapeJson.properties.originalProperties.rangeSection.keyword',
+			name: 'parcel.shapeJson.properties.originalProperties.rangeSection',
 			id: 'parcel.shapeJson.properties.originalProperties.rangeSection',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Abstract/Sec',
-			name: 'parcel.shapeJson.properties.originalProperties.abstractSection.keyword',
+			name: 'parcel.shapeJson.properties.originalProperties.abstractSection',
 			id: 'parcel.shapeJson.properties.originalProperties.abstractSection',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Legal Description',
 			id: 'shape.shapeJson.properties.legalDesctiption',
-			name: 'shape.shapeJson.properties.legalDesctiption.keyword',
+			name: 'shape.shapeJson.properties.legalDesctiption',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Internal Company',
 			id: 'shape.shapeJson.properties.internalCompany',
-			name: 'shape.shapeJson.properties.internalCompany.keyword',
+			name: 'shape.shapeJson.properties.internalCompany',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Prospect',
 			id: 'shape.shapeJson.properties.prospectID',
-			name: 'shape.shapeJson.properties.prospectID.keyword',
+			name: 'shape.shapeJson.properties.prospectID',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Acquisition',
 			id: 'shape.shapeJson.properties.acquisitionID',
-			name: 'shape.shapeJson.properties.acquisitionID.keyword',
+			name: 'shape.shapeJson.properties.acquisitionID',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
@@ -275,19 +275,19 @@ const ExhibitAMeta = {
 			...CommonSchema.STRING_COLUMN,
 			header: 'Book',
 			id: 'shape.shapeJson.properties.recordedBook',
-			name: 'shape.shapeJson.properties.recordedBook.keyword',
+			name: 'shape.shapeJson.properties.recordedBook',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Page',
 			id: 'shape.shapeJson.properties.recordedPage',
-			name: 'shape.shapeJson.properties.recordedPage.keyword',
+			name: 'shape.shapeJson.properties.recordedPage',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Instrument #',
 			id: 'shape.shapeJson.properties.recordedInstrumentNumber',
-			name: 'shape.shapeJson.properties.recordedInstrumentNumber.keyword',
+			name: 'shape.shapeJson.properties.recordedInstrumentNumber',
 		},
 	],
 };

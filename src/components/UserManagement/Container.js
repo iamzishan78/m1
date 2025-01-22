@@ -8,6 +8,8 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 import MRTTable from 'components/MRTTable';
 
+import { UserSession } from 'utils/user';
+
 import { Modals } from '../../styles/Modal';
 import { NavigationContext } from '../Navigation/NavigationContext';
 
@@ -55,7 +57,15 @@ export default function UserManagementContainer() {
 					<HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={handleClose} />
 				</DialogTitle>
 				<DialogContent style={{ height: windowsHeight }}>
-					<MRTTable name="UserManagementTable" />
+					<MRTTable
+						name="UserManagementTable"
+						overrideMeta={{
+							deletedKeys: {
+								mainRecord: { key: '_id' },
+								parentRecord: { value: UserSession.getStorageItem('tenantOrgId') },
+							},
+						}}
+					/>
 				</DialogContent>
 			</Dialog>
 		</Fragment>
