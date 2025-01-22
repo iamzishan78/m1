@@ -51,14 +51,14 @@ const LastCheckDateFilter = ({
 	extraFitlers = [],
 	stateESKey = '',
 	isComparisonReport = false,
-	tableKey
+	tableKey,
 }) => {
 	const classes = useStyles();
-  
-	const [selectedFilter, setSelectedFilter] = useState("");
+
+	const [selectedFilter, setSelectedFilter] = useState('');
 	const [fromDate, setFromDate] = React.useState(null);
 	const [toDate, setToDate] = React.useState(null);
-	const [lastCheckMinDate, setLastCheckMinDate] = useState("");
+	const [lastCheckMinDate, setLastCheckMinDate] = useState('');
 	const [propertyFilter, setPropertyFilter] = useState([]);
 	const [checkNumberFilter, setCheckNumberFilter] = useState();
 	const [propertyNumberFilter, setPropertyNumberFilter] = useState();
@@ -90,17 +90,16 @@ const LastCheckDateFilter = ({
 			},
 		});
 	}, [getDbMinValue, esIndex, field]);
-  
-  
+
 	useEffect(() => {
-	  return () => {
-		if (tableKey) {
-		  tableController(tableKey).clearFilters(); // clear filter from the table state, when the component is destroyed
-		  setESFilters([]); // clear revenue filters and set default values
-		}
-	  };
+		return () => {
+			if (tableKey) {
+				tableController(tableKey).clearFilters(); // clear filter from the table state, when the component is destroyed
+				setESFilters([]); // clear revenue filters and set default values
+			}
+		};
 	}, []); // Empty dependency array means this effect runs only on mount and unmount
-  
+
 	const updateFilters = useCallback(() => {
 		let filters = copy(esFilters) ?? [];
 		const isDuplicateFilter = filters?.findIndex(filter => filter.field === field) !== -1;
@@ -122,7 +121,7 @@ const LastCheckDateFilter = ({
 		}
 		if (fromDate && toDate) {
 			if (isDuplicateFilter) {
-				filters = filters?.filter(filter => filter.field !== field)
+				filters = filters?.filter(filter => filter.field !== field);
 			}
 			filters.unshift({
 				field,
@@ -134,6 +133,9 @@ const LastCheckDateFilter = ({
 				searchType: 'betweenInclusive',
 				columnType: 'date',
 			});
+		} else {
+			tableController(tableKey).clearFilter(field);
+			filters = filters.filter(filter => filter.field !== field);
 		}
 
 		const _propertyFilter = copy(propertyFilter);
@@ -154,7 +156,8 @@ const LastCheckDateFilter = ({
 		// }
 		// Removed the conditional statement because clicking the cross icon in the comparison grid's global filter or selecting all dates was not updating the grid filters as expected.
 
-		if (!deepEqual(filters, copy(esFilters))) { // prevent from unnecessary re rendering 
+		if (!deepEqual(filters, copy(esFilters))) {
+			// prevent from unnecessary re rendering
 			setESFilters(filters);
 		}
 		setFilterToggle(!filterToggle);
