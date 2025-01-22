@@ -240,6 +240,12 @@ const getBoundsQuery = async ({
 			});
 		}
 
+		if (layerSettings.selectedFillStyle) {
+			Object.assign(variables.project, {
+				[layerSettings.selectedFillStyle.value.replace('.keyword', '')]: 1,
+			});
+		}
+
 		const queryHandler = {
 			identifier,
 			id: uuid(),
