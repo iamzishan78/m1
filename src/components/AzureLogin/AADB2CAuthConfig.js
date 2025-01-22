@@ -39,7 +39,7 @@ export const msalB2CConfig = (tenantId, clientId) => {
 			postLogoutRedirectUri: path,
 		},
 		cache: {
-			cacheLocation: 'sessionStorage', // This configures where your cache will be stored
+			cacheLocation: 'localStorage', // This configures where your cache will be stored
 			storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
 		},
 	};

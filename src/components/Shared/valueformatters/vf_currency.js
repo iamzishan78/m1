@@ -1,10 +1,10 @@
+import React from 'react';
+
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 import { toNumber } from 'lodash';
 
 import vf_number from './vf_number';
-
-// this function is intended to convert a numeric string to currency
 
 export default function vf_currency(value) {
 	var formatter = new Intl.NumberFormat('en-US', {
@@ -17,13 +17,20 @@ export default function vf_currency(value) {
 		if (v) {
 			return formatter.format(parseInt(v));
 		}
+		return v;
 	};
 
 	return valueFormatter(value);
 }
 
 export function vf_currency_to_fixed(value, toFixed) {
-	if (!value) return null;
+	if (value === 0) {
+		return `$${value}`;
+	}
+
+	if (!value) {
+		return null;
+	}
 
 	const numericValue = parseFloat(value);
 
@@ -45,6 +52,7 @@ export function vf_currency_to_fixed(value, toFixed) {
 		if (v) {
 			return formatter.format(parseFloat(v).toFixed(toFixed));
 		}
+		return v;
 	};
 
 	return valueFormatter(fixedValue);

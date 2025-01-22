@@ -19,6 +19,8 @@ import UserManagementProvider from 'components/UserManagement/UserManagementProv
 
 import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 
+import { UserSession } from 'utils/user';
+
 import { AppContext } from 'AppContext';
 
 export const useStyles = makeStyles(() => ({
@@ -114,14 +116,11 @@ export default function UserProfile() {
 		}
 
 		setAnchorEl(null);
-		sessionStorage.clear();
-		localStorage.clear();
 
 		if (currentAccount) {
-			stateApp.myMSALObj?.logout(logoutRequest);
+			stateApp?.myMSALObj?.logout(logoutRequest);
 		}
-
-		window.location.replace(window.location.origin);
+		UserSession.deleteSession();
 	};
 
 	const handleProfileMenuOpen = event => setAnchorEl(event.currentTarget);
@@ -143,7 +142,7 @@ export default function UserProfile() {
 				<CheckIcon />
 				<Typography variant="inherit" color="textPrimary">
 					{' '}
-					{sessionStorage.getItem('tenantName')}{' '}
+					{UserSession.getStorageItem('tenantName')}{' '}
 				</Typography>
 				<FiberManualRecordIcon style={{ color: '#34F125' }} fontSize="small" />
 			</MenuItem>

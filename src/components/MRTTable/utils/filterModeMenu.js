@@ -20,7 +20,7 @@ const filterModeMenu =
 			? schemaColumn.type === 'number'
 				? 'equals'
 				: 'singleselect'
-			: mapViewFilter?.filterType || schemaColumn.type;
+			: mapViewFilter?.filterType;
 
 		if (!columnFilterModesFnRefs?.[tableKey]) {
 			columnFilterModesFnRefs[tableKey] = {};

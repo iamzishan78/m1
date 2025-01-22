@@ -2,6 +2,8 @@ import { BlockBlobClient } from '@azure/storage-blob';
 import { cloneDeep, initial, join, keyBy, last, merge, split, values } from 'lodash';
 import moment from 'moment';
 
+import { UserSession } from 'utils/user';
+
 export * from './deepEqual';
 export * from './setStateIfDeepEqual';
 export * from './getPolygonString';
@@ -136,7 +138,7 @@ export function customStartCaseString(str, isDate) {
 }
 
 export function workspaceTenantName() {
-	const workspaceName = window.sessionStorage.getItem('tenantName');
+	const workspaceName = UserSession.getStorageItem('tenantName');
 	return workspaceName === 'localhost' ? 'm1dev' : workspaceName;
 }
 
