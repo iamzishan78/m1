@@ -70,7 +70,7 @@ export default class DeckGlOverlay {
 	static setProps = layers => {
 		let allLayers = [...layers];
 
-		allLayers = orderBy(allLayers, ['props.position'], ['asc']);
+		allLayers = orderBy(allLayers, ['props.position'], ['desc']);
 
 		allLayers.forEach(layer => {
 			layer.props.data = DeckGlOverlay.dataRef[layer.id];
