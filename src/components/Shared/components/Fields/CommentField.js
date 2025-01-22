@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import MentionsUser from '../../MentionsUser'
 
 import $ from 'jquery';
 
@@ -188,14 +189,6 @@ export default function DealComment({
 	const [selectedCommentType, setSelectedCommentType] = useState('General');
 	const [commentTypeDialogBox, setCommentTypeDialogBox] = useState(false);
 	const classes = useStyles({ fieldWidth, commentTypeDialogBox, collapsed: isCollapsed && !isEdit });
-	(function () {
-		var target = $('#colorText');
-		const scrollDiv = function () {
-			target.prop('scrollTop', this.scrollTop).prop('scrollLeft', this.scrollLeft);
-		};
-		$('.MuiOutlinedInput-input').scroll(scrollDiv);
-		$('.MuiOutlinedInput-input').resize(scrollDiv);
-	})();
 
 	const checkIfShowUsers = comment => {
 		let isActive = false;
@@ -242,7 +235,7 @@ export default function DealComment({
 		if (value.includes('\n')) {
 			value = value.replace(/\n/g, '<br>');
 		}
-		document.getElementById('colorText').innerHTML = value;
+		// document.getElementById('colorText').innerHTML = value;
 	}, [comment, users]);
 
 	const replaceAllWith = (_string, replaceFrom, replaceWith) => {
@@ -302,7 +295,7 @@ export default function DealComment({
 			}}
 		>
 			<div onClick={e => openDialogBox(e)}>
-				<Autocomplete
+				{/* <Autocomplete
 					id="txtArea"
 					className={classes.search}
 					style={{
@@ -376,6 +369,16 @@ export default function DealComment({
 							></div>
 						</>
 					)}
+				/> */}
+				<MentionsUser
+					users={users}
+					comment={comment}
+					setComment={setComment}
+					updateComment={upsertComment}
+					profilesInfo={profilesInfo}
+					setIsCollapsed={setIsCollapsed}
+					isSaveAllowed={false}
+					placeholder={'Add a question or post an update'}
 				/>
 				{!isCollapsed && (
 					<>
