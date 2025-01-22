@@ -1,10 +1,4 @@
-import { hookStateController } from 'hookstate/hookStateController';
+import { StateController } from './stateController';
+import { adminOperationsInitialState } from './initialStates';
 
-import { adminOperationsInitialState, adminOperationsState } from './initialStates';
-
-const adminOperationsControllerHandler = state => ({});
-
-export const adminOperationsController = {
-	...adminOperationsControllerHandler(adminOperationsState),
-	...hookStateController(adminOperationsState, adminOperationsInitialState),
-};
+export const globalStateController = new StateController(adminOperationsInitialState);
