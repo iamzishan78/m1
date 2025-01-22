@@ -30,6 +30,7 @@ import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
 import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
 import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
+import AttrsFillStyleDropdown from './LayerAttributes/AttrsFillStyleDropdown';
 
 function LayerStyling() {
 	const classes = useStyles();
@@ -44,7 +45,9 @@ function LayerStyling() {
 		width,
 		setWidth,
 		fillColor,
+		fillStyle,
 		setFillColor,
+		setFillStyle,
 		enablefillColor,
 		setEnableFillColor,
 		enableStrokeColor,
@@ -53,9 +56,13 @@ function LayerStyling() {
 		setSelectedValue,
 		selectedStrokeValue,
 		setSelectedStrokeValue,
+		selectedFillStyle,
+		setSelectedFillStyle,
 		attributeBasedColors,
 		setAttributeBasedColors,
 		attributeBasedStrokeColors,
+		attributeBasedStyles,
+		setAttributeBasedStyles,
 		setAttributeBasedStrokeColors,
 		layerLabelVisibility,
 		setLayerLabelVisibility,
@@ -120,8 +127,10 @@ function LayerStyling() {
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
 			!_.isEqual(selectedLayer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
 			!_.isEqual(selectedLayer.layerSettings?.attributeBasedStrokeColors, attributeBasedStrokeColors) ||
+			!_.isEqual(selectedLayer.layerSettings?.attributeBasedStyles, attributeBasedStyles) ||
 			selectedLayer.layerSettings?.selectedAttribute?.label !== selectedValue?.label ||
-			selectedLayer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label
+			selectedLayer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label ||
+			selectedLayer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label
 		) {
 			let { currentLayer } = handleLayerChange();
 			const currentLayers = [...hookStateAppLayers];
@@ -156,11 +165,14 @@ function LayerStyling() {
 		enablefillColor,
 		enableStrokeColor,
 		attributeBasedColors,
+		attributeBasedStyles,
 		attributeBasedStrokeColors,
 		selectedValue,
 		selectedStrokeValue,
+		selectedFillStyle,
 		strokeWidth,
 		fillColor,
+		fillStyle,
 		strokeColor,
 		width,
 	]);
@@ -334,6 +346,37 @@ function LayerStyling() {
 									</>
 								)}
 							</Grid>
+
+							{/* dropdown for fill style selection */}
+
+							<Grid item xs={12}>
+								<div
+									style={{
+										display: 'flex',
+										justifyContent: 'space-between',
+									}}
+								>
+									<Typography variant="h6">Fill Style</Typography>
+								</div>
+								{enablefillColor && (
+									<>
+										<AttrsAutocomplete
+											options={options}
+											selectedValue={selectedFillStyle}
+											setSelectedValue={setSelectedFillStyle}
+										/>
+										<AttrsFillStyleDropdown
+											selectedValue={selectedFillStyle}
+											selectedLayer={selectedLayer}
+											fillStyle={fillStyle}
+											setFillStyle={setFillStyle}
+											attributeBasedStyles={attributeBasedStyles}
+											setAttributeBasedStyles={setAttributeBasedStyles}
+										/>
+									</>
+								)}
+							</Grid>
+
 							{strokeColor && (
 								<Grid item xs={12}>
 									<div
