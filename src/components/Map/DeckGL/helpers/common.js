@@ -380,7 +380,6 @@ export const dividePolygon = polygon => {
 		],
 	]);
 
-	// console.log("Quadrants:", quadrants);
 	return [topLeft, topRight, bottomLeft, bottomRight];
 };
 export const getBeforeLayerId = (beforeLayer, layerFilters) =>
@@ -623,6 +622,31 @@ export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 	};
 };
 
+export const getLayerFillStyle = dbLayer => {
+	// const layerInteraction = dbLayer.layerSettings?.interaction;
+	const selectedFillStyle = dbLayer.layerSettings?.selectedFillStyle;
+	const selectAttrLabel = dbLayer.layerSettings?.selectedFillStyle?.label;
+	const attributeBasedStyles = dbLayer.layerSettings?.attributeBasedStyles;
+
+	return d => {
+		if (selectAttrLabel) {
+			let path = selectedFillStyle.value;
+			let keys = path?.split('.').slice(1, -1);
+			let value = _.get(d, keys) || _.get(d, path?.replace('.keyword', ''));
+			if (!value) {
+				keys = path?.split('.').slice(1, -1);
+				keys.unshift('properties');
+				value = _.get(d, keys);
+			}
+			const attrFillStyle = attributeBasedStyles[selectAttrLabel][value] || attributeBasedStyles[selectAttrLabel][''];
+			if (attrFillStyle) {
+				return attrFillStyle;
+			}
+		}
+		return null;
+	};
+};
+
 export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	const props = {};
 
@@ -725,6 +749,25 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 		props.pointType = 'icon';
 	}
 
+	if (dbLayer.layerSettings?.selectedFillStyle) {
+		// fill pattern props
+		props.stroked = true;
+		props.filled = true;
+		props.lineWidthMinPixels = 2;
+		props.fillPatternScale = 10;
+		props.fillPatternEnabled = true;
+
+		props.fillPatternMask = true;
+		props.getFillPatternScale = 1;
+		props.getFillPatternOffset = [0, 0];
+		props.getFillPattern = getLayerFillStyle(dbLayer);
+		props.fillPatternAtlas =
+			'https://raw.githubusercontent.com/visgl/deck.gl/master/examples/layer-browser/data/pattern.png';
+		props.fillPatternMapping =
+			'https://raw.githubusercontent.com/visgl/deck.gl/master/examples/layer-browser/data/pattern.json';
+	} else {
+		props.fillPatternEnabled = false;
+	}
 	return props;
 }
 
