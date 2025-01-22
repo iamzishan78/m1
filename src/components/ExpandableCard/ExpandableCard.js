@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
 import {
 	Avatar,
 	Box,
@@ -39,7 +40,6 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from 'hookstate/popupStateController';
 
 import { showInfoMessage } from 'actions';
-import { layerRefs } from 'hookstate';
 
 import ReportBugModal from './components/ReportBugModal';
 import { ExpandableCardContext } from './ExpandableCardContext';
@@ -527,7 +527,7 @@ function ExpandableCard(props) {
 
 			for (let i = 0; i < selectedAbstracts.length; i++) {
 				const id = selectedAbstracts[i].properties.Id;
-				const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+				const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
 				if (sourceId) {
 					window.mapRef?.setFeatureState({ source: sourceId, id }, { click: false });
 				}
@@ -617,10 +617,10 @@ function ExpandableCard(props) {
 						<Typography
 							// className={classes.prevlocation}
 							color="inherit"
-							// onClick={() => {
-							//   setStateApp({ ...stateApp, DocumentDrawer: true });
-							//   history.push("/documents");
-							// }}
+						// onClick={() => {
+						//   setStateApp({ ...stateApp, DocumentDrawer: true });
+						//   history.push("/documents");
+						// }}
 						>
 							Wells
 						</Typography>
@@ -760,16 +760,16 @@ function ExpandableCard(props) {
 								)}
 
 							{stateExpandableCard.expanded &&
-							targetLabel !== 'activity' &&
-							targetLabel !== 'contact' &&
-							parent !== 'table' ? (
+								targetLabel !== 'activity' &&
+								targetLabel !== 'contact' &&
+								parent !== 'table' ? (
 								parent !== 'table' &&
-								targetLabel !== 'well' &&
-								targetLabel !== 'expandedWell' &&
-								targetLabel !== 'parcel' &&
-								!selectedShape &&
-								targetLabel !== 'expandedParcel' &&
-								targetLabel !== 'recent_submitted_permits' ? (
+									targetLabel !== 'well' &&
+									targetLabel !== 'expandedWell' &&
+									targetLabel !== 'parcel' &&
+									!selectedShape &&
+									targetLabel !== 'expandedParcel' &&
+									targetLabel !== 'recent_submitted_permits' ? (
 									<Tooltip title={'Shrink'} placement="top">
 										<IconButton color="secondary" onClick={handleShrink} aria-label="shrink" className={classes.icons}>
 											<ShrinkIcon viewBox="0 0 64 64" color="secondary" />
@@ -826,27 +826,27 @@ function ExpandableCard(props) {
 													targetLabel === 'unit' ||
 													targetLabel === 'agreement' ||
 													targetLabel === 'activity') && (
-													<>
-														{' '}
-														<IconButton size="small" component="span" onClick={handleMenuClick}>
-															<MoreVertIcon id="expandCardVertIcon" color="secondary" size="medium" />
-														</IconButton>
-														<Menu
-															id="dealMenu"
-															anchorEl={anchorEl}
-															open={Boolean(anchorEl)}
-															onClose={handleMenuClose}
-															className={classes.menu}
-														>
-															<MenuItem onClick={openConfirmationDialog} data-testid="delete-icon">
-																<ListItemIcon>
-																	<DeleteIcon size="medium" />
-																</ListItemIcon>
-																<ListItemText>Delete</ListItemText>
-															</MenuItem>
-														</Menu>
-													</>
-												)}
+														<>
+															{' '}
+															<IconButton size="small" component="span" onClick={handleMenuClick}>
+																<MoreVertIcon id="expandCardVertIcon" color="secondary" size="medium" />
+															</IconButton>
+															<Menu
+																id="dealMenu"
+																anchorEl={anchorEl}
+																open={Boolean(anchorEl)}
+																onClose={handleMenuClose}
+																className={classes.menu}
+															>
+																<MenuItem onClick={openConfirmationDialog} data-testid="delete-icon">
+																	<ListItemIcon>
+																		<DeleteIcon size="medium" />
+																	</ListItemIcon>
+																	<ListItemText>Delete</ListItemText>
+																</MenuItem>
+															</Menu>
+														</>
+													)}
 											</>
 										)}
 									</Tooltip>

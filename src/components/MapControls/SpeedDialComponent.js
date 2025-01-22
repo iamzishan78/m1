@@ -12,11 +12,10 @@ import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 
 import { drawController } from 'hookstate/drawStateController';
+import { globalStateController } from 'hookstate/globalStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { popupController } from 'hookstate/popupStateController';
-
-import { layerRefs } from 'hookstate';
 
 import { clearMapAndCloseShapeActionsPopup } from './commonHelper';
 import { AppContext } from '../../AppContext';
@@ -157,7 +156,7 @@ export function SpeedDialComponent(props) {
 			window.mapRef?.removeLayer('aoi_label_layer');
 		}
 
-		const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+		const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
 
 		if (!sourceId) {
 			return;
@@ -205,7 +204,7 @@ export function SpeedDialComponent(props) {
 					selectedControl: action,
 					expandedPanel:
 						action === mapControlsController.getValue('selectedControl') &&
-						mapControlsController.getValue('expandedPanel')
+							mapControlsController.getValue('expandedPanel')
 							? false
 							: true,
 					anchorEl: anchorEl,

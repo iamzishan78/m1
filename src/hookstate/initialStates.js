@@ -27,6 +27,7 @@ export const globalInitialState = {
 	bypassType: '',
 	tenant: null,
 	layerSettingsLoading: false,
+	abstract_geo: {}
 };
 
 /* -------------------------------------------------------------------------- */

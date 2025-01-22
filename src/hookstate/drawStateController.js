@@ -19,6 +19,7 @@ import {
 	drawBoundary,
 	getDrawAdustedShape,
 } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { removeSpaces } from 'components/MRTTable/utils/helper';
 import { DRAWING_MODES } from 'components/Navigation/NavigationContext';
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { calculateLandArea, shapeTypeLayers } from 'components/Shared/functions/shapeLayer';
@@ -26,8 +27,8 @@ import { calculateLandArea, shapeTypeLayers } from 'components/Shared/functions/
 import { hookStateController } from 'hookstate/hookStateController';
 
 import { showErrorMessage } from 'actions';
-import { layerRefs } from 'hookstate';
 
+import { detailCardController } from './detailCardController';
 import { globalStateController } from './globalStateController';
 import { drawInitialState, drawState } from './initialStates';
 import { jobController } from './jobStateController';
@@ -36,8 +37,6 @@ import { layerController } from './layerStateController';
 import { mapControlsController } from './mapControlsController';
 import { navController } from './navStateController';
 import { popupController } from './popupStateController';
-import { removeSpaces } from 'components/MRTTable/utils/helper';
-import { detailCardController } from './detailCardController';
 
 const drawStateControllerHandler = state => {
 	/* --------------------------- DrawShapes Actions --------------------------- */
@@ -192,7 +191,7 @@ const drawStateControllerHandler = state => {
 			selectedAbstracts: [],
 		});
 
-		const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+		const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
 
 		if (!sourceId) {
 			return;
@@ -471,7 +470,7 @@ const drawStateControllerHandler = state => {
 					shapeEdit: false,
 				});
 			}
-		} catch (err) {}
+		} catch (err) { }
 	};
 
 	const actionShowWellsAndOwners = dispatch => {
@@ -680,9 +679,8 @@ const drawStateControllerHandler = state => {
 		if (abstractShape?.properties?.County && state) {
 			if (layerType === 'unit') {
 				if (abstractShape.properties.State === 'TX') {
-					shapeSubtitle = `${abstractShape?.properties?.County}, ${
-						state || ''
-					} - ${blockTownship}${section ? `, SEC ${section}` : ''}`;
+					shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''
+						} - ${blockTownship}${section ? `, SEC ${section}` : ''}`;
 				} else {
 					shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''} - ${shapeName}`;
 				}
@@ -778,7 +776,7 @@ const drawStateControllerHandler = state => {
 		const user = globalStateController.getValue('user');
 		const { currentFeature } = drawController.getValues(['currentFeature']);
 
-		if (!user?._id) return;
+		if (!user?._id) { return; }
 
 		const abstractShape = getAbstractGeoSource(abstractData, currentFeature);
 		let shapeSubtitle = '';
@@ -912,8 +910,8 @@ const drawStateControllerHandler = state => {
 
 		const isShapeResizeMode = shapeTypeLayers.includes(
 			featureToEdit?.properties?.layerType ||
-				featureToEdit?.properties?.sdType ||
-				featureToEdit?.properties?.layerSubType
+			featureToEdit?.properties?.sdType ||
+			featureToEdit?.properties?.layerSubType
 		);
 
 		let drawFeature = null;

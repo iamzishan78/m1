@@ -42,8 +42,6 @@ import { tableGlobalController } from 'hookstate/tableController';
 
 import { Modals } from 'styles/Modal';
 
-import { resetESTableToggle } from 'hookstate';
-
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
 	loading: {
@@ -424,7 +422,6 @@ export default function AssignOwnerToContactDrawer({
 		}).then(
 			res => {
 				// Toggle the reset state for the table to refresh its data
-				resetESTableToggle.set(!resetESTableToggle.get());
 
 				// Check if the response data is present and updateShapes was successful
 				if (res.data && res.data.updateShapes) {
@@ -471,7 +468,6 @@ export default function AssignOwnerToContactDrawer({
 				awaitRefetchQueries: true,
 			}).then(
 				res => {
-					resetESTableToggle.set(!resetESTableToggle.get());
 					if (res.data && res.data.assignOwnerToContact) {
 						const { success, message } = res.data.assignOwnerToContact;
 						if (success) {
@@ -506,7 +502,6 @@ export default function AssignOwnerToContactDrawer({
 				awaitRefetchQueries: true,
 			}).then(
 				res => {
-					resetESTableToggle.set(!resetESTableToggle.get());
 					if (res.data && res.data.bulkUpsertTagOnContacts) {
 						const { success, message } = res.data.bulkUpsertTagOnContacts;
 
@@ -536,7 +531,6 @@ export default function AssignOwnerToContactDrawer({
 				},
 			}).then(
 				res => {
-					resetESTableToggle.set(!resetESTableToggle.get());
 					if (res.data && res.data.addRelatedContacts) {
 						const { success, message } = res.data.addRelatedContacts;
 
@@ -603,7 +597,6 @@ export default function AssignOwnerToContactDrawer({
 							}).then(
 								res => {
 									if (res.data && res.data.upsertEntityCampaigns) {
-										resetESTableToggle.set(!resetESTableToggle.get());
 										const success = res.data.upsertEntityCampaigns.success;
 										if (success) {
 											Loader.successToast('contact-creation', 'Updated');
@@ -645,7 +638,6 @@ export default function AssignOwnerToContactDrawer({
 								awaitRefetchQueries: true,
 							}).then(
 								res => {
-									resetESTableToggle.set(!resetESTableToggle.get());
 									if (res.data && res.data.updateParcelOwners) {
 										const success = res.data.updateParcelOwners.success;
 										if (success) {
@@ -690,7 +682,6 @@ export default function AssignOwnerToContactDrawer({
 								awaitRefetchQueries: true,
 							}).then(
 								res => {
-									resetESTableToggle.set(!resetESTableToggle.get());
 									if (res.data && res.data.updateShapeOwners) {
 										const success = res.data.updateShapeOwners.success;
 										if (success) {
@@ -729,7 +720,6 @@ export default function AssignOwnerToContactDrawer({
 						awaitRefetchQueries: true,
 					}).then(
 						res => {
-							resetESTableToggle.set(!resetESTableToggle.get());
 							if (res.data && res.data.updateBulkContact) {
 								const success = res.data.updateBulkContact.some(res => res.success);
 								if (success) {

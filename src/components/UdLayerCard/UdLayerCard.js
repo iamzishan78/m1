@@ -24,13 +24,13 @@ import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_SHAPE_FEATURE } from 'graphQL/useQueryGetShapeFeature';
 
 import { drawController } from 'hookstate/drawStateController';
+import { globalStateController } from 'hookstate/globalStateController';
 import { jobController } from 'hookstate/jobStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { popupController } from 'hookstate/popupStateController';
 
-import { layerRefs } from 'hookstate';
 import { history } from 'store';
 
 import { AppContext } from '../../AppContext';
@@ -147,7 +147,7 @@ function UdLayerCard(props) {
 	const handleCloseShapeDrawer = () => {
 		drawController.reset();
 
-		const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+		const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
 
 		if (!sourceId) {
 			return;
