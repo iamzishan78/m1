@@ -821,7 +821,7 @@ const layerStateControllerHandler = state => {
 		);
 
 		// If layerId is not found, then find layerId by layerShapeName
-		if (!layerId) {
+		if (!layerId && identifier != 'all') {
 			// Find layer by layerShapeName
 			const requiredLayers = globalStateController
 				.getValue('layers')
@@ -850,10 +850,19 @@ const layerStateControllerHandler = state => {
 
 		const showableLayers = getShowableLayers();
 		showableLayers.forEach(dbLayer => {
-			if (dbLayer.identifier.toLowerCase().startsWith(identifier.toLowerCase())) {
+			if (dbLayer.identifier.toLowerCase().startsWith(identifier.toLowerCase()) || identifier === 'all') {
 				removeLayer(dbLayer, true);
 			}
 		});
+
+		// Refresh all layers when the map is synchronized
+		if (identifier === 'all') {
+			  // Retrieve all layers from the global state
+			globalStateController.getValue('layers').forEach(layer => {
+				  // Handle each layer using the layer controller
+				layerController.handleDeckLayer(layer);
+			});
+		}
 	};
 
 	const resetMapStates = (mapReady = false) => {

@@ -770,16 +770,14 @@ function Map({
 			if (index === -1) {
 				index = 0;
 			}
-			const { isMapRefreshing, mapVars } = mapStateValues || {};
-			const { center, zoom, pitch, bearing } = mapVars || {};
 
 			const newMap = new mapboxgl.Map({
 				container: `${id}`,
 				style: `mapbox://styles/m1neral/${mapStyles[index]?.id}`,
-				center: isMapRefreshing && map ? map.getCenter() : center,
-				zoom: isMapRefreshing && map ? map.getZoom() : zoom,
-				pitch: isMapRefreshing && map ? map.getPitch() : pitch,
-				bearing: isMapRefreshing && map ? map.getBearing() : bearing,
+				center: mapStateValues.mapVars.center,
+				zoom: mapStateValues.mapVars.zoom,
+				pitch: mapStateValues.mapVars.pitch,
+				bearing: mapStateValues.mapVars.bearing,
 			});
 
 			/// optimized interactions w/ map
@@ -935,7 +933,6 @@ function Map({
 				window.mapRef = newMap;
 				window.drawRef = Draw;
 				// Initializing overlay
-				console.log("load reload call",)
 				DeckGlLayer.initializeOverlay();
 				layerController.resetMapStates(true);
 
@@ -982,15 +979,23 @@ function Map({
 				setDraw(Draw);
 				setMap(newMap);
 				setLoading(false);
-				mapStateController.updateState({ reintializeMap: false, isMapRefreshing : false });
+				mapStateController.updateState({ reintializeMap: false });
 			});
 		};
 
-		if (!map || mapStateValues.reintializeMap || mapStateValues.isMapRefreshing) {
+		if (!map || mapStateValues.reintializeMap) {
 			initializeMap({ setMap, mapEl, setStateApp, setDraw });
 		}
-	}, [map, mapStyles, mapStateValues.mapVars.styleId, mapStateValues.isMapRefreshing]);
+	}, [map, mapStyles, mapStateValues.mapVars.styleId]);
 
+	useEffect(() => {
+		if (mapStateValues.isMapRefreshing) {
+			  // Reset bounds for all layers
+			layerController.resetBounds('all');
+			// Update the map state to indicate that refreshing is complete
+			mapStateController.updateState({ isMapRefreshing : false });
+		}
+	}, [mapStateValues.isMapRefreshing])
 	// Use effect for removing shape filter
 	useEffect(() => {
 		if (!loading) {
