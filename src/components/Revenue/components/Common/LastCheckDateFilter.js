@@ -125,10 +125,7 @@ const LastCheckDateFilter = ({
 			}
 			filters.unshift({
 				field,
-				value: [
-					fromDate ? `${getFirstDayOfMonth(fromDate)}` : null,
-					toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
-				],
+				value: [fromDate ? new Date(fromDate).toISOString() : null, toDate ? new Date(toDate).toISOString() : null],
 				type: 'advanced',
 				searchType: 'betweenInclusive',
 				columnType: 'date',
