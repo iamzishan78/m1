@@ -7,7 +7,6 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { activityType } from 'components/MRTTable/utils/enums';
 import { formatDate } from 'components/Shared/functions';
 
-import { slidoutState } from 'hookstate/initialStates';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 import { getTruncateText } from '../utils/helper';
@@ -23,8 +22,11 @@ const onClickedRow = selectedRow => {
 	};
 
 	slidoutStateController.showSlideout();
-	slidoutState.selectedActivityId.set(selectedRow._id);
-	slidoutState.selectedActivity.set(formattedActivity);
+
+	slidoutStateController.updateState({
+		selectedActivityId: selectedRow._id,
+		selectedActivity: formattedActivity,
+	});
 
 	if (window.location.pathname.startsWith('/calendar/activities')) {
 		window.history.pushState('', '', `/calendar/activities/${selectedRow._id}`);

@@ -1,25 +1,27 @@
-/* eslint-disable no-use-before-define */
+
 import { deepEqual } from 'components/Shared/functions';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
-import { hookStateController } from 'hookstate/hookStateController';
-
 import { globalStateController } from './globalStateController';
-import { layerFilterInitialState, layerFilters } from './initialStates';
+import { layerFilterInitialState } from './initialStates';
 import { layerController } from './layerStateController';
+import { StateController } from './stateController';
 
-const layerFiltersControllerHandler = state => ({
-	setVariables: (layerType, variables) => {
+
+class LayerFiltersController extends StateController {
+	constructor(initialState) {
+		super(initialState);
+	}
+
+	setVariables(layerType, variables) {
 		if (!layerType) {
 			return;
 		}
 
-		let filters = layerFilters[layerType].get({ noproxy: true }) || {};
+		let filters = this.getValue(layerType) || {};
 
 		if (!filters?.variables) {
-			filters = {
-				variables: {},
-			};
+			filters = { variables: {} };
 		}
 
 		const updatedVariables = {
@@ -29,27 +31,29 @@ const layerFiltersControllerHandler = state => ({
 		};
 
 		if (!deepEqual(filters.variables, updatedVariables)) {
-			layerFilters[layerType]?.set({ ...filters, variables: updatedVariables });
+			this.updateState({ [layerType]: { ...filters, variables: updatedVariables } });
 			layerController.resetBounds(layerType);
 		}
-	},
-	resetVariables: (layerType, mapViewFilters = []) => {
+	}
+
+	resetVariables(layerType, mapViewFilters = []) {
 		const initialVariables = layerFilterInitialState[layerType]?.variables;
 
 		if (!initialVariables) {
 			return;
 		}
 
-		const filters = layerFilters[layerType].get({ noproxy: true });
+		const filters = this.getValue(layerType);
 
 		if (!deepEqual(filters.variables, initialVariables)) {
 			const mergedFilters = [...initialVariables.filters, ...mapViewFilters];
-			const updatedVariables = { ...filters, variables: { ...initialVariables, filters: mergedFilters } };
-			layerFilters[layerType]?.set(updatedVariables);
+			const updatedVariables = { ...filters, variables: { ...initialVariables, filters: mergedFilters } }; t
+			this.updateState({ [layerType]: updatedVariables });
 			layerController.resetBounds(layerType);
 		}
-	},
-	getBeforeLayer: index => {
+	}
+
+	getBeforeLayer(index) {
 		const layers = globalStateController.getValue('layers');
 
 		let id;
@@ -62,7 +66,7 @@ const layerFiltersControllerHandler = state => ({
 				continue;
 			}
 
-			id = layerFiltersController.getFirstLayer(layer.identifier);
+			id = this.getFirstLayer(layer.identifier);
 
 			if (id) {
 				break;
@@ -70,13 +74,14 @@ const layerFiltersControllerHandler = state => ({
 		}
 
 		return id;
-	},
-	updateLayerIds: (layerType, firstLayer, lastLayer) => {
+	}
+
+	updateLayerIds(layerType, firstLayer, lastLayer) {
 		if (!layerType) {
 			return;
 		}
 
-		const filters = layerFilters[layerType].get({ noproxy: true });
+		const filters = this.getValue(layerType);
 
 		if (!filters) {
 			return;
@@ -93,63 +98,65 @@ const layerFiltersControllerHandler = state => ({
 		};
 
 		if (!deepEqual(filters, updatedFilters)) {
-			layerFilters[layerType]?.set(updatedFilters);
+			this.updateState({ [layerType]: updatedFilters });
 		}
-	},
-	getFirstLayer: layerType => {
+	}
+
+	getFirstLayer(layerType) {
 		if (!layerType) {
 			return null;
 		}
 
-		const filters = layerFilters[layerType].get({ noproxy: true });
-
+		const filters = this.getValue(layerType);
 		return filters?.firstLayer;
-	},
-	clearWellsFilters: () => {
-		const { variables } = layerFiltersController.getValue('Wells');
-		layerFiltersController.setVariables('Wells', {
+	}
+
+	clearWellsFilters() {
+		const { variables } = this.getValue('Wells');
+
+		this.setVariables('Wells', {
 			...variables,
 			filters: [],
 		});
-	},
-	clearSnapGridFilters: () => {
+	}
+
+	clearSnapGridFilters() {
 		['Wells', 'Agreements', 'Units', 'Parcels'].forEach(key => {
-			const mapViewFilters = layerFilters[key].get({ noproxy: true });
-			layerFiltersController.resetVariables(
+			const mapViewFilters = this.getValue(key);
+			this.resetVariables(
 				key,
 				mapViewFilters?.variables?.filters?.filter(filter => filter.isMapViewFilter)
 			);
 		});
-	},
-	setPolygonFilter: polygon => {
-		layerController.removeLayers();
-		setTimeout(() => {
-			state.polygonFilter.set(polygon);
-		}, 100);
-	},
-	setPolygonsFilter: polygons => {
-		layerController.removeLayers();
-		setTimeout(() => {
-			state.polygonsFilter.set(polygons);
-		}, 100);
-	},
+	}
 
-	updateLayerFiltersFromMapViews: (dataSourceName, mapViewFilters) => {
-		mapViewFilters = mapViewFilters?.filter(filter => filter?.dataSourceName === dataSourceName);
-		const state = layerFiltersController.getValue([dataSourceName]); // Get layer filters from hookstate
-		const initialFilters = state?.variables?.filters || []; // Get initial filters
-		let filters = initialFilters?.filter(filter => !filter.isMapViewFilter); // Remove existing filter
+	setPolygonFilter(polygon) {
+		layerController.removeLayers();
+		setTimeout(() => {
+			this.updateState({ polygonFilter: polygon });
+		}, 100);
+	}
+
+	setPolygonsFilter(polygons) {
+		layerController.removeLayers();
+		setTimeout(() => {
+			this.updateState({ polygonsFilter: polygons });
+		}, 100);
+	}
+
+	updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters) {
+		mapViewFilters = mapViewFilters.filter(filter => filter.dataSourceName === dataSourceName);
+		const state = this.getValue(dataSourceName);
+		const initialFilters = state?.variables?.filters || [];
+		let filters = initialFilters.filter(filter => !filter.isMapViewFilter);
 		filters = [
 			...filters,
 			...(mapViewFilters?.map(mapView =>
 				getFormattedFilterBasedOnType(mapView.filterType, mapView.fieldName, mapView.filterValues)
 			) ?? {}),
 		];
-		layerFiltersController.setVariables(dataSourceName, { filters });
-	},
-});
+		this.setVariables(dataSourceName, { filters });
+	}
+}
 
-export const layerFiltersController = {
-	...layerFiltersControllerHandler(layerFilters),
-	...hookStateController(layerFilters, layerFilterInitialState),
-};
+export const layerFiltersController = new LayerFiltersController(layerFilterInitialState);

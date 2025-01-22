@@ -33,9 +33,9 @@ import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
 
 import { globalStateController } from 'hookstate/globalStateController';
-import { slidoutState } from 'hookstate/initialStates';
 
 import { updatePinComments } from 'store/actions/commonActions';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 import { UserSession } from 'utils/user';
 
@@ -532,23 +532,23 @@ export default function CommentComponent(props) {
 	const newCommentCleaner = value =>
 		value.trim()[value.trim().length - 1] === '.'
 			? value
-					.split('\n')
-					.map(line => {
-						if (line.trim() !== '.') {
-							return line.trim();
-						}
-						return '';
-					})
-					.join('\n')
+				.split('\n')
+				.map(line => {
+					if (line.trim() !== '.') {
+						return line.trim();
+					}
+					return '';
+				})
+				.join('\n')
 			: `${value
-					.split('\n')
-					.map(line => {
-						if (line.trim() !== '.') {
-							return line.trim();
-						}
-						return '';
-					})
-					.join('\n')}`;
+				.split('\n')
+				.map(line => {
+					if (line.trim() !== '.') {
+						return line.trim();
+					}
+					return '';
+				})
+				.join('\n')}`;
 
 	const updateComment = value => {
 		setLoadingComments(true);
@@ -691,7 +691,7 @@ export default function CommentComponent(props) {
 		};
 
 		if (props.targetLabel === 'activity') {
-			slidoutState.newComments.set([...slidoutState.newComments.get(), comment]);
+			slidoutStateController.updateState({ newComments: [...slidoutStateController.getValue('newComments'), comment] });
 		}
 
 		upsertComment({
@@ -927,13 +927,12 @@ export default function CommentComponent(props) {
 																editCommentId !== eachComment?._id &&
 																eachComment?.commentType?.commentType !== 'unitCreation' && (
 																	<div
-																		className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${
-																			!(
+																		className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
 																				eachComment?.user?.email === user.email &&
 																				showCommentActionId === eachComment?._id &&
 																				editCommentId !== eachComment?._id
 																			) && classes.hideMenuIcon
-																		}`}
+																			}`}
 																	>
 																		<ActionMenu
 																			eachComment={eachComment}
@@ -1033,7 +1032,7 @@ export default function CommentComponent(props) {
 							<Grid item style={{ maxWidth: '55px' }}>
 								<IconButton
 									className={classes.commentView}
-									// style={{ top: "3px" }}
+								// style={{ top: "3px" }}
 								>
 									{profile?.profileImage ? (
 										<Avatar src={profile?.profileImage} size="38" round />

@@ -1,41 +1,50 @@
-import { useHookstate } from '@hookstate/core';
+import { StateController } from './stateController';
 
-import { hookStateController } from 'hookstate/hookStateController';
+import { slidoutInitialState } from './initialStates';
 
-import { slidoutInitialState, slidoutState } from './initialStates';
+class SlidoutStateController extends StateController {
+	constructor(initialState) {
+		super(initialState);
+	}
 
-export const useSlideoutState = () => useHookstate(slidoutState);
-const slidoutStateControllerHandler = state => ({
-	updateProps: newProps => {
-		state.props.set(prevProps => ({ ...prevProps, ...newProps }));
-	},
-	updateActiveTabs: tab => {
-		state.activeTabs[tab].set(value => !value);
-	},
-	updateTitle: newTitle => {
-		state.title.set(newTitle);
-	},
-	showSlideout: () => {
-		state.show.set(true);
-	},
-	hideSlideout: () => {
-		state.show.set(false);
-	},
-	changeView: view => {
-		state.view.set(view);
-	},
-	updateParent: newParent => {
-		state.parentType.set(newParent);
-	},
-	updateNewEntity: newEntity => {
-		state.newEntity.set(newEntity);
-	},
-	updateEntityLoading: isLoading => {
-		state.isLoading.set(isLoading);
-	},
-});
+	updateProps(newProps) {
 
-export const slidoutStateController = {
-	...slidoutStateControllerHandler(slidoutState),
-	...hookStateController(slidoutState, slidoutInitialState),
-};
+		this.updateState({ props: { ...this.getValue('props'), ...newProps } });
+	}
+
+	updateActiveTabs(tab) {
+		const activeTabs = this.getValue('activeTabs')
+		activeTabs[tab] = !activeTabs[tab];
+		this.updateState({ activeTabs });
+	}
+
+	updateTitle(newTitle) {
+		this.updateState({ title: newTitle });
+	}
+
+	showSlideout() {
+		this.updateState({ show: true });
+	}
+
+	hideSlideout() {
+		this.updateState({ show: false });
+	}
+
+	changeView(view) {
+		this.updateState({ view });
+	}
+
+	updateParent(newParent) {
+		this.updateState({ parentType: newParent });
+	}
+
+	updateNewEntity(newEntity) {
+		this.updateState({ newEntity });
+	}
+
+	updateEntityLoading(isLoading) {
+		this.updateState({ isLoading });
+	}
+}
+
+export const slidoutStateController = new SlidoutStateController(slidoutInitialState);

@@ -16,7 +16,7 @@ import debounce from 'lodash/debounce';
 
 import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
 
-import { slidoutState } from 'hookstate/initialStates';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 import { AppContext } from 'AppContext';
 
@@ -114,9 +114,11 @@ const ActivitySearch = () => {
 			}));
 		} else if (id) {
 			window.history.pushState('', '', `/calendar/activities/${id}`);
-			slidoutState.selectedActivityId.set(id);
-			slidoutState.show.set(true);
-			slidoutState.selectedActivity.set(activitiesData?.activities?.find(act => act._id === id));
+			slidoutStateController.updateState({
+				selectedActivityId: id,
+				show: true,
+				selectedActivity: activitiesData?.activities?.find(act => act._id === id)
+			})
 		}
 	};
 

@@ -28,8 +28,6 @@ import { GETALLACTIVITIES } from '../../graphQL/useQueryGetAllActivities';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './index.css';
 
-import { slidoutState } from 'hookstate/initialStates';
-
 const localizer = momentLocalizer(moment);
 
 Date.prototype.addHours = function (h) {
@@ -143,7 +141,7 @@ const Activities = () => {
 	const [getContactsForActivity, { data: getContactsForActivityResult }] = useLazyQuery(GET_CONTACTS_FOR_ACTIVITY, {
 		fetchPolicy: 'no-cache',
 		onCompleted: () => {
-			slidoutState.loader.set(false);
+			slidoutStateController.updateState({ loader: false })
 		},
 	});
 
@@ -158,7 +156,7 @@ const Activities = () => {
 	const activitiesGridState = tableController('ActivitiesTable').useState(['filters']).stateValues;
 	const [view, setView] = React.useState(Views.MONTH);
 
-	const selectedActivityId = useHookstate(slidoutState.selectedActivityId);
+	const { selectedActivityId } = slidoutStateController.useState(['selectedActivityId'])
 
 	const obligationOptions = React.useMemo(() => {
 		if (activitiesData?.activities) {
@@ -248,12 +246,12 @@ const Activities = () => {
 	]);
 
 	useEffect(() => {
-		if (selectedActivityId.get()) {
-			slidoutState.selectedActivity.set(events.find(act => act._id === selectedActivityId.get()));
+		if (selectedActivityId) {
+			slidoutStateController.updateState({ selectedActivity: events.find(act => act._id === selectedActivityId) })
 		} else {
-			slidoutState.selectedActivity.set(null);
+			slidoutStateController.updateState({ selectedActivity: null })
 		}
-	}, [selectedActivityId.get()]);
+	}, [selectedActivityId]);
 
 	useEffect(() => {
 		if (activitiesGridState) {
@@ -316,9 +314,9 @@ const Activities = () => {
 
 	useEffect(() => {
 		getContactsForActivity({
-			variables: { activityId: selectedActivityId.get() },
+			variables: { activityId: selectedActivityId },
 		});
-	}, [selectedActivityId.get()]);
+	}, [selectedActivityId]);
 
 	const onEventClick = event => {
 		window.history.pushState('', '', `/calendar/obligations/${event._id}`);
@@ -327,16 +325,16 @@ const Activities = () => {
 	};
 
 	const onModalOpen = () => {
-		slidoutState.loader.set(true);
+		slidoutStateController.updateState({ loader: true })
 		getContactsForActivity({
-			variables: { activityId: selectedActivityId.get() },
+			variables: { activityId: selectedActivityId },
 		}).then(() => {
 			slidoutStateController.showSlideout();
 		});
 	};
 
 	const setSelectedActivityId = id => {
-		slidoutState.selectedActivityId.set(id);
+		slidoutStateController.updateState({ selectedActivityId: id })
 	};
 
 	useEffect(() => {
@@ -351,8 +349,7 @@ const Activities = () => {
 		});
 
 		return () => {
-			slidoutState.selectedActivityId.set('');
-			slidoutState.selectedActivity.set(null);
+			slidoutStateController.updateState({ selectedActivityId: 'id', selectedActivity: null })
 			slidoutStateController.hideSlideout();
 		};
 	}, []);
@@ -424,7 +421,7 @@ const Activities = () => {
 					{/* <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} /> */}
 
 					<ActivitiesSlideout
-						activityId={selectedActivityId.get()}
+						activityId={selectedActivityId}
 						setSelectedActivityId={setSelectedActivityId}
 						events={events}
 						getContactsForActivity={getContactsForActivity}

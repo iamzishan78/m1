@@ -29,8 +29,6 @@ export const globalInitialState = {
 	layerSettingsLoading: false,
 };
 
-export const globalState = hookstate(copy(globalInitialState));
-
 /* -------------------------------------------------------------------------- */
 /*                              Table Controller                              */
 /* -------------------------------------------------------------------------- */
@@ -318,8 +316,6 @@ export const layerFilterInitialState = {
 	},
 };
 
-export const layerFilters = hookstate(copy(layerFilterInitialState));
-
 /* -------------------------------------------------------------------------- */
 /*                           Map Controls Controller                          */
 /* -------------------------------------------------------------------------- */
@@ -450,8 +446,6 @@ export const slidoutInitialState = {
 	loader: false,
 };
 
-export const slidoutState = hookstate(copy(slidoutInitialState));
-
 /* -------------------------------------------------------------------------- */
 /*                           Detail Card Controller                           */
 /* -------------------------------------------------------------------------- */
@@ -462,8 +456,6 @@ export const detailCardInitialState = {
 	bottomTabKey: 0,
 	props: null,
 };
-
-export const detailCardState = hookstate(copy(detailCardInitialState));
 
 /* -------------------------------------------------------------------------- */
 /*                         Admin Operations Controller                        */
@@ -480,7 +472,6 @@ export const adminOperationsInitialState = {
 	message: null,
 	apiKeys: { dialpad: '' },
 };
-export const adminOperationsState = hookstate(copy(adminOperationsInitialState));
 
 /* -------------------------------------------------------------------------- */
 /*                              View Controller                               */

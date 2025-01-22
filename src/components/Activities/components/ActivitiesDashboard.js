@@ -3,14 +3,12 @@ import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useLazyQuery } from '@apollo/client';
-import { useHookstate } from '@hookstate/core';
 
 import MRTTable from 'components/MRTTable';
 
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 
-import { slidoutState } from 'hookstate/initialStates';
 import { tableController } from 'hookstate/tableController';
 
 import { getDateFilters } from 'utils/helper';
@@ -20,6 +18,7 @@ import { AppContext } from 'AppContext';
 import ActivitiesDashboardFilter from './ActivitiesDashboardFilter';
 import ActivitiesSlideout from './ActivitiesSlideout';
 import ActivityAnalytics from './ActivityAnalytics';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -74,7 +73,7 @@ export const getActivityFilters = (appliedFilters, tableKey) => {
 
 const ActivitiesDashboard = () => {
 	const classes = useStyles();
-	const selectedActivityId = useHookstate(slidoutState.selectedActivityId);
+	const { selectedActivityId } = slidoutStateController.useState(['selectedActivityId'])
 
 	const tableKey = 'ActivitiesTable';
 	const esIndex = 'activities_flat';
@@ -128,15 +127,13 @@ const ActivitiesDashboard = () => {
 
 	useEffect(() => {
 		getContactsForActivity({
-			variables: { activityId: selectedActivityId.get() },
+			variables: { activityId: selectedActivityId },
 		});
 	}, [getContactsForActivity, selectedActivityId]);
 
 	useEffect(() => {
 		return () => {
-			slidoutState.selectedActivityId.set('');
-			slidoutState.selectedActivity.set(null);
-			slidoutState.show.set(false);
+			slidoutStateController.updateState({ selectedActivityId: '', selectedActivity: null, show: false })
 		};
 	}, []);
 
@@ -185,8 +182,8 @@ const ActivitiesDashboard = () => {
 				}}
 			/>
 			<ActivitiesSlideout
-				activityId={selectedActivityId.get()}
-				setSelectedActivityId={slidoutState.selectedActivityId.set}
+				activityId={selectedActivityId}
+				setSelectedActivityId={(id) => slidoutStateController.updateState({ selectedActivityId: id })}
 				getContactsForActivity={getContactsForActivity}
 			/>
 		</div>

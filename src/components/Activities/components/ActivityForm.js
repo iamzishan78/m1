@@ -21,7 +21,6 @@ import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTe
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
 import { globalStateController } from 'hookstate/globalStateController';
-import { slidoutState } from 'hookstate/initialStates';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -190,7 +189,6 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	const classes = useStyles();
 	const [stateApp] = useContext(AppContext);
 	const [users, setUsers] = useState([]);
-	const { selectedActivity } = slidoutState;
 	const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 	const [nameAutInputValue, NameAutInputValue] = useState('');
 	const setNameAutInputValue = newState => {
@@ -201,8 +199,8 @@ export default function ActivityForm({ setSelectedActivityId }) {
 
 	const [openDeals, setOpenDeals] = useState([]);
 
-	const activityName = useHookstate(slidoutState.title).get({ noproxy: true });
-	const formMode = useHookstate(slidoutState.formMode);
+	const { selectedActivity, title, formMode } = slidoutStateController.useState(['title', 'formMode', 'selectedActivity']);
+	const activityName = title
 	const { activityType, outcome, startDate, endDate, owner, dealId, status, notes, startTime, endTime } =
 		useHookstate(activityFormState);
 	const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
@@ -254,9 +252,11 @@ export default function ActivityForm({ setSelectedActivityId }) {
 
 		clearFields();
 		setSelectedActivityId(null);
-		slidoutState.selectedActivity.set(null);
+		slidoutStateController.updateState({
+			selectedActivity: null,
+			newComments: []
+		})
 		slidoutStateController.hideSlideout();
-		slidoutState.newComments.set([]);
 	};
 
 	const [addActivityMutation] = useMutation(ADDACTIVITY, {
@@ -343,7 +343,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	}, [allContacts]);
 
 	useEffect(() => {
-		const activity = selectedActivity.get();
+		const activity = selectedActivity;
 		if (activity) {
 			slidoutStateController.updateNewEntity(false);
 			notes.set(activity.notes);
@@ -428,7 +428,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 					isClosed: status.get(),
 					user: stateApp.user._id,
 					createdBy: stateApp?.user?._id,
-					comments: slidoutState.newComments.get(),
+					comments: slidoutStateController.getValue('newComments'),
 				},
 			},
 		});
@@ -442,7 +442,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 		updateActivityMutation({
 			variables: {
 				activity: {
-					_id: selectedActivity.get()?._id,
+					_id: selectedActivity?._id,
 					type: activityType.get(),
 					name: activityName,
 					dateTime: new Date(dateTime).toUTCString(),
@@ -465,26 +465,26 @@ export default function ActivityForm({ setSelectedActivityId }) {
 		slidoutStateController.updateEntityLoading(true);
 		await deleteActivityMutation({
 			variables: {
-				id: selectedActivity.get()._id,
+				id: selectedActivity._id,
 			},
 		});
 	};
 
 	useEffect(() => {
-		if (formMode.get()) {
-			if (formMode.get() === 'update') {
-				if (!selectedActivity.get()) {
+		if (formMode) {
+			if (formMode === 'update') {
+				if (!selectedActivity) {
 					addActivity();
 				} else {
 					updateActivity();
 				}
-			} else if (formMode.get() === 'delete') {
+			} else if (formMode === 'delete') {
 				deleteActivity();
 			}
-			formMode.set('');
+			slidoutStateController.updateState({ formMode: '' })
 			slidoutStateController.hideSlideout();
 		}
-	}, [formMode.get()]);
+	}, [formMode]);
 
 	return (
 		<div className={classes.inputFieldRoot}>

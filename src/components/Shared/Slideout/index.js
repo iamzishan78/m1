@@ -3,12 +3,9 @@ import React, { useState, memo } from 'react';
 import { Dialog as MuiDialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { useHookstate } from '@hookstate/core';
-
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
-import { slidoutState } from 'hookstate/initialStates';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 import Dialog from './Dialog';
@@ -30,10 +27,7 @@ const useStyles = makeStyles(() => ({
 function Slideout({ isTransactPage, show }) {
 	const classes = useStyles();
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
-	const formMode = useHookstate(slidoutState.formMode);
-	const parentType = useHookstate(slidoutState.parentType);
-	const view = useHookstate(slidoutState.view).get({ noproxy: true });
+	const { parentType, view } = slidoutStateController.useState(['parentType', 'view']);
 
 	const handleCloseDialog = () => {
 		setDeleteDialogOpen(false);
@@ -44,12 +38,13 @@ function Slideout({ isTransactPage, show }) {
 			if (window.location.pathname.startsWith('/calendar/activities')) {
 				window.history.pushState('', '', '/calendar/activities');
 			}
-
-			slidoutState.selectedActivity.set(null);
-			slidoutState.selectedActivityId.set('');
+			slidoutStateController.updateState({
+				selectedActivity: null,
+				selectedActivityId: '',
+			});
 			slidoutStateController.hideSlideout();
 		} else {
-			slidoutState.formMode.set('update');
+			slidoutStateController.updateState({ formMode: 'update' });
 		}
 	};
 
@@ -72,10 +67,10 @@ function Slideout({ isTransactPage, show }) {
 					maxWidth="sm"
 				>
 					<DeleteConfirmationDialog
-						header={`Delete ${parentType.get()}`}
+						header={`Delete ${parentType}`}
 						onClose={handleCloseDialog}
 						deleteFunc={() => {
-							formMode.set('delete');
+							slidoutStateController.updateState({ formMode: 'delete' });
 						}}
 					>
 						Do you want to delete the selected item?

@@ -5,14 +5,13 @@ import HomeIcon from '@material-ui/icons/HomeOutlined';
 import IdentityIcon from '@material-ui/icons/PermIdentity';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { useHookstate } from '@hookstate/core';
 
 import Slideout from 'components/Shared/Slideout';
 
 import { REMOVECOMMONDESCRIPTOR } from 'graphQL/useMutationRemoveCommonDescriptor';
 import { UPSERTCOMMONDESCRIPTOR } from 'graphQL/useMutationUpsertCommonDescriptor';
 
-import { slidoutState } from 'hookstate/initialStates';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 import ActivityForm from './ActivityForm';
 import { AppContext } from '../../../AppContext';
@@ -25,20 +24,19 @@ export default function ActivitiesSlideout({ activityId, setSelectedActivityId, 
 	const [users, setUsers] = useState([]);
 	const { selectedActivity } = stateApp;
 
-	const show = useHookstate(slidoutState.show).get({ noproxy: true });
-	const view = useHookstate(slidoutState.view).get({ noproxy: true });
+	const { view, show } = slidoutStateController.useState(['show', 'view'])
 
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
 		fetchPolicy: 'cache-and-network',
 	});
 	const [upsertCommonDescriptor] = useMutation(UPSERTCOMMONDESCRIPTOR, {
 		onCompleted: () => {
-			slidoutState.loader.set(false);
+			slidoutStateController.updateState({ loader: false })
 		},
 	});
 	const [removeCommonDescriptor] = useMutation(REMOVECOMMONDESCRIPTOR, {
 		onCompleted: () => {
-			slidoutState.loader.set(false);
+			slidoutStateController.updateState({ loader: false })
 		},
 	});
 
@@ -64,7 +62,7 @@ export default function ActivitiesSlideout({ activityId, setSelectedActivityId, 
 						<ActivityForm setSelectedActivityId={setSelectedActivityId} />
 					),
 				props: {},
-				onClick: () => {},
+				onClick: () => { },
 			},
 			{
 				name: 'Contacts',
@@ -87,9 +85,9 @@ export default function ActivitiesSlideout({ activityId, setSelectedActivityId, 
 						stateAppKey: 'activityContacts',
 					},
 					functions: {
-						gotoContact: () => {},
+						gotoContact: () => { },
 						getRemoveDescriptorResponse: async descriptorId => {
-							slidoutState.loader.set(true);
+							slidoutStateController.updateState({ loader: true })
 							let result = await removeCommonDescriptor({
 								variables: { id: descriptorId, relatedObjectType: 'Contact' },
 								refetchQueries: ['getContactsForActivity'],
@@ -102,7 +100,7 @@ export default function ActivitiesSlideout({ activityId, setSelectedActivityId, 
 						},
 
 						addSelectedContact: contact => {
-							slidoutState.loader.set(true);
+							slidoutStateController.updateState({ loader: true })
 							upsertCommonDescriptor({
 								variables: {
 									descriptorId: activityId,
@@ -113,28 +111,24 @@ export default function ActivitiesSlideout({ activityId, setSelectedActivityId, 
 								},
 								refetchQueries: ['getContactsForActivity'],
 								awaitRefetchQueries: true,
-							}).then(result => {});
+							}).then(result => { });
 						},
 						refetchData: () => {
 							getContactsForActivity({ activityId });
 						},
 					},
 				},
-				onClick: () => {},
+				onClick: () => { },
 			},
 		],
 		[selectedActivity, activityId, stateApp.user.mongoId, stateApp?.activityContacts?.contacts?.length]
 	);
 
 	useEffect(() => {
-		slidoutState.parentId.set(activityId);
-		slidoutState.views.set(views);
-		slidoutState.view.set(views.find(v => v.name === view?.name) || views[0]);
+		slidoutStateController.updateState({ parentId: activityId, views, view: views.find(v => v.name === view?.name) || views[0] })
 	}, [views, view, show]);
 	useEffect(() => {
-		slidoutState.parentId.set(activityId);
-		slidoutState.views.set(views);
-		slidoutState.view.set(views[0]);
+		slidoutStateController.updateState({ parentId: activityId, views, view: views[0] })
 	}, [activityId]);
 
 	useEffect(() => {
