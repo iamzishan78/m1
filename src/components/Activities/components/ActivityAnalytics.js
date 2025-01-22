@@ -85,6 +85,8 @@ const ActivityAnalytics = ({
 	tableData,
 	searchFields,
 	globalFilter,
+	tableKey,
+	esIndex,
 }) => {
 	const [analyticsData, setAnalyticsData] = useState([]);
 	const [contactData, setContactData] = useState([]);
@@ -156,11 +158,7 @@ const ActivityAnalytics = ({
 			if (activeModule.title === 'Audit Reporting') {
 				appliedFilters.filter = 'audit';
 			}
-			rangeFilters = getFilters(appliedFilters);
-
-			if (module === 'Activities') {
-				rangeFilters = getActivityFilters(appliedFilters);
-			}
+			rangeFilters = getActivityFilters(appliedFilters, tableKey, esIndex);
 		}
 		return [...rangeFilters, ...tableFilters];
 	};
@@ -201,7 +199,7 @@ const ActivityAnalytics = ({
 	}, [appliedFilters, tableFilters, tableData, searchFields, globalFilter]);
 
 	useEffect(() => {
-		setTableFilters && setTableFilters(getActivityFilters(appliedFilters));
+		setTableFilters && setTableFilters(getActivityFilters(appliedFilters, tableKey, esIndex));
 	}, [appliedFilters]);
 
 	useEffect(() => {

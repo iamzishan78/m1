@@ -159,7 +159,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 	// Debounce the filter values
 	useEffect(() => {
-		console.log(filterValues);
 		const handler = setTimeout(() => {
 			setDebouncedFilterValues(filterValues);
 		}, 1500); // Delay of 1500ms
@@ -175,7 +174,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
 		const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
 		return (
-			customLayersFieldAccessors[_dataSource || mapView?.dataSourceName || dataSourceName]?.keys || layer?.layerSchema
+			customLayersFieldAccessors[_dataSource || dataSourceName || mapView?.dataSourceName]?.keys || layer?.layerSchema
 		)?.find(key => key.value.replace('.keyword', '') === fieldName || key?.value === fieldName);
 	};
 
@@ -387,7 +386,18 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				defaultValue: mapView?.dataSourceName
 					? [...m1LayersOptions, ...datasetsShapeNames]?.find(option => option.value === mapView?.dataSourceName)
 					: null, // Set default value if mapView is provided
-				onChange: () => {
+				onChange: (e, v, r, previousValue) => {
+					const tableKey = Object.keys(tableESState).find(key => {
+						const tableState = tableESState[key].get({ noproxy: true });
+						return tableState?.layerIdentifier === previousValue?.value;
+					});
+					tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
+					tableController(tableKey).setFilterMode(
+						(fieldName?.value || fieldName)?.replace('.keyword', ''),
+						'singleselect',
+						false
+					);
+					// layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
 					setValue(`mapViews.${index}.fieldName`, null);
 					setValue(`mapViews.${index}.filterType`, null);
 					setValue(`mapViews.${index}.filterValues`, null);
