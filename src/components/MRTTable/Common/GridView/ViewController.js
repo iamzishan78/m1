@@ -1,26 +1,17 @@
-/* eslint-disable no-use-before-define */
-import { hookstate } from '@hookstate/core';
-
-import { copy } from 'components/Shared/functions';
-
 import { UPSERT_GRID_VIEW } from 'graphQL/useMutationUpsertGridView';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 
+
 import { globalStateController } from 'hookstate/globalStateController';
-import { hookStateController } from 'hookstate/hookStateController';
-import { viewInitialState, viewStates } from 'hookstate/initialStates';
+import { StateController } from 'hookstate/stateController';
 import { tableController } from 'hookstate/tableController';
 
-const viewStatesControllerHandler = state => ({
-	initialize: ({
-		Icon,
-		label,
-		client,
-		allViews,
-		isTable = false,
-		styleOverride = null,
-		defaultViewOverride = null,
-	}) => {
+class ViewStateController extends StateController {
+	constructor(initialState) {
+		super(initialState);
+	}
+
+	initialize({ Icon, label, client, allViews, isTable = false, styleOverride = null, defaultViewOverride = null }) {
 		const userId = globalStateController.getValue('user').mongoId;
 		const userDefaultView = allViews?.find(view => view?.defaultDisplayBy?.includes(userId));
 		const defaultView = allViews?.find(view => view?.type === 'Default');
@@ -28,11 +19,10 @@ const viewStatesControllerHandler = state => ({
 		const selectedView = defaultViewOverride || userDefaultView || defaultView || allViews?.[0] || null;
 
 		if (selectedView && !isTable) {
-			const moduleName = state.moduleName.get();
-			viewStateController(moduleName).applyView(selectedView);
+			this.applyView(selectedView);
 		}
 
-		state.merge({
+		this.updateState({
 			label,
 			client,
 			allViews,
@@ -41,33 +31,31 @@ const viewStatesControllerHandler = state => ({
 			icon: { jsxEl: Icon },
 			...(styleOverride && { styleOverride }),
 		});
-	},
+	}
 
-	applyView: selectedView => {
+	applyView(selectedView) {
 		if (!selectedView) {
 			return;
 		}
 
-		const { isTable = false, moduleName = '' } = state?.get({ noproxy: true }) ?? {};
-		const ViewController = viewStateController(moduleName);
-		ViewController.updateState({ selectedView, isLoading: true });
+		const { isTable = false, moduleName = '' } = this.getValues(['isTable', 'moduleName']) || {};
+		this.updateState({ selectedView, isLoading: true });
 
 		if (isTable) {
 			const TableKey = moduleName;
 			tableController(TableKey).applyGridView(selectedView);
 		}
 
-		ViewController.updateState({
+		this.updateState({
 			isLoading: false,
 			isViewOpen: false,
 			shouldSyncView: true,
 		});
-	},
+	}
 
-	fetchAllViews: async () => {
+	async fetchAllViews() {
 		const userId = globalStateController.getValue('user').mongoId;
-		const { client = null, isTable = false, moduleName = '' } = state?.get({ noproxy: true }) ?? {};
-		const ViewController = viewStateController(moduleName);
+		const { client = null, isTable = false, moduleName = '' } = this.getValues(['client', 'isTable', 'moduleName']) || {};
 
 		const result = await client.query({
 			variables: {
@@ -78,65 +66,61 @@ const viewStatesControllerHandler = state => ({
 		});
 
 		const allViews = result?.data?.getGridViews?.gridViews || [];
+		this.updateState({ allViews });
+	}
 
-		ViewController.updateState({ allViews });
-	},
-
-	updateAllViews: view => {
-		const allViews = state.allViews?.get({ noproxy: true }) || [];
+	updateAllViews(view) {
+		const allViews = this.getValue('allViews') || [];
 		let updatedViews = [];
 
 		if (view.isDeleted) {
 			updatedViews = allViews.filter(existingView => existingView._id !== view._id);
-			if (view._id === state.selectedView?.get()._id) {
+			if (view._id === this.getValue('selectedView')?._id) {
 				const userId = globalStateController.getValue('user').mongoId;
-				const moduleName = state.moduleName.get();
-				const viewController = viewStateController(moduleName);
-
 				const userDefaultView = updatedViews?.find(view => view?.defaultDisplayBy?.includes(userId));
 				const defaultView = updatedViews?.find(view => view?.type === 'Default');
 				const selectedView = userDefaultView || defaultView || allViews?.[0] || null;
 
 				if (selectedView) {
-					viewController.applyView(selectedView);
+					this.applyView(selectedView);
 				}
 
-				viewController.updateState({ selectedView });
+				this.updateState({ selectedView });
 			}
 		} else if (view._id) {
-			if (view._id === state.selectedView?.get()._id) {
-				const selectedView = state.selectedView.get({ noproxy: true });
-				state.selectedView.set({ ...selectedView, ...view });
+			if (view._id === this.getValue('selectedView')?._id) {
+				const selectedView = this.getValue('selectedView');
+				this.updateState({ selectedView: { ...selectedView, ...view } });
 			}
 
 			updatedViews = allViews.map(prevView => (prevView._id === view._id ? { ...prevView, ...view } : prevView));
 		} else {
 			updatedViews = [...allViews, view];
+			this.updateState({ selectedView: view });
 		}
 
-		state.allViews.set(updatedViews);
-	},
+		this.updateState({ allViews: updatedViews });
+	}
 
-	updateView: async ({ id = null, fieldsToUpdate = {} }) => {
+	async updateView({ id = null, fieldsToUpdate = {} }) {
 		try {
-			const client = state.client.get();
+			const client = this.getValue('client');
 
 			if (client) {
 				const userId = globalStateController.getValue('user').mongoId;
-				const { isTable = false, moduleName = '', selectedView = {} } = state?.get({ noproxy: true }) ?? {};
+				const { isTable = false, moduleName = '', selectedView = {} } = this.getValues(['isTable', 'moduleName', 'selectedView']) || {};
 
-				const ViewController = viewStateController(moduleName);
 				const TableController = tableController(moduleName);
 
 				let requestedViewProps = {};
-				const fetchViewSettings = id === null ? true : (state?.fetchViewSettings?.get({ noproxy: true }) ?? false);
+				const fetchViewSettings = id === null ? true : this.getValue('fetchViewSettings') ?? false;
 				const newViewAttributes = fetchViewSettings
 					? {
-							user: userId,
-							type: 'Custom',
-							module: isTable ? TableController.getModuleName() : moduleName,
-							isDeleted: false,
-						}
+						user: userId,
+						type: 'Custom',
+						module: isTable ? TableController.getModuleName() : moduleName,
+						isDeleted: false,
+					}
 					: {};
 
 				if (isTable) {
@@ -153,8 +137,8 @@ const viewStatesControllerHandler = state => ({
 					...newViewAttributes,
 				};
 
-				ViewController.updateState({ isLoading: true });
-				ViewController.updateAllViews(view);
+				this.updateState({ isLoading: true });
+				this.updateAllViews(view);
 
 				await client.mutate({
 					variables: {
@@ -163,20 +147,19 @@ const viewStatesControllerHandler = state => ({
 					mutation: UPSERT_GRID_VIEW,
 				});
 
-				await ViewController.fetchAllViews();
-				ViewController.updateState({ isLoading: false, fetchViewSettings: false });
+				await this.fetchAllViews();
+				this.updateState({ isLoading: false, fetchViewSettings: false });
 			} else {
 				throw new Error('Apollo Client is undefined or invalid.');
 			}
 		} catch (error) {
 			console.log('Error: ', error);
 		}
-	},
+	}
 
-	updateViewPreference: (view, action) => {
+	updateViewPreference(view, action) {
 		const userId = globalStateController.getValue('user').mongoId;
-		const { moduleName = '', isTable = false } = state?.get({ noproxy: true }) ?? {};
-		const ViewController = viewStateController(moduleName);
+		const { moduleName = '', isTable = false } = this.getValues(['isTable', 'moduleName']) || {};
 		const module = isTable ? tableController(moduleName).getModuleName() : moduleName;
 		let fieldsToUpdate = { user: userId, module };
 
@@ -192,19 +175,35 @@ const viewStatesControllerHandler = state => ({
 
 		const key = action === 'favourite' ? 'favouriteBy' : 'defaultDisplayBy';
 		fieldsToUpdate[key] = toggleUserInArray(view[key]);
-		ViewController.updateView({ id: view._id, fieldsToUpdate });
+		this.updateView({ id: view._id, fieldsToUpdate });
+	}
+}
+
+export const viewInitialState = {
+	client: null,
+	moduleName: null,
+	isTable: false,
+	icon: { jsxEl: null },
+	label: null,
+	allViews: [],
+	selectedView: null,
+	isViewOpen: false,
+	fetchViewSettings: false,
+	styleOverride: {
+		bgColor: {},
+		color: {},
 	},
-});
+	isLoading: false,
+	shouldSyncView: true,
+};
+
+
+export const viewStates = {};
 
 export const viewStateController = moduleName => {
-	const initialState = { ...viewInitialState, moduleName };
-
 	if (!viewStates[moduleName]) {
-		viewStates[moduleName] = hookstate(copy(initialState));
+		viewStates[moduleName] = new ViewStateController({ ...viewInitialState, moduleName });
 	}
 
-	return {
-		...viewStatesControllerHandler(viewStates[moduleName]),
-		...hookStateController(viewStates[moduleName], copy(initialState)),
-	};
+	return viewStates[moduleName];
 };

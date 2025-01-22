@@ -56,10 +56,11 @@ function ViewItem({ moduleName, view }) {
 	const [showActions, setShowActions] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [allowEdit, setAllowEdit] = useState(false);
-	const [viewName, setViewName] = useState('View Name');
+	const ViewController = viewStateController(moduleName);
+	const [viewName, setViewName] = useState(`${ViewController.getValue('selectedView')?.name}-copy`);
 
 	const userId = globalStateController.getValue('user').mongoId;
-	const ViewController = viewStateController(moduleName);
+
 
 	const isFavourite = view?.favouriteBy?.includes(userId);
 	const isDefault = view?.defaultDisplayBy?.includes(userId);
