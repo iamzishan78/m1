@@ -1,6 +1,12 @@
 
-import { detailCardInitialState } from './initialStates';
 import { StateController } from './stateController';
+
+export const detailCardInitialState = {
+	shrinkRightColumn: false,
+	baseTabKey: 0,
+	bottomTabKey: 0,
+	props: null,
+};
 
 class DetailCardController extends StateController {
 	constructor(initialState) {

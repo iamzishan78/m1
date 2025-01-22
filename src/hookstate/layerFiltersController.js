@@ -3,10 +3,188 @@ import { deepEqual } from 'components/Shared/functions';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { globalStateController } from './globalStateController';
-import { layerFilterInitialState } from './initialStates';
 import { layerController } from './layerStateController';
 import { StateController } from './stateController';
 
+const layerFilterInitialState = {
+	polygonFilter: null,
+	polygonsFilter: [],
+	Units: {
+		layerName: 'Units',
+		allowedTypes: ['Polygon', 'MultiPolygon'],
+		variables: {
+			index: 'shapes_flat',
+			sort: {
+				field: '_ts',
+				order: 'desc',
+			},
+			pagination: {
+				first: 10000,
+				after: null,
+			},
+			filters: [
+				{
+					field: 'layer.keyword',
+					value: 'unit',
+				},
+			],
+			search: {
+				query: null,
+				fields: [
+					'name',
+					'shapeJson.properties.uNumber',
+					'shapeJson.properties.originalProperties.State',
+					'shapeJson.properties.originalProperties.County',
+					'shapeJson.properties.originalProperties.Survey',
+					'shapeJson.properties.originalProperties.PrincipalMeridian',
+					'shapeJson.properties.originalProperties.Block',
+					'shapeJson.properties.originalProperties.Township',
+					'shapeJson.properties.originalProperties.Section',
+					'shapeJson.properties.originalProperties.Range',
+					'shapeJson.properties.originalProperties.AbstractName',
+					'shapeJson.properties.originalProperties.ShortName',
+					'shapeJson.properties.shapeArea',
+					'shapeJson.properties.uStatus',
+					'shapeJson.properties.uPrimaryOperator',
+					'shapeJson.properties.uUnitPricing',
+					'shapeJson.properties.qualifier.name',
+					'shapeJson.properties.reviewer.name',
+					'tags.tag',
+				],
+			},
+		},
+	},
+	Wells: {
+		layerName: 'Wells',
+		variables: {
+			index: 'platformData:wells',
+			pagination: {
+				first: 10000,
+				after: null,
+			},
+			filters: [],
+		},
+	},
+	Parcels: {
+		layerName: 'Parcels',
+		allowedTypes: ['Polygon', 'MultiPolygon'],
+		variables: {
+			index: 'shapes_flat',
+			sort: {
+				field: '_ts',
+				order: 'desc',
+			},
+			pagination: {
+				first: 10000,
+				after: null,
+			},
+			filters: [
+				{
+					field: 'layer.keyword',
+					value: 'parcel',
+				},
+			],
+			search: {
+				query: null,
+				fields: [
+					'name',
+					'shapeJson.properties.originalProperties.State',
+					'shapeJson.properties.originalProperties.County',
+					'shapeJson.properties.originalProperties.Survey',
+					'shapeJson.properties.originalProperties.PrincipalMeridian',
+					'shapeJson.properties.originalProperties.Block',
+					'shapeJson.properties.originalProperties.Township',
+					'shapeJson.properties.originalProperties.Section',
+					'shapeJson.properties.originalProperties.Range',
+					'shapeJson.properties.originalProperties.AbstractName',
+					'shapeJson.properties.originalProperties.ShortName',
+					'shapeJson.properties.sdGrossAcres',
+					'shapeJson.properties.shapeArea',
+					'shapeJson.properties.department',
+					'tags.tag',
+					'name',
+					'shapeLabel',
+					'state',
+				],
+			},
+		},
+	},
+	'Area of Interest': {
+		layerName: 'Area of Interest',
+		variables: {
+			index: 'shapes_flat',
+			sort: {
+				field: '_ts',
+				order: 'desc',
+			},
+			pagination: {
+				first: 10000,
+				after: null,
+			},
+			filters: [
+				{
+					field: 'layer.keyword',
+					value: 'interest',
+				},
+			],
+			search: {
+				query: null,
+				fields: ['name'],
+			},
+		},
+	},
+	Agreements: {
+		layerName: 'Agreements',
+		allowedTypes: ['Polygon', 'MultiPolygon'],
+		variables: {
+			index: 'shapes_flat',
+			sort: {
+				field: '_ts',
+				order: 'desc',
+			},
+			pagination: {
+				first: 10000,
+				after: null,
+			},
+			filters: [
+				{
+					field: 'shapeJson.properties.type.keyword',
+					value: 'agreement',
+				},
+			],
+			search: {
+				query: null,
+				fields: ['name'],
+			},
+		},
+	},
+	'My Wells': {
+		layerName: 'My Wells',
+		geoBoundingField: 'wellData.geoJSON',
+		hasText: false,
+		variables: {
+			index: 'mywells_flat',
+			sort: { field: 'lastUpdateAt', order: 'desc' },
+			pagination: {
+				first: 10000,
+				after: null,
+			},
+			filters: [],
+			search: {
+				query: null,
+				fields: ['wellData.wellName', 'wellData.api', 'wellData.WellName', 'wellData.ApiNumber'],
+			},
+		},
+	},
+	'Land Grid': {
+		layerName: 'Land Grid',
+		abstractZoom: 12,
+		pllsZoom: 14,
+	},
+	Basins: {
+		layerName: 'Basins',
+	},
+};
 
 class LayerFiltersController extends StateController {
 	constructor(initialState) {

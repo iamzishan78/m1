@@ -1,7 +1,28 @@
 import { bypassTenants, simpleAuthBypass } from 'utils/data';
 
-import { globalInitialState } from './initialStates';
 import { StateController } from './stateController'; // Import your StateController class
+
+export const globalInitialState = {
+	layers: [],
+	panelItems: [],
+	emptyGroups: [],
+	globalSearch: '',
+	universalLoader: false,
+	layerLoading: {},
+	user: null,
+	reFetchedLayer: null /* ? */,
+	mapReady: false,
+	showFieldModal: false,
+	apolloClientEndpoint: null,
+	x_zumo_auth: null,
+	cypress: null,
+	testCase: null,
+	bypassLogin: simpleAuthBypass || false,
+	bypassType: '',
+	tenant: null,
+	layerSettingsLoading: false,
+	abstract_geo: {}
+};
 
 class GlobalStateController extends StateController {
 	constructor(initialState) {

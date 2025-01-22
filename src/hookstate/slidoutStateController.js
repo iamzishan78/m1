@@ -1,6 +1,20 @@
 import { StateController } from './stateController';
 
-import { slidoutInitialState } from './initialStates';
+const slidoutInitialState = {
+	show: false,
+	views: [],
+	parentId: '',
+	view: null,
+	props: {},
+	activeTabs: { Grid: false, Map: false },
+	title: '',
+	formMode: '',
+	newEntity: false,
+	selectedActivity: null,
+	selectedActivityId: '',
+	newComments: [],
+	loader: false,
+};
 
 class SlidoutStateController extends StateController {
 	constructor(initialState) {
