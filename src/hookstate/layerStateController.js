@@ -30,7 +30,7 @@ import { hookStateController } from 'hookstate/hookStateController';
 
 import { drawController } from './drawStateController';
 import { globalStateController } from './globalStateController';
-import { layerFilters, layerState, layerStateInitialState } from './initialStates';
+import { layerState, layerStateInitialState } from './initialStates';
 import { layerFiltersController } from './layerFiltersController';
 import { mapControlsController } from './mapControlsController';
 import { navController } from './navStateController';
@@ -685,7 +685,7 @@ const layerStateControllerHandler = state => {
 
 		const filterKey = isFileLayer
 			? `${dbLayer.file}_${dbLayer.layerShapeName}`
-			: getLayerKey(filterIdentifier, layerFilters);
+			: getLayerKey(filterIdentifier, layerFiltersController.getAllValues());
 
 		let {
 			[filterKey]: filters,
