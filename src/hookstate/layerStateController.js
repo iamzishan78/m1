@@ -854,6 +854,8 @@ const layerStateControllerHandler = state => {
 				removeLayer(dbLayer, true);
 			}
 		});
+		const layer = globalStateController.getValue('layers').find(l => l.identifier === identifier);
+		layerController.handleDeckLayer(layer);
 	};
 
 	const resetMapStates = (mapReady = false) => {
