@@ -167,7 +167,7 @@ export const useLayerStyle = layer => {
 	const [width, setWidth] = useState(initialWidth);
 	const [layerName, setLayerName] = useState();
 	const [fillColor, setFillColor] = useState(initialFillColor);
-	const [fillStyle, setFillStyle] = useState(null);
+	const [fillStyle, setFillStyle] = useState(layer.layerSettings?.fillStyle || null);
 
 	// Added state for enable layer fill
 	const [enablefillColor, setEnableFillColor] = useState(initialLayerEnableFill);
@@ -188,7 +188,7 @@ export const useLayerStyle = layer => {
 	useEffect(() => {
 		setFillColor(initialFillColor);
 		setStrokeColor(initialStrokeColor);
-		setFillStyle(null);
+		setFillStyle(layer.layerSettings?.fillStyle);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedValue, selectedStrokeValue, selectedFillStyle]);
 
@@ -196,7 +196,7 @@ export const useLayerStyle = layer => {
 		setWidth(initialWidth);
 		setFillColor(initialFillColor);
 		setStrokeColor(initialStrokeColor);
-		setFillStyle(null);
+		setFillStyle(layer.layerSettings?.fillStyle);
 	}, [initialFillColor, initialStrokeColor, initialWidth, layer]);
 
 	const handleLayerChange = () => {
@@ -215,7 +215,8 @@ export const useLayerStyle = layer => {
 			!_.isEqual(layer.layerSettings?.attributeBasedStyles, attributeBasedStyles) ||
 			layer.layerSettings?.selectedAttribute?.label !== selectedValue?.label ||
 			layer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label ||
-			layer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label
+			layer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label ||
+			layer.layerSettings?.fillStyle !== fillStyle
 		) {
 			let currentLayer = { ...layer };
 			let fColor;

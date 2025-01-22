@@ -1,22 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
-
 import { Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-
-import { TextField } from '@mui/material';
-
+import { Autocomplete, TextField } from '@mui/material';
 import { useLazyQuery } from '@apollo/client';
-
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
-
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
-
 import { getLayerKey } from 'hookstate/helpers';
 import { colorBasedAttributes } from './ColorBasedAttributes';
 
 const fillStylesList = ['dots', 'hatch-1x', 'hatch-2x', 'hatch-cross'];
 
-// Styles for AttrsFillStyleDropdown
 const useStyles = makeStyles(() => ({
 	dropdownContainer: {
 		width: '485px',
@@ -85,19 +78,18 @@ const AttrsFillStyleDropdown = ({
 }) => {
 	const classes = useStyles();
 	const [displayDropdown, setDisplayDropdown] = useState(false);
-
-	// State for managing the clicked value and its style
 	const [selectedOption, setSelectedOption] = useState('');
-
-	// Getting values against the summary field keys
 	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
+		if (!selectedValue) return;
+
 		let esIndex = selectedLayer.layerType === 'file layer' ? 'shapefile_flat' : 'shapes_flat';
 		const layerType =
 			colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey?.toLowerCase();
 		let filters = [];
 		let search = { fields: [] };
+
 		if (selectedLayer?.layerType === 'file layer') {
 			filters = generateFileFilters({ fileLayer: selectedLayer }).variables.filters;
 			search = generateFileFilters({ fileLayer: selectedLayer }).variables.search;
@@ -113,7 +105,6 @@ const AttrsFillStyleDropdown = ({
 			];
 		}
 
-		console.log(selectedValue);
 		getFiltersList({
 			variables: {
 				search,
@@ -131,14 +122,11 @@ const AttrsFillStyleDropdown = ({
 		});
 	}, [selectedValue, getFiltersList, selectedLayer]);
 
-	// Making dropdown options with fill styles
 	const attroptions = useMemo(() => {
-		debugger;
 		if (!filtersData?.getDbFilters?.hits || !selectedValue?.label) {
 			return [];
 		}
 		const filterKeys = filtersData.getDbFilters.hits.map(hit => hit?.key).filter(key => key && key.toString().trim());
-
 		filterKeys.unshift('');
 
 		const options = filterKeys.map(key => {
@@ -162,7 +150,6 @@ const AttrsFillStyleDropdown = ({
 		}));
 
 		return options;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [filtersData, fillStyle]);
 
 	return (
@@ -196,14 +183,13 @@ const AttrsFillStyleDropdown = ({
 					)}
 				</div>
 			) : (
-				<TextField
-					variant="outlined"
-					fullWidth
-					onClick={() => setDisplayDropdown(!displayDropdown)}
-					InputProps={{
-						className: classes.textFieldInput,
-						startAdornment: <div className={classes.fillBox}>{fillStyle || '(Select Fill Style)'}</div>,
+				<Autocomplete
+					options={fillStylesList}
+					value={fillStyle || ''}
+					onChange={(event, newValue) => {
+						setFillStyle(newValue);
 					}}
+					renderInput={params => <TextField {...params} variant="outlined" fullWidth placeholder="Select Fill Style" />}
 				/>
 			)}
 		</>

@@ -640,10 +640,10 @@ export const getLayerFillStyle = dbLayer => {
 			}
 			const attrFillStyle = attributeBasedStyles[selectAttrLabel][value] || attributeBasedStyles[selectAttrLabel][''];
 			if (attrFillStyle) {
-				return attrFillStyle;
+				return attrFillStyle || dbLayer.layerSettings?.fillStyle;
 			}
 		}
-		return null;
+		return dbLayer.layerSettings?.fillStyle;
 	};
 };
 
@@ -749,7 +749,7 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 		props.pointType = 'icon';
 	}
 
-	if (dbLayer.layerSettings?.selectedFillStyle) {
+	if (dbLayer.layerSettings?.selectedFillStyle || dbLayer.layerSettings?.fillStyle) {
 		// fill pattern props
 		props.stroked = true;
 		props.filled = true;

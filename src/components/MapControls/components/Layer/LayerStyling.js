@@ -130,7 +130,8 @@ function LayerStyling() {
 			!_.isEqual(selectedLayer.layerSettings?.attributeBasedStyles, attributeBasedStyles) ||
 			selectedLayer.layerSettings?.selectedAttribute?.label !== selectedValue?.label ||
 			selectedLayer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label ||
-			selectedLayer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label
+			selectedLayer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label ||
+			selectedLayer.layerSettings?.fillStyle !== fillStyle
 		) {
 			let { currentLayer } = handleLayerChange();
 			const currentLayers = [...hookStateAppLayers];
@@ -139,7 +140,7 @@ function LayerStyling() {
 
 			const debouncedUpdate = _.debounce(() => {
 				globalStateController.updateState({ layers: currentLayers });
-				layerController.handleDeckLayer(currentLayer, true);
+				layerController.resetBounds(selectedLayer?.identifier, true);
 				updateLayerSettings({
 					variables: {
 						settings: {
@@ -149,7 +150,7 @@ function LayerStyling() {
 						},
 					},
 				});
-				layerController.resetBounds(selectedLayer?.identifier);
+				// layerController.handleDeckLayer(currentLayer, true);
 			}, 250); // Adjust the debounce delay as needed
 
 			debouncedUpdate();

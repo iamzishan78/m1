@@ -802,7 +802,7 @@ const layerStateControllerHandler = state => {
 		handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } });
 	};
 
-	const resetBounds = identifier => {
+	const resetBounds = (identifier, updateTriggers = false) => {
 		if (typeof identifier !== 'string') {
 			return;
 		}
@@ -855,7 +855,7 @@ const layerStateControllerHandler = state => {
 			}
 		});
 		const layer = globalStateController.getValue('layers').find(l => l.identifier === identifier);
-		layerController.handleDeckLayer(layer);
+		if (updateTriggers) layerController.handleDeckLayer(layer, true);
 	};
 
 	const resetMapStates = (mapReady = false) => {
