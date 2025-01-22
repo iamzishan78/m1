@@ -114,7 +114,7 @@ export default function AddUnitOwnerDialogContent({
 	const [metafields, setMetaFields] = useState([]);
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 	const { control, reset, setValue, getValues, watch } = useForm();

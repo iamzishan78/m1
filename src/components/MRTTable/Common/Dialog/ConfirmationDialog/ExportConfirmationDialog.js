@@ -25,7 +25,7 @@ function ExportConfirmationDialog({ table, tableKey, header, onClose, children, 
 	const client = useApolloClient();
 	const modalClass = Modals();
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const Controller = controller(tableKey);
 

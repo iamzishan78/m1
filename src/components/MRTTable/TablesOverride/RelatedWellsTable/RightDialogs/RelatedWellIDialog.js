@@ -52,7 +52,7 @@ function RelatedWellsDialog(props) {
 	const classes = useStyles();
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 	const { control, reset, getValues } = useForm();
 
 	const [loading, setLoading] = useState(false);

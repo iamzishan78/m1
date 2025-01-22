@@ -289,7 +289,7 @@ const Notifications = () => {
 	const [tab, setTab] = useState(0);
 	const [copyData, setCopyData] = useState([]);
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const [archiveAllMentions] = useMutation(ARCHIVE_ALL_MUTATIONS);
 	const [updateNotificationStatus] = useMutation(UPDATE_NOTIFICATION_STATUS);

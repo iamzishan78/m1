@@ -136,7 +136,7 @@ const AssociatedWellsList = ({ title, selectedDocument }) => {
 	const [addWell, setAddWell] = useState(false);
 	const [deletedRow, setDeletedRow] = useState('');
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const { getWellsFromDocument, wells, wellsFromDocument, getWellsLoading, setWells } =
 		React.useContext(DocumentContext);

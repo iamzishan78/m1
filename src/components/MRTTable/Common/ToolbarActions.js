@@ -22,7 +22,7 @@ function ToolbarActions({ table, tableKey, children }) {
 	const tableState = tableController(tableKey).useCompleteState();
 	const tableStateValues = tableState?.get({ noproxy: true });
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomeRowsSelected =
@@ -93,12 +93,12 @@ function ToolbarActions({ table, tableKey, children }) {
 				acc[key] =
 					selectedRows?.length > 0
 						? selectedRows.map(item => {
-								let val;
-								if (originalKey) val = _.get(item, originalKey);
-								if (func) val = func(val);
-								if (value) val = value;
-								return val;
-							})
+							let val;
+							if (originalKey) val = _.get(item, originalKey);
+							if (func) val = func(val);
+							if (value) val = value;
+							return val;
+						})
 						: null;
 				return acc;
 			}, {});

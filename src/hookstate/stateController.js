@@ -69,7 +69,7 @@ export class StateController {
 	getValues(keys) {
 		const returnValues = {};
 		keys.forEach(key => {
-			returnValues[key] = store.get(this.focusState[key]);
+			returnValues[key] = this.getValue(key);
 		});
 		return returnValues;
 	}
@@ -87,14 +87,8 @@ export class StateController {
 		return store.get(this.state);
 	}
 
-	resetAll() {
+	reset() {
 		store.set(this.state, this.initialState);
-	}
-
-	reset(keys) {
-		keys.forEach(key => {
-			store.set(this.focusState[key], this.initialState[key]);
-		});
 	}
 
 	resetState(key) {

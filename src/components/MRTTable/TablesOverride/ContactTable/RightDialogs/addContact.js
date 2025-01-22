@@ -68,7 +68,7 @@ export default function AddContactDialogContent(props) {
 	const formStateValues = formState?.get({ noproxy: true });
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const { control, reset, getValues, setValue, watch } = useForm();
 

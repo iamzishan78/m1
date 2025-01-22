@@ -240,7 +240,7 @@ export default function CommentComponent(props) {
 		isFileDetail: props.targetLabel === 'file' || false,
 	});
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const dispatch = useDispatch();
 
@@ -405,21 +405,21 @@ export default function CommentComponent(props) {
 	const newCommentCleaner = value =>
 		value.trim()[value.trim().length - 1] === '.'
 			? value
-					.split('\n')
-					.map(line => {
-						if (line.trim() !== '.') {
-							return line.trim();
-						}
-					})
-					.join('\n')
+				.split('\n')
+				.map(line => {
+					if (line.trim() !== '.') {
+						return line.trim();
+					}
+				})
+				.join('\n')
 			: `${value
-					.split('\n')
-					.map(line => {
-						if (line.trim() !== '.') {
-							return line.trim();
-						}
-					})
-					.join('\n')}`;
+				.split('\n')
+				.map(line => {
+					if (line.trim() !== '.') {
+						return line.trim();
+					}
+				})
+				.join('\n')}`;
 
 	const updateComment = value => {
 		setLoadingComments(true);
@@ -742,13 +742,12 @@ export default function CommentComponent(props) {
 															editCommentId !== eachComment._id &&
 															eachComment?.commentType?.commentType !== 'unitCreation' && (
 																<div
-																	className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${
-																		!(
+																	className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
 																			eachComment?.user?.email === getUser?.email &&
 																			showCommentActionId === eachComment._id &&
 																			editCommentId !== eachComment._id
 																		) && classes.hideMenuIcon
-																	}`}
+																		}`}
 																>
 																	<ActionMenu
 																		eachComment={eachComment}
@@ -847,7 +846,7 @@ export default function CommentComponent(props) {
 							<Grid item style={{ maxWidth: '55px' }}>
 								<IconButton
 									className={classes.commentView}
-									// style={{ top: "3px" }}
+								// style={{ top: "3px" }}
 								>
 									{profileImage ? (
 										<Avatar src={profileImage} size="38" round />

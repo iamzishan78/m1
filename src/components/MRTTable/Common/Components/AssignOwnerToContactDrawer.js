@@ -274,7 +274,7 @@ export default function AssignOwnerToContactDrawer({
 	...rest
 }) {
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const classes = useStyles();
 	const modalClass = Modals();

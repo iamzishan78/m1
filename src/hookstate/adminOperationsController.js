@@ -1,4 +1,4 @@
-import { StateController } from './stateController';
 import { adminOperationsInitialState } from './initialStates';
+import { StateController } from './stateController';
 
-export const globalStateController = new StateController(adminOperationsInitialState);
+export const adminOperationsController = new StateController(adminOperationsInitialState);

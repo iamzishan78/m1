@@ -196,7 +196,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	const dispatch = useDispatch();
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(DOCUMENT_TYPE, {
 		fetchPolicy: 'no-cache',
@@ -591,7 +591,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							className={classes.forImage}
 						></img>
 					) : (
-						<div className={fileUpload?.fileExtension ? classes.forImageContainer : ''} onClick={() => {}}>
+						<div className={fileUpload?.fileExtension ? classes.forImageContainer : ''} onClick={() => { }}>
 							{get_file_icon(fileUpload?.fileExtension)}
 						</div>
 					)}

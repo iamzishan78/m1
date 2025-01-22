@@ -85,7 +85,7 @@ export default function SendMailersDialogContent(props) {
 	}, [props.rows]);
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	useEffect(() => {
 		if (props?.campaign?.name !== '') {
