@@ -181,7 +181,7 @@ const ActivitiesDashboard = () => {
 						{ field: 'category.keyword', value: 'CRM' },
 						{ field: 'type.keyword', value: 'Expiration', type: 'advanced', searchType: 'notEquals' },
 					],
-					maxTableHeight: '42vh',
+					maxTableHeight: '55vh',
 				}}
 			/>
 			<ActivitiesSlideout
