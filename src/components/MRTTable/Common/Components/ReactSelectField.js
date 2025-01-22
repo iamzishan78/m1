@@ -5,6 +5,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/lab/es/internal/svg-icons/ArrowDropDown';
 
+import PropTypes from 'prop-types';
+
 import { BulletPointMeta } from 'utils/BulletPointMeta';
 import { ChipMeta } from 'utils/ChipMeta';
 import { getMetaCss } from 'utils/getMetaCss';
@@ -76,6 +78,21 @@ const ReactSelectField = ({
 	const wrapperRef = useRef(null);
 	const [showIcon, setShowIcon] = useState(showChevron);
 
+	const dropdownRef = useRef(null);
+	const [dropdownPosition, setDropdownPosition] = useState('bottom');
+
+	useEffect(() => {
+		if (wrapperRef.current && dropdownRef.current) {
+			const wrapperRect = wrapperRef.current.getBoundingClientRect();
+			const windowHeight = window.innerHeight;
+			const spaceBelow = windowHeight - wrapperRect.bottom;
+			const spaceAbove = wrapperRect.top;
+
+			// Set dropdown position based on available space
+			setDropdownPosition(spaceBelow < 200 && spaceAbove > 200 ? 'top' : 'bottom');
+		}
+	}, [wrapperRef, dropdownRef, isOpen]);
+
 	useEffect(() => {
 		function handleClickOutside(event) {
 			if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
@@ -124,6 +141,13 @@ const ReactSelectField = ({
 			{isOpen ? <Blanket onClick={onClose} /> : null}
 		</div>
 	);
+
+	Dropdown.propTypes = {
+		children: PropTypes.node,
+		isOpen: PropTypes.bool.isRequired,
+		target: PropTypes.node.isRequired,
+		onClose: PropTypes.func.isRequired,
+	};
 
 	const toggleOpen = () => {
 		setIsOpen(!isOpen);
@@ -191,6 +215,8 @@ const ReactSelectField = ({
 				>
 					<SelectField
 						dropdownOptions={dropdownOptions}
+						dropdownPosition={dropdownPosition}
+						ref={dropdownRef}
 						value={value}
 						isSingleSelect={isSingleSelect}
 						onCustomKeyChange={onCustomKeyChange}
@@ -201,6 +227,19 @@ const ReactSelectField = ({
 			</div>
 		</>
 	);
+};
+ReactSelectField.propTypes = {
+	isSingleSelect: PropTypes.bool.isRequired,
+	onCustomKeyChange: PropTypes.func,
+	dropdownOptions: PropTypes.array,
+	column: PropTypes.object,
+	value: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
+	fullWidth: PropTypes.bool,
+	showUnderline: PropTypes.bool,
+	showChevron: PropTypes.bool,
+	variant: PropTypes.string,
+	tooltipView: PropTypes.bool,
+	minHeight: PropTypes.string,
 };
 
 export default ReactSelectField;
@@ -231,7 +270,9 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
 						title={
 							<React.Fragment>
 								{tooltipValues.map(v => (
-									<Typography color="inherit">{v}</Typography>
+									<Typography key={v} color="inherit">
+										{v}
+									</Typography>
 								))}
 							</React.Fragment>
 						}
@@ -261,10 +302,16 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
 				const option = dropdownOptions.find(opt => opt.value === v);
 
 				return isBulletPointMeta ? (
-					<BulletPointMeta key={index} index={index} option={option} bulletValue={v} iconType={column.iconType} />
+					<BulletPointMeta
+						key={option.value}
+						index={index}
+						option={option}
+						bulletValue={v}
+						iconType={column.iconType}
+					/>
 				) : (
 					<ChipMeta
-						key={index}
+						key={option.value}
 						index={index}
 						chipsArray={value}
 						chipValue={v}
@@ -317,4 +364,13 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
 			)}
 		</span>
 	);
+};
+
+MultSelectValues.propTypes = {
+	value: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
+	dropdownOptions: PropTypes.array.isRequired,
+	onCustomKeyChange: PropTypes.func,
+	isSingleSelect: PropTypes.bool,
+	tooltipView: PropTypes.bool,
+	column: PropTypes.object.isRequired,
 };
