@@ -216,33 +216,44 @@ const MetaField = ({
 	const [filter, setFilter] = useState('');
 	const [showAddDescription, setShowAddDescription] = useState(false);
 	const { control, setValue, getValues, watch } = useForm();
-	const [stateApp, setStateApp] = useContext(AppContext);
-	const type = watch('type', stateApp.selectedMeta ? stateApp.selectedMeta.type : 'dropdown');
-	const title = watch('title', stateApp.selectedMeta ? stateApp.selectedMeta.title : '');
-	const { globalState } = globalStateController.useState(['selectedIconTpe'], 'globalState');
+	const { globalState, selectedMeta } = globalStateController.useState(
+		['selectedIconTpe', 'selectedMeta', 'user'],
+		'globalState'
+	);
+
+	const type = watch('type', globalState.selectedMeta ? globalState.selectedMeta.type : 'dropdown');
+	const title = watch('title', globalState.selectedMeta ? globalState.selectedMeta.title : '');
+
 	const isAddedToLibrary = watch(
 		'isAddedToLibrary',
-		stateApp.selectedMeta ? stateApp.selectedMeta.isAddedToLibrary : false
+		globalState.selectedMeta ? globalState.selectedMeta.isAddedToLibrary : false
 	);
 
 	const [items, setItems] = useState([{ palleteId: colorPallete[0].id }]);
 
 	useEffect(() => {
-		if (stateApp.selectedMeta) {
+		if (globalState.selectedMeta) {
 			setTimeout(() => {
-				setValue('isAddedToLibrary', stateApp.selectedMeta.isAddedToLibrary);
-				setValue('type', stateApp.selectedMeta.type);
-				setValue('title', stateApp.selectedMeta.label);
-				setValue('iconType', stateApp.selectedMeta.iconType || iconOptions[0].value);
-				setItems(stateApp.selectedMeta.dropdownOptions);
+				setValue('isAddedToLibrary', globalState.selectedMeta.isAddedToLibrary);
+				setValue('type', globalState.selectedMeta.type);
+				setValue('title', globalState.selectedMeta.label);
+				setValue('iconType', globalState.selectedMeta.iconType || iconOptions[0].value);
+				setItems(globalState.selectedMeta.dropdownOptions);
 			}, 100);
 		}
-	}, [stateApp.selectedMeta, setValue]);
+	}, [selectedMeta, setValue]);
 
-	const [addMetaData] = useMutation(ADD_META_DATA);
+	const [addMetaData] = useMutation(ADD_META_DATA, {
+		onCompleted: () => {
+			tableGlobalController.reInitialized();
+		},
+	});
 	const [updateMetaData] = useMutation(UPDATE_META_DATA, {
 		refetchQueries: ['getMetaData'],
 		awaitRefetchQueries: true,
+		onCompleted: () => {
+			tableGlobalController.reInitialized();
+		},
 	});
 
 	const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(GET_ALL_LIBRARY_META_DATA);
@@ -283,11 +294,11 @@ const MetaField = ({
 
 	const handleSave = () => {
 		const values = getValues();
-		if (stateApp.selectedMeta) {
+		if (globalState.selectedMeta) {
 			updateMetaData({
 				variables: {
 					metaData: {
-						_id: stateApp.selectedMeta._id,
+						_id: globalState.selectedMeta._id,
 						label: values.title,
 						iconType: values.iconType,
 						dropdownOptions: items,
@@ -319,7 +330,7 @@ const MetaField = ({
 						},
 						type: values.type,
 						category: values.category,
-						user: stateApp.user.mongoId,
+						user: globalState.user.mongoId,
 						dropdownOptions: type !== 'text' ? items : [],
 						isAddedToLibrary: values.isAddedToLibrary,
 						isCustom: true,
@@ -333,25 +344,12 @@ const MetaField = ({
 		handleClose();
 	};
 
-	useEffect(() => {
-		return () => {
-			if (tableKey) {
-				tableGlobalController.reInitialized();
-			}
-		};
-	}, [tableKey]);
-
 	const handleClose = () => {
 		setItems([]);
-		setStateApp(stateApp => ({
-			...stateApp,
-			showFieldModal: false,
-			selectedMeta: null,
-		}));
-
 		// Using for metaa fields other then grid
 		globalStateController?.updateState?.({
 			showFieldModal: false,
+			selectedMeta: null,
 		});
 		TableController?.updateState?.({
 			showFieldModal: false,
@@ -362,7 +360,7 @@ const MetaField = ({
 		updateMetaData({
 			variables: {
 				metaData: {
-					_id: stateApp.selectedMeta._id,
+					_id: globalState.selectedMeta._id,
 					isDeleted: true,
 				},
 			},
@@ -398,7 +396,7 @@ const MetaField = ({
 					metaData: {
 						...meta,
 						category: category,
-						user: stateApp.user.mongoId,
+						user: globalState.user.mongoId,
 						isAddedToLibrary: false,
 						isCustom: true,
 					},
@@ -424,20 +422,16 @@ const MetaField = ({
 				onClose={() => {
 					globalStateController.updateState({
 						showFieldModal: false,
-					});
-					setStateApp(stateApp => ({
-						...stateApp,
 						selectedMeta: null,
-						showFieldModal: false,
-					}));
+					});
 				}}
 			>
 				<div>
 					<div className={classes.header}>
 						<Grid container justify="space-between" direction="row" display="flex">
-							<Grid item>{stateApp.selectedMeta ? <h3>Edit Field</h3> : <h3>Add Field</h3>}</Grid>
+							<Grid item>{globalState.selectedMeta ? <h3>Edit Field</h3> : <h3>Add Field</h3>}</Grid>
 							<Grid item xs={6} className={classes.dialogActions}>
-								{stateApp.selectedMeta && (
+								{globalState.selectedMeta && (
 									<IconButton
 										size="small"
 										component="span"
@@ -477,7 +471,7 @@ const MetaField = ({
 						</Grid>
 					</div>
 					<div className={classes.tabs}>
-						{!stateApp.selectedMeta && (
+						{!globalState.selectedMeta && (
 							<>
 								{viewOptions.map(option => {
 									return (
@@ -517,7 +511,7 @@ const MetaField = ({
 														placeholder="e.g. Priority, Stage, Status"
 														fullWidth
 														defaultValue=""
-														disabled={stateApp.selectedMeta}
+														disabled={globalState.selectedMeta}
 														onBlur={e => {
 															const name = e.target.value?.replace(/ /g, '_').toLowerCase();
 															checkMetaKeyExists({ variables: { name, category } });
@@ -555,7 +549,7 @@ const MetaField = ({
 														}}
 														options={options}
 														className={classes.select}
-														isDisabled={stateApp.selectedMeta}
+														isDisabled={globalState.selectedMeta}
 													/>
 												)}
 											/>
@@ -642,7 +636,7 @@ const MetaField = ({
 															menuPlacement="auto"
 															options={categoryOptions}
 															className={classes.select}
-															isDisabled={stateApp.selectedMeta}
+															isDisabled={globalState.selectedMeta}
 														/>
 													)}
 												/>
@@ -689,7 +683,7 @@ const MetaField = ({
 											onClick={handleSave}
 											disabled={isDisabled || isKeyExists}
 										>
-											{stateApp.selectedMeta ? 'Update Field' : 'Create Field'}
+											{globalState.selectedMeta ? 'Update Field' : 'Create Field'}
 										</Button>
 									</div>
 								</div>
@@ -710,7 +704,7 @@ const MetaField = ({
 										}}
 										options={categoryOptions}
 										className={classes.select}
-										isDisabled={stateApp.selectedMeta}
+										isDisabled={globalState.selectedMeta}
 									/>
 									<TextField
 										style={{ marginTop: 15 }}
