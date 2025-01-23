@@ -165,7 +165,7 @@ const Auth0Login = props => {
 
 				// Fetch user settings
 				const authToken = loginRes.sessionData.auth0Token || loginRes.sessionData.token;
-				const userMapSettings = await userSettings(loginRes.user._id, authToken, id.__raw);
+				const userMapSettings = await userSettings(loginRes.user._id, authToken, id.__raw, 'baseMap');
 
 				handleLogin(loginRes, userMapSettings);
 			} catch (error) {
