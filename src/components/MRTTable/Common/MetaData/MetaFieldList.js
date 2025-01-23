@@ -1,17 +1,30 @@
 import React, { memo } from 'react';
 
-import { Grid, Dialog, FormLabel, Button, ButtonGroup } from '@material-ui/core';
+import {
+	Grid,
+	Dialog,
+	Button,
+	ButtonGroup,
+	List,
+	ListItem,
+	ListItemText,
+	ListItemSecondaryAction,
+	DialogTitle,
+	DialogContent,
+} from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import EditIcon from '@material-ui/icons/Edit';
+
+import PropTypes from 'prop-types';
 
 import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController } from 'hookstate/tableController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	header: {
 		display: 'flex',
 		justifyContent: 'space-between',
@@ -59,6 +72,7 @@ const useStyles = makeStyles(theme => ({
 	dialog: {
 		height: '58%',
 		margin: 'auto',
+		width: '50%',
 	},
 }));
 
@@ -89,49 +103,53 @@ function MetaFieldList({ tableKey }) {
 
 	return (
 		<Dialog fullWidth maxWidth="md" open={true} onClose={handleClose} className={classes.dialog}>
-			<div>
-				<div className={classes.header}>
-					<Grid container justify="space-between" direction="row" display="flex" alignItems="center">
-						<Grid item>
-							<h2>List</h2>
-						</Grid>
-						<Grid item xs={6} className={classes.dialogActions}>
-							<ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
-								<Button
-									id="addDocument"
-									color="primary"
-									size="small"
-									aria-label="select merge strategy"
-									aria-haspopup="menu"
-									onClick={() => {
-										handleClose();
-										OpenFieldModelDialog();
-									}}
-								>
-									Add Field
-								</Button>
-							</ButtonGroup>
-							<IconButton onClick={handleClose}>
-								<CloseIcon />
-							</IconButton>
-						</Grid>
+			<DialogTitle id="customized-dialog-title" onClose={handleClose}>
+				<Grid container justify="space-between" direction="row" display="flex" alignItems="center">
+					<Grid item>
+						<h3>List</h3>
 					</Grid>
-				</div>
-				<div style={{ display: 'flex', flexWrap: 'wrap' }}>
+					<Grid item xs={6} className={classes.dialogActions}>
+						<ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
+							<Button
+								id="addDocument"
+								color="primary"
+								size="small"
+								aria-label="select merge strategy"
+								aria-haspopup="menu"
+								onClick={() => {
+									handleClose();
+									OpenFieldModelDialog();
+								}}
+							>
+								Add Field
+							</Button>
+						</ButtonGroup>
+						<IconButton onClick={handleClose}>
+							<CloseIcon />
+						</IconButton>
+					</Grid>
+				</Grid>
+			</DialogTitle>
+			<DialogContent dividers>
+				<List>
 					{fieldStateValues?.metaColumns.map(row => (
-						<Grid item xs={12} className={classes.inputContainer}>
-							<FormLabel className={classes.inputLabel}>{`${row.label}`}</FormLabel>
-							<FormLabel className={classes.inputContent}>
-								<IconButton onClick={() => OpenFieldModelDialog(row)}>
+						<ListItem key={row.label || row.label}>
+							<ListItemText primary={row.label} />
+							<ListItemSecondaryAction>
+								<IconButton edge="end" aria-label="edit" onClick={() => OpenFieldModelDialog(row)}>
 									<EditIcon />
 								</IconButton>
-							</FormLabel>
-						</Grid>
+							</ListItemSecondaryAction>
+						</ListItem>
 					))}
-				</div>
-			</div>
+				</List>
+			</DialogContent>
 		</Dialog>
 	);
 }
+
+MetaFieldList.propTypes = {
+	tableKey: PropTypes.string.isRequired,
+};
 
 export default memo(MetaFieldList);
