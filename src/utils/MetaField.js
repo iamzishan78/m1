@@ -216,7 +216,10 @@ const MetaField = ({
 	const [filter, setFilter] = useState('');
 	const [showAddDescription, setShowAddDescription] = useState(false);
 	const { control, setValue, getValues, watch } = useForm();
-	const { globalState, selectedMeta } = globalStateController.useState(['selectedIconTpe', 'selectedMeta', 'user'], 'globalState');
+	const { globalState, selectedMeta } = globalStateController.useState(
+		['selectedIconTpe', 'selectedMeta', 'user'],
+		'globalState'
+	);
 
 	const type = watch('type', globalState.selectedMeta ? globalState.selectedMeta.type : 'dropdown');
 	const title = watch('title', globalState.selectedMeta ? globalState.selectedMeta.title : '');
@@ -240,10 +243,17 @@ const MetaField = ({
 		}
 	}, [selectedMeta, setValue]);
 
-	const [addMetaData] = useMutation(ADD_META_DATA);
+	const [addMetaData] = useMutation(ADD_META_DATA, {
+		onCompleted: () => {
+			tableGlobalController.reInitialized();
+		},
+	});
 	const [updateMetaData] = useMutation(UPDATE_META_DATA, {
 		refetchQueries: ['getMetaData'],
 		awaitRefetchQueries: true,
+		onCompleted: () => {
+			tableGlobalController.reInitialized();
+		},
 	});
 
 	const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(GET_ALL_LIBRARY_META_DATA);
