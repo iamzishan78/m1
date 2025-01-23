@@ -147,6 +147,10 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 
 	// Fetch dynamic grid columns
 	const customAsset = result?.data?.getCustomAssetInfo?.asset;
+	globalStateController.updateState({
+		currentAsset: customAsset,
+	});
+
 	let columns = customAsset?.modelKeys || [];
 
 	let associatedModel = {};
