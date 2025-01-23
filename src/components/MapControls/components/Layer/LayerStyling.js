@@ -45,8 +45,10 @@ function LayerStyling() {
 		setWidth,
 		fillColor,
 		fillStyle,
+		lineStyle,
 		setFillColor,
 		setFillStyle,
+		setLineStyle,
 		enablefillColor,
 		setEnableFillColor,
 		enableStrokeColor,
@@ -56,12 +58,16 @@ function LayerStyling() {
 		selectedStrokeValue,
 		setSelectedStrokeValue,
 		selectedFillStyle,
+		selectedLineStyle,
 		setSelectedFillStyle,
+		setSelectedLineStyle,
 		attributeBasedColors,
 		setAttributeBasedColors,
 		attributeBasedStrokeColors,
 		attributeBasedStyles,
+		attributeBasedLineStyles,
 		setAttributeBasedStyles,
+		setAttributeBasedLineStyles,
 		setAttributeBasedStrokeColors,
 		layerLabelVisibility,
 		setLayerLabelVisibility,
@@ -125,10 +131,13 @@ function LayerStyling() {
 			!_.isEqual(selectedLayer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
 			!_.isEqual(selectedLayer.layerSettings?.attributeBasedStrokeColors, attributeBasedStrokeColors) ||
 			!_.isEqual(selectedLayer.layerSettings?.attributeBasedStyles, attributeBasedStyles) ||
+			!_.isEqual(selectedLayer.layerSettings?.attributeBasedLineStyles, attributeBasedLineStyles) ||
 			selectedLayer.layerSettings?.selectedAttribute?.label !== selectedValue?.label ||
 			selectedLayer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label ||
 			selectedLayer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label ||
-			selectedLayer.layerSettings?.fillStyle !== fillStyle
+			selectedLayer.layerSettings?.selectedLineStyle?.label !== selectedLineStyle?.label ||
+			selectedLayer.layerSettings?.fillStyle !== fillStyle ||
+			selectedLayer.layerSettings?.lineStyle !== lineStyle
 		) {
 			let { currentLayer } = handleLayerChange();
 			const currentLayers = [...hookStateAppLayers];
@@ -175,13 +184,16 @@ function LayerStyling() {
 		enableStrokeColor,
 		attributeBasedColors,
 		attributeBasedStyles,
+		attributeBasedLineStyles,
 		attributeBasedStrokeColors,
 		selectedValue,
 		selectedStrokeValue,
 		selectedFillStyle,
+		selectedLineStyle,
 		strokeWidth,
 		fillColor,
 		fillStyle,
+		lineStyle,
 		strokeColor,
 		width,
 	]);
@@ -374,6 +386,7 @@ function LayerStyling() {
 											setSelectedValue={setSelectedFillStyle}
 										/>
 										<AttrsFillStyleDropdown
+											dropDownOptions={['dots', 'hatch-1x', 'hatch-2x', 'hatch-cross']}
 											selectedValue={selectedFillStyle}
 											selectedLayer={selectedLayer}
 											fillStyle={fillStyle}
@@ -423,6 +436,36 @@ function LayerStyling() {
 											/>
 										</>
 									)}
+									{/* dropdown for line/stroke style selection */}
+
+									<Grid item xs={12}>
+										<div
+											style={{
+												display: 'flex',
+												justifyContent: 'space-between',
+											}}
+										>
+											<Typography variant="h6">Stroke Style</Typography>
+										</div>
+										{enableStrokeColor && (
+											<>
+												<AttrsAutocomplete
+													options={options}
+													selectedValue={selectedLineStyle}
+													setSelectedValue={setSelectedLineStyle}
+												/>
+												<AttrsFillStyleDropdown
+													dropDownOptions={['dots', 'dashed', 'connected']}
+													selectedValue={selectedLineStyle}
+													selectedLayer={selectedLayer}
+													fillStyle={lineStyle}
+													setFillStyle={setLineStyle}
+													attributeBasedStyles={attributeBasedLineStyles}
+													setAttributeBasedStyles={setAttributeBasedLineStyles}
+												/>
+											</>
+										)}
+									</Grid>
 									<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
 										Stroke Width
 									</Typography>
