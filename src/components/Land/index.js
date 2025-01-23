@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Switch, Route, useLocation, Redirect } from 'react-router-dom';
 
+import { useLazyQuery } from '@apollo/client';
+
 import * as Components from 'components/Land/components';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
-import { replaceLinkId } from 'components/Shared/functions';
-import { ALL_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
-import { useLazyQuery } from '@apollo/client';
 import { removeSpaces } from 'components/MRTTable/utils/helper';
+import { replaceLinkId } from 'components/Shared/functions';
+
+import { ALL_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 
 //Actions
 import { toggleQuickActionsPanel, setActiveModule } from 'store/actions/commonActions';
@@ -95,7 +97,11 @@ export default function Land() {
 
 	useEffect(() => {
 		// Get all custom assets
-		getAllCustomAsset();
+		getAllCustomAsset({
+			variables: {
+				type: 'Custom',
+			},
+		});
 	}, [getAllCustomAsset]);
 
 	useEffect(() => {
@@ -116,7 +122,7 @@ export default function Land() {
 
 					newList[`${key}_DETAIL`] = {
 						featureFlag: 'LANDMODULE',
-						link: `/land/customAsset/:tableName/details/:id`,
+						link: '/land/customAsset/:tableName/details/:id',
 						component: 'GenericDetailCardContainer',
 						value: 'GenericDetailCardContainer',
 						hideSearch: true,
@@ -127,7 +133,7 @@ export default function Land() {
 
 					newList[`${key}_DETAIL_DOCUMENTS`] = {
 						featureFlag: 'LANDMODULE',
-						link: `/land/customAsset/:tableName/details/:id/documents`,
+						link: '/land/customAsset/:tableName/details/:id/documents',
 						component: 'DocumentsCardContainer',
 						value: 'DocumentsCardContainer',
 						hideSearch: true,
@@ -162,7 +168,7 @@ export default function Land() {
 						component={Components[sidePanelMenuList[option].component]}
 					/>
 				))}
-				<Redirect to={`/land/agreements`} />
+				<Redirect to={'/land/agreements'} />
 			</Switch>
 		</QuickActionPanel>
 	);
