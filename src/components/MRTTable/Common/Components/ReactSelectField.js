@@ -78,20 +78,19 @@ const ReactSelectField = ({
 	const wrapperRef = useRef(null);
 	const [showIcon, setShowIcon] = useState(showChevron);
 
-	const dropdownRef = useRef(null);
 	const [dropdownPosition, setDropdownPosition] = useState('bottom');
 
 	useEffect(() => {
-		if (wrapperRef.current && dropdownRef.current) {
+		if (wrapperRef.current) {
 			const wrapperRect = wrapperRef.current.getBoundingClientRect();
 			const windowHeight = window.innerHeight;
 			const spaceBelow = windowHeight - wrapperRect.bottom;
 			const spaceAbove = wrapperRect.top;
 
 			// Set dropdown position based on available space
-			setDropdownPosition(spaceBelow < 200 && spaceAbove > 200 ? 'top' : 'bottom');
+			setDropdownPosition(spaceBelow < 250 && spaceAbove > 200 ? 'top' : 'bottom');
 		}
-	}, [wrapperRef, dropdownRef, isOpen]);
+	}, [wrapperRef, isOpen]);
 
 	useEffect(() => {
 		function handleClickOutside(event) {
@@ -216,7 +215,6 @@ const ReactSelectField = ({
 					<SelectField
 						dropdownOptions={dropdownOptions}
 						dropdownPosition={dropdownPosition}
-						ref={dropdownRef}
 						value={value}
 						isSingleSelect={isSingleSelect}
 						onCustomKeyChange={onCustomKeyChange}

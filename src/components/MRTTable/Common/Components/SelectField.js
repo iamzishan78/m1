@@ -39,7 +39,6 @@ const SelectField = ({
 	column,
 	onClose,
 	dropdownPosition,
-	ref,
 }) => {
 	const classes = useStyles();
 	const [dropDownValues, setDropDownValues] = useState([]);
@@ -348,7 +347,6 @@ const SelectField = ({
 
 	return (
 		<Select
-			ref={ref}
 			captureMenuScroll={false}
 			classNamePrefix="react-select"
 			className="react-select-container"
