@@ -20,7 +20,11 @@ const updateState = debounce((zoom, bbox, center) => {
 	});
 }, 1000);
 
-const move = moveRef => {
+const move = (moveRef, isInitialLoad) => {
+	if (isInitialLoad) {
+		return
+	}
+
 	const zoom = window.mapRef?.getZoom();
 	const center = window.mapref?.getCenter();
 	const bounds = window.mapRef?.getBounds();
@@ -28,6 +32,7 @@ const move = moveRef => {
 	console.log("bbox", bounds)
 	console.log("center", center)
 	console.log("zoom", zoom)
+	debugger
 
 	const ne = bounds?.getNorthEast();
 	const sw = bounds?.getSouthWest();
@@ -50,6 +55,20 @@ const move = moveRef => {
 
 	// Update the browser's URL
 	window.history.pushState({}, '', url);
+	const mapBounds = {
+		zoom: parseFloat(params.zoom),
+		bbox: {
+			_ne: {
+				lng: parseFloat(params._neLng),
+				lat: parseFloat(params._neLat),
+			},
+			_sw: {
+				lng: parseFloat(params._swLng),
+				lat: parseFloat(params._swLat),
+			},
+		}
+	};
+	globalStateController.updateState({ mapBounds: mapBounds });
 
 	if (deepEqual(values.bounds, bounds) && zoom === values.zoom && center === values.center) {
 		return;
@@ -68,7 +87,7 @@ function LayerManager() {
 
 	const { bbox, recalculate } = layerController.useState(['bbox', 'recalculate']);
 	const { layers, deckLayer, globalStateValues } = globalStateController.useState(
-		['layers', 'deckLayer'],
+		['layers', 'deckLayer', 'isInitialLoad'],
 		'globalStateValues'
 	);
 	const { polygonFilter, polygonsFilter } = layerFiltersController.useState(['polygonFilter', 'polygonsFilter']);
@@ -77,10 +96,10 @@ function LayerManager() {
 		if (!window.mapRef) {
 			return;
 		}
-		move(moveRef);
-		window.mapRef?.on?.('move', () => move(moveRef));
+		move(moveRef, globalStateValues?.isInitialLoad);
+		window.mapRef?.on?.('move', () => move(moveRef, globalStateValues?.isInitialLoad));
 		return () => {
-			window.mapRef?.off('move', () => move(moveRef));
+			window.mapRef?.off('move', () => move(moveRef, globalStateValues?.isInitialLoad));
 		};
 	}, []);
 
@@ -103,6 +122,7 @@ function LayerManager() {
 	}, [deckLayer]);
 
 	useEffect(() => {
+		debugger
 		if (isReady) {
 			layerController.handleChange();
 		}
