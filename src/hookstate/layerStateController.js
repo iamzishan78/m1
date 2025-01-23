@@ -502,7 +502,7 @@ const layerStateControllerHandler = state => {
 		});
 		return layerIndex > 0
 			? `${showableLayers[layerIndex - 1]?.identifier}_${showableLayers[layerIndex - 1].layerId}`
-			: 'first_deck_layer';
+			: null;
 	};
 
 	const handleMapBoxLayer = dbLayer => {
@@ -648,9 +648,9 @@ const layerStateControllerHandler = state => {
 			});
 
 			deckLayers[layerId].deckLayer = deckLayer;
+			deckLayers[layerId].beforeLayerId = beforeLayerId;
 		}
-		DeckGlLayer.moveLayer(layerId, beforeLayerId);
-		deckLayers[layerId].beforeLayerId = beforeLayerId;
+
 	};
 
 	const handleDeckLayer = (dbLayer, isUpdateTrigger) => {
@@ -910,7 +910,7 @@ const layerStateControllerHandler = state => {
 		handleChange: () => {
 			const showableLayers = getShowableLayers();
 
-			showableLayers.forEach(dbLayer => {
+			showableLayers.reverse().forEach(dbLayer => {
 				handleDeckLayer(dbLayer);
 			});
 			if (window.mapRef.getLayer('boundary-layer')) {

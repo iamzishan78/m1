@@ -100,7 +100,6 @@ export const drawWellBoundary = coordinates => {
 		DeckGlLayer.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
-			beforeLayer: 'top_deck_layer',
 			props: {
 				data: [
 					{
@@ -140,7 +139,6 @@ export const drawPlaceBoundary = coordinates => {
 		DeckGlLayer.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
-			beforeLayer: 'top_deck_layer',
 			props: {
 				data: [
 					{
@@ -183,7 +181,6 @@ export const drawBoundary = (selectedUserDefinedLayer, layer_Id) => {
 		DeckGlLayer.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
-			beforeLayer: 'top_deck_layer',
 			props: {
 				data: [
 					{

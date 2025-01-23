@@ -29,6 +29,7 @@ import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 
+import { detailCardController } from 'hookstate/detailCardController';
 import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
@@ -37,7 +38,6 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { navController } from 'hookstate/navStateController';
 import { popupController } from 'hookstate/popupStateController';
-import { detailCardController } from 'hookstate/detailCardController';
 
 import { baseTenantsMaps } from 'utils/data';
 import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
@@ -879,8 +879,7 @@ function Map({
 						},
 						getCursor: ({ isHovering }) => {
 							const value = isDrawing ? 'crosshair' : isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab';
-							if (window?.mapRef?.getCanvas?.()?.style?.cursor !== value)
-								window.mapRef.getCanvas().style.cursor = value;
+							if (window?.mapRef?.getCanvas?.()?.style?.cursor !== value) { window.mapRef.getCanvas().style.cursor = value; }
 							return value;
 						},
 						onClick: ({ x, y, coordinate }, { rightButton, srcEvent }) => {
@@ -948,24 +947,6 @@ function Map({
 					// add image to the active style and make it SDF-enabled
 					newMap.addImage('marker-icon', image, { sdf: true });
 				});
-				setTimeout(() => {
-					DeckGlLayer.addLayer({
-						layerId: 'top_deck_layer',
-						type: 'ScatterplotLayer',
-						props: {
-							data: [],
-						},
-					});
-
-					DeckGlLayer.addLayer({
-						layerId: 'first_deck_layer',
-						type: 'ScatterplotLayer',
-						beforeLayer: 'top_deck_layer',
-						props: {
-							data: [],
-						},
-					});
-				}, 250);
 
 				// FOR aoi_labels
 				newMap.addSource('aoi_label_source', {

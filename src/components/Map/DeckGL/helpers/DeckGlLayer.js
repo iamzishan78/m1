@@ -70,8 +70,6 @@ export default class DeckGlOverlay {
 	static setProps = layers => {
 		let allLayers = [...layers];
 
-		allLayers = orderBy(allLayers, ['props.position'], ['desc']);
-
 		allLayers.forEach(layer => {
 			layer.props.data = DeckGlOverlay.dataRef[layer.id];
 		});
@@ -107,30 +105,46 @@ export default class DeckGlOverlay {
 		});
 		DeckGlOverlay.dataRef[layerId] = props.data;
 		const currentLayers = window.deckOverlay?._props?.layers || [];
-		currentLayers.push(newLayer);
-		DeckGlOverlay.setProps(currentLayers);
-		return newLayer;
+		if (currentLayers.find(layer => layer.id === layerId)) {
+			return currentLayers.find(layer => layer.id === layerId);
+		} else {
+			currentLayers.push(newLayer);
+			console.log('currentLayers', currentLayers);
+			DeckGlOverlay.setProps(currentLayers);
+			return newLayer;
+		}
+
 	};
 
 	static moveLayer = (layerId, beforeLayer) => {
-		setTimeout(() => {
-			const layers = window.deckOverlay?._props?.layers || [];
-			const layerIndex = layers.findIndex(layer => layer.id === layerId);
-			const beforeLayerIndex = layers.findIndex(layer => layer.id === beforeLayer);
+		const layers = window.deckOverlay?._props?.layers || [];
 
-			if (layerIndex === -1) {
-				return;
-			}
+		// Find the indexes of `layerId` and `beforeLayerId`
+		const layerIndex = layers.findIndex(layer => layer.id === layerId);
+		const beforeLayerIndex = layers.findIndex(layer => layer.id === beforeLayer);
 
+		if (layerIndex === -1) {
+			return;
+		}
+
+		// Ensure `layerId` exists
+		if (layerIndex !== -1) {
+			// Remove the layer from its current position
 			const [layer] = layers.splice(layerIndex, 1);
-			if (beforeLayerIndex !== -1) {
-				layers.splice(beforeLayerIndex, 0, layer);
+
+			if (!beforeLayer) {
+				// Move the layer to the end if `beforeLayerId` is null
+				layers.push(layer);
+			} else if (beforeLayerIndex !== -1) {
+				// Insert the layer at the correct position before `beforeLayerId`
+				layers.splice(beforeLayerIndex - 1, 0, layer);
 			} else {
+				// If `beforeLayerId` is invalid, move the layer to the end
 				layers.push(layer);
 			}
+		}
 
-			window.deckOverlay.setProps({ layers });
-		}, 0);
+		window.deckOverlay.setProps({ layers });
 	};
 
 	static moveLayerToTop = layerId => {
