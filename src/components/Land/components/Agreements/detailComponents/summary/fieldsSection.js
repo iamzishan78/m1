@@ -34,6 +34,7 @@ import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoComple
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
+import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from 'hookstate/popupStateController';
 
 import { KEYBOARD_KEYS, TO_FIXED } from 'utils/consts';
@@ -41,7 +42,6 @@ import { copy } from 'utils/helper';
 import MetaField from 'utils/MetaField';
 
 import { showInfoMessage } from 'actions';
-import { AppContext } from 'AppContext';
 
 import { useStyles as summaryStyles } from '../style';
 import fieldsData from './data';
@@ -64,7 +64,7 @@ const useStyles = makeStyles(() => ({
 export default function FieldsSection({ updateAgreement, control, agreementDetails }) {
 	const classes = summaryStyles();
 	const overrideClasses = useStyles();
-	const [stateApp, setStateApp] = useContext(AppContext);
+	const { globalStateValues } = globalStateController.useState(['showFieldModal', 'user'], 'globalStateValues');
 	const [fieldsList, setFieldsList] = useState([]);
 	const [isHovered, setIsHovered] = useState(false);
 	const [editIconState, setEditIconState] = useState({});
@@ -82,7 +82,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 
 	useEffect(() => {
 		document.addEventListener('keydown', onGlobalKeyDown, false);
-		document.addEventListener('blur', () => {});
+		document.addEventListener('blur', () => { });
 	}, []);
 
 	useEffect(() => {
@@ -98,11 +98,11 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 	useEffect(() => {
 		getMetaData({
 			variables: {
-				user: stateApp.user?.mongoId,
+				user: globalStateValues.user?.mongoId,
 				category: 'Agreement',
 			},
 		});
-	}, [stateApp.user?.mongoId, getMetaData]);
+	}, [globalStateValues.user?.mongoId, getMetaData]);
 
 	useEffect(() => {
 		return history.listen(() => {
@@ -118,14 +118,14 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 	useEffect(() => {
 		let customData = getCustomMetaFields(agreementDetails, metaDataRes);
 		customData = uniqBy(customData, 'esKey');
-		setFieldsList([...fieldsData(stateApp.user), ...customData]);
+		setFieldsList([...fieldsData(globalStateValues.user), ...customData]);
 		if (agreementDetails?.originalProperties?.State || agreementDetails?.originalProperties?.StateAbbreviation) {
 			setState(agreementDetails.originalProperties.State || agreementDetails.originalProperties.StateAbbreviation);
 		}
 		if (agreementDetails?.originalProperties?.County) {
 			setCounty(agreementDetails.originalProperties.County);
 		}
-	}, [metaDataRes, agreementDetails, stateApp.user]);
+	}, [metaDataRes, agreementDetails, globalStateValues.user?.mongoId]);
 
 	const onGlobalKeyDown = e => {
 		const id = e?.target?.id;
@@ -167,11 +167,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 		>
 			{fieldsList.map((field, index) => {
 				const handleEdit = () => {
-					window.setStateApp(stateApp => ({
-						...stateApp,
-						selectedMeta: field,
-						showFieldModal: true,
-					}));
+					globalStateController.updateState({ showFieldModal: true, selectedMeta: field });
 				};
 
 				const isMetaField = field?._id && field?.category;
@@ -204,11 +200,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 										<CreateTwoToneIcon
 											className={classes.pencilIcon}
 											onClick={() => {
-												setStateApp(stateApp => ({
-													...stateApp,
-													selectedMeta: field,
-													showFieldModal: true,
-												}));
+												globalStateController.updateState({ showFieldModal: true, selectedMeta: field });
 											}}
 										/>
 									</Tooltip>
@@ -231,131 +223,131 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 										field.type === 'dropdown' ||
 										field.type === 'multiselect' ||
 										field.type === 'select') && (
-										<Controller
-											control={control}
-											name={field.key}
-											render={params => {
-												return (
-													<Fragment>
-														{field.type === 'text' && (
-															<CustomTextField
-																{...params}
-																id={`field-${field.key}`}
-																index={index}
-																field={field}
-																fieldKey={field.key}
-																defaultValue={get(agreementDetails, `${field.key}`, '')}
-																showLinkPopup={true}
-																offClickHandler={(key, value) => {
-																	offClickHandler(key, value);
-																}}
-																InputProps={{
-																	...field.InputProps,
-																	endAdornment,
-																}}
-															/>
-														)}
-														{field.type === 'number' && (
-															<NumberField
-																{...params}
-																id={`field-${field.key}`}
-																index={index}
-																field={field}
-																fieldKey={field.key}
-																defaultValue={get(agreementDetails, `${field.key}`, '')}
-																offClickHandler={(key, value) => {
-																	offClickHandler(key, value);
-																}}
-																InputProps={{
-																	...field.InputProps,
-																	endAdornment,
-																}}
-															/>
-														)}
-														{field.type === 'date' && (
-															<DateField
-																{...params}
-																id={`field-${field.key}`}
-																index={index}
-																field={field}
-																fieldKey={field.key}
-																defaultValue={get(agreementDetails, `${field.key}`, '')}
-																offClickHandler={(key, value) => {
-																	offClickHandler(key, value);
-																}}
-																InputProps={{
-																	...field.InputProps,
-																	endAdornment,
-																}}
-															/>
-														)}
-														{field.type === 'dropdown' && (
-															<div
-																style={{
-																	margin: '8px 0px 4px',
-																}}
-															>
-																<ReactSelectField
-																	id={`field-${field.title}`}
-																	isSingleSelect={true}
-																	fullWidth
-																	variant="outlined"
-																	dropdownOptions={field.options}
-																	column={field}
-																	onCustomKeyChange={value => {
-																		offClickHandler(field.key, value, field.isCustom);
+											<Controller
+												control={control}
+												name={field.key}
+												render={params => {
+													return (
+														<Fragment>
+															{field.type === 'text' && (
+																<CustomTextField
+																	{...params}
+																	id={`field-${field.key}`}
+																	index={index}
+																	field={field}
+																	fieldKey={field.key}
+																	defaultValue={get(agreementDetails, `${field.key}`, '')}
+																	showLinkPopup={true}
+																	offClickHandler={(key, value) => {
+																		offClickHandler(key, value);
 																	}}
-																	disabled={field.disabled}
-																	value={get(agreementDetails, `${field.key}`, '')}
+																	InputProps={{
+																		...field.InputProps,
+																		endAdornment,
+																	}}
 																/>
-															</div>
-														)}
-														{field.type === 'select' && (
-															<Select
-																{...params}
-																id={`field-${field.key}`}
-																variant="outlined"
-																fullWidth
-																InputLabelProps={{
-																	shrink: true,
-																}}
-																style={{ margin: '8px 0px 4px' }}
-																onChange={event => offClickHandler(field.key, event.target.value, field.isCustom)}
-																disabled={field.disabled}
-																value={get(agreementDetails, `${field.key}`, '')}
-															>
-																{field.options.map(option => (
-																	<MenuItem value={option.value ? option.value : option}>
-																		{option.label ? option.label : option}
-																	</MenuItem>
-																))}
-															</Select>
-														)}
-														{field.type === 'multiselect' && (
-															<div
-																style={{
-																	margin: '8px 0px 4px',
-																}}
-															>
-																<ReactSelectField
+															)}
+															{field.type === 'number' && (
+																<NumberField
+																	{...params}
+																	id={`field-${field.key}`}
+																	index={index}
+																	field={field}
+																	fieldKey={field.key}
+																	defaultValue={get(agreementDetails, `${field.key}`, '')}
+																	offClickHandler={(key, value) => {
+																		offClickHandler(key, value);
+																	}}
+																	InputProps={{
+																		...field.InputProps,
+																		endAdornment,
+																	}}
+																/>
+															)}
+															{field.type === 'date' && (
+																<DateField
+																	{...params}
+																	id={`field-${field.key}`}
+																	index={index}
+																	field={field}
+																	fieldKey={field.key}
+																	defaultValue={get(agreementDetails, `${field.key}`, '')}
+																	offClickHandler={(key, value) => {
+																		offClickHandler(key, value);
+																	}}
+																	InputProps={{
+																		...field.InputProps,
+																		endAdornment,
+																	}}
+																/>
+															)}
+															{field.type === 'dropdown' && (
+																<div
+																	style={{
+																		margin: '8px 0px 4px',
+																	}}
+																>
+																	<ReactSelectField
+																		id={`field-${field.title}`}
+																		isSingleSelect={true}
+																		fullWidth
+																		variant="outlined"
+																		dropdownOptions={field.options}
+																		column={field}
+																		onCustomKeyChange={value => {
+																			offClickHandler(field.key, value, field.isCustom);
+																		}}
+																		disabled={field.disabled}
+																		value={get(agreementDetails, `${field.key}`, '')}
+																	/>
+																</div>
+															)}
+															{field.type === 'select' && (
+																<Select
+																	{...params}
 																	id={`field-${field.key}`}
 																	variant="outlined"
-																	margin="dense"
 																	fullWidth
-																	dropdownOptions={field.options}
-																	column={field}
-																	value={get(agreementDetails, `${field.key}`) ?? []}
-																	onCustomKeyChange={value => {
-																		offClickHandler(field.key, value, field.isCustom);
+																	InputLabelProps={{
+																		shrink: true,
 																	}}
-																/>
-															</div>
-														)}
-													</Fragment>
-												);
-											}}
-										/>
-									)}
+																	style={{ margin: '8px 0px 4px' }}
+																	onChange={event => offClickHandler(field.key, event.target.value, field.isCustom)}
+																	disabled={field.disabled}
+																	value={get(agreementDetails, `${field.key}`, '')}
+																>
+																	{field.options.map(option => (
+																		<MenuItem value={option.value ? option.value : option}>
+																			{option.label ? option.label : option}
+																		</MenuItem>
+																	))}
+																</Select>
+															)}
+															{field.type === 'multiselect' && (
+																<div
+																	style={{
+																		margin: '8px 0px 4px',
+																	}}
+																>
+																	<ReactSelectField
+																		id={`field-${field.key}`}
+																		variant="outlined"
+																		margin="dense"
+																		fullWidth
+																		dropdownOptions={field.options}
+																		column={field}
+																		value={get(agreementDetails, `${field.key}`) ?? []}
+																		onCustomKeyChange={value => {
+																			offClickHandler(field.key, value, field.isCustom);
+																		}}
+																	/>
+																</div>
+															)}
+														</Fragment>
+													);
+												}}
+											/>
+										)}
 									{field.type === 'autocomplete' && field.key !== 'approvalStatus' && (
 										<AutoCompleteTypeComponent
 											value={agreementDetailCopied?.[field.key]}
@@ -461,7 +453,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 					</Grid>
 				);
 			})}
-			{stateApp.showFieldModal && (
+			{globalStateValues.showFieldModal && (
 				<MetaField
 					customDataPrefix="shapeJson.properties.custom_data"
 					customDataPostfix=".keyword"
@@ -470,14 +462,14 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 					updateColumnSorting={addAgreementCustomData}
 				/>
 			)}
-			{stateApp.user?.rolePrivileges !== 'READ_ONLY' && (
+			{globalStateValues.user?.rolePrivileges !== 'READ_ONLY' && (
 				<Grid item>
 					<Button
 						variant="contained"
 						color="primary"
 						className={classes.addDataButton}
 						startIcon={<AddIcon />}
-						onClick={() => setStateApp(stateApp => ({ ...stateApp, showFieldModal: true }))}
+						onClick={() => globalStateController.updateState({ showFieldModal: true })}
 					>
 						Add Custom Data
 					</Button>

@@ -9,6 +9,8 @@ import ArrowDropDownIcon from '@material-ui/lab/es/internal/svg-icons/ArrowDropD
 
 import isEmpty from 'lodash/isEmpty';
 
+import { globalStateController } from 'hookstate/globalStateController';
+
 import { colorPallete } from 'utils/consts';
 
 import { AppContext } from 'AppContext';
@@ -191,11 +193,7 @@ const CustomFieldSelect = ({
 								spacing={0}
 								onClick={() => {
 									setShowOptions(false);
-									setStateApp(stateApp => ({
-										...stateApp,
-										selectedMeta: isEmpty(column) ? null : column,
-										showFieldModal: true,
-									}));
+									globalStateController.updateState({ showFieldModal: true, selectedMeta: isEmpty(column) ? null : column });
 								}}
 							>
 								<Grid
@@ -259,8 +257,8 @@ const CustomFieldSelect = ({
 											marginRight: 5,
 											visibility:
 												(typeof value === 'string' && option.value === value) ||
-												option.value === value?.label ||
-												(!value && option.value === defaultValue.label)
+													option.value === value?.label ||
+													(!value && option.value === defaultValue.label)
 													? 'visible'
 													: 'hidden',
 										}}

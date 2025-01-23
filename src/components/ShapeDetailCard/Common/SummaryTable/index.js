@@ -75,7 +75,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 						}
 					}
 				}}
-				onWheel={onWheel ? onWheel : () => {}}
+				onWheel={onWheel ? onWheel : () => { }}
 				onBlur={() => {
 					onBlur(data, type);
 				}}
@@ -419,12 +419,9 @@ export default function SummaryTableInfo({
 																	if (data.isCustom) {
 																		setTableDataState({ [`${data.key}key`]: true });
 																	} else {
-																		setStateApp(stateApp => ({
-																			...stateApp,
-																			selectedMeta: data,
-																		}));
 																		globalStateController.updateState({
 																			showFieldModal: true,
+																			selectedMeta: data,
 																		});
 																	}
 																}}
@@ -678,8 +675,8 @@ export default function SummaryTableInfo({
 													{data.type === 'date' &&
 														(get(properties, `${data.key}`, '')
 															? moment(get(properties, `${data.key}`, ''))
-																	.utc(true)
-																	.format('DD/MM/yyyy')
+																.utc(true)
+																.format('DD/MM/yyyy')
 															: '-')}
 													{data.type === 'custom' && (
 														<>{['qualifier', 'reviewer'].includes(data.key) && (properties[data.key]?.name || '-')}</>

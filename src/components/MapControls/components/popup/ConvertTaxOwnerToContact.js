@@ -20,10 +20,9 @@ import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import Tags from 'components/Shared/Tagger';
 
 import { drawController } from 'hookstate/drawStateController';
+import { globalStateController } from 'hookstate/globalStateController';
 
 import { getMapFilters } from 'utils/helper';
-
-import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -67,9 +66,9 @@ const ConvertTaxOwnerToContact = ({
 	open,
 }) => {
 	const classes = useStyles();
-	const [stateApp] = useContext(AppContext);
+	const { globalStateValues } = globalStateController.useState(['selectedMeta', 'user'], 'globalStateValues');
 	const [stateNav] = useContext(NavigationContext);
-	const { user } = stateApp;
+	const { user } = globalStateValues;
 	const [newTagsIds, setNewTagsIds] = useState([]);
 	const [includeFilter, setIncludeFilter] = useState(true);
 	const [campaigns, setCampaigns] = useState([]);
@@ -79,7 +78,7 @@ const ConvertTaxOwnerToContact = ({
 
 	const contactStatus = watch('contactStatus', contactStatusOptions[0].value);
 	const contactOwner = watch('contactOwner', null);
-	const userId = stateApp.user.mongoId;
+	const userId = globalStateValues.user.mongoId;
 
 	useEffect(() => {
 		getContactCampaignAction({
@@ -184,7 +183,7 @@ const ConvertTaxOwnerToContact = ({
 									props.onChange(e.target.value);
 								}}
 								className={classes.fullWidth}
-								isDisabled={stateApp.selectedMeta}
+								isDisabled={globalStateValues.selectedMeta}
 							>
 								<MenuItem value="Lead"> Lead </MenuItem>
 								<MenuItem value="Prospect"> Prospect</MenuItem>

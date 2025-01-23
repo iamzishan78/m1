@@ -93,10 +93,9 @@ function MetaFieldList({ tableKey }) {
 			showFieldModal: true,
 		});
 		if (row) {
-			window.setStateApp(stateApp => ({
-				...stateApp,
+			globalStateController.updateState({
 				selectedMeta: row,
-			}));
+			});
 		}
 		handleClose();
 	};

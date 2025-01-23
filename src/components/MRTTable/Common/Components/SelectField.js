@@ -135,12 +135,8 @@ const SelectField = ({
 									onClose();
 									globalStateController.updateState({
 										showFieldModal: true,
-									});
-									setStateApp(stateApp => ({
-										...stateApp,
 										selectedMeta: column,
-										showFieldModal: true,
-									}));
+									});
 								}}
 							>
 								<Grid
