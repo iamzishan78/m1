@@ -48,7 +48,7 @@ const handleQuery = (queryHandler, onData) => {
 
 	const client = layerController.getValue('client');
 	if (!client) {
-		return;
+		return null;
 	}
 
 	return new Promise(resolve => {
@@ -243,6 +243,12 @@ const getBoundsQuery = async ({
 		if (layerSettings.selectedFillStyle) {
 			Object.assign(variables.project, {
 				[layerSettings.selectedFillStyle.value.replace('.keyword', '')]: 1,
+			});
+		}
+
+		if (layerSettings.selectedLineStyle) {
+			Object.assign(variables.project, {
+				[layerSettings.selectedLineStyle.value.replace('.keyword', '')]: 1,
 			});
 		}
 
