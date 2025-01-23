@@ -203,12 +203,15 @@ export const entityCreationOptions = [
 
 export const entityKeyTypes = [
 	{ label: 'String', value: 'string' },
+	{ label: 'Json', value: 'json' },
 	{ label: 'Number', value: 'number' },
 	{ label: 'Date', value: 'date' },
+	{ label: 'ObjectId', value: 'objectId' },
+	{ label: 'Boolean', value: 'boolean' },
+	{ label: 'Array', value: 'array' },
 	{ label: 'User', value: 'user' },
-	// { label: 'JSON', value: 'json' },
-	// { label: 'Tags', value: 'Tags' },
-	// { label: 'Comments', value: 'Comments' }, // In future we need to add these association support
+	{ label: 'Tags', value: 'tags' },
+	{ label: 'Comments', value: 'comments' },
 ];
 
 // Dummy schema for dynamic schema loading
