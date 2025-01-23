@@ -1,5 +1,5 @@
 import { CompositeLayer } from '@deck.gl/core';
-import { CollisionFilterExtension, FillStyleExtension } from '@deck.gl/extensions';
+import { CollisionFilterExtension, FillStyleExtension, PathStyleExtension } from '@deck.gl/extensions';
 import { GeoJsonLayer, TextLayer } from '@deck.gl/layers';
 import * as turf from '@turf/turf';
 
@@ -58,7 +58,7 @@ class M1neralGeojsonLayer extends CompositeLayer {
 			data: this.props.data,
 
 			// props added by FillStyleExtension
-			extensions: [new FillStyleExtension({ pattern: true })],
+			extensions: [new FillStyleExtension({ pattern: true }), new PathStyleExtension({ dash: true })],
 		});
 
 		// TextLayer
