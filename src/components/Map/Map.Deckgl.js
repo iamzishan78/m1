@@ -1,7 +1,7 @@
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import MapIcon from '@material-ui/icons/Map';
@@ -22,6 +22,7 @@ import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHel
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
+import { deepEqual } from 'components/Shared/functions';
 import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
@@ -150,6 +151,10 @@ function Map({
 
 	const client = useApolloClient();
 	const history = useHistory();
+	const location = useLocation(); // Hook to get the current URL details
+
+    // Extract the current search string from the URL
+    const currentSearch = location.search;
 	const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
 
 	// styles
@@ -1290,6 +1295,74 @@ function Map({
 			}
 		}
 	}, [mapStateValues.toggleZoomOut]);
+
+	// Helper function to extract latitude/longitude from parameters or map bounds
+	const getCoordinates = (params, type) => {
+		return {
+			lng: parseFloat(params.get(`${type}Lng`)),
+			lat: parseFloat(params.get(`${type}Lat`)),
+		};
+	};
+
+	useEffect(() => {
+		const zoom = window.mapRef?.getZoom();
+		const center = window.mapref?.getCenter();
+		const bounds = window.mapRef?.getBounds();
+
+		const params = new URLSearchParams(currentSearch); // Parse query parameters
+
+		 // Return early if currentSearch is empty or not provided
+		if (
+			!params.has('zoom') ||
+			!params.has('_neLng') ||
+			!params.has('_neLat') ||
+			!params.has('_swLng') ||
+			!params.has('_swLat') ||
+			!params?.size
+		) {
+			return; // Return early if any required parameter is missing
+		}
+
+		console.log("params",params)
+		 // Extract zoom level from URL
+		 const zoomAtUrl = parseFloat(params.get('zoom')); // Zoom level from URL
+
+		 // Extract coordinates from URL
+		 const ne = getCoordinates(params, '_ne');
+		 const sw = getCoordinates(params, '_sw');
+	 
+		 const neMap = {
+			lng: bounds?.getNorthEast().lng,
+			lat: bounds?.getNorthEast().lat,
+		};
+		const swMap = {
+			lng: bounds?.getSouthWest().lng,
+			lat: bounds?.getSouthWest().lat,
+		};
+
+		  // Compare coordinates
+		  const isLngEqual = Math.abs(ne.lng - neMap.lng) < 1e-7 && Math.abs(sw.lng - swMap.lng) < 1e-7;
+		  const isLatEqual = Math.abs(ne.lat - neMap.lat) < 1e-7 && Math.abs(sw.lat - swMap.lat) < 1e-7;
+	  
+		if (isLngEqual && isLatEqual && zoomAtUrl == zoom || !map) {
+			return 
+		} 
+
+		debugger
+		// Construct the bbox object with _ne and _sw
+		const bbox = {
+			_ne: { lng: ne.lng, lat: ne.lat },
+			_sw: { lng: sw.lng, lat: sw.lat },
+		};
+	
+		layerController.updateState({zoom:zoomAtUrl, bbox, center: undefined });
+		map.jumpTo({
+			center: undefined,
+			zoom: zoomAtUrl,
+			bounds: bbox,
+		});
+
+	}, [map, currentSearch]);
 
 	useEffect(() => {
 		// use effect to toggle the map into a 3d state
