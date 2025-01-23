@@ -1,14 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Paper } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Autocomplete, TextField } from '@mui/material';
-import { useLazyQuery } from '@apollo/client';
-import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
-import { getLayerKey } from 'hookstate/helpers';
-import { colorBasedAttributes } from './ColorBasedAttributes';
 
-const fillStylesList = ['dots', 'hatch-1x', 'hatch-2x', 'hatch-cross'];
+import { makeStyles } from '@material-ui/core/styles';
+
+import { Autocomplete, TextField } from '@mui/material';
+
+import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types'; // Import PropTypes for prop validation
+
+import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
+
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+
+import { getLayerKey } from 'hookstate/helpers';
+
+import { colorBasedAttributes } from './ColorBasedAttributes';
 
 const useStyles = makeStyles(() => ({
 	dropdownContainer: {
@@ -69,6 +74,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const AttrsFillStyleDropdown = ({
+	dropDownOptions,
 	selectedValue,
 	selectedLayer,
 	setFillStyle,
@@ -82,7 +88,7 @@ const AttrsFillStyleDropdown = ({
 	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
-		if (!selectedValue) return;
+		if (!selectedValue) {return;}
 
 		let esIndex = selectedLayer.layerType === 'file layer' ? 'shapefile_flat' : 'shapes_flat';
 		const layerType =
@@ -133,7 +139,7 @@ const AttrsFillStyleDropdown = ({
 			const isStyleOverridden = (selectedOption?.label || selectedOption?.label === '') && selectedOption.label === key;
 			const randomStyle =
 				attributeBasedStyles?.[selectedValue.label]?.[key] ||
-				fillStylesList[Math.floor(Math.random() * fillStylesList.length)];
+				dropDownOptions[Math.floor(Math.random() * dropDownOptions.length)];
 
 			return {
 				label: key,
@@ -156,15 +162,15 @@ const AttrsFillStyleDropdown = ({
 		<>
 			{selectedValue ? (
 				<div className={classes.dropdownContainer}>
-					<div id="fillstyle-dropdown" className={classes.dropdown}>
+					<div className={classes.dropdown}>
 						<span>{selectedValue ? selectedValue['label'] : ''}</span>
 						<span className={classes.arrowIcon} style={{ transform: 'rotate(180deg)' }}></span>
 					</div>
 					{attroptions?.length > 0 && (
 						<ul className={classes.dropdownList}>
-							{attroptions.map((option, index) => (
+							{attroptions.map(option => (
 								<li
-									key={index}
+									key={option?.value}
 									className={classes.listItem}
 									onClick={() => {
 										setSelectedOption(option);
@@ -184,7 +190,7 @@ const AttrsFillStyleDropdown = ({
 				</div>
 			) : (
 				<Autocomplete
-					options={fillStylesList}
+					options={dropDownOptions}
 					value={fillStyle || ''}
 					onChange={(event, newValue) => {
 						setFillStyle(newValue);
@@ -194,6 +200,27 @@ const AttrsFillStyleDropdown = ({
 			)}
 		</>
 	);
+};
+
+AttrsFillStyleDropdown.propTypes = {
+	dropDownOptions: PropTypes.arrayOf(
+		PropTypes.shape({
+			label: PropTypes.string.isRequired,
+			value: PropTypes.any.isRequired,
+		})
+	).isRequired,
+	selectedValue: PropTypes.shape({
+		label: PropTypes.string,
+		value: PropTypes.any,
+	}),
+	selectedLayer: PropTypes.shape({
+		layerType: PropTypes.string,
+		identifier: PropTypes.string,
+	}),
+	setFillStyle: PropTypes.func.isRequired,
+	fillStyle: PropTypes.string,
+	attributeBasedStyles: PropTypes.object,
+	setAttributeBasedStyles: PropTypes.func,
 };
 
 export default AttrsFillStyleDropdown;
