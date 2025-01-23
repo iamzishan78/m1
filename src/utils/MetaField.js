@@ -219,7 +219,7 @@ const MetaField = ({
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const type = watch('type', stateApp.selectedMeta ? stateApp.selectedMeta.type : 'dropdown');
 	const title = watch('title', stateApp.selectedMeta ? stateApp.selectedMeta.title : '');
-	const iconType = watch('iconType', stateApp.selectedMeta ? stateApp.selectedMeta.iconType : '');
+	const { globalState } = globalStateController.useState(['selectedIconTpe'], 'globalState');
 	const isAddedToLibrary = watch(
 		'isAddedToLibrary',
 		stateApp.selectedMeta ? stateApp.selectedMeta.isAddedToLibrary : false
@@ -256,10 +256,6 @@ const MetaField = ({
 	useEffect(() => {
 		getAllLibraryMetaData();
 	}, [getAllLibraryMetaData]);
-
-	useEffect(() => {
-		setStateApp(stateApp => ({ ...stateApp, selectedIconTpe: iconType }));
-	}, [iconType, setStateApp]);
 
 	useEffect(() => {
 		if (metaDataRes?.getAllLibraryMetaData?.metaData) {
@@ -608,7 +604,7 @@ const MetaField = ({
 													<Controller
 														control={control}
 														name="iconType"
-														defaultValue={iconOptions[0].value}
+														defaultValue={globalState?.selectedIconTpe || iconOptions[0].value}
 														render={params => (
 															<Select
 																styles={{
@@ -619,6 +615,7 @@ const MetaField = ({
 																options={iconOptions}
 																className={classes.select}
 																onChange={e => {
+																	globalStateController.updateState({ selectedIconTpe: e.value });
 																	params.onChange(e.value);
 																}}
 															/>
@@ -939,9 +936,9 @@ const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateInde
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [showDrag, setShowDrag] = useState(false);
 	const [itemValue, setItemValue] = useState(item.value);
-	const [stateApp] = useContext(AppContext);
+	const { globalState } = globalStateController.useState(['selectedIconTpe'], 'globalState');
 
-	const isChipSelected = stateApp?.selectedIconTpe === 'Chip';
+	const isChipSelected = globalState?.selectedIconTpe === 'Chip';
 
 	const handleClick = event => {
 		setAnchorEl(event.currentTarget);
@@ -990,7 +987,7 @@ const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateInde
 					<div style={{ width: '100%', display: 'flex', gap: '5px', alignItems: 'center' }}>
 						{!isChipSelected ? (
 							<div
-								style={getMetaCss({ option: item, iconType: stateApp?.selectedIconTpe, isMetaPopup: true })}
+								style={getMetaCss({ option: item, iconType: globalState?.selectedIconTpe, isMetaPopup: true })}
 								onClick={handleClick}
 							/>
 						) : (
@@ -1049,7 +1046,7 @@ const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateInde
 							className={isChipSelected ? 'colorText' : ''}
 							style={
 								isChipSelected
-									? getMetaCss({ option: item, iconType: stateApp?.selectedIconTpe, isMetaPopup: true })
+									? getMetaCss({ option: item, iconType: globalState?.selectedIconTpe, isMetaPopup: true })
 									: {}
 							}
 						>
