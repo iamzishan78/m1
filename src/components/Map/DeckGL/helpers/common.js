@@ -27,6 +27,12 @@ const MAX_COLOR_VALUE = 251;
 const DEFAULT_COLOR_VALUE = 152;
 const MAX_COLOR_COMPONENT_VALUE = 255;
 
+const lineStyles = {
+	dots: [1, 1],
+	dashed: [10, 3],
+	connected: [10, 0],
+};
+
 export const random_hex_color_code = () => {
 	const n = (Math.random() * MAX_COLOR_VALUE_HEX * COLOR_MULTIPLIER).toString(SIXTEEN);
 	return `#${n.slice(0, SIX)}`;
@@ -647,6 +653,32 @@ export const getLayerFillStyle = dbLayer => {
 	};
 };
 
+export const getLayerDashStyle = dbLayer => {
+	// const layerInteraction = dbLayer.layerSettings?.interaction;
+	const selectedLineStyle = dbLayer.layerSettings?.selectedLineStyle;
+	const selectAttrLabel = dbLayer.layerSettings?.selectedLineStyle?.label;
+	const attributeBasedLineStyles = dbLayer.layerSettings?.attributeBasedLineStyles;
+
+	return d => {
+		if (selectAttrLabel) {
+			let path = selectedLineStyle.value;
+			let keys = path?.split('.').slice(1, -1);
+			let value = _.get(d, keys) || _.get(d, path?.replace('.keyword', ''));
+			if (!value) {
+				keys = path?.split('.').slice(1, -1);
+				keys.unshift('properties');
+				value = _.get(d, keys);
+			}
+			const attrLineStyle =
+				attributeBasedLineStyles[selectAttrLabel][value] || attributeBasedLineStyles[selectAttrLabel][''];
+			if (attrLineStyle) {
+				return lineStyles[attrLineStyle] || lineStyles[dbLayer.layerSettings?.fillStyle] || lineStyles.connected;
+			}
+		}
+		return lineStyles[dbLayer.layerSettings?.fillStyle] || lineStyles.connected;
+	};
+};
+
 export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	const props = {};
 
@@ -747,6 +779,12 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	} else if (labelProps?.visibility) {
 		// Adhoc Fix
 		props.pointType = 'icon';
+	}
+
+	if (dbLayer.layerSettings?.selectedLineStyle || dbLayer.layerSettings?.lineStyle) {
+		props.getDashArray = getLayerDashStyle(dbLayer);
+		props.dashJustified = true;
+		props.dashGapPickable = true;
 	}
 
 	if (dbLayer.layerSettings?.selectedFillStyle || dbLayer.layerSettings?.fillStyle) {
