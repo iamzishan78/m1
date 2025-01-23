@@ -672,10 +672,10 @@ export const getLayerDashStyle = dbLayer => {
 			const attrLineStyle =
 				attributeBasedLineStyles[selectAttrLabel][value] || attributeBasedLineStyles[selectAttrLabel][''];
 			if (attrLineStyle) {
-				return lineStyles[attrLineStyle] || lineStyles[dbLayer.layerSettings?.fillStyle] || lineStyles.connected;
+				return lineStyles[attrLineStyle] || lineStyles[dbLayer.layerSettings?.lineStyle] || lineStyles.connected;
 			}
 		}
-		return lineStyles[dbLayer.layerSettings?.fillStyle] || lineStyles.connected;
+		return lineStyles[dbLayer.layerSettings?.lineStyle] || lineStyles.connected;
 	};
 };
 
