@@ -646,43 +646,43 @@ function Map({
 		}
 	}, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
 
-	useEffect(() => {
-		// USE EFFECT FOR HEATMAP LAYER HANDLES
-		if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
-			stateApp.heatLayers.forEach(l => {
-				l.id.forEach(k => {
-					if (map?.getLayer(k)) {
-						map?.setLayoutProperty(k, 'visibility', 'none');
-					}
-				});
-			});
+	// useEffect(() => {
+	// 	// USE EFFECT FOR HEATMAP LAYER HANDLES
+	// 	if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
+	// 		stateApp.heatLayers.forEach(l => {
+	// 			l.id.forEach(k => {
+	// 				if (map?.getLayer(k)) {
+	// 					map?.setLayoutProperty(k, 'visibility', 'none');
+	// 				}
+	// 			});
+	// 		});
 
-			if (stateApp.checkedHeats.length > 0) {
-				const layers = stateApp.checkedHeats.slice(0);
-				layers.sort((a, b) => b - a);
-				if (layers.length > 0) {
-					let belowlayer = null;
-					for (let k = layers.length - 1; k >= 0; k--) {
-						const i = layers[k];
-						const currentLayerArray = stateApp.heatLayers[i].id;
+	// 		if (stateApp.checkedHeats.length > 0) {
+	// 			const layers = stateApp.checkedHeats.slice(0);
+	// 			layers.sort((a, b) => b - a);
+	// 			if (layers.length > 0) {
+	// 				let belowlayer = null;
+	// 				for (let k = layers.length - 1; k >= 0; k--) {
+	// 					const i = layers[k];
+	// 					const currentLayerArray = stateApp.heatLayers[i].id;
 
-						currentLayerArray.forEach(j => {
-							const mapLayer = map.getLayer(j);
-							if (typeof mapLayer !== 'undefined') {
-								if (map.getLayer(j)) {
-									map.setLayoutProperty(j, 'visibility', 'visible');
-									if (belowlayer != null) {
-										map.moveLayer(j, belowlayer);
-									}
-									belowlayer = j;
-								}
-							}
-						});
-					}
-				}
-			}
-		}
-	}, [map, stateApp.checkedHeats, stateApp.heatLayers]);
+	// 					currentLayerArray.forEach(j => {
+	// 						const mapLayer = map.getLayer(j);
+	// 						if (typeof mapLayer !== 'undefined') {
+	// 							if (map.getLayer(j)) {
+	// 								map.setLayoutProperty(j, 'visibility', 'visible');
+	// 								if (belowlayer != null) {
+	// 									map.moveLayer(j, belowlayer);
+	// 								}
+	// 								belowlayer = j;
+	// 							}
+	// 						}
+	// 					});
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
 	function getIndex(value, arr, prop) {
 		for (let i = 0; i < arr.length; i++) {
