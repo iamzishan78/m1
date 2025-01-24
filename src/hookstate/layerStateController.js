@@ -382,7 +382,7 @@ const layerStateControllerHandler = state => {
 			}
 
 			const isOutside = previousBounds ? !booleanWithin(newPolygon, previousBounds) : true;
-			const bboxIntersects = bbox && layerBBox ? booleanIntersects(bbox, bboxPolygon(layerBBox)) : true;
+			const bboxIntersects = bbox && layerBBox?.length > 0 ? booleanIntersects(bbox, bboxPolygon(layerBBox)) : true;
 			const show = visible && zoom > defaultZoom;
 
 			const lastBounds = previousBounds;
@@ -421,7 +421,7 @@ const layerStateControllerHandler = state => {
 			if (polygonFilter) {
 				showError('Invalid Shape');
 			}
-			console.log('🚀 ~ file: layerStateController.js:285 ~ handleBounds ~ err:', err.message);
+			console.log(`🚀 ~ file: layerStateController.js:285 ~ handleBounds ~ err:${layerId}`, err.message);
 			return boundingStateVal;
 		}
 	};
@@ -643,7 +643,6 @@ const layerStateControllerHandler = state => {
 					pickable,
 					visible,
 					position,
-					// zIndex: 9999999999,
 				},
 			});
 
