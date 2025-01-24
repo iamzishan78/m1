@@ -1,6 +1,6 @@
 import { ScatterplotLayer, LineLayer, PolygonLayer, TextLayer } from '@deck.gl/layers';
 import { MapboxOverlay } from '@deck.gl/mapbox';
-import { isEqual, orderBy } from 'lodash';
+import { isEqual } from 'lodash';
 
 import M1neralGeojsonLayer from './M1neralGeojsonLayer';
 
@@ -59,10 +59,10 @@ export default class DeckGlOverlay {
 			throw new Error('Map reference is not available.');
 		}
 
-		if (!window.deckOverlay) {
-			window.deckOverlay = new MapboxOverlay({
-				layers: [],
-			});
+		if (!window?.deckOverlay?._deck) {
+			window.deckOverlay = new MapboxOverlay({ layers: [] });
+		}
+		if (!window.mapRef._controls.find(control => control instanceof MapboxOverlay)) {
 			window.mapRef.addControl(window.deckOverlay);
 		}
 	};
@@ -109,11 +109,10 @@ export default class DeckGlOverlay {
 			return currentLayers.find(layer => layer.id === layerId);
 		} else {
 			currentLayers.push(newLayer);
-			console.log('currentLayers', currentLayers);
+			currentLayers.sort((a, b) => b.props.position - a.props.position);
 			DeckGlOverlay.setProps(currentLayers);
 			return newLayer;
 		}
-
 	};
 
 	static moveLayer = (layerId, beforeLayer) => {
@@ -145,21 +144,6 @@ export default class DeckGlOverlay {
 		}
 
 		window.deckOverlay.setProps({ layers });
-	};
-
-	static moveLayerToTop = layerId => {
-		setTimeout(() => {
-			const layers = window.deckOverlay._props.layers || [];
-			const layerIndex = layers.findIndex(layer => layer.id === layerId);
-
-			if (layerIndex === -1) {
-				return;
-			}
-
-			const [layer] = layers.splice(layerIndex, 1);
-			layers.push(layer);
-			window.deckOverlay.setProps({ layers });
-		}, 100);
 	};
 
 	static removeLayer = layerId => {
