@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { IconButton, TextField, withStyles, Typography, Grid, Divider, Box, Container } from '@material-ui/core';
+import { IconButton, TextField, withStyles, Typography, Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -11,7 +11,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
 import { BlockBlobClient } from '@azure/storage-blob';
 import _ from 'lodash';
 import loadashFilter from 'lodash/filter';
@@ -24,7 +24,7 @@ import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
-import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import { UPDATE_DOCUMENT, UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
@@ -32,6 +32,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { CREATED_STATUS, ONE_MB } from 'utils/consts';
+import { convertFile } from 'utils/tesseractHelper';
 
 import { showErrorMessage } from 'actions';
 
@@ -198,6 +199,8 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 
+	const client = useApolloClient();
+
 	const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(DOCUMENT_TYPE, {
 		fetchPolicy: 'no-cache',
 	});
@@ -226,9 +229,36 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	});
 
 	const [fileUpload, setFileUpload] = useState({ upload: false, fileExtension: null, fileInformation: '' });
-	const [url, setUrl] = useState({ isValid: selectedDocument?.url ? true : false, value: selectedDocument?.url, error: false });
+	const [url, setUrl] = useState({
+		isValid: selectedDocument?.url ? true : false,
+		value: selectedDocument?.url,
+		error: false,
+	});
 	const [inputFile, setInputFile] = useState(null);
 	const [fileDownload, setFileDownload] = useState(false);
+
+	const saveDocument = document => {
+		updateDocument({
+			variables: {
+				document,
+			},
+			refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
+			awaitRefetchQueries: true,
+		}).then(res => {
+			if (res?.data?.updateDocumentFile) {
+				const { success, message } = res.data.updateDocumentFile;
+				if (success) {
+					Loader.successToast('DocumentUpdating', message);
+				} else {
+					Loader.errorToast('DocumentUpdating', message);
+				}
+			} else {
+				Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
+			}
+
+			tableGlobalController.refetch();
+		});
+	};
 
 	useEffect(() => {
 		if (selectedDocument?._id || fileDownload) {
@@ -266,6 +296,22 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 			const MBS = 4;
 
 			if (file_id) {
+				(async () => {
+					if (fileUpload.fileExtension !== 'pdf') {
+						return;
+					}
+
+					await convertFile(fileUpload.fileInformation, texts => {
+						client.mutate({
+							mutation: UPDATE_PDF_TEXTS,
+							variables: {
+								fileId: file_id,
+								texts,
+							},
+						});
+					});
+				})();
+
 				const blockBlobClient = new BlockBlobClient(uri);
 				blockBlobClient
 					.uploadBrowserData(inputFile, {
@@ -291,7 +337,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 				};
 
 				Loader.createToast('DocumentUpdating', 'Document Updating in Progress');
-			
+
 				saveDocument(document);
 				handleClose();
 			}
@@ -311,32 +357,9 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	}, [selectedDocument]);
 
 	useEffect(() => {
-		const value = url?.isValid ? url?.value : null
-		formState?.url?.set(value) 
-	}, [url])
-
-	const saveDocument = (document) => {
-		updateDocument({
-			variables: {
-				document,
-			},
-			refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
-			awaitRefetchQueries: true,
-		}).then(res => {
-			if (res?.data?.updateDocumentFile) {
-				const { success, message } = res.data.updateDocumentFile;
-				if (success) {
-					Loader.successToast('DocumentUpdating', message);
-				} else {
-					Loader.errorToast('DocumentUpdating', message);
-				}
-			} else {
-				Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
-			}
-
-			tableGlobalController.refetch();
-		});
-	}
+		const value = url?.isValid ? url?.value : null;
+		formState?.url?.set(value);
+	}, [url]);
 
 	const uploadFile = () => {
 		Loader.createToast('FileUploading', 'File Uploading in Progress');
@@ -595,7 +618,14 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 
 				{!fileUpload?.fileExtension ? (
 					<div className={classes.Uploadcomp}>
-						<UploadZone userId={getUser?._id} fileId={selectedDocument?._id} setFileUpload={setFileUpload} title={'Upload Document'} setUrl={setUrl} url={url} />
+						<UploadZone
+							userId={getUser?._id}
+							fileId={selectedDocument?._id}
+							setFileUpload={setFileUpload}
+							title={'Upload Document'}
+							setUrl={setUrl}
+							url={url}
+						/>
 					</div>
 				) : null}
 				<div className={classes.dialogFooter}>
@@ -621,13 +651,13 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						color="secondary"
 						size="medium"
 						disableElevation
-						disabled={!fileUpload?.upload && !url?.isValid }
+						disabled={!fileUpload?.upload && !url?.isValid}
 						onClick={() => {
 							if (fileUpload?.upload) {
 								uploadFile();
 							} else {
 								delete formStateValues.tableKey;
-								saveDocument({ ...formStateValues, fileId : null});
+								saveDocument({ ...formStateValues, fileId: null });
 								handleClose();
 							}
 						}}
