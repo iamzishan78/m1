@@ -129,7 +129,7 @@ function Map({
 	layerPadding = null,
 }) {
 	// context states
-	const globalState = globalStateController.useState(['layers']);
+	const globalState = globalStateController.useState(['layers', 'mapReady']);
 	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues');
 	const { selectedShapeFile, selectedPlaces, popupStateValues } = popupController.useState(
 		['selectedShapeFile', 'selectedPlaces'],
@@ -850,6 +850,27 @@ function Map({
 				setMap(newMap);
 				setLoading(false);
 				mapStateController.updateState({ reintializeMap: false });
+
+				// Extract the current search string from the URL
+				const searchParams = new URLSearchParams(history?.location?.search);
+
+				if (!searchParams.has('zoom') ||
+					!searchParams.has('lng') ||
+					!searchParams.has('lat') ||
+					!searchParams?.size
+				) {
+					return; // Return early if any required parameter is missing
+				}
+				const lng = searchParams?.get("lng")
+				const lat = searchParams?.get("lat")
+				const zoom = searchParams?.get("zoom")
+				newMap.jumpTo({
+					center: {
+						lng,
+						lat
+					},
+					zoom: zoom,
+				});
 			});
 		};
 
@@ -1161,6 +1182,7 @@ function Map({
 		}
 	}, [mapStateValues.toggleZoomOut]);
 
+
 	useEffect(() => {
 		// use effect to toggle the map into a 3d state
 
@@ -1186,6 +1208,39 @@ function Map({
 			}
 		}
 	}, [mapStateValues.toggle3d]);
+
+		useEffect(() => {
+			const mapRef = window.mapRef;
+	
+			if (mapRef) {
+				debugger
+				// Update for values
+				const setCoordinateAtUrl = () => {
+					const url = new URL(window.location);
+	
+					// Create an object to hold all parameters
+					const params = {
+						lat: mapRef.getCenter()?.lat,
+						lng: mapRef.getCenter()?.lng,
+						zoom: mapRef.getZoom()
+					};
+	
+					// Iterate over the object and set all parameters at once
+					Object.entries(params).forEach(([key, value]) => {
+						url.searchParams.set(key, value);
+					});
+	
+					// Update the browser's URL
+					window.history.pushState({}, '', url);
+				};
+	
+				// Listen to the map events
+				mapRef.on('move', setCoordinateAtUrl);
+				mapRef.on('zoom', setCoordinateAtUrl);
+				mapRef.on('rotate', setCoordinateAtUrl);
+				setCoordinateAtUrl();
+			}
+		}, [globalState.mapReady]);
 
 	useEffect(() => {
 		// Map will be reset if we move to another page
