@@ -132,7 +132,7 @@ function Map({
 	layerPadding = null,
 }) {
 	// context states
-	const globalState = globalStateController.useState(['layers', 'mapBounds', 'isInitialLoad']);
+	const globalState = globalStateController.useState(['layers', 'mapReady', 'isInitialLoad']);
 	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues');
 	const { selectedShapeFile, selectedPlaces, popupStateValues } = popupController.useState(
 		['selectedShapeFile', 'selectedPlaces'],
@@ -153,8 +153,6 @@ function Map({
 	const history = useHistory();
 	const location = useLocation(); // Hook to get the current URL details
 
-    // Extract the current search string from the URL
-    const currentSearch = location.search;
 	const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
 
 	// styles
@@ -985,6 +983,27 @@ function Map({
 				setMap(newMap);
 				setLoading(false);
 				mapStateController.updateState({ reintializeMap: false });
+
+				// Extract the current search string from the URL
+				const searchParams = new URLSearchParams(history?.location?.search);
+
+				if (!searchParams.has('zoom') ||
+					!searchParams.has('lng') ||
+					!searchParams.has('lat') ||
+					!searchParams?.size
+				) {
+					return; // Return early if any required parameter is missing
+				}
+				const lng = searchParams?.get("lng")
+				const lat = searchParams?.get("lat")
+				const zoom = searchParams?.get("zoom")
+				newMap.jumpTo({
+					center: {
+						lng,
+						lat
+					},
+					zoom: zoom,
+				});
 			});
 		};
 
@@ -1296,86 +1315,6 @@ function Map({
 		}
 	}, [mapStateValues.toggleZoomOut]);
 
-	// Helper function to extract latitude/longitude from parameters or map bounds
-	const getCoordinates = (params, type) => {
-		return {
-			lng: parseFloat(params.get(`${type}Lng`)),
-			lat: parseFloat(params.get(`${type}Lat`)),
-		};
-	};
-
-	useEffect(() => {
-		const mapBounds = copy(globalState.stateValues.mapBounds);
-		if (!map || !mapBounds) {
-			return 
-		} 
-		debugger
-		const zoom = window.mapRef?.getZoom();
-		const center = window.mapref?.getCenter();
-		const bounds = window.mapRef?.getBounds();
-
-		console.log("mapBounds",mapBounds)
-		const params = new URLSearchParams(currentSearch); // Parse query parameters
-
-		 // Return early if currentSearch is empty or not provided
-		// if (
-		// 	!params.has('zoom') ||
-		// 	!params.has('_neLng') ||
-		// 	!params.has('_neLat') ||
-		// 	!params.has('_swLng') ||
-		// 	!params.has('_swLat') ||
-		// 	!params?.size
-		// ) {
-		// 	return; // Return early if any required parameter is missing
-		// }
-
-		console.log("params",params)
-		 // Extract zoom level from URL
-		//  const zoomAtUrl = parseFloat(params.get('zoom')); // Zoom level from URL
-
-		//  // Extract coordinates from URL
-		//  const ne = getCoordinates(params, '_ne');
-		//  const sw = getCoordinates(params, '_sw');
-	 
-		//  const neMap = {
-		// 	lng: bounds?.getNorthEast().lng,
-		// 	lat: bounds?.getNorthEast().lat,
-		// };
-		// const swMap = {
-		// 	lng: bounds?.getSouthWest().lng,
-		// 	lat: bounds?.getSouthWest().lat,
-		// };
-
-
-		// Compare coordinates
-		  const isLngEqual = Math.abs(bounds?._ne?.lng - mapBounds?.bbox?._ne?.lng) < 1e-7 && Math.abs(bounds?._sw?.lng - mapBounds?.bbox?._sw?.lng) < 1e-7;
-		  const isLatEqual = Math.abs(bounds?._ne?.lat - mapBounds?.bbox?._ne?.lat) < 1e-7 && Math.abs(bounds?._sw?.lat - mapBounds?.bbox?._sw?.lat) < 1e-7;
-	  
-		if (isLngEqual && isLatEqual && mapBounds?.zoom === zoom && center === mapBounds?.center) {
-			return 
-		} 
-
-		// debugger
-		// // Construct the bbox object with _ne and _sw
-		// const bbox = {
-		// 	_ne: { lng: ne.lng, lat: ne.lat },
-		// 	_sw: { lng: sw.lng, lat: sw.lat },
-		// };
-		
-		// const bbox = convertBBoxToPolygon(mapBounds?.bbox)
-		// layerController.updateState({zoom:mapBounds?.zoom, bbox: bbox, center: undefined });
-		map.jumpTo({
-			center: undefined,
-			zoom: mapBounds?.zoom,
-			bounds: mapBounds?.bbox,
-		});
-
-		// layerController.resetBounds('all');
-		if (globalState.isInitialLoad) {
-			globalStateController.updateState({ isInitialLoad : false });
-		}
-
-	}, [map, globalState.mapBounds]);
 
 	useEffect(() => {
 		// use effect to toggle the map into a 3d state
@@ -1402,6 +1341,38 @@ function Map({
 			}
 		}
 	}, [mapStateValues.toggle3d]);
+
+		useEffect(() => {
+			const mapRef = window.mapRef;
+	
+			if (mapRef) {
+				// Update for values
+				const setCoordinateAtUrl = () => {
+					const url = new URL(window.location);
+	
+					// Create an object to hold all parameters
+					const params = {
+						lat: mapRef.getCenter()?.lat,
+						lng: mapRef.getCenter()?.lng,
+						zoom: mapRef.getZoom()
+					};
+	
+					// Iterate over the object and set all parameters at once
+					Object.entries(params).forEach(([key, value]) => {
+						url.searchParams.set(key, value);
+					});
+	
+					// Update the browser's URL
+					window.history.pushState({}, '', url);
+				};
+	
+				// Listen to the map events
+				mapRef.on('move', setCoordinateAtUrl);
+				mapRef.on('zoom', setCoordinateAtUrl);
+				mapRef.on('rotate', setCoordinateAtUrl);
+				setCoordinateAtUrl();
+			}
+		}, [globalState.mapReady]);
 
 	useEffect(() => {
 		// Map will be reset if we move to another page

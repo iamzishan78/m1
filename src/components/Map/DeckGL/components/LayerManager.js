@@ -29,47 +29,6 @@ const move = (moveRef, isInitialLoad) => {
 	const center = window.mapref?.getCenter();
 	const bounds = window.mapRef?.getBounds();
 	const values = moveRef.current;
-	console.log("bbox", bounds)
-	console.log("center", center)
-	console.log("zoom", zoom)
-	debugger
-
-	const ne = bounds?.getNorthEast();
-	const sw = bounds?.getSouthWest();
-
-	const url = new URL(window.location);
-
-	// Create an object to hold all parameters
-	const params = {
-		_neLng: ne?.lng,
-		_neLat: ne?.lat,
-		_swLng: sw.lng,
-		_swLat: sw?.lat,
-		zoom: zoom
-	};
-
-	// Iterate over the object and set all parameters at once
-	Object.entries(params).forEach(([key, value]) => {
-		url.searchParams.set(key, value);
-	});
-
-	// Update the browser's URL
-	window.history.pushState({}, '', url);
-	const mapBounds = {
-		zoom: parseFloat(params.zoom),
-		bbox: {
-			_ne: {
-				lng: parseFloat(params._neLng),
-				lat: parseFloat(params._neLat),
-			},
-			_sw: {
-				lng: parseFloat(params._swLng),
-				lat: parseFloat(params._swLat),
-			},
-		}
-	};
-	globalStateController.updateState({ mapBounds: mapBounds });
-
 	if (deepEqual(values.bounds, bounds) && zoom === values.zoom && center === values.center) {
 		return;
 	}
@@ -122,7 +81,6 @@ function LayerManager() {
 	}, [deckLayer]);
 
 	useEffect(() => {
-		debugger
 		if (isReady) {
 			layerController.handleChange();
 		}
