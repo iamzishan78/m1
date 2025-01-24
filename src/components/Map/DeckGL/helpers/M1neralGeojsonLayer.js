@@ -45,7 +45,13 @@ const transformFields = input => {
 		}
 	}
 
-	return [remainingObject, newObject];
+	return [
+		remainingObject,
+		{
+			...newObject,
+			visible: remainingObject?.visible,
+		},
+	];
 };
 
 class M1neralGeojsonLayer extends CompositeLayer {

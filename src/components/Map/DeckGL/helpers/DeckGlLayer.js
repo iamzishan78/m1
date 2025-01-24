@@ -71,16 +71,18 @@ export default class DeckGlOverlay {
 		if (!window?.deckOverlay?._deck) {
 			window.deckOverlay = new MapboxOverlay({ layers: [] });
 		}
-		if (!window.mapRef._controls.find(control => control instanceof MapboxOverlay)) { window.mapRef.addControl(window.deckOverlay); }
+		if (!window.mapRef._controls.find(control => control instanceof MapboxOverlay)) {
+			window.mapRef.addControl(window.deckOverlay);
+		}
 
-		window.mapRef.on('contextmenu', (event) => {
+		window.mapRef.on('contextmenu', event => {
 			const drawMode = window.drawRef?.getMode();
 
 			if (drawMode?.includes('draw') || drawMode?.includes('drag')) {
 				window.mapRef?.resize();
 				return;
 			}
-			onRightClick({ x: event.point.x, y: event.point.y, coordinate: [event.lngLat.lng, event.lngLat.lat] })
+			onRightClick({ x: event.point.x, y: event.point.y, coordinate: [event.lngLat.lng, event.lngLat.lat] });
 		});
 
 		let isDragging = false;
@@ -99,7 +101,9 @@ export default class DeckGlOverlay {
 				},
 				getCursor: ({ isHovering }) => {
 					const value = isDrawing ? 'crosshair' : isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab';
-					if (window?.mapRef?.getCanvas && window?.mapRef?.getCanvas?.()?.style?.cursor !== value) { window.mapRef.getCanvas().style.cursor = value; }
+					if (window?.mapRef?.getCanvas && window?.mapRef?.getCanvas?.()?.style?.cursor !== value) {
+						window.mapRef.getCanvas().style.cursor = value;
+					}
 					return value;
 				},
 				onClick: ({ x, y }) => {
@@ -118,7 +122,7 @@ export default class DeckGlOverlay {
 					const clickOnSameFeature =
 						previousClickedFeature && previousClickedFeature?.object?.id === clickedFeature?.object?.id;
 					if (!clickedFeature || clickOnSameFeature) {
-						const selectedPlace = popupController.getValue('selectedPlaces')
+						const selectedPlace = popupController.getValue('selectedPlaces');
 						if (!selectedPlace) {
 							// Reset the state when slected search is not places
 							popupController.reset();
@@ -146,6 +150,8 @@ export default class DeckGlOverlay {
 		allLayers.forEach(layer => {
 			layer.props.data = DeckGlOverlay.dataRef[layer.id];
 		});
+
+		// add layers in deck overlay
 		window.deckOverlay.setProps({ layers: allLayers });
 	};
 
@@ -156,10 +162,6 @@ export default class DeckGlOverlay {
 
 		const layers = window?.deckOverlay?._props?.layers || [];
 		const foundLayer = layers.find(layer => layer.id === layerId);
-
-		if (!foundLayer) {
-			// console.warn(`Layer with id '${layerId}' not found.`);
-		}
 
 		return foundLayer;
 	};
@@ -178,14 +180,12 @@ export default class DeckGlOverlay {
 		});
 		DeckGlOverlay.dataRef[layerId] = props.data;
 		const currentLayers = window.deckOverlay?._props?.layers || [];
-		if (currentLayers.find(layer => layer.id === layerId)) {
-			return currentLayers.find(layer => layer.id === layerId);
-		} else {
-			currentLayers.push(newLayer);
-			currentLayers.sort((a, b) => b.props.position - a.props.position);
-			DeckGlOverlay.setProps(currentLayers);
-			return newLayer;
-		}
+		if (DeckGlOverlay.getLayer(layerId)) return DeckGlOverlay.getLayer(layerId);
+
+		currentLayers.push(newLayer);
+		currentLayers.sort((a, b) => b.props.position - a.props.position);
+		DeckGlOverlay.setProps(currentLayers);
+		return newLayer;
 	};
 
 	static moveLayer = (layerId, beforeLayer) => {
@@ -216,11 +216,13 @@ export default class DeckGlOverlay {
 			}
 		}
 
+		// add layers in deck overlay
 		window.deckOverlay.setProps({ layers });
 	};
 
 	static removeLayer = layerId => {
 		const layers = window.deckOverlay._props.layers.filter(layer => layer.id !== layerId);
+		// add layers in deck overlay
 		window.deckOverlay.setProps({ layers });
 	};
 
