@@ -88,7 +88,9 @@ const AttrsFillStyleDropdown = ({
 	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
-		if (!selectedValue) {return;}
+		if (!selectedValue) {
+			return;
+		}
 
 		let esIndex = selectedLayer.layerType === 'file layer' ? 'shapefile_flat' : 'shapes_flat';
 		const layerType =
@@ -188,7 +190,9 @@ const AttrsFillStyleDropdown = ({
 						</ul>
 					)}
 				</div>
-			) : (
+			) : null}
+
+			{!selectedValue || displayDropdown ? (
 				<Autocomplete
 					options={dropDownOptions}
 					value={fillStyle || ''}
@@ -197,7 +201,7 @@ const AttrsFillStyleDropdown = ({
 					}}
 					renderInput={params => <TextField {...params} variant="outlined" fullWidth placeholder="Select Fill Style" />}
 				/>
-			)}
+			) : null}
 		</>
 	);
 };
