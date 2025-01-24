@@ -150,7 +150,7 @@ export default function AddUnitOwnerDialogContent({
 			const rowData = _.merge({}, unitInterestOwnerState, filteredSelectedRow);
 
 			rowData.contactStatus = selectedRow?.contact?.contactStatus;
-			rowData.isPurchased = selectedRow?.isPurchased ?? false;
+			rowData.isPurchased = (selectedRow?.isPurchased == 'true') ? true : false;
 			rowData.status = selectedRow?.contact?.status;
 			rowData.relatedObject = selectedRow?.contactId || selectedRow?.ownerEntity;
 			rowData.contactOwners = selectedRow?.contactOwners; // auto-complete the contact owner in slideout

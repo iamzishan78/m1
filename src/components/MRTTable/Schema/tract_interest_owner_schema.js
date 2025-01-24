@@ -87,7 +87,7 @@ const TractInterestOwnerMeta = {
 			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
 				// Check if the contact is purchased
-				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
 				return (
 					<div
 						style={{
