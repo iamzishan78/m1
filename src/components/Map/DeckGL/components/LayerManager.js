@@ -20,15 +20,12 @@ const updateState = debounce((zoom, bbox, center) => {
 	});
 }, 1000);
 
-const move = (moveRef, isInitialLoad) => {
-	if (isInitialLoad) {
-		return
-	}
-
+const move = (moveRef) => {
 	const zoom = window.mapRef?.getZoom();
 	const center = window.mapref?.getCenter();
 	const bounds = window.mapRef?.getBounds();
 	const values = moveRef.current;
+
 	if (deepEqual(values.bounds, bounds) && zoom === values.zoom && center === values.center) {
 		return;
 	}
@@ -46,7 +43,7 @@ function LayerManager() {
 
 	const { bbox, recalculate } = layerController.useState(['bbox', 'recalculate']);
 	const { layers, deckLayer, globalStateValues } = globalStateController.useState(
-		['layers', 'deckLayer', 'isInitialLoad'],
+		['layers', 'deckLayer'],
 		'globalStateValues'
 	);
 	const { polygonFilter, polygonsFilter } = layerFiltersController.useState(['polygonFilter', 'polygonsFilter']);
@@ -55,10 +52,10 @@ function LayerManager() {
 		if (!window.mapRef) {
 			return;
 		}
-		move(moveRef, globalStateValues?.isInitialLoad);
-		window.mapRef?.on?.('move', () => move(moveRef, globalStateValues?.isInitialLoad));
+		move(moveRef);
+		window.mapRef?.on?.('move', () => move(moveRef));
 		return () => {
-			window.mapRef?.off('move', () => move(moveRef, globalStateValues?.isInitialLoad));
+			window.mapRef?.off('move', () => move(moveRef));
 		};
 	}, []);
 

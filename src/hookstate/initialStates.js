@@ -27,8 +27,6 @@ export const globalInitialState = {
 	bypassType: '',
 	tenant: null,
 	layerSettingsLoading: false,
-	mapBounds: null,
-	isInitialLoad : false,
 };
 
 export const globalState = hookstate(copy(globalInitialState));
