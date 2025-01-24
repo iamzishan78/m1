@@ -287,12 +287,14 @@ export const useLayerStyle = layer => {
 			//Setting fill style
 			layerSettings.attributeBasedStyles = attributeBasedStyles;
 			layerSettings.selectedFillStyle = selectedFillStyle;
-			layerSettings.fillStyle = fillStyle;
+
+			if (!selectedFillStyle) {layerSettings.fillStyle = fillStyle;}
 
 			//Setting Line Style
 			layerSettings.attributeBasedLineStyles = attributeBasedLineStyles;
 			layerSettings.selectedLineStyle = selectedLineStyle;
-			layerSettings.lineStyle = lineStyle;
+
+			if (!selectedLineStyle) {layerSettings.lineStyle = lineStyle;}
 
 			if (
 				currentLayer &&

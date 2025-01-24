@@ -649,7 +649,6 @@ const layerStateControllerHandler = state => {
 			deckLayers[layerId].deckLayer = deckLayer;
 			deckLayers[layerId].beforeLayerId = beforeLayerId;
 		}
-
 	};
 
 	const handleDeckLayer = (dbLayer, isUpdateTrigger) => {

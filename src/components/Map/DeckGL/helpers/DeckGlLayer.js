@@ -69,7 +69,7 @@ export default class DeckGlOverlay {
 		}
 
 		if (!window?.deckOverlay?._deck) {
-			window.deckOverlay = new MapboxOverlay({ layers: [], onEvent: () => { console.log('click') } });
+			window.deckOverlay = new MapboxOverlay({ layers: [] });
 		}
 		if (!window.mapRef._controls.find(control => control instanceof MapboxOverlay)) { window.mapRef.addControl(window.deckOverlay); }
 
@@ -81,8 +81,7 @@ export default class DeckGlOverlay {
 				return;
 			}
 			onRightClick({ x: event.point.x, y: event.point.y, coordinate: [event.lngLat.lng, event.lngLat.lat] })
-		}
-		);
+		});
 
 		let isDragging = false;
 		let isDrawing = false;
@@ -187,7 +186,6 @@ export default class DeckGlOverlay {
 			DeckGlOverlay.setProps(currentLayers);
 			return newLayer;
 		}
-
 	};
 
 	static moveLayer = (layerId, beforeLayer) => {

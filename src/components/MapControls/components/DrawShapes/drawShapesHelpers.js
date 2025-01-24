@@ -118,7 +118,7 @@ export const drawWellBoundary = coordinates => {
 				parameters: {
 					depthTest: false, // Disable depth testing to draw points on top
 				},
-				position: 0
+				position: 0,
 			},
 		});
 	}
@@ -161,7 +161,7 @@ export const drawPlaceBoundary = coordinates => {
 				parameters: {
 					depthTest: false, // Disable depth testing to draw points on top
 				},
-				position: 0
+				position: 0,
 			},
 		});
 	}
@@ -204,7 +204,7 @@ export const drawBoundary = (selectedUserDefinedLayer, layer_Id) => {
 				parameters: {
 					depthTest: false, // Disable depth testing to draw points on top
 				},
-				position: 0
+				position: 0,
 			},
 		});
 	}
