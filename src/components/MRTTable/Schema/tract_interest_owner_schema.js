@@ -395,14 +395,17 @@ const TractInterestOwnerMeta = {
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'contact.isPurchased',
+			name: 'isPurchased',
+			id: 'isPurchased',
 			header: 'Purchased Data Exists',
 			filterSelectOptions: [
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
+			type: 'boolean',
 			Cell: ({ row }) => {
-				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
 			},
 			isSearchField: false,
