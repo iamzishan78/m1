@@ -144,17 +144,6 @@ export default class DeckGlOverlay {
 		}
 	};
 
-	static setProps = layers => {
-		let allLayers = [...layers];
-
-		allLayers.forEach(layer => {
-			layer.props.data = DeckGlOverlay.dataRef[layer.id];
-		});
-
-		// add layers in deck overlay
-		window.deckOverlay.setProps({ layers: allLayers });
-	};
-
 	static getLayer = layerId => {
 		if (!window.deckOverlay) {
 			throw new Error('DeckOverlay is not initialized.');
@@ -180,11 +169,11 @@ export default class DeckGlOverlay {
 		});
 		DeckGlOverlay.dataRef[layerId] = props.data;
 		const currentLayers = window.deckOverlay?._props?.layers || [];
-		if (DeckGlOverlay.getLayer(layerId)) return DeckGlOverlay.getLayer(layerId);
+		if (DeckGlOverlay.getLayer(layerId)) { return DeckGlOverlay.getLayer(layerId); }
 
 		currentLayers.push(newLayer);
 		currentLayers.sort((a, b) => b.props.position - a.props.position);
-		DeckGlOverlay.setProps(currentLayers);
+		window.deckOverlay.setProps({ layers: currentLayers });
 		return newLayer;
 	};
 
@@ -253,7 +242,8 @@ export default class DeckGlOverlay {
 				data: DeckGlOverlay.dataRef[layerId], // Explicitly retain the generator function
 			});
 			layers[layerIndex] = updatedLayer;
-			DeckGlOverlay.setProps(layers);
+
+			window.deckOverlay.setProps({ layers: [...layers] });
 		}
 	};
 }

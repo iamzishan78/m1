@@ -911,9 +911,6 @@ const layerStateControllerHandler = state => {
 			showableLayers.reverse().forEach(dbLayer => {
 				handleDeckLayer(dbLayer);
 			});
-			if (window.mapRef.getLayer('boundary-layer')) {
-				window.mapRef.moveLayer('boundary-layer');
-			}
 		},
 		changeLayerPosition: (currentLayer, beforeLayer) => {
 			if (!currentLayer) {
