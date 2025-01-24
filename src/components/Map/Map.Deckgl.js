@@ -131,7 +131,7 @@ function Map({
 	layerPadding = null,
 }) {
 	// context states
-	const globalState = globalStateController.useState(['layers']);
+	const globalState = globalStateController.useState(['layers', 'mapReady']);
 	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues');
 	const { selectedShapeFile, selectedPlaces, popupStateValues } = popupController.useState(
 		['selectedShapeFile', 'selectedPlaces'],
@@ -1343,6 +1343,7 @@ function Map({
 			const mapRef = window.mapRef;
 	
 			if (mapRef) {
+				debugger
 				// Update for values
 				const setCoordinateAtUrl = () => {
 					const url = new URL(window.location);
