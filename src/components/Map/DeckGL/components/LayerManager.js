@@ -12,7 +12,6 @@ import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { layerController } from 'hookstate/layerStateController';
 
 const updateState = debounce((zoom, bbox, center) => {
-
 	layerController.updateState({
 		zoom,
 		bbox,
@@ -20,7 +19,7 @@ const updateState = debounce((zoom, bbox, center) => {
 	});
 }, 1000);
 
-const move = (moveRef) => {
+const move = moveRef => {
 	const zoom = window.mapRef?.getZoom();
 	const center = window.mapref?.getCenter();
 	const bounds = window.mapRef?.getBounds();
