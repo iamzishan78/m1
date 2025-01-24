@@ -22,7 +22,6 @@ import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHel
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
-import { deepEqual } from 'components/Shared/functions';
 import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
@@ -151,8 +150,6 @@ function Map({
 
 	const client = useApolloClient();
 	const history = useHistory();
-	const location = useLocation(); // Hook to get the current URL details
-
 	const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
 
 	// styles
