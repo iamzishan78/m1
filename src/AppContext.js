@@ -15,7 +15,7 @@ import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConf
 import { MSALB2CObj, B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
 import { heatLayers, baseMapLayers } from './LayerConfig';
 
-const AppContext = createContext([{}, () => { }]);
+const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = props => {
 	const [stateApp, setStateApp] = useState({
@@ -205,35 +205,7 @@ const AppProvider = props => {
 					isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
 
 				let myMSALObjInt = isBypassTenant ? null : MSALObj(tenant);
-				// Check if all required parameters exist
-				const hasRequiredParams =
-					query.zoom &&
-					query._neLng &&
-					query._neLat &&
-					query._swLng &&
-					query._swLat;
-
-				let mapBounds = null, isInitialLoad = false;
-				if (hasRequiredParams) {
-					// Set the mapBounds state with the parsed query values
-					mapBounds = {
-						zoom: parseFloat(query.zoom),
-						bbox: {
-							_ne: {
-								lng: parseFloat(query._neLng),
-								lat: parseFloat(query._neLat),
-							},
-							_sw: {
-								lng: parseFloat(query._swLng),
-								lat: parseFloat(query._swLat),
-							},
-						}
-					};
-					isInitialLoad = true;
-					console.log("mapBounds in app context",mapBounds)
-
-				}
-				globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint, mapBounds: mapBounds, isInitialLoad });
+				globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint });
 				setStateApp(state => {
 					return {
 						...state,
