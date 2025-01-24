@@ -30,7 +30,6 @@ import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 
 import { detailCardController } from 'hookstate/detailCardController';
-import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { layerController } from 'hookstate/layerStateController';
@@ -46,7 +45,6 @@ import { layerRefs } from 'hookstate';
 
 import HugeRequest from './components/HugeRequest';
 import DeckGL from './DeckGL';
-import onRightClick from './DeckGL/helpers/onRightClick';
 import DefaultFiltersTest from './filtersDefaultTest';
 import { setMainMapState } from '../../actions';
 import { SRMode } from './MapBoxDrawRotate/index';
@@ -55,9 +53,8 @@ import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsBy
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { copy } from '../Shared/functions';
 import ZoomFault from './components/ZoomFault';
-import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
+import { extractUniqueFilters } from './DeckGL/helpers/common';
 import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
-import onFeatureClick from './DeckGL/helpers/onFeatureClick';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import MarkerIcon from './sprites/marker-icon.png';
 import {
@@ -720,46 +717,6 @@ function Map({
 		}
 	}, [stateApp.filterSelectAllAbstract, map]);
 
-	// if this isn't fast enough we can try to only recalc length for features on the tile boundary
-	// if feature is entirely within a tile we difinitively know the length
-	// if it is on the tile boundary we know that the vector feature "may" cross tile boundaries so don't know the true
-	// length from a single tile
-	async function findBadLinestrings(map, tile) {
-		if (!tile) {
-			return;
-		}
-		let repaint = false;
-		const renderedLineStrings = [];
-		tile.querySourceFeatures(renderedLineStrings, {
-			filter: ['in', ['geometry-type'], ['literal', ['LineString', 'MultiLineString']]],
-			sourceLayer: 'wells',
-		});
-		renderedLineStrings.forEach(feature => {
-			const geometryLength = map.getFeatureState({
-				source: 'wellsVT',
-				sourceLayer: 'wells',
-				id: feature.id,
-			})?.geometryLength;
-			const newGeometryLength = Math.round(turf.length(feature.geometry, { units: 'feet' }), 0);
-			if (newGeometryLength > 20000 && !(geometryLength >= newGeometryLength)) {
-				map.setFeatureState(
-					{
-						source: 'wellsVT',
-						sourceLayer: 'wells',
-						id: feature.id,
-					},
-					{
-						geometryLength: Math.max(newGeometryLength, geometryLength || -1),
-					}
-				);
-				repaint = true;
-			}
-		});
-
-		if (repaint) {
-			map.triggerRepaint();
-		}
-	}
 
 	useEffect(() => {
 		if (mapStyles.length <= 0) {
@@ -858,75 +815,6 @@ function Map({
 			});
 			newMap.addControl(Draw);
 
-			newMap.on('sourcedata', e => {
-				if (e.sourceId === 'wellsVT') {
-					findBadLinestrings(e.target, e.tile);
-				}
-			});
-
-			const interval = setInterval(() => {
-				let isDragging = false;
-				let isDrawing = false;
-				if (window?.deckOverlay?._deck) {
-					window.mapRef?.on('draw.actionable', () => {
-						// console.log(window.drawRef?.getMode())
-						isDrawing = !['direct_select', 'simple_select'].includes(window.drawRef?.getMode());
-					});
-					window.deckOverlay._deck?.setProps({
-						onDragStart: () => {
-							isDragging = true;
-						},
-						onDragEnd: () => {
-							isDragging = false;
-						},
-						getCursor: ({ isHovering }) => {
-							const value = isDrawing ? 'crosshair' : isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab';
-							if (window?.mapRef?.getCanvas && window?.mapRef?.getCanvas?.()?.style?.cursor !== value) { window.mapRef.getCanvas().style.cursor = value; }
-							return value;
-						},
-						onClick: ({ x, y, coordinate }, { rightButton, srcEvent }) => {
-							const drawMode = window.drawRef?.getMode();
-
-							if (drawMode?.includes('draw') || drawMode?.includes('drag')) {
-								window.mapRef?.resize();
-								return;
-							}
-
-							if (rightButton || srcEvent.shiftKey) {
-								onRightClick({ x, y, coordinate });
-								return;
-							}
-
-							const getLandGrid =
-								window.event.ctrlKey || window.event.metaKey || drawController.getValue('multiSelectLandGrids');
-
-							const { clickedFeature, layer } = getClickedFeature({ x, y, getLandGrid });
-							const previousClickedFeature = layerController.getValue('clickedFeature');
-							const clickOnSameFeature =
-								previousClickedFeature && previousClickedFeature?.object?.id === clickedFeature?.object?.id;
-							if (!clickedFeature || clickOnSameFeature) {
-								const selectedPlace = selectedPlaces.get({ noproxy: true });
-								if (!selectedPlace) {
-									// Reset the state when slected search is not places
-									popupController.reset();
-								}
-								// If the path is not '/' or ' ' and the map is not rendered through deal dialog
-								if (!['', '/'].includes(window.location.pathname) && stateApp.transactBarView !== 'Map') {
-									history.replace({ pathname: '/' });
-								}
-								return;
-							}
-							if (!getLandGrid) {
-								drawBoundary(clickedFeature.object);
-							}
-
-							layerController.updateState({ clickedFeature });
-							onFeatureClick(clickedFeature, layer);
-						},
-					});
-					clearInterval(interval);
-				}
-			}, 500);
 
 			newMap.on('load', () => {
 				window.mapRef = null; // Remove the existing map instance to avoid rendering multiple maps
@@ -934,7 +822,7 @@ function Map({
 				window.mapRef = newMap;
 				window.drawRef = Draw;
 				// Initializing overlay
-				DeckGlLayer.initializeOverlay();
+				DeckGlLayer.initializeOverlay({ transactBarView: stateApp.transactBarView });
 				layerController.resetMapStates(true);
 
 				setStateApp(state => ({

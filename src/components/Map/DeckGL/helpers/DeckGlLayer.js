@@ -2,7 +2,16 @@ import { ScatterplotLayer, LineLayer, PolygonLayer, TextLayer } from '@deck.gl/l
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { isEqual } from 'lodash';
 
+import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+
+import { drawController } from 'hookstate/drawStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { popupController } from 'hookstate/popupStateController';
+
+import { getClickedFeature } from './common';
 import M1neralGeojsonLayer from './M1neralGeojsonLayer';
+import onFeatureClick from './onFeatureClick';
+import onRightClick from './onRightClick';
 
 const MAX = 255;
 
@@ -54,15 +63,82 @@ export default class DeckGlOverlay {
 	static overlayInstance = null;
 	static dataRef = {};
 
-	static initializeOverlay = () => {
+	static initializeOverlay = ({ transactBarView }) => {
 		if (!window.mapRef) {
 			throw new Error('Map reference is not available.');
 		}
 
 		if (!window?.deckOverlay?._deck) {
-			window.deckOverlay = new MapboxOverlay({ layers: [] });
+			window.deckOverlay = new MapboxOverlay({ layers: [], onEvent: () => { console.log('click') } });
 		}
 		if (!window.mapRef._controls.find(control => control instanceof MapboxOverlay)) { window.mapRef.addControl(window.deckOverlay); }
+
+		window.mapRef.on('contextmenu', (event) => {
+			const drawMode = window.drawRef?.getMode();
+
+			if (drawMode?.includes('draw') || drawMode?.includes('drag')) {
+				window.mapRef?.resize();
+				return;
+			}
+			onRightClick({ x: event.point.x, y: event.point.y, coordinate: [event.lngLat.lng, event.lngLat.lat] })
+		}
+		);
+
+		let isDragging = false;
+		let isDrawing = false;
+		if (window?.deckOverlay?._deck) {
+			window.mapRef?.on('draw.actionable', () => {
+				// console.log(window.drawRef?.getMode())
+				isDrawing = !['direct_select', 'simple_select'].includes(window.drawRef?.getMode());
+			});
+			window.deckOverlay._deck?.setProps({
+				onDragStart: () => {
+					isDragging = true;
+				},
+				onDragEnd: () => {
+					isDragging = false;
+				},
+				getCursor: ({ isHovering }) => {
+					const value = isDrawing ? 'crosshair' : isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab';
+					if (window?.mapRef?.getCanvas && window?.mapRef?.getCanvas?.()?.style?.cursor !== value) { window.mapRef.getCanvas().style.cursor = value; }
+					return value;
+				},
+				onClick: ({ x, y }) => {
+					const drawMode = window.drawRef?.getMode();
+
+					if (drawMode?.includes('draw') || drawMode?.includes('drag')) {
+						window.mapRef?.resize();
+						return;
+					}
+
+					const getLandGrid =
+						window.event.ctrlKey || window.event.metaKey || drawController.getValue('multiSelectLandGrids');
+
+					const { clickedFeature, layer } = getClickedFeature({ x, y, getLandGrid });
+					const previousClickedFeature = layerController.getValue('clickedFeature');
+					const clickOnSameFeature =
+						previousClickedFeature && previousClickedFeature?.object?.id === clickedFeature?.object?.id;
+					if (!clickedFeature || clickOnSameFeature) {
+						const selectedPlace = popupController.getValue('selectedPlaces')
+						if (!selectedPlace) {
+							// Reset the state when slected search is not places
+							popupController.reset();
+						}
+						// If the path is not '/' or ' ' and the map is not rendered through deal dialog
+						if (!['', '/'].includes(window.location.pathname) && transactBarView !== 'Map') {
+							history.replace({ pathname: '/' });
+						}
+						return;
+					}
+					if (!getLandGrid) {
+						drawBoundary(clickedFeature.object);
+					}
+
+					layerController.updateState({ clickedFeature });
+					onFeatureClick(clickedFeature, layer);
+				},
+			});
+		}
 	};
 
 	static setProps = layers => {
