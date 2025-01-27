@@ -24,12 +24,13 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 
 import { AppContext } from 'AppContext';
 
-import { useLayerStyle, useStyles, WidthPicker } from './Common';
+import { ifRgbaConvt, useStyles, WidthPicker } from './Common';
 import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
 import AttrsFillStyleDropdown from './LayerAttributes/AttrsFillStyleDropdown';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
 import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
 import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
+import { layerStylingController } from 'hookstate/layersStylingController';
 
 function LayerStyling() {
 	const classes = useStyles();
@@ -37,48 +38,61 @@ function LayerStyling() {
 		['selectedLayer'],
 		'mapControlsStateValues'
 	);
-	const selectedLayer = mapControlsStateValues.selectedLayer;
 
-	const layerType = selectedLayer.layerPaintProps[0]?.paintType;
+	const layerStylingState = layerStylingController.useCompleteState();
+	const layerStylingStateValues = layerStylingState?.get({ noproxy: true });
+
 	const {
 		width,
-		setWidth,
 		fillColor,
 		fillStyle,
 		lineStyle,
-		setFillColor,
-		setFillStyle,
-		setLineStyle,
 		enablefillColor,
-		setEnableFillColor,
 		enableStrokeColor,
-		setEnableStrokeColor,
+		enableStrokeStyle,
+		enableColorStyle,
 		selectedValue,
-		setSelectedValue,
 		selectedStrokeValue,
-		setSelectedStrokeValue,
 		selectedFillStyle,
 		selectedLineStyle,
-		setSelectedFillStyle,
-		setSelectedLineStyle,
 		attributeBasedColors,
-		setAttributeBasedColors,
 		attributeBasedStrokeColors,
 		attributeBasedStyles,
 		attributeBasedLineStyles,
-		setAttributeBasedStyles,
-		setAttributeBasedLineStyles,
-		setAttributeBasedStrokeColors,
 		layerLabelVisibility,
-		setLayerLabelVisibility,
 		layerClickability,
-		setLayerClickability,
 		strokeColor,
-		setStrokeColor,
-		handleLayerChange,
 		strokeWidth,
-		setStrokeWidth,
-	} = useLayerStyle(selectedLayer);
+	} = layerStylingStateValues;
+
+	const selectedLayer = mapControlsStateValues.selectedLayer;
+
+	const layerType = selectedLayer.layerPaintProps[0]?.paintType;
+
+	const initialFillColor =
+		layerType === 'fill'
+			? ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['fill-color'])
+			: layerType === 'line'
+				? ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['line-color'])
+				: ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['circle-color']);
+	const initialStrokeColor =
+		layerType === 'fill'
+			? ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['fill-outline-color'])
+			: layerType === 'line'
+				? undefined
+				: ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['circle-stroke-color']);
+
+	let initialWidth;
+	if (layerType === 'circle') {
+		initialWidth = selectedLayer.layerPaintProps[0]?.paintProps['circle-stroke-width']
+			? selectedLayer.layerPaintProps[0]?.paintProps['circle-stroke-width']
+			: 0;
+	}
+	if (layerType === 'line') {
+		initialWidth = selectedLayer.layerPaintProps[0]?.paintProps['line-width']
+			? selectedLayer.layerPaintProps[0]?.paintProps['line-width']
+			: 1;
+	}
 
 	const [rows, setRows] = useState(0);
 	const [stateApp] = useContext(AppContext);
@@ -93,6 +107,7 @@ function LayerStyling() {
 
 	// Getting meta data for selected layer
 	useEffect(() => {
+		layerStylingController.initializeLayerStyling(selectedLayer);
 		if (selectedLayer?._id) {
 			getShapeFileSchema({
 				variables: {
@@ -117,6 +132,7 @@ function LayerStyling() {
 
 	useEffect(() => {
 		const hookStateAppLayers = globalStateController.getValue('layers');
+		if (!layerStylingStateValues?.layerInitialized) return null;
 		if (
 			(hookStateAppLayers &&
 				selectedLayer &&
@@ -128,6 +144,8 @@ function LayerStyling() {
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
+			selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeStyle !== enableStrokeStyle ||
+			selectedLayer.layerSettings?.interaction?.interactionDetail?.enableColorStyle !== enableColorStyle ||
 			!_.isEqual(selectedLayer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
 			!_.isEqual(selectedLayer.layerSettings?.attributeBasedStrokeColors, attributeBasedStrokeColors) ||
 			!_.isEqual(selectedLayer.layerSettings?.attributeBasedStyles, attributeBasedStyles) ||
@@ -139,7 +157,7 @@ function LayerStyling() {
 			selectedLayer.layerSettings?.fillStyle !== fillStyle ||
 			selectedLayer.layerSettings?.lineStyle !== lineStyle
 		) {
-			let { currentLayer } = handleLayerChange();
+			let { currentLayer } = layerStylingController.handleLayerChange(selectedLayer);
 			const currentLayers = [...hookStateAppLayers];
 			const index = currentLayers.findIndex(l => l.layerId === currentLayer.layerId);
 			currentLayers[index] = currentLayer;
@@ -182,6 +200,8 @@ function LayerStyling() {
 		layerLabelVisibility,
 		enablefillColor,
 		enableStrokeColor,
+		enableStrokeStyle,
+		enableColorStyle,
 		attributeBasedColors,
 		attributeBasedStyles,
 		attributeBasedLineStyles,
@@ -205,6 +225,21 @@ function LayerStyling() {
 			layerFeaturesCount({ variables: { fileId: selectedLayer.file, layerShapeName: selectedLayer.layerShapeName } });
 		}
 	}, [mapControlStates.selectedLayer.file, layerFeaturesCount]);
+
+	useEffect(() => {
+		layerStylingController.setFillColor(initialFillColor);
+		layerStylingController.setStrokeColor(initialStrokeColor);
+		layerStylingController.setFillStyle(selectedLayer.layerSettings?.fillStyle);
+		layerStylingController.setLineStyle(selectedLayer.layerSettings?.lineStyle);
+	}, [selectedValue, selectedStrokeValue, selectedFillStyle, selectedLineStyle]);
+
+	useEffect(() => {
+		layerStylingController.setWidth(initialWidth);
+		layerStylingController.setFillColor(initialFillColor);
+		layerStylingController.setStrokeColor(initialStrokeColor);
+		layerStylingController.setFillStyle(selectedLayer.layerSettings?.fillStyle);
+		layerStylingController.setLineStyle(selectedLayer.layerSettings?.lineStyle);
+	}, [initialFillColor, initialStrokeColor, initialWidth, selectedLayer]);
 
 	const handleClose = () => {
 		mapControlsController.updateState({ selectedLayerControl: null });
@@ -298,7 +333,11 @@ function LayerStyling() {
 									control={
 										<Switch
 											checked={layerLabelVisibility === 'visible'}
-											onChange={() => setLayerLabelVisibility(layerLabelVisibility === 'visible' ? 'none' : 'visible')}
+											onChange={() =>
+												layerStylingController.setLayerLabelVisibility(
+													layerLabelVisibility === 'visible' ? 'none' : 'visible'
+												)
+											}
 											size="small"
 											data-testid="layer-label-visibility-toggle"
 										/>
@@ -317,7 +356,7 @@ function LayerStyling() {
 									control={
 										<Switch
 											checked={layerClickability}
-											onChange={() => setLayerClickability(!layerClickability)}
+											onChange={() => layerStylingController.setLayerClickability(!layerClickability)}
 											size="small"
 											data-testid="layer-pickability-toggle"
 										/>
@@ -342,28 +381,31 @@ function LayerStyling() {
 										control={
 											<Switch
 												checked={enablefillColor}
-												onChange={() => setEnableFillColor(!enablefillColor)}
+												onChange={() => layerStylingController.setEnableFillColor(!enablefillColor)}
 												size="small"
 												data-testid="layer-fill-toggle"
 											/>
 										}
 									/>
-									{layerType === 'line' && <WidthPicker width={width} setWidth={setWidth} layerType={layerType} />}
+									{layerType === 'line' && (
+										<WidthPicker width={width} setWidth={layerStylingController.setWidth} layerType={layerType} />
+									)}
 								</div>
 								{enablefillColor && (
 									<>
 										<AttrsAutocomplete
 											options={options}
 											selectedValue={selectedValue}
-											setSelectedValue={setSelectedValue}
+											setSelectedValue={layerStylingController.setSelectedValue}
+											typography={'Color based on'}
 										/>
 										<AttrsValuesDropdown
 											selectedValue={selectedValue}
 											selectedLayer={selectedLayer}
 											fillColor={fillColor}
-											setFillColor={setFillColor}
+											setFillColor={layerStylingController.setFillColor}
 											attributeBasedColors={attributeBasedColors}
-											setAttributeBasedColors={setAttributeBasedColors}
+											setAttributeBasedColors={layerStylingController.setAttributeBasedColors}
 										/>
 									</>
 								)}
@@ -380,22 +422,33 @@ function LayerStyling() {
 									}}
 								>
 									<Typography variant="h6">Fill Style</Typography>
+									<FormControlLabel
+										control={
+											<Switch
+												checked={!!enableColorStyle}
+												onChange={() => layerStylingController.setEnableColorStyle(!enableColorStyle)}
+												size="small"
+												data-testid="layer-stroke-toggle"
+											/>
+										}
+									/>
 								</div>
-								{enablefillColor && (
+								{enablefillColor && enableColorStyle && (
 									<>
 										<AttrsAutocomplete
 											options={options}
 											selectedValue={selectedFillStyle}
-											setSelectedValue={setSelectedFillStyle}
+											setSelectedValue={layerStylingController.setSelectedFillStyle}
+											typography={'Style based on'}
 										/>
 										<AttrsFillStyleDropdown
 											dropDownOptions={['dots', 'hatch-1x', 'hatch-2x', 'hatch-cross']}
 											selectedValue={selectedFillStyle}
 											selectedLayer={selectedLayer}
 											fillStyle={fillStyle}
-											setFillStyle={setFillStyle}
+											setFillStyle={layerStylingController.setFillStyle}
 											attributeBasedStyles={attributeBasedStyles}
-											setAttributeBasedStyles={setAttributeBasedStyles}
+											setAttributeBasedStyles={layerStylingController.setAttributeBasedStyles}
 										/>
 									</>
 								)}
@@ -415,71 +468,84 @@ function LayerStyling() {
 											control={
 												<Switch
 													checked={enableStrokeColor}
-													onChange={() => setEnableStrokeColor(!enableStrokeColor)}
+													onChange={() => layerStylingController.setEnableStrokeColor(!enableStrokeColor)}
 													size="small"
 													data-testid="layer-stroke-toggle"
 												/>
 											}
 										/>
 									</div>
-									{layerType === 'circle' && <WidthPicker width={width} setWidth={setWidth} layerType={layerType} />}
+									{layerType === 'circle' && (
+										<WidthPicker width={width} setWidth={layerStylingController.setWidth} layerType={layerType} />
+									)}
 									{enableStrokeColor && (
 										<>
 											<AttrsAutocomplete
 												options={options}
 												selectedValue={selectedStrokeValue}
-												setSelectedValue={setSelectedStrokeValue}
+												setSelectedValue={layerStylingController.setSelectedStrokeValue}
+												typography={'Color based on'}
 											/>
 											<AttrsValuesDropdown
 												selectedValue={selectedStrokeValue}
 												selectedLayer={selectedLayer}
 												fillColor={strokeColor}
-												setFillColor={setStrokeColor}
+												setFillColor={layerStylingController.setStrokeColor}
 												attributeBasedColors={attributeBasedStrokeColors}
-												setAttributeBasedColors={setAttributeBasedStrokeColors}
+												setAttributeBasedColors={layerStylingController.setAttributeBasedStrokeColors}
 											/>
 										</>
 									)}
 									{/* dropdown for line/stroke style selection */}
 									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
 
-									<div
-										style={{
-											display: 'flex',
-											justifyContent: 'space-between',
-										}}
-									>
-										<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
-											Stroke Style
-										</Typography>
-									</div>
-									{enableStrokeColor && (
-										<>
-											<AttrsAutocomplete
-												options={options}
-												selectedValue={selectedLineStyle}
-												setSelectedValue={setSelectedLineStyle}
+									<Grid item xs={12}>
+										<div
+											style={{
+												display: 'flex',
+												justifyContent: 'space-between',
+												marginTop: '20px',
+											}}
+										>
+											<Typography variant="h6">Stroke Style</Typography>
+											<FormControlLabel
+												control={
+													<Switch
+														checked={enableStrokeStyle}
+														onChange={() => layerStylingController.setEnableStrokeStyle(!enableStrokeStyle)}
+														size="small"
+														data-testid="layer-stroke-toggle"
+													/>
+												}
 											/>
-											<AttrsFillStyleDropdown
-												dropDownOptions={['dots', 'dashed', 'connected']}
-												selectedValue={selectedLineStyle}
-												selectedLayer={selectedLayer}
-												fillStyle={lineStyle}
-												setFillStyle={setLineStyle}
-												attributeBasedStyles={attributeBasedLineStyles}
-												setAttributeBasedStyles={setAttributeBasedLineStyles}
-											/>
-										</>
-									)}
-
-									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
+										</div>
+										{enableStrokeColor && enableStrokeStyle && (
+											<>
+												<AttrsAutocomplete
+													options={options}
+													selectedValue={selectedLineStyle}
+													setSelectedValue={layerStylingController.setSelectedLineStyle}
+													typography={'Style based on'}
+												/>
+												<AttrsFillStyleDropdown
+													dropDownOptions={['dots', 'dashed', 'connected']}
+													selectedValue={selectedLineStyle}
+													selectedLayer={selectedLayer}
+													fillStyle={lineStyle}
+													setFillStyle={layerStylingController.setLineStyle}
+													attributeBasedStyles={attributeBasedLineStyles}
+													setAttributeBasedStyles={layerStylingController.setAttributeBasedLineStyles}
+												/>
+											</>
+										)}
+									</Grid>
 									<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
 										Stroke Width
 									</Typography>
 									<Box display="flex" alignItems="center" justifyContent="space-between">
 										<Slider
 											value={strokeWidth}
-											onChange={(e, val) => setStrokeWidth(val)}
+											onChange={(e, val) => layerStylingController.setStrokeWidth(val)}
 											aria-labelledby="continuous-slider"
 											className={classes.slider}
 											valueLabelDisplay="auto" // Shows the value above the thumb
@@ -496,7 +562,7 @@ function LayerStyling() {
 												if (width < 0) {
 													width = 0;
 												}
-												setStrokeWidth(width);
+												layerStylingController.setStrokeWidth(width);
 											}}
 											size="small"
 											className={classes.valueBox}

@@ -362,6 +362,14 @@ export const mapControlsInitialState = {
 export const mapControls = hookstate(copy(mapControlsInitialState));
 
 /* -------------------------------------------------------------------------- */
+/*                           Layer Styling Controller                          */
+/* -------------------------------------------------------------------------- */
+
+export const layerStylingInitialState = {};
+
+export const layerStyling = hookstate(copy(layerStylingInitialState));
+
+/* -------------------------------------------------------------------------- */
 /*                            Map State Controller                            */
 /* -------------------------------------------------------------------------- */
 

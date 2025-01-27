@@ -681,10 +681,9 @@ export const getLayerDashStyle = dbLayer => {
 
 export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	const props = {};
-
+	// Getting layer interation settings
+	const layerInteraction = dbLayer.layerSettings?.interaction;
 	dbLayer.layerPaintProps?.forEach(prop => {
-		// Getting layer interation settings
-		const layerInteraction = dbLayer.layerSettings?.interaction;
 		const fillColor = prop.paintProps?.['fill-color'];
 		const fillOpacity = prop.paintProps?.['fill-opacity'];
 		const strokeWidth = prop.paintProps?.['strokeWidth'];
@@ -781,13 +780,19 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 		props.pointType = 'icon';
 	}
 
-	if (dbLayer.layerSettings?.selectedLineStyle || dbLayer.layerSettings?.lineStyle) {
+	if (
+		layerInteraction.interactionDetail?.enableStrokeStyle &&
+		(dbLayer.layerSettings?.selectedLineStyle || dbLayer.layerSettings?.lineStyle)
+	) {
 		props.getDashArray = getLayerDashStyle(dbLayer);
 		props.dashJustified = true;
 		props.dashGapPickable = true;
 	}
 
-	if (dbLayer.layerSettings?.selectedFillStyle || dbLayer.layerSettings?.fillStyle) {
+	if (
+		(layerInteraction.interactionDetail?.enableColorStyle && dbLayer.layerSettings?.selectedFillStyle) ||
+		dbLayer.layerSettings?.fillStyle
+	) {
 		// fill pattern props
 		props.stroked = true;
 		props.filled = true;

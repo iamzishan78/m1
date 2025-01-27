@@ -740,6 +740,7 @@ const layerStateControllerHandler = state => {
 				defaultColor: newId,
 				getPointRadius: newId,
 				fillPatternEnabled: newId,
+				getDashArray: newId,
 			};
 		}
 		if (!boundingState.show?.current) {
