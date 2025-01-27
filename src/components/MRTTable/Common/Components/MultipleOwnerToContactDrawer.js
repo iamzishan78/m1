@@ -36,7 +36,7 @@ import Tags from 'components/Shared/Tagger';
 
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
 
-import { AppContext } from 'AppContext';
+import { globalStateController } from 'hookstate/globalStateController';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
@@ -96,7 +96,7 @@ const MultipleOwnerToContactDrawer = ({
 	jobName,
 	jobType,
 }) => {
-	const [stateApp] = React.useContext(AppContext);
+	const { globalStateValues } = globalStateController.useState(['selectedMeta', 'user'], 'globalStateValues');
 	const classes = useStyles();
 
 	const [primaryOwner, setPrimaryOwner] = useState(rows[0]);
@@ -115,7 +115,7 @@ const MultipleOwnerToContactDrawer = ({
 
 	const contactStatus = watch('contactStatus', contactStatusOptions[0].value);
 	const contactOwner = watch('contactOwner', null);
-	const userId = stateApp.user.mongoId;
+	const userId = globalStateValues.user.mongoId;
 
 	const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
 		PAGINATEDCONTACTSQUERY,
@@ -171,7 +171,9 @@ const MultipleOwnerToContactDrawer = ({
 			entitiesIds = Ids.map(id => id._id);
 		}
 
-		const autoCalculateOfferPrice = !!stateApp?.user?.features?.find(f => f.name === 'autoCalculateOfferPrice');
+		const autoCalculateOfferPrice = !!globalStateValues?.user?.features?.find(
+			f => f.name === 'autoCalculateOfferPrice'
+		);
 
 		let existingContactId = null;
 		let action = actionType;
@@ -374,7 +376,7 @@ const MultipleOwnerToContactDrawer = ({
 												props.onChange(e.target.value);
 											}}
 											className={classes.fullWidth}
-											isDisabled={stateApp.selectedMeta}
+											isDisabled={globalStateValues.selectedMeta}
 										>
 											<MenuItem value="Lead"> Lead </MenuItem>
 											<MenuItem value="Prospect"> Prospect </MenuItem>

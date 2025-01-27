@@ -781,6 +781,10 @@ export const esIndexFilterKeyMap = {
 	// Add other mappings as needed
 };
 
+export const esIndexDateFilterKeyMap = {
+	contacts_flat: 'lastUpdateAt',
+};
+
 export const baseTenantsMaps = () => {
 	const tenantId = UserSession.getStorageItem('tenantName').toLowerCase();
 	const defaultStyles = ['Satellite', 'Basic', 'Light', 'Outdoors']; // Default for most clients

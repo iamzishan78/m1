@@ -72,6 +72,7 @@ export default function CustomDatesActivities({
 	qualifier,
 	setQualifier,
 	esIndex,
+	tableKey,
 	searchFields,
 	tableFilters,
 	appliedFilters,
@@ -210,6 +211,7 @@ export default function CustomDatesActivities({
 							value={campaigns}
 							setValue={setCampaigns}
 							esIndex={esIndex}
+							tableKey={tableKey}
 							searchFields={searchFields}
 							tableFilters={tableFilters}
 							appliedFilters={appliedFilters}
@@ -230,6 +232,7 @@ export default function CustomDatesActivities({
 						value={qualifier}
 						setValue={setQualifier}
 						esIndex={esIndex}
+						tableKey={tableKey}
 						searchFields={searchFields}
 						tableFilters={tableFilters}
 						appliedFilters={appliedFilters}
@@ -246,6 +249,7 @@ export default function CustomDatesActivities({
 
 const CampaignFilter = ({
 	esIndex,
+	tableKey,
 	value,
 	setValue,
 	tableFilters,
@@ -264,7 +268,7 @@ const CampaignFilter = ({
 		if (!tableFilters.find(filter => filter.type === 'range')) {
 			rangeFilters = getActivityAnalyticsFilters(appliedFilters);
 			if (esIndex === 'activities_flat') {
-				rangeFilters = getActivityFilters(appliedFilters);
+				rangeFilters = getActivityFilters(appliedFilters, tableKey, esIndex);
 			}
 		}
 		const filters = [...rangeFilters, ...tableFilters];
@@ -337,6 +341,7 @@ const CampaignFilter = ({
 
 const QualifierFilter = ({
 	esIndex,
+	tableKey,
 	value,
 	setValue,
 	tableFilters,
@@ -360,7 +365,7 @@ const QualifierFilter = ({
 			}
 			rangeFilters = getActivityAnalyticsFilters(appliedFilters);
 			if (esIndex === 'activities_flat') {
-				rangeFilters = getActivityFilters(appliedFilters);
+				rangeFilters = getActivityFilters(appliedFilters, tableKey, esIndex);
 			}
 		}
 		const filters = [...rangeFilters, ...tableFilters];

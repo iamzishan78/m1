@@ -155,7 +155,7 @@ const Activities = () => {
 	const [activityFilterByOwner, setActivityFilterByOwner] = useState('all');
 	const [activityFilterByResponsibleParty, setActivityFilterByResponsibleParty] = useState('all');
 	const [activityFilterByTime, setActivityFilterByTime] = useState('all');
-	const activitiesGridState = tableController('ActivitiesTable').useState(['filters']).stateValues;
+	const activitiesGridState = tableController('ObligationsTable').useState(['filters']).stateValues;
 	const [view, setView] = React.useState(Views.MONTH);
 
 	const selectedActivityId = useHookstate(slidoutState.selectedActivityId);
@@ -257,21 +257,24 @@ const Activities = () => {
 
 	useEffect(() => {
 		if (activitiesGridState) {
-			tableController('ActivitiesTable').clearFilters();
-			const filters = [
-				{ field: 'type.keyword', value: 'Expiration', notInclude: true },
-				{ field: 'type.keyword', value: 'Option to Extend', notInclude: true },
-			];
+			tableController('ObligationsTable').clearFilters();
+			const filters = [];
 
 			if (activityFilterByType && activityFilterByType !== 'all') {
 				filters.push({ field: 'type.keyword', value: activityFilterByType });
+			} else {
+				tableController('ObligationsTable').clearFilter('type.keyword');
 			}
 			if (activityFilterByType && activityFilterByOwner !== 'all') {
 				filters.push({ field: 'ownerId.keyword', value: activityFilterByOwner });
+			} else {
+				tableController('ObligationsTable').clearFilter('ownerId.keyword');
 			}
 
 			if (activityFilterByResponsibleParty && activityFilterByResponsibleParty !== 'all') {
 				filters.push({ field: 'responsibleParty.keyword', value: activityFilterByResponsibleParty });
+			} else {
+				tableController('ObligationsTable').clearFilter('responsibleParty.keyword');
 			}
 			const today = moment().format('yyyy-MM-DD');
 			switch (activityFilterByTime) {
