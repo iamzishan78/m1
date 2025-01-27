@@ -24,7 +24,7 @@ import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
-import { UPDATE_DOCUMENT, UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
+import { PARSE_PDF_TEXTS, UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
@@ -32,7 +32,6 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { CREATED_STATUS, ONE_MB } from 'utils/consts';
-import { convertFile } from 'utils/tesseractHelper';
 
 import { showErrorMessage } from 'actions';
 
@@ -296,22 +295,6 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 			const MBS = 4;
 
 			if (file_id) {
-				(async () => {
-					if (fileUpload.fileExtension !== 'pdf') {
-						return;
-					}
-
-					await convertFile(fileUpload.fileInformation, texts => {
-						client.mutate({
-							mutation: UPDATE_PDF_TEXTS,
-							variables: {
-								fileId: file_id,
-								texts,
-							},
-						});
-					});
-				})();
-
 				const blockBlobClient = new BlockBlobClient(uri);
 				blockBlobClient
 					.uploadBrowserData(inputFile, {
@@ -326,7 +309,19 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 					.then(res => {
 						if (res?._response?.status !== CREATED_STATUS) {
 							dispatch(showErrorMessage('Upload failed'));
+							return;
 						}
+
+						if (fileUpload.fileExtension !== 'pdf') {
+							return;
+						}
+
+						client.mutate({
+							mutation: PARSE_PDF_TEXTS,
+							variables: {
+								fileId: file_id,
+							},
+						});
 					})
 					.catch(err => console.log(err));
 

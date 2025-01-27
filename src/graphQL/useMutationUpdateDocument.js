@@ -10,9 +10,9 @@ export const UPDATE_DOCUMENT = gql`
 	}
 `;
 
-export const UPDATE_PDF_TEXTS = gql`
-	mutation updatePDFText($fileId: ID, $texts: [String]) {
-		updatePDFText(fileId: $fileId, texts: $texts) {
+export const PARSE_PDF_TEXTS = gql`
+	mutation parsePDFText($fileId: ID) {
+		parsePDFText(fileId: $fileId) {
 			success
 			message
 			error
