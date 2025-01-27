@@ -305,7 +305,7 @@ function Datasets({ headerButton, search, stateApp }) {
 											}}
 												index={index}
 												title={sourceName}
-												height={"100%"}
+												height={"18px"}
 											/>
 										</Grid>
 										<Grid item className="actionIcons">

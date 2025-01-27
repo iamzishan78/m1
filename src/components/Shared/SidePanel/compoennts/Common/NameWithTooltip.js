@@ -6,6 +6,7 @@ const useStyles = makeStyles(theme => ({
     iconTooltip: {
         fontSize: '15px !important',
         padding: '10px !important',
+        maxWidth: "450px !important"
     },
 }))
 const NameWithTooltip = ({ title, style, index, height }) => {
