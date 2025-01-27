@@ -8,7 +8,7 @@ const useStyles = makeStyles(theme => ({
         padding: '10px',
     },
 }))
-const NameWithTooltip = ({ title, style, index }) => {
+const NameWithTooltip = ({ title, style, index, height }) => {
     const classes = useStyles();
     const textRef = useRef(null); // Reference to Typography element
     const [isTruncated, setIsTruncated] = useState(false); // State to track if text is truncated
@@ -43,9 +43,9 @@ const NameWithTooltip = ({ title, style, index }) => {
                         sx={{
                             position: "relative",
                             top: "0px",
-                            right: "12px",
+                            right: "14px",
                             width: "12px", // Approximate ellipsis width
-                            // height: "15px",
+                            height: height,
                             pointerEvents: "auto",
                             cursor: "pointer",
                         }}

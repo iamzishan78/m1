@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Flipped } from 'react-flip-toolkit';
 import { useSelector } from 'react-redux';
 import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
@@ -26,6 +26,8 @@ import { mapStateController } from 'hookstate/mapStateController';
 
 import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';
+
+import NameWithTooltip from '../Common/NameWithTooltip';
 
 const ZERO = 0;
 const ONE = 1;
@@ -74,10 +76,6 @@ const useStyles = makeStyles(theme => ({
 		paddingLeft: '10px',
 		justifyContent: 'center',
 		alignItems: 'center',
-		iconTooltip: {
-			fontSize: '15px',
-			padding: '10px',
-		},
 	}),
 	subContainer: props => ({
 		marginLeft: theme.spacing(props.depth * TWO),
@@ -98,9 +96,6 @@ const LayerItem = React.memo(props => {
 	const {
 		stateValues: { emptyGroups },
 	} = globalStateController.useState(['emptyGroups']);
-
-	const textRef = useRef(null);
-	const [isTruncated, setIsTruncated] = useState(false);
 
 	const [{ isDragging }, drag, preview] = useDrag({
 		collect: monitor => {
@@ -158,25 +153,6 @@ const LayerItem = React.memo(props => {
 		);
 	});
 
-	// Check if the text is truncated and calculate the ellipsis position
-	const checkTruncation = () => {
-		if (textRef.current) {
-			const { offsetWidth, scrollWidth } = textRef.current;
-
-			if (scrollWidth > offsetWidth) {
-				setIsTruncated(true);
-			} else {
-				setIsTruncated(false);
-			}
-		}
-	};
-
-	useEffect(() => {
-		checkTruncation();
-		window.addEventListener("resize", checkTruncation); // Recalculate on resize
-		return () => window.removeEventListener("resize", checkTruncation);
-	}, [data, hoverItemIndex]);
-
 	return (
 		<Flipped flipId={id}>
 			<div
@@ -221,27 +197,15 @@ const LayerItem = React.memo(props => {
 										<ListItemIcon />
 									)}
 								</Box>
-
-								<Typography id={id} color="secondary" noWrap ref={textRef} >
-									{name === 'Wells' ? 'Platform Wells' : name}
-								</Typography>
-								{isTruncated && (
-									<Tooltip classes={{ tooltip: classes.iconTooltip }} arrow title={
-										(name === 'Wells') ? 'Platform Wells' : name
-									}>
-										<Box
-											sx={{
-												position: "relative",
-												top: "0px",
-												right: "12px",
-												width: "12px", // Approximate ellipsis width
-												height: "15px",
-												pointerEvents: "auto",
-												cursor: "pointer",
-											}}
-										/>
-									</Tooltip>
-								)}
+								<NameWithTooltip style={{
+									color: 'secondary',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap',
+								}}
+									index={hoverItemIndex}
+									title={name === 'Wells' ? 'Platform Wells' : name}
+									height={"18px"}
+								/>
 								<Box paddingLeft={1} display="flex">
 									{type === 'group' && (
 										<ListItemIcon onClick={handleClick}>

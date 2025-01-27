@@ -78,6 +78,7 @@ function EditableTextField({
 						style={{
 							width: "300px", // Approximate ellipsis width
 						}}
+						height={"100%"}
 					/>
 				) : (
 					<TextField
