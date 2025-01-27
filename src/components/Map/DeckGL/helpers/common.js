@@ -28,7 +28,7 @@ const DEFAULT_COLOR_VALUE = 152;
 const MAX_COLOR_COMPONENT_VALUE = 255;
 
 const lineStyles = {
-	dots: [1, 1],
+	dots: [2, 2],
 	dashed: [10, 3],
 	connected: [10, 0],
 };

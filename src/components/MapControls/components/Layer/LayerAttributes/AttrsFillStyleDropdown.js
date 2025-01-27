@@ -14,6 +14,7 @@ import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { getLayerKey } from 'hookstate/helpers';
 
 import { colorBasedAttributes } from './ColorBasedAttributes';
+import { styleImageMap } from '../Common';
 
 const useStyles = makeStyles(() => ({
 	dropdownContainer: {
@@ -59,12 +60,13 @@ const useStyles = makeStyles(() => ({
 		cursor: 'pointer',
 	},
 	fillBox: {
-		width: '100px',
-		height: '30px',
-		border: '1px solid #ccc',
-		textAlign: 'center',
-		lineHeight: '30px',
-		backgroundColor: '#f7f7f7',
+		width: '24px', // Set the width to match the image width
+		height: '30px', // Set the height to match the image height
+		border: 'none', // Remove the border
+		textAlign: 'center', // Optional, in case you want to center align content inside
+		lineHeight: '30px', // Optional, only needed if you're using text inside
+		backgroundColor: 'transparent', // Remove the background color
+		overflow: 'hidden', // Ensure no content goes outside the box
 	},
 	textFieldInput: {
 		height: '50px',
@@ -184,7 +186,13 @@ const AttrsFillStyleDropdown = ({
 									}}
 								>
 									<span>{option['label'] === '' ? '(Blank)' : option['label']}</span>
-									<div className={classes.fillBox}>{option.style}</div>
+									<div className={classes.fillBox}>
+										<img
+											src={styleImageMap[option.style]}
+											alt={option.label || 'Style'}
+											style={{ width: '100%', height: '100%', objectFit: 'contain' }} // Make the image fill the container
+										/>
+									</div>
 								</li>
 							))}
 						</ul>
@@ -200,6 +208,17 @@ const AttrsFillStyleDropdown = ({
 						setFillStyle(newValue);
 					}}
 					renderInput={params => <TextField {...params} variant="outlined" fullWidth placeholder="Select Fill Style" />}
+					renderOption={(props, option) => (
+						<li {...props} style={{ display: 'flex', alignItems: 'center', padding: '8px' }}>
+							<img
+								src={styleImageMap[option]} // Map the style to the image URL
+								alt={option}
+								style={{ width: '24px', height: '30px', objectFit: 'contain', marginRight: '10px' }}
+							/>
+							<span>{option}</span> {/* Optional: Display label alongside the image */}
+						</li>
+					)}
+					getOptionLabel={option => option}
 				/>
 			) : null}
 		</>

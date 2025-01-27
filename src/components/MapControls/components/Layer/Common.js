@@ -98,6 +98,15 @@ export const useStyles = makeStyles(() => ({
 	},
 }));
 
+export const styleImageMap = {
+	dots: '/img/dots.png',
+	'hatch-1x': '/img/1x.png',
+	'hatch-2x': '/img/2x.png',
+	'hatch-cross': '/img/cross.png',
+	dashed: '/img/dashed.png',
+	connected: '/img/connected.png',
+};
+
 export const WidthPicker = ({ width, setWidth, layerType }) => {
 	return (
 		<FormControl
@@ -288,13 +297,17 @@ export const useLayerStyle = layer => {
 			layerSettings.attributeBasedStyles = attributeBasedStyles;
 			layerSettings.selectedFillStyle = selectedFillStyle;
 
-			if (!selectedFillStyle) {layerSettings.fillStyle = fillStyle;}
+			if (!selectedFillStyle) {
+				layerSettings.fillStyle = fillStyle;
+			}
 
 			//Setting Line Style
 			layerSettings.attributeBasedLineStyles = attributeBasedLineStyles;
 			layerSettings.selectedLineStyle = selectedLineStyle;
 
-			if (!selectedLineStyle) {layerSettings.lineStyle = lineStyle;}
+			if (!selectedLineStyle) {
+				layerSettings.lineStyle = lineStyle;
+			}
 
 			if (
 				currentLayer &&

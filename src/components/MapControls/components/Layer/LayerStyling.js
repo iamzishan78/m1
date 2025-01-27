@@ -305,6 +305,7 @@ function LayerStyling() {
 									}
 								/>
 							</div>
+							<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
 						</Grid>
 					)}
 
@@ -323,6 +324,7 @@ function LayerStyling() {
 									}
 								/>
 							</div>
+							<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
 						</Grid>
 					)}
 
@@ -365,6 +367,7 @@ function LayerStyling() {
 										/>
 									</>
 								)}
+								<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
 							</Grid>
 
 							{/* dropdown for fill style selection */}
@@ -396,6 +399,7 @@ function LayerStyling() {
 										/>
 									</>
 								)}
+								<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
 							</Grid>
 
 							{strokeColor && (
@@ -437,35 +441,38 @@ function LayerStyling() {
 										</>
 									)}
 									{/* dropdown for line/stroke style selection */}
+									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
 
-									<Grid item xs={12}>
-										<div
-											style={{
-												display: 'flex',
-												justifyContent: 'space-between',
-											}}
-										>
-											<Typography variant="h6">Stroke Style</Typography>
-										</div>
-										{enableStrokeColor && (
-											<>
-												<AttrsAutocomplete
-													options={options}
-													selectedValue={selectedLineStyle}
-													setSelectedValue={setSelectedLineStyle}
-												/>
-												<AttrsFillStyleDropdown
-													dropDownOptions={['dots', 'dashed', 'connected']}
-													selectedValue={selectedLineStyle}
-													selectedLayer={selectedLayer}
-													fillStyle={lineStyle}
-													setFillStyle={setLineStyle}
-													attributeBasedStyles={attributeBasedLineStyles}
-													setAttributeBasedStyles={setAttributeBasedLineStyles}
-												/>
-											</>
-										)}
-									</Grid>
+									<div
+										style={{
+											display: 'flex',
+											justifyContent: 'space-between',
+										}}
+									>
+										<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
+											Stroke Style
+										</Typography>
+									</div>
+									{enableStrokeColor && (
+										<>
+											<AttrsAutocomplete
+												options={options}
+												selectedValue={selectedLineStyle}
+												setSelectedValue={setSelectedLineStyle}
+											/>
+											<AttrsFillStyleDropdown
+												dropDownOptions={['dots', 'dashed', 'connected']}
+												selectedValue={selectedLineStyle}
+												selectedLayer={selectedLayer}
+												fillStyle={lineStyle}
+												setFillStyle={setLineStyle}
+												attributeBasedStyles={attributeBasedLineStyles}
+												setAttributeBasedStyles={setAttributeBasedLineStyles}
+											/>
+										</>
+									)}
+
+									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
 									<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
 										Stroke Width
 									</Typography>
