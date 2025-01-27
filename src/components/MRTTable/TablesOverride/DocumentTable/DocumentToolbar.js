@@ -1,20 +1,32 @@
-import React, { memo } from 'react';
+import React from 'react';
 
 import { Button, ButtonGroup } from '@material-ui/core';
 import PostAddIcon from '@material-ui/icons/PostAdd';
 
+import { ToggleButton } from '@mui/material';
+
+import PropTypes from 'prop-types';
+
 import MetaFieldList from 'components/MRTTable/Common/MetaData/MetaFieldList';
-import MetaField from 'utils/MetaField';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
+import MetaField from 'utils/MetaField';
+
 import DocumentRightDialogs from './RightDialogs';
 
-function DocumentToolBar({ table, tableKey }) {
+function DocumentToolBar({ tableKey }) {
 	const Controller = tableController(tableKey);
-	const tableState = Controller.useState(['metaFieldList', 'showFieldModal', 'fetchMetaData', 'TableSchema']);
+	const tableState = Controller.useState([
+		'metaFieldList',
+		'showFieldModal',
+		'fetchMetaData',
+		'TableSchema',
+		'advanceSearch',
+		'globalFilter',
+	]);
 	const tableStateValues = tableState.stateValues;
 
 	const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
@@ -64,6 +76,33 @@ function DocumentToolBar({ table, tableKey }) {
 						Add Document
 					</Button>
 				</ButtonGroup>
+				{tableStateValues?.globalFilter && (
+					<ToggleButton
+						style={{
+							padding: '0',
+							height: 'fit-content',
+							margin: 'auto 0',
+							color: tableStateValues.advanceSearch?.docSearch ? '#fff' : '#263451',
+							backgroundColor: tableStateValues.advanceSearch?.docSearch ? '#263451' : '#fff',
+							border: `1px solid ${tableStateValues.advanceSearch?.docSearch ? '#fff' : '#263451'}`,
+						}}
+						selected={tableStateValues.advanceSearch?.docSearch}
+						onChange={() =>
+							tableController(tableKey).updateState({
+								advanceSearch: { docSearch: !tableStateValues.advanceSearch?.docSearch },
+							})
+						}
+					>
+						<small
+							style={{
+								padding: '5px',
+								fontWeight: 'normal',
+							}}
+						>
+							{'Doc Search'}
+						</small>
+					</ToggleButton>
+				)}
 
 				{/* Custom metat data dialog */}
 				{!!tableStateValues?.metaFieldList && <MetaFieldList tableKey={tableKey} />}
@@ -80,4 +119,8 @@ function DocumentToolBar({ table, tableKey }) {
 	);
 }
 
-export default memo(DocumentToolBar);
+DocumentToolBar.propTypes = {
+	tableKey: PropTypes.string.isRequired,
+};
+
+export default DocumentToolBar;
