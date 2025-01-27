@@ -4,8 +4,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
     iconTooltip: {
-        fontSize: '15px',
-        padding: '10px',
+        fontSize: '15px !important',
+        padding: '10px !important',
     },
 }))
 const NameWithTooltip = ({ title, style, index, height }) => {
