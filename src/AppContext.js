@@ -15,7 +15,7 @@ import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConf
 import { MSALB2CObj, B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
 import { heatLayers, baseMapLayers } from './LayerConfig';
 
-const AppContext = createContext([{}, () => {}]);
+const AppContext = createContext([{}, () => { }]);
 
 const AppProvider = props => {
 	const [stateApp, setStateApp] = useState({
@@ -134,7 +134,6 @@ const AppProvider = props => {
 		viewDoc: null,
 		pdfView: null,
 		selectedAgreement: null,
-		selectedMeta: null,
 		selectedView: null,
 		filtersData: [],
 		shapeEditMode: '',

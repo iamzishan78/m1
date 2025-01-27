@@ -458,12 +458,7 @@ export default function DetailInfo(props) {
 																aria-label="Edit Meta"
 																style={{ padding: '6px' }}
 																onClick={() => {
-																	globalStateController.updateState({ showFieldModal: true });
-																	window.setStateApp(stateApp => ({
-																		...stateApp,
-																		selectedMeta: row?.rawMeta,
-																		showFieldModal: true,
-																	}));
+																	globalStateController.updateState({ showFieldModal: true, selectedMeta: row?.rawMeta });
 																}}
 															>
 																<EditIcon />
@@ -524,12 +519,7 @@ export default function DetailInfo(props) {
 																	aria-label="Edit Meta"
 																	style={{ padding: '6px' }}
 																	onClick={() => {
-																		globalStateController.updateState({ showFieldModal: true });
-																		window.setStateApp(stateApp => ({
-																			...stateApp,
-																			selectedMeta: row?.rawMeta,
-																			showFieldModal: true,
-																		}));
+																		globalStateController.updateState({ showFieldModal: true, selectedMeta: row?.rawMeta });
 																	}}
 																>
 																	<EditIcon />

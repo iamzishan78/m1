@@ -12,16 +12,18 @@ import moment from 'moment';
 import CommonFieldList from 'components/Shared/Forms/Fields/CommonFieldList';
 import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
 import vf_number from 'components/Shared/valueformatters/vf_number';
-import MetaField from 'utils/MetaField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import { AppContext } from 'AppContext';
+import { globalStateController } from 'hookstate/globalStateController';
+
+import MetaField from 'utils/MetaField';
 
 import { headerStyles } from './styles';
 
+
 const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
-	const [stateApp, setStateApp] = useContext(AppContext);
+	const { globalStateValues } = globalStateController.useState(['showFieldModal', 'user'], 'globalStateValues');
 	const classes = headerStyles();
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
@@ -29,11 +31,11 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
 	useEffect(() => {
 		getMetaData({
 			variables: {
-				user: stateApp.user?.mongoId,
+				user: globalStateValues.user?.mongoId,
 				category: 'Campaign Name',
 			},
 		});
-	}, [getMetaData, stateApp.user?.mongoId]);
+	}, [getMetaData, globalStateValues.user?.mongoId]);
 
 	const { control } = useForm();
 
@@ -184,7 +186,7 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
 			</Grid>
 
 			<Grid>
-				{stateApp.showFieldModal && (
+				{globalStateValues.showFieldModal && (
 					<MetaField
 						customDataPrefix="custom_data"
 						customDataPostfix=".keyword"
@@ -192,14 +194,14 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
 						category="Campaign Name"
 					/>
 				)}
-				{stateApp.user?.rolePrivileges !== 'READ_ONLY' && (
+				{globalStateValues.user?.rolePrivileges !== 'READ_ONLY' && (
 					<Grid item>
 						<Button
 							variant="contained"
 							color="primary"
 							className={classes.addDataButton}
 							startIcon={<AddIcon />}
-							onClick={() => setStateApp(stateApp => ({ ...stateApp, showFieldModal: true }))}
+							onClick={() => globalStateController.updateState({ showFieldModal: true })}
 						>
 							Add Custom Data
 						</Button>

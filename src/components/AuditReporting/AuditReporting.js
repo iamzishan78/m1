@@ -16,6 +16,7 @@ import { tableController } from 'hookstate/tableController';
 import { getDateFilters } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
+import { getActivityFilters } from 'components/Activities/components/ActivitiesDashboard';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -108,7 +109,7 @@ const ActivitiesDashboard = () => {
 	}, [stateApp.landAnalyticsSearchQuery]);
 
 	useEffect(() => {
-		tableController(tableKey).setFilters(getFilters(appliedFilters));
+		tableController(tableKey).setFilters(getActivityFilters(appliedFilters, tableKey, esIndex));
 	}, [appliedFilters]);
 
 	return (
@@ -116,6 +117,7 @@ const ActivitiesDashboard = () => {
 			{
 				<ActivitiesDashboardFilter
 					esIndex={esIndex}
+					tableKey={tableKey}
 					searchFields={searchFields}
 					setFilterToggle={setFilterToggle}
 					filterToggle={filterToggle}

@@ -11,6 +11,8 @@ import CustomTextField from 'components/Shared/components/Fields/CustomTextField
 import DateField from 'components/Shared/components/Fields/DateField';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 
+import { globalStateController } from 'hookstate/globalStateController';
+
 const useStyles = makeStyles(() => ({
 	text: {
 		'& div': {
@@ -19,7 +21,7 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) => {
+const CommonFieldList = ({ data, fields, control, offClickHandler = () => { } }) => {
 	const classes = useStyles();
 
 	const [isHovered, setIsHovered] = useState(false);
@@ -32,11 +34,10 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 		const fieldKey = (field.key || field.esKey).replaceAll('.keyword', '');
 
 		const handleEdit = () => {
-			window.setStateApp(stateApp => ({
-				...stateApp,
-				selectedMeta: field,
+			globalStateController.updateState?.({
 				showFieldModal: true,
-			}));
+				selectedMeta: field,
+			});
 		};
 
 		const isMetaField = field._id && field.category;
@@ -78,143 +79,143 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 							field.type === 'dropdown' ||
 							field.type === 'multiselect' ||
 							field.type === 'select') && (
-							<Controller
-								key={fieldKey}
-								control={control}
-								name={fieldKey}
-								render={params => {
-									return (
-										<Fragment>
-											{field.type === 'text' && (
-												<CustomTextField
-													{...params}
-													id={`field-${fieldKey}`}
-													index={index}
-													fieldKey={fieldKey}
-													field={field}
-													defaultValue={get(data, `${fieldKey}`, '')}
-													showLinkPopup={true}
-													offClickHandler={(key, value) => {
-														offClickHandler(key, value);
-													}}
-													InputProps={{
-														...field.InputProps,
-														endAdornment,
-													}}
-													props={{
-														className: classes.text,
-													}}
-												/>
-											)}
-											{field.type === 'number' && (
-												<NumberField
-													{...params}
-													id={`field-${fieldKey}`}
-													index={index}
-													fieldKey={fieldKey}
-													field={field}
-													defaultValue={get(data, `${fieldKey}`, '')}
-													offClickHandler={(key, value) => {
-														offClickHandler(key, value);
-													}}
-													InputProps={{
-														...field.InputProps,
-														endAdornment,
-													}}
-													props={{
-														className: classes.text,
-													}}
-												/>
-											)}
-											{field.type === 'date' && (
-												<DateField
-													{...params}
-													id={`field-${fieldKey}`}
-													index={index}
-													field={field}
-													fieldKey={fieldKey}
-													defaultValue={get(data, `${fieldKey}`, '')}
-													offClickHandler={(key, value) => {
-														offClickHandler(key, value);
-													}}
-													InputProps={{
-														...field.InputProps,
-														endAdornment,
-													}}
-													props={{
-														className: classes.text,
-													}}
-												/>
-											)}
-											{field.type === 'dropdown' && (
-												<div
-													style={{
-														margin: '8px 0px 4px',
-													}}
-												>
-													<ReactSelectField
-														id={`field-${field.title}`}
-														isSingleSelect={true}
-														fullWidth
-														variant="outlined"
-														dropdownOptions={field.dropdownOptions}
-														column={field}
-														onCustomKeyChange={value => {
-															offClickHandler(fieldKey, value, field.isCustom);
+								<Controller
+									key={fieldKey}
+									control={control}
+									name={fieldKey}
+									render={params => {
+										return (
+											<Fragment>
+												{field.type === 'text' && (
+													<CustomTextField
+														{...params}
+														id={`field-${fieldKey}`}
+														index={index}
+														fieldKey={fieldKey}
+														field={field}
+														defaultValue={get(data, `${fieldKey}`, '')}
+														showLinkPopup={true}
+														offClickHandler={(key, value) => {
+															offClickHandler(key, value);
 														}}
-														disabled={field.disabled}
-														value={get(data, `${fieldKey}`, '')}
-														minHeight=""
+														InputProps={{
+															...field.InputProps,
+															endAdornment,
+														}}
+														props={{
+															className: classes.text,
+														}}
 													/>
-												</div>
-											)}
-											{field.type === 'select' && (
-												<Select
-													{...params}
-													id={`field-${fieldKey}`}
-													variant="outlined"
-													fullWidth
-													InputLabelProps={{
-														shrink: true,
-													}}
-													style={{ margin: '8px 0px 4px' }}
-													onChange={event => offClickHandler(fieldKey, event.target.value, field.isCustom)}
-													disabled={field.disabled}
-													value={get(data, `${fieldKey}`, '')}
-												>
-													{field.dropdownOptions.map(option => (
-														<MenuItem value={option.value ? option.value : option}>
-															{option.label ? option.label : option}
-														</MenuItem>
-													))}
-												</Select>
-											)}
-											{field.type === 'multiselect' && (
-												<div
-													style={{
-														margin: '8px 0px 4px',
-													}}
-												>
-													<ReactSelectField
+												)}
+												{field.type === 'number' && (
+													<NumberField
+														{...params}
+														id={`field-${fieldKey}`}
+														index={index}
+														fieldKey={fieldKey}
+														field={field}
+														defaultValue={get(data, `${fieldKey}`, '')}
+														offClickHandler={(key, value) => {
+															offClickHandler(key, value);
+														}}
+														InputProps={{
+															...field.InputProps,
+															endAdornment,
+														}}
+														props={{
+															className: classes.text,
+														}}
+													/>
+												)}
+												{field.type === 'date' && (
+													<DateField
+														{...params}
+														id={`field-${fieldKey}`}
+														index={index}
+														field={field}
+														fieldKey={fieldKey}
+														defaultValue={get(data, `${fieldKey}`, '')}
+														offClickHandler={(key, value) => {
+															offClickHandler(key, value);
+														}}
+														InputProps={{
+															...field.InputProps,
+															endAdornment,
+														}}
+														props={{
+															className: classes.text,
+														}}
+													/>
+												)}
+												{field.type === 'dropdown' && (
+													<div
+														style={{
+															margin: '8px 0px 4px',
+														}}
+													>
+														<ReactSelectField
+															id={`field-${field.title}`}
+															isSingleSelect={true}
+															fullWidth
+															variant="outlined"
+															dropdownOptions={field.dropdownOptions}
+															column={field}
+															onCustomKeyChange={value => {
+																offClickHandler(fieldKey, value, field.isCustom);
+															}}
+															disabled={field.disabled}
+															value={get(data, `${fieldKey}`, '')}
+															minHeight=""
+														/>
+													</div>
+												)}
+												{field.type === 'select' && (
+													<Select
+														{...params}
 														id={`field-${fieldKey}`}
 														variant="outlined"
-														margin="dense"
 														fullWidth
-														dropdownOptions={field.dropdownOptions}
-														column={field}
-														value={get(data, `${fieldKey}`) ?? []}
-														onCustomKeyChange={value => {
-															offClickHandler(fieldKey, value, field.isCustom);
+														InputLabelProps={{
+															shrink: true,
 														}}
-														minHeight=""
-													/>
-												</div>
-											)}
-										</Fragment>
-									);
-								}}
-							/>
-						)}
+														style={{ margin: '8px 0px 4px' }}
+														onChange={event => offClickHandler(fieldKey, event.target.value, field.isCustom)}
+														disabled={field.disabled}
+														value={get(data, `${fieldKey}`, '')}
+													>
+														{field.dropdownOptions.map(option => (
+															<MenuItem value={option.value ? option.value : option}>
+																{option.label ? option.label : option}
+															</MenuItem>
+														))}
+													</Select>
+												)}
+												{field.type === 'multiselect' && (
+													<div
+														style={{
+															margin: '8px 0px 4px',
+														}}
+													>
+														<ReactSelectField
+															id={`field-${fieldKey}`}
+															variant="outlined"
+															margin="dense"
+															fullWidth
+															dropdownOptions={field.dropdownOptions}
+															column={field}
+															value={get(data, `${fieldKey}`) ?? []}
+															onCustomKeyChange={value => {
+																offClickHandler(fieldKey, value, field.isCustom);
+															}}
+															minHeight=""
+														/>
+													</div>
+												)}
+											</Fragment>
+										);
+									}}
+								/>
+							)}
 					</Fragment>
 				</Grid>
 			</Grid>
