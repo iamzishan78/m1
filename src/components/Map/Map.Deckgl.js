@@ -1213,7 +1213,6 @@ function Map({
 			const mapRef = window.mapRef;
 	
 			if (mapRef) {
-				debugger
 				// Update for values
 				const setCoordinateAtUrl = () => {
 					const url = new URL(window.location);

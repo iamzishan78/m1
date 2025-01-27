@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Flipped } from 'react-flip-toolkit';
 import { useSelector } from 'react-redux';
 import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
 
 import { Box, Grid, ListItemIcon, FormControlLabel, Switch } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 import { DragIndicator } from '@material-ui/icons';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -73,6 +74,10 @@ const useStyles = makeStyles(theme => ({
 		paddingLeft: '10px',
 		justifyContent: 'center',
 		alignItems: 'center',
+		iconTooltip: {
+			fontSize: '15px',
+			padding: '10px',
+		},
 	}),
 	subContainer: props => ({
 		marginLeft: theme.spacing(props.depth * TWO),
@@ -93,6 +98,9 @@ const LayerItem = React.memo(props => {
 	const {
 		stateValues: { emptyGroups },
 	} = globalStateController.useState(['emptyGroups']);
+
+	const textRef = useRef(null);
+	const [isTruncated, setIsTruncated] = useState(false);
 
 	const [{ isDragging }, drag, preview] = useDrag({
 		collect: monitor => {
@@ -150,6 +158,25 @@ const LayerItem = React.memo(props => {
 		);
 	});
 
+	// Check if the text is truncated and calculate the ellipsis position
+	const checkTruncation = () => {
+		if (textRef.current) {
+			const { offsetWidth, scrollWidth } = textRef.current;
+
+			if (scrollWidth > offsetWidth) {
+				setIsTruncated(true);
+			} else {
+				setIsTruncated(false);
+			}
+		}
+	};
+
+	useEffect(() => {
+		checkTruncation();
+		window.addEventListener("resize", checkTruncation); // Recalculate on resize
+		return () => window.removeEventListener("resize", checkTruncation);
+	}, [data, hoverItemIndex]);
+
 	return (
 		<Flipped flipId={id}>
 			<div
@@ -195,9 +222,26 @@ const LayerItem = React.memo(props => {
 									)}
 								</Box>
 
-								<Typography id={id} color="secondary" noWrap>
+								<Typography id={id} color="secondary" noWrap ref={textRef} >
 									{name === 'Wells' ? 'Platform Wells' : name}
 								</Typography>
+								{isTruncated && (
+									<Tooltip classes={{ tooltip: classes.iconTooltip }} arrow title={
+										(name === 'Wells') ? 'Platform Wells' : name
+									}>
+										<Box
+											sx={{
+												position: "relative",
+												top: "0px",
+												right: "12px",
+												width: "12px", // Approximate ellipsis width
+												height: "15px",
+												pointerEvents: "auto",
+												cursor: "pointer",
+											}}
+										/>
+									</Tooltip>
+								)}
 								<Box paddingLeft={1} display="flex">
 									{type === 'group' && (
 										<ListItemIcon onClick={handleClick}>
