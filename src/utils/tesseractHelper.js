@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import Tesseract from 'tesseract.js';
+// import Tesseract from 'tesseract.js';
 
 const readFile = async file => {
 	return new Promise(resolve => {
@@ -26,23 +26,24 @@ const convertToImage = async pdf => {
 	return images;
 };
 
+// eslint-disable-next-line no-unused-vars
 const convertToText = async (images, language, setFileContent) => {
-	const worker = await Tesseract.createWorker();
-	await worker.loadLanguage(language);
-	await worker.initialize(language);
+	// const worker = await Tesseract.createWorker();
+	// await worker.loadLanguage(language);
+	// await worker.initialize(language);
 
 	const texts = [];
-	for (const image of images) {
-		const {
-			data: { text },
-		} = await worker.recognize(image);
-		texts.push(text);
+	// for (const image of images) {
+	// 	const {
+	// 		data: { text },
+	// 	} = await worker.recognize(image);
+	// 	texts.push(text);
 
-		console.log('🚀 ~ convertToText ~ texts:', texts);
-		setFileContent?.([...texts]);
-	}
+	// 	setFileContent?.([...texts]);
+	// }
 
-	await worker.terminate();
+	// await worker.terminate();
+
 	return texts;
 };
 
