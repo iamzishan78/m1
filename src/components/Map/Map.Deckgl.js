@@ -136,7 +136,7 @@ function Map({
 		'popupStateValues'
 	);
 	const { mapStateValues } = mapStateController.useState(
-		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut', 'isDefaultViewAllowed', 'reintializeMap'],
+		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut', 'isDefaultViewAllowed', 'reintializeMap', 'isMapRefreshing'],
 		'mapStateValues'
 	);
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
@@ -729,6 +729,7 @@ function Map({
 			if (index === -1) {
 				index = 0;
 			}
+
 			const newMap = new mapboxgl.Map({
 				container: `${id}`,
 				style: `mapbox://styles/m1neral/${mapStyles[index]?.id}`,
@@ -879,6 +880,14 @@ function Map({
 		}
 	}, [map, mapStyles, mapStateValues.mapVars.styleId]);
 
+	useEffect(() => {
+		if (mapStateValues.isMapRefreshing) {
+			  // Reset bounds for all layers
+			layerController.resetBounds('all');
+			// Update the map state to indicate that refreshing is complete
+			mapStateController.updateState({ isMapRefreshing : false });
+		}
+	}, [mapStateValues.isMapRefreshing])
 	// Use effect for removing shape filter
 	useEffect(() => {
 		if (!loading) {
