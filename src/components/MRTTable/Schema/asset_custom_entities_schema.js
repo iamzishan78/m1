@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
+
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
 import Chips from '../Common/TableCells/Chips';
 import AssetCustomEntitiesToolbar from '../TablesOverride/AssetCustomEntities/Toolbars/AssetCustomEntities';
 

@@ -19,6 +19,7 @@ import {
 	drawBoundary,
 	getDrawAdustedShape,
 } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { removeSpaces } from 'components/MRTTable/utils/helper';
 import { DRAWING_MODES } from 'components/Navigation/NavigationContext';
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { calculateLandArea, shapeTypeLayers } from 'components/Shared/functions/shapeLayer';
@@ -28,6 +29,7 @@ import { hookStateController } from 'hookstate/hookStateController';
 import { showErrorMessage } from 'actions';
 import { layerRefs } from 'hookstate';
 
+import { detailCardController } from './detailCardController';
 import { globalStateController } from './globalStateController';
 import { drawInitialState, drawState } from './initialStates';
 import { jobController } from './jobStateController';
@@ -36,8 +38,6 @@ import { layerController } from './layerStateController';
 import { mapControlsController } from './mapControlsController';
 import { navController } from './navStateController';
 import { popupController } from './popupStateController';
-import { removeSpaces } from 'components/MRTTable/utils/helper';
-import { detailCardController } from './detailCardController';
 
 const drawStateControllerHandler = state => {
 	/* --------------------------- DrawShapes Actions --------------------------- */
@@ -471,10 +471,12 @@ const drawStateControllerHandler = state => {
 					shapeEdit: false,
 				});
 			}
-		} catch (err) {}
+		} catch {
+			//
+		}
 	};
 
-	const actionShowWellsAndOwners = dispatch => {
+	const actionShowWellsAndOwners = () => {
 		if (isLine()) {
 			return;
 		}
@@ -557,7 +559,7 @@ const drawStateControllerHandler = state => {
 			try {
 				var intersection = turf.intersect(abstractShape, feature);
 				return !!intersection;
-			} catch (err) {
+			} catch {
 				return false;
 			}
 		});
@@ -778,7 +780,9 @@ const drawStateControllerHandler = state => {
 		const user = globalStateController.getValue('user');
 		const { currentFeature } = drawController.getValues(['currentFeature']);
 
-		if (!user?._id) return;
+		if (!user?._id) {
+			return;
+		}
 
 		const abstractShape = getAbstractGeoSource(abstractData, currentFeature);
 		let shapeSubtitle = '';
@@ -938,7 +942,9 @@ const drawStateControllerHandler = state => {
 			];
 
 			let newShape = {};
-			[drawFeature] = window.drawRef?.getAll().features;
+			if (window.drawRef) {
+				[drawFeature] = window.drawRef.getAll().features;
+			}
 			if (drawFeature) {
 				if (currentFeature) {
 					currentFeature.geometry = drawFeature.geometry;
@@ -950,7 +956,9 @@ const drawStateControllerHandler = state => {
 			}
 		}
 		if (isShapeResizeMode && shapeEditMode === 'resize') {
-			[drawFeature] = window.drawRef?.getAll().features;
+			if (window.drawRef) {
+				[drawFeature] = window.drawRef.getAll().features;
+			}
 			if (currentFeature) {
 				currentFeature.geometry = drawFeature.geometry;
 			}

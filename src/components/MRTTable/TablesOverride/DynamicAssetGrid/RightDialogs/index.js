@@ -1,9 +1,14 @@
 import React, { memo } from 'react';
-import { tableGlobalController } from 'hookstate/tableController';
-import CreateUpdateRecordInRunTimeModal from './CreateUpdateRecordInRunTimeModal';
-import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
+
 import { useMutation } from '@apollo/client';
+
 import Loader from 'components/Loaders';
+
+import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
+import CreateUpdateRecordInRunTimeModal from './CreateUpdateRecordInRunTimeModal';
 
 function DynamicAssetTableDialogs() {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
@@ -27,9 +32,14 @@ function DynamicAssetTableDialogs() {
 			res => {
 				if (res?.data?.addRecordInRunTimeModel) {
 					const { success, message } = res.data.addRecordInRunTimeModel;
-					if (success) Loader.successToast('addAndUpdate', message);
-					else Loader.errorToast('addAndUpdate', message);
-				} else Loader.errorToast('addAndUpdate', 'Failed to add row (s)');
+					if (success) {
+						Loader.successToast('addAndUpdate', message);
+					} else {
+						Loader.errorToast('addAndUpdate', message);
+					}
+				} else {
+					Loader.errorToast('addAndUpdate', 'Failed to add row (s)');
+				}
 				tableGlobalController.refetch();
 			},
 			() => {

@@ -1,6 +1,7 @@
 import React, { memo, useState } from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from '@mui/material';
+
 import PropTypes from 'prop-types';
 
 const CreateUpdateRecordInRunTimeModal = ({ open, columns, onClose, onSubmit, tableName }) => {

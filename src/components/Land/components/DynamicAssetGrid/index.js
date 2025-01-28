@@ -1,7 +1,10 @@
 import React, { useMemo, useEffect, useContext } from 'react';
-import MRTTable from 'components/MRTTable';
 import { useSelector } from 'react-redux';
+
+import MRTTable from 'components/MRTTable';
+
 import { tableController, tableGlobalController } from 'hookstate/tableController';
+
 import { AppContext } from 'AppContext';
 
 function DynamicAssetGrid() {

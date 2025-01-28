@@ -1,14 +1,14 @@
 import React, { useMemo, memo, useCallback } from 'react';
 
+import AssetAssociationToolbar from 'components/MRTTable/TablesOverride/AssetCustomEntities/Toolbars/AssetAssoication';
+import DetailCardBottom from 'components/Shared/components/common/DetailCard/DetailCardBottom';
+import ContactInformationIcon from 'components/Shared/svgIcons/ContactPhone';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 
 import { detailCardController } from 'hookstate/detailCardController';
 import { globalStateController } from 'hookstate/globalStateController';
 
 import DetailInfo from './DetailInfoSection';
-import ContactInformationIcon from 'components/Shared/svgIcons/ContactPhone';
-import DetailCardBottom from 'components/Shared/components/common/DetailCard/DetailCardBottom';
-import AssetAssociationToolbar from 'components/MRTTable/TablesOverride/AssetCustomEntities/Toolbars/AssetAssoication';
 
 const BottomContainer = () => {
 	const {

@@ -4,12 +4,13 @@ import Avatar from 'react-avatar';
 import { Badge } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
+import FieldContent from 'components/ContactDetailCard/components/FieldContent';
+import Tags from 'components/Shared/Tagger';
+
 import { detailCardController } from 'hookstate/detailCardController';
 import { globalStateController } from 'hookstate/globalStateController';
 
 import useStyles from './useStyles';
-import Tags from 'components/Shared/Tagger';
-import FieldContent from 'components/ContactDetailCard/components/FieldContent';
 
 const StyleBadge = withStyles({
 	badge: {
@@ -35,10 +36,16 @@ const Header = () => {
 
 	const getControlColumnData = () => {
 		const controlColumnKey = currentAsset?.modelKeys?.find(key => !!key.isControlColumn)?.mappingKey;
-		if (controlColumnKey && currentAssetRecord) return currentAssetRecord[controlColumnKey];
+		if (controlColumnKey && currentAssetRecord) {
+			return currentAssetRecord[controlColumnKey];
+		}
+
+		return null;
 	};
 
-	if (!currentAssetRecord) return null;
+	if (!currentAssetRecord) {
+		return null;
+	}
 
 	return (
 		<div style={{ display: 'flex' }}>

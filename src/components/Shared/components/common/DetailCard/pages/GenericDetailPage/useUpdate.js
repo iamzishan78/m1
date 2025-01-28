@@ -1,8 +1,11 @@
 import { useEffect } from 'react';
+
 import { useMutation } from '@apollo/client';
+
+import { UPDATE_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
+
 import { detailCardController } from 'hookstate/detailCardController';
 import { globalStateController } from 'hookstate/globalStateController';
-import { UPDATE_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 
 const useUpdate = () => {
 	const {

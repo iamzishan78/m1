@@ -1,6 +1,9 @@
 import React, { useMemo } from 'react';
-import MRTTable from 'components/MRTTable';
+
 import { isEmpty } from 'lodash';
+
+import MRTTable from 'components/MRTTable';
+
 import { tableGlobalController } from 'hookstate/tableController';
 
 export default function AssetManagement() {
@@ -9,7 +12,7 @@ export default function AssetManagement() {
 
 	const CustomEntitiesOverrideMeta = useMemo(
 		() => ({
-			tableHeading: `Entities`,
+			tableHeading: 'Entities',
 			onClickedRow: selectedRow => {
 				tableGlobalController.updateState({
 					selectedAsset: selectedRow,

@@ -1,16 +1,17 @@
 import React, { useState, memo } from 'react';
 
-import useStyles from './useStyles';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
-import { popupController } from 'hookstate/popupStateController';
+import { removeSpaces } from 'components/MRTTable/utils/helper';
+import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
+import * as Pages from 'components/Shared/components/common/DetailCard/pages';
+
 import { detailCardController } from 'hookstate/detailCardController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { popupController } from 'hookstate/popupStateController';
 
-import * as Pages from 'components/Shared/components/common/DetailCard/pages';
-import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
-import { removeSpaces } from 'components/MRTTable/utils/helper';
+import useStyles from './useStyles';
 
 const MainGridRightContainer = () => {
 	const classes = useStyles();
@@ -38,9 +39,11 @@ const MainGridRightContainer = () => {
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	const handleClick = event => setAnchorEl(event.currentTarget);
-	const handleClose = event => setAnchorEl(null);
+	const handleClose = () => setAnchorEl(null);
 
-	if (shrinkRightColumn) return null;
+	if (shrinkRightColumn) {
+		return null;
+	}
 
 	return (
 		<>
@@ -87,7 +90,7 @@ const MainGridRightContainer = () => {
 			>
 				<MenuItem
 					className={classes.userMenuItem}
-					onClick={e => {
+					onClick={() => {
 						handleClose();
 						handleExpandClick('deleteConfirmation');
 					}}

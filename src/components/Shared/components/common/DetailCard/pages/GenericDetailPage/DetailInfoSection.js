@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 
+import { Grid, FormControlLabel, FormGroup, Switch, Box } from '@material-ui/core';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Grid, FormControlLabel, FormGroup, Switch, Box } from '@material-ui/core';
-
-import { getAssetFields, getNonEmptyFields } from '../../helpers';
 
 import { detailCardController } from 'hookstate/detailCardController';
 import { globalStateController } from 'hookstate/globalStateController';
 
 import CommonSummaryFieldsComponent from '../../CommonSummaryFields';
+import { getAssetFields, getNonEmptyFields } from '../../helpers';
 
 const AntSwitch = withStyles(theme => ({
 	root: {
@@ -242,6 +241,7 @@ export default function DetailInfo() {
 					{tabs.map(tab => {
 						return (
 							<span
+								key={tab}
 								className={`${classes.tab} ${selectedTab === tab ? classes.selectedTab : ''}`}
 								onClick={() => setSelectedTab(tab)}
 							>

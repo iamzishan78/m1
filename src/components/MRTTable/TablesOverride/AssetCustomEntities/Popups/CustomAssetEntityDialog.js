@@ -1,16 +1,23 @@
 import React, { useEffect } from 'react';
-import CloseIcon from '@material-ui/icons/Close';
-import { Grid, Dialog, IconButton, Button, TextField, MenuItem } from '@material-ui/core';
-import Loader from 'components/Loaders';
-import { useMutation } from '@apollo/client';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-import { tableGlobalController } from 'hookstate/tableController';
-import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetInfo';
-import DynamicForm from '../Forms/DynamicForm';
-import { entityCreationOptions } from 'components/MRTTable/utils/data';
-import { useStyles } from './styles';
 import { useDispatch } from 'react-redux';
+
+import { Grid, Dialog, IconButton, Button, TextField, MenuItem } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+
+import { useMutation } from '@apollo/client';
+
+import Loader from 'components/Loaders';
+import { entityCreationOptions } from 'components/MRTTable/utils/data';
+
+import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetInfo';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
 import { showInfoMessage } from 'actions';
+
+import { useStyles } from './styles';
+import DynamicForm from '../Forms/DynamicForm';
 
 function CustomAssetEntityDialog() {
 	const classes = useStyles();
@@ -97,8 +104,12 @@ function CustomAssetEntityDialog() {
 				const { success, message } = res.data.upsertCustomAssetInfo;
 				if (success) {
 					Loader.successToast(toastType, message);
-				} else Loader.errorToast(toastType, message);
-			} else Loader.errorToast(toastType, `Failed to ${capitalizedToastType} Entity`);
+				} else {
+					Loader.errorToast(toastType, message);
+				}
+			} else {
+				Loader.errorToast(toastType, `Failed to ${capitalizedToastType} Entity`);
+			}
 		});
 	};
 
@@ -129,16 +140,16 @@ function CustomAssetEntityDialog() {
 										<Controller
 											control={control}
 											name="table_name"
-											render={props => (
+											render={field => (
 												<TextField
 													size="small"
 													type="text"
 													variant="outlined"
-													value={props.value}
-													inputRef={props.ref}
+													value={field.value}
+													inputRef={field.ref}
 													onWheel={e => e.target.blur()}
 													onChange={e => {
-														props.onChange(e.target.value);
+														field.onChange(e.target.value);
 													}}
 													label="Table Name"
 													placeholder="Table Name"
@@ -152,18 +163,18 @@ function CustomAssetEntityDialog() {
 									<Grid item xs={6}>
 										<Controller
 											control={control}
-											name={`creation_place`}
-											render={props => (
+											name={'creation_place'}
+											render={field => (
 												<TextField
 													select
 													size="small"
 													type="text"
 													variant="outlined"
-													value={props.value}
-													inputRef={props.ref}
+													value={field.value}
+													inputRef={field.ref}
 													onWheel={e => e.target.blur()}
 													onChange={e => {
-														props.onChange(e.target.value);
+														field.onChange(e.target.value);
 													}}
 													label="Creationn Place"
 													placeholder="creation place"
