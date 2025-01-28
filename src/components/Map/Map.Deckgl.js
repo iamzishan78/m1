@@ -11,7 +11,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import * as turf from '@turf/turf';
 import gjv from 'geojson-validation';
-import _ from 'lodash';
+import _, { debounce } from 'lodash';
 import mapboxgl from 'mapbox-gl';
 import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
@@ -861,9 +861,9 @@ function Map({
 				) {
 					return; // Return early if any required parameter is missing
 				}
-				const lng = searchParams?.get("lng")
-				const lat = searchParams?.get("lat")
-				const zoom = searchParams?.get("zoom")
+				const lng = searchParams?.get('lng')
+				const lat = searchParams?.get('lat')
+				const zoom = searchParams?.get('zoom')
 				newMap.jumpTo({
 					center: {
 						lng,
@@ -1209,37 +1209,37 @@ function Map({
 		}
 	}, [mapStateValues.toggle3d]);
 
-		useEffect(() => {
-			const mapRef = window.mapRef;
-	
-			if (mapRef) {
-				// Update for values
-				const setCoordinateAtUrl = () => {
-					const url = new URL(window.location);
-	
-					// Create an object to hold all parameters
-					const params = {
-						lat: mapRef.getCenter()?.lat,
-						lng: mapRef.getCenter()?.lng,
-						zoom: mapRef.getZoom()
-					};
-	
-					// Iterate over the object and set all parameters at once
-					Object.entries(params).forEach(([key, value]) => {
-						url.searchParams.set(key, value);
-					});
-	
-					// Update the browser's URL
-					window.history.pushState({}, '', url);
+	useEffect(() => {
+		const mapRef = window.mapRef;
+
+		if (mapRef) {
+			// Update for values
+			const setCoordinateAtUrl = debounce(() => {
+				const url = new URL(window.location);
+
+				// Create an object to hold all parameters
+				const params = {
+					lat: mapRef.getCenter()?.lat,
+					lng: mapRef.getCenter()?.lng,
+					zoom: mapRef.getZoom()
 				};
-	
-				// Listen to the map events
-				mapRef.on('move', setCoordinateAtUrl);
-				mapRef.on('zoom', setCoordinateAtUrl);
-				mapRef.on('rotate', setCoordinateAtUrl);
-				setCoordinateAtUrl();
-			}
-		}, [globalState.mapReady]);
+
+				// Iterate over the object and set all parameters at once
+				Object.entries(params).forEach(([key, value]) => {
+					url.searchParams.set(key, value);
+				});
+
+				// Update the browser's URL
+				window.history.replaceState({}, '', url);
+			}, 500)
+
+			// Listen to the map events
+			mapRef.on('move', setCoordinateAtUrl);
+			mapRef.on('zoom', setCoordinateAtUrl);
+			mapRef.on('rotate', setCoordinateAtUrl);
+			setCoordinateAtUrl();
+		}
+	}, [globalState.mapReady]);
 
 	useEffect(() => {
 		// Map will be reset if we move to another page
