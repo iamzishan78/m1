@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useAuth0 } from '@auth0/auth0-react';
-import * as msal from '@azure/msal-browser';
+import queryString from 'query-string';
 
-import { msalConfig, tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
+import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 
 import { BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
 import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
@@ -16,7 +16,7 @@ import { setUserAction } from 'store/actions/appActions';
 import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';
 
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
-import { saveUserSession } from 'utils/user';
+import { UserSession } from 'utils/user';
 
 import { setApolloHeaders } from 'AppContext';
 
@@ -25,7 +25,7 @@ const Auth0Login = props => {
 
 	const { isAuthenticated, isLoading, getIdTokenClaims, loginWithRedirect } = useAuth0();
 
-	const handleLogin = (loginResp, userMapSettings, authGraphQLResponse, authGraphQLToken) => {
+	const handleLogin = (loginResp, userMapSettings) => {
 		let mongoUser, sessionData;
 
 		let { mapVars, defaultMapVars } = mapStateController.getValues(['mapVars', 'defaultMapVars']);
@@ -48,15 +48,6 @@ const Auth0Login = props => {
 			}
 		}
 
-		const bypassLogin = globalStateController.getValue('bypassLogin');
-
-		let authTokenExpires;
-		if (bypassLogin) {
-			authTokenExpires = sessionData.authenticationToken.expiresOn;
-		} else if (authGraphQLToken?.expiresOn) {
-			authTokenExpires = new Date(authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14));
-		}
-
 		const user = {
 			...mongoUser,
 			id: mongoUser.adUserId,
@@ -65,31 +56,17 @@ const Auth0Login = props => {
 			mongoId: mongoUser._id,
 			roles: mongoUser.roles,
 			isAuth0: true,
-			authToken: bypassLogin ? sessionData.auth0Token : authGraphQLResponse.authenticationToken,
-			accessToken: bypassLogin ? sessionData.auth0Token : authGraphQLToken.idToken,
-			authTokenExpires,
-			tenant: {
-				id: sessionData.tenantId,
-				tenant: 'M1neral',
-				graphQL: {
-					endpoint:
-						'https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==',
-				},
-			},
+			authToken: sessionData.auth0Token,
+			accessToken: sessionData.auth0Token,
+			authTokenExpires: sessionData.authenticationToken.expiresOn,
 		};
-		mapStateController.updateState({ mapVars, defaultMapVars });
 		globalStateController.updateState({ user });
+		mapStateController.updateState({ mapVars, defaultMapVars });
 		window.setStateApp(state => ({ ...state, user }));
 		dispatch(setUserAction(user));
 		dispatch(currentUserGridViewSettingsAction.STARTED(user._id));
-		saveUserSession(user);
+		UserSession.saveUserSession(user);
 		window.setStateNav(stateNav => ({ ...stateNav, defaultOn: true }));
-
-		// setLoadingSigInButton(false);
-		props.history.push({
-			parhname: window.location.pathname,
-			search: window.location?.search,
-		});
 	};
 
 	async function loginUser(email, authToken, idToken) {
@@ -110,9 +87,9 @@ const Auth0Login = props => {
 			.then(response => {
 				return response?.data?.bypassLogin?.success
 					? {
-							user: response.data.bypassLogin.user,
-							sessionData: response.data.bypassLogin.sessionData,
-						}
+						user: response.data.bypassLogin.user,
+						sessionData: response.data.bypassLogin.sessionData,
+					}
 					: null;
 			})
 			.catch(error => console.log(error));
@@ -147,59 +124,60 @@ const Auth0Login = props => {
 		}
 
 		if (!isAuthenticated) {
-			const org_id = window.sessionStorage.getItem('tenantOrgId')
-				? window.sessionStorage.getItem('tenantOrgId')
+			const org_id = UserSession.getStorageItem('tenantOrgId')
+				? UserSession.getStorageItem('tenantOrgId')
 				: globalStateController.getValue('tenant').org_id;
-			loginWithRedirect(org_id ? { authorizationParams: { organization: org_id } } : {});
+			loginWithRedirect(
+				org_id ? { prompt: 'login', authorizationParams: { organization: org_id } } : { prompt: 'login' }
+			);
 			return;
 		}
 
-		let myMSALObj = globalStateController.getValue('myMSALObj');
-
-		if (!myMSALObj) {
-			const tenantName = window.sessionStorage.getItem('tenantName');
+		let apolloClientEndpoint = globalStateController.getValue('apolloClientEndpoint');
+		const tenantName = UserSession.getStorageItem('tenantName') || queryString.parse(props.location.search)?.tenant;
+		if (!apolloClientEndpoint) {
 			let tenant = tenantsCredentials(tenantName);
-
-			const isBypassTenant = tenantName && globalStateController.isBypassTenant(tenantName);
-			myMSALObj = isBypassTenant ? null : new msal.PublicClientApplication(msalConfig(tenant));
-
 			globalStateController.updateState({
-				myMSALObj,
+				myMSALObj: null,
 				apolloClientEndpoint:
-					isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint,
+					isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant?.apolloClientEndpoint,
 			});
 			window.setStateApp(stateApp => ({
 				...stateApp,
-				myMSALObj,
-				apolloClientEndpoint: tenant.apolloClientEndpoint,
-				graphqlScope: tenant.graphqlScope,
+				myMSALObj: null,
+				apolloClientEndpoint: tenant?.apolloClientEndpoint,
+				graphqlScope: tenant?.graphqlScope,
 			}));
 		}
 
 		(async () => {
-			const id = await getIdTokenClaims();
-			if (!id) {
-				sessionStorage.clear();
-				window.location.replace(window.location.origin);
-				return;
+			try {
+				const id = await getIdTokenClaims();
+				if (!id) {
+					UserSession.deleteSession();
+					return;
+				}
+
+				const loginRes = await loginUser(id.email, id.__raw, id.__raw);
+				if (!loginRes?.user) {
+					UserSession.deleteSession();
+					return;
+				}
+
+				// Store tenant information in session storage
+				const { org_id: tenantOrgId } = id;
+				UserSession.setStorageItem('tenantOrgId', tenantOrgId);
+				UserSession.setStorageItem('tenantName', tenantName);
+
+				// Fetch user settings
+				const authToken = loginRes.sessionData.auth0Token || loginRes.sessionData.token;
+				const userMapSettings = await userSettings(loginRes.user._id, authToken, id.__raw, 'baseMap');
+
+				handleLogin(loginRes, userMapSettings);
+			} catch (error) {
+				console.error('An error occurred during the login process:', error);
+				UserSession.deleteSession();
 			}
-
-			const loginRes = await loginUser(id.email, id.__raw, id.__raw);
-			if (!loginRes?.user) {
-				sessionStorage.clear();
-				window.location.replace(window.location.origin);
-				return;
-			}
-			window.sessionStorage.setItem('tenantOrgId', id.org_id);
-
-			const userMapSettings = await userSettings(
-				loginRes.user._id,
-				loginRes.sessionData.auth0Token || loginRes.sessionData.token,
-				id.__raw,
-				'baseMap'
-			);
-
-			handleLogin(loginRes, userMapSettings);
 		})();
 	}, [isLoading, isAuthenticated]);
 

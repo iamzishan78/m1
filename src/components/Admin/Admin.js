@@ -3,16 +3,18 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Switch, Route, useLocation } from 'react-router-dom';
 
 import AdminOperation from 'components/Admin/AdminOperation';
+import AssetManagement from 'components/Admin/components/AssetManagement';
 import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
+import ExternalTools from 'components/ExternalTools';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 import AdminSettings from 'components/Shared/AdminSettings';
-import AssetManagement from 'components/Admin/components/AssetManagement';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
 
 import { AdminManagementRoutes } from 'utils/data';
+import { UserSession } from 'utils/user';
 
 import { AppContext } from 'AppContext';
 
@@ -25,6 +27,7 @@ const Components = {
 	AdminOperation,
 	BulkDataEditing,
 	BulkDataEditingDetail,
+	ExternalTools,
 	AssetManagement,
 };
 
@@ -33,7 +36,7 @@ function isM1neralAddress(email) {
 }
 
 function isTestEnv() {
-	let tenantName = window.sessionStorage.getItem('tenantName');
+	let tenantName = UserSession.getStorageItem('tenantName');
 
 	let validTenants = ['frontier', 'm1development', 'localhost'];
 	let isValidTenant = validTenants.map(tenant => tenant.toLowerCase()).includes(tenantName.toLowerCase());

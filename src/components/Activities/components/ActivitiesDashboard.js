@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-export const getActivityFilters = appliedFilters => {
+export const getActivityFilters = (appliedFilters, tableKey) => {
 	let filters = [];
 	if (appliedFilters) {
 		let range = [];
@@ -54,12 +54,16 @@ export const getActivityFilters = appliedFilters => {
 				field: 'contact.campaigns',
 				value: appliedFilters.campaigns,
 			});
+		} else {
+			tableController(tableKey).clearFilter('contact.campaigns');
 		}
 		if (appliedFilters.qualifier) {
 			filters.push({
 				field: 'ownerName.keyword',
 				value: appliedFilters.qualifier,
 			});
+		} else {
+			tableController(tableKey).clearFilter('ownerName.keyword');
 		}
 		if (!filters.length && appliedFilters.length) {
 			filters = appliedFilters;
@@ -119,7 +123,7 @@ const ActivitiesDashboard = () => {
 	}, [getDbMinValue]);
 
 	useEffect(() => {
-		tableController(tableKey).setFilters(getActivityFilters(appliedFilters));
+		tableController(tableKey).setFilters(getActivityFilters(appliedFilters, tableKey));
 	}, [appliedFilters]);
 
 	useEffect(() => {

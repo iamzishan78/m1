@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 
 import { globalStateController } from 'hookstate/globalStateController';
 
-import { getSession } from 'utils/user';
+import { UserSession } from 'utils/user';
 
 import { AppProvider, setApolloHeaders } from './AppContext';
 import ContactBulkProgress from './components/BulkUpload/ContactBulkProgress';
@@ -106,7 +106,7 @@ function Providers({ children }) {
 	const { stateValues } = globalStateController.useState(['apolloClientEndpoint', 'user', 'cypress']);
 
 	const updateApolloClient = (endpoint, token, idToken) => {
-		const session = getSession();
+		const session = UserSession.getSession();
 
 		if (globalStateController.getValue('bypassLogin') && session && !token) {
 			idToken = session.accessToken;

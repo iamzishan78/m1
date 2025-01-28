@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const GETALLACTIVITIES = gql`
-	query getAllActivities($category: String) {
-		activities(category: $category) {
+	query getAllActivities($category: String, $openOnly: Boolean) {
+		activities(category: $category, openOnly: $openOnly) {
 			_id
 			dateTime
 			endDateTime

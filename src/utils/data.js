@@ -1,3 +1,5 @@
+import { UserSession } from './user';
+
 export const campaignVariables = {
 	esIndex: 'contacts_flat',
 	filterKey: 'campaignName.keyword',
@@ -565,6 +567,14 @@ export const AdminManagementRoutes = {
 		noCheck: true,
 		showSettingString: false,
 	},
+	EXTERNALTOOLS: {
+		featureFlag: 'AlWAYSSHOW',
+		title: 'External Tools',
+		link: '/admin/externalTools',
+		component: 'ExternalTools',
+		noCheck: true,
+		showSettingString: false,
+	},
 	// CUSTOMIZATIONS: {
 	//   featureFlag: "CONTACTSUBMENU",
 	//   title: "Customization",
@@ -772,7 +782,7 @@ export const esIndexFilterKeyMap = {
 };
 
 export const baseTenantsMaps = () => {
-	const tenantId = window.sessionStorage?.getItem('tenantName').toLowerCase();
+	const tenantId = UserSession.getStorageItem('tenantName').toLowerCase();
 	const defaultStyles = ['Satellite', 'Basic', 'Light', 'Outdoors']; // Default for most clients
 	const testNewStyles = [
 		...defaultStyles,

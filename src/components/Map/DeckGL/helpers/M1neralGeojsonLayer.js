@@ -1,5 +1,5 @@
 import { CompositeLayer } from '@deck.gl/core';
-import { CollisionFilterExtension } from '@deck.gl/extensions';
+import { CollisionFilterExtension, FillStyleExtension, PathStyleExtension } from '@deck.gl/extensions';
 import { GeoJsonLayer, TextLayer } from '@deck.gl/layers';
 import * as turf from '@turf/turf';
 
@@ -45,7 +45,13 @@ const transformFields = input => {
 		}
 	}
 
-	return [remainingObject, newObject];
+	return [
+		remainingObject,
+		{
+			...newObject,
+			visible: remainingObject?.visible,
+		},
+	];
 };
 
 class M1neralGeojsonLayer extends CompositeLayer {
@@ -56,6 +62,9 @@ class M1neralGeojsonLayer extends CompositeLayer {
 			...geojsonProps,
 			id: `${this.id}-geojson-layer`,
 			data: this.props.data,
+
+			// props added by FillStyleExtension
+			extensions: [new FillStyleExtension({ pattern: true }), new PathStyleExtension({ dash: true })],
 		});
 
 		// TextLayer

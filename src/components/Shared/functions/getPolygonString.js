@@ -1,4 +1,8 @@
 export const getPolygonString = feature => {
+	if (typeof feature === 'string') {
+		return feature;
+	}
+
 	let polygonString = '';
 	if (feature?.geometry) {
 		if (feature.geometry.type === 'MultiPolygon') {

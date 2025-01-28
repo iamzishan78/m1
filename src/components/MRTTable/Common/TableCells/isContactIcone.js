@@ -11,6 +11,8 @@ import ConvertContact from 'components/Shared/svgIcons/convert_contact';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
+import { UserSession } from 'utils/user';
+
 const useStyles = makeStyles(() => ({
 	icons: {
 		marginLeft: 'auto',
@@ -79,7 +81,7 @@ function IsContactCell({ contactId, rows }) {
 				target="_blank"
 			>
 				<Link
-					to={`/contact/details/${contactId}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+					to={`/contact/details/${contactId}/?tenant=${UserSession.getStorageItem('tenantName')}`}
 					onClick={e => e.preventDefault()}
 				>
 					<ContactCard style={{ margin: '4px' }} />

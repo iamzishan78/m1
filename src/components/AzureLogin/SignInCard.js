@@ -139,61 +139,58 @@ const BootstrapInput = withStyles(theme => ({
 
 const SignInCard = props => {
 	const { handleAADSignIn } = props;
-
 	const classes = useStyles();
-
 	const history = useHistory();
 	const query = queryString.parse(history?.location?.search);
 
-	const [tenant, setTenant] = useState(props.tenant || query.tenant ? props.tenant || query.tenant : '');
+	const [tenant, setTenant] = useState(query.tenant || '');
 	const [error, setError] = useState(null);
 	const [tenantFlags, setTenantFlags] = useState({
 		error: false,
-		placeholder: null,
+		placeholder: 'i.e. M1neral',
 		autoFocus: false,
 	});
 
 	useEffect(() => {
-		if (tenant.trim() !== '' && tenant === props.tenant) {
-			signInAAD();
+		if (query.tenant?.trim()) {
+			handleSignIn(query.tenant);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [props.tenant]);
+	}, [query.tenant]);
 
-	const updateTenantFlags = errorText => {
-		setTenantFlags({
+	const updateTenantFlags = (errorText = null) => {
+		setTenantFlags(prevFlags => ({
+			...prevFlags,
 			error: true,
-			placeholder: 'i.e. M1neral',
 			autoFocus: true,
-		});
+		}));
 		setTenant('');
-		errorText ? setError(errorText) : setError(null);
+		setError(errorText);
 	};
 
-	const onEnterKey = e => {
-		if (tenant.trim() === '') {
-			updateTenantFlags();
-		} else {
-			if (e.keyCode === 13) {
-				e.preventDefault();
-				setError(null);
-				handleAADSignIn(tenant, updateTenantFlags);
-			}
-		}
-	};
-
-	const signInAAD = async () => {
-		if (tenant.trim() === '') {
+	const handleSignIn = async tenantValue => {
+		if (tenantValue.trim() === '') {
 			updateTenantFlags();
 		} else {
 			setError(null);
-			await handleAADSignIn(tenant, updateTenantFlags);
-
+			if (query.tenant?.trim()) {
+				await handleAADSignIn(tenantValue, updateTenantFlags);
+			} else {
+				handleAADSignIn(tenantValue, updateTenantFlags);
+			}
 			history.push(history.location.pathname);
 		}
 	};
 
-	const renderAADButtonAndLoader = props.ready ? (
+	const onEnterKey = e => {
+		if (e.keyCode === 13) {
+			e.preventDefault();
+			handleSignIn(tenant);
+		}
+	};
+
+	const loading = query.tenant?.trim() ? true : props.ready;
+
+	const renderAADButtonAndLoader = loading ? (
 		<CircularProgress color="secondary" size={28} className={classes.loader} />
 	) : (
 		<Button
@@ -202,7 +199,7 @@ const SignInCard = props => {
 			type="submit"
 			id="workSpaceSignin"
 			className={classes.aadButton}
-			onClick={signInAAD}
+			onClick={() => handleSignIn(tenant)}
 			onKeyDown={e => onEnterKey(e)}
 		>
 			Sign In
@@ -224,7 +221,7 @@ const SignInCard = props => {
 						<M1neralLogo2 />
 					</div>
 
-					{!props.ready ? (
+					{!loading ? (
 						<React.Fragment>
 							<div
 								style={{

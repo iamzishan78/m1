@@ -108,7 +108,7 @@ const ValidationChart = ({
 					});
 				}
 			});
-			setAssociatedWellIds(wellIds);
+			if (setAssociatedWellIds) setAssociatedWellIds(wellIds);
 			setStateApp(stateApp => ({
 				...stateApp,
 				associatedWellIds: wellIds,

@@ -8,8 +8,7 @@ import { ContextProvider } from 'react-sortly';
 import { Box, CircularProgress } from '@material-ui/core';
 
 import { useLazyQuery } from '@apollo/client';
-
-import { deepEqual } from 'components/Shared/functions';
+import PropTypes from 'prop-types';
 
 import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
 
@@ -44,6 +43,8 @@ const getEmptyGroupAndLayer = (group, type) => {
 			id: group.groupId,
 		};
 	}
+
+	return null;
 };
 
 const dnd = isMobile ? TouchBackend : HTML5Backend;
@@ -92,7 +93,7 @@ const SortableLayer = ({ mongoId, search }) => {
 									visiable: item.layerSettings.visiable,
 									depth: 1,
 									type: 'layer',
-									id: item._id,
+									id: item.layerId,
 								});
 							});
 						}
@@ -107,7 +108,7 @@ const SortableLayer = ({ mongoId, search }) => {
 								name: item.layerName === 'Parcels' ? 'Tracts' : item.layerName,
 								depth: 0,
 								type: 'layer',
-								id: item._id,
+								id: item.layerId,
 							});
 						}
 					}
@@ -128,14 +129,17 @@ const SortableLayer = ({ mongoId, search }) => {
 					}
 
 					const index = layerAndGroups.findIndex(layerAndGroup => layerAndGroup.id === emptyGroup.above);
+					const TWO = 2;
+					const THREE = 3;
 					if (index && layerAndGroups[index]?.type === 'layer') {
 						layerAndGroups.splice(index + 1, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
-						layerAndGroups.splice(index + 2, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
+						layerAndGroups.splice(index + TWO, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
 						return;
 					}
 					if (index && layerAndGroups[index]?.type === 'group') {
-						layerAndGroups.splice(index + 2, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
-						layerAndGroups.splice(index + 3, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
+						layerAndGroups.splice(index + TWO, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
+						layerAndGroups.splice(index + THREE, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
+
 						return;
 					}
 				});
@@ -172,6 +176,10 @@ const SortableLayer = ({ mongoId, search }) => {
 			)}
 		</>
 	);
+};
+SortableLayer.propTypes = {
+	mongoId: PropTypes.string.isRequired,
+	search: PropTypes.string,
 };
 
 export default React.memo(SortableLayer);

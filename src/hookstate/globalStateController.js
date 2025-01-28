@@ -1,3 +1,5 @@
+/* eslint-disable no-use-before-define */
+
 import { hookStateController } from 'hookstate/hookStateController';
 
 import { bypassTenants, simpleAuthBypass } from 'utils/data';
@@ -21,6 +23,7 @@ const globalStateControllerHandler = state => ({
 			globalStateController.updateState({ ...bypass, tenant });
 		}
 	},
+
 	isAuth0Bypass: () => state.bypassType.get({ noproxy: true }) === 'Auth0Bypass',
 	isBypassTenant: tenant => bypassTenants.map(t => t.toLowerCase()).includes(tenant.toLowerCase()),
 	handleMyWellTestCase: (globalWellId, mongoWellId) => {

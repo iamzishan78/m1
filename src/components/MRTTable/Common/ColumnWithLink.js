@@ -4,6 +4,8 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Box, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { UserSession } from 'utils/user';
+
 import GlobalStyles from 'GlobalStyles';
 import { history } from 'store';
 
@@ -56,7 +58,7 @@ const ColumnWithLink = ({ value, link, ...rest }) => {
 					{link ? (
 						<Tooltip title={value || ''} arrow>
 							<RouterLink
-								to={`${link}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+								to={`${link}/?tenant=${UserSession.getStorageItem('tenantName')}`}
 								className={rest.muted ? classes.mutedLink : classes.link}
 							>
 								{value}

@@ -48,6 +48,7 @@ export const ADDCONTACT = gql`
 				notes
 				website
 				industryType
+				isPurchased
 			}
 		}
 	}

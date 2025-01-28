@@ -70,6 +70,7 @@ export const tableGlobalState = hookstate({
 /* -------------------------------------------------------------------------- */
 
 export const layerStateInitialState = {
+	projectedLayers: [],
 	client: null,
 	history: null,
 	boundingStates: null,
@@ -361,6 +362,14 @@ export const mapControlsInitialState = {
 export const mapControls = hookstate(copy(mapControlsInitialState));
 
 /* -------------------------------------------------------------------------- */
+/*                           Layer Styling Controller                          */
+/* -------------------------------------------------------------------------- */
+
+export const layerStylingInitialState = {};
+
+export const layerStyling = hookstate(copy(layerStylingInitialState));
+
+/* -------------------------------------------------------------------------- */
 /*                            Map State Controller                            */
 /* -------------------------------------------------------------------------- */
 
@@ -478,6 +487,7 @@ export const adminOperationsInitialState = {
 	createNewFlatData: 'No',
 	warning: null,
 	message: null,
+	apiKeys: { dialpad: '' },
 };
 export const adminOperationsState = hookstate(copy(adminOperationsInitialState));
 

@@ -1,8 +1,17 @@
 import { ScatterplotLayer, LineLayer, PolygonLayer, TextLayer } from '@deck.gl/layers';
 import { MapboxOverlay } from '@deck.gl/mapbox';
-import { isEqual, orderBy } from 'lodash';
+import { isEqual } from 'lodash';
 
+import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+
+import { drawController } from 'hookstate/drawStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { popupController } from 'hookstate/popupStateController';
+
+import { getClickedFeature } from './common';
 import M1neralGeojsonLayer from './M1neralGeojsonLayer';
+import onFeatureClick from './onFeatureClick';
+import onRightClick from './onRightClick';
 
 const MAX = 255;
 
@@ -54,28 +63,85 @@ export default class DeckGlOverlay {
 	static overlayInstance = null;
 	static dataRef = {};
 
-	static initializeOverlay = () => {
+	static initializeOverlay = ({ transactBarView }) => {
 		if (!window.mapRef) {
 			throw new Error('Map reference is not available.');
 		}
 
-		if (!window.deckOverlay) {
-			window.deckOverlay = new MapboxOverlay({
-				layers: [],
-			});
+		if (!window?.deckOverlay?._deck) {
+			window.deckOverlay = new MapboxOverlay({ layers: [] });
+		}
+		if (!window.mapRef._controls.find(control => control instanceof MapboxOverlay)) {
 			window.mapRef.addControl(window.deckOverlay);
 		}
-	};
 
-	static setProps = layers => {
-		let allLayers = [...layers];
+		window.mapRef.on('contextmenu', event => {
+			const drawMode = window.drawRef?.getMode();
 
-		allLayers = orderBy(allLayers, ['props.position'], ['asc']);
-
-		allLayers.forEach(layer => {
-			layer.props.data = DeckGlOverlay.dataRef[layer.id];
+			if (drawMode?.includes('draw') || drawMode?.includes('drag')) {
+				window.mapRef?.resize();
+				return;
+			}
+			onRightClick({ x: event.point.x, y: event.point.y, coordinate: [event.lngLat.lng, event.lngLat.lat] });
 		});
-		window.deckOverlay.setProps({ layers: allLayers });
+
+		let isDragging = false;
+		let isDrawing = false;
+		if (window?.deckOverlay?._deck) {
+			window.mapRef?.on('draw.actionable', () => {
+				// console.log(window.drawRef?.getMode())
+				isDrawing = !['direct_select', 'simple_select'].includes(window.drawRef?.getMode());
+			});
+			window.deckOverlay._deck?.setProps({
+				onDragStart: () => {
+					isDragging = true;
+				},
+				onDragEnd: () => {
+					isDragging = false;
+				},
+				getCursor: ({ isHovering }) => {
+					const value = isDrawing ? 'crosshair' : isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab';
+					if (window?.mapRef?.getCanvas && window?.mapRef?.getCanvas?.()?.style?.cursor !== value) {
+						window.mapRef.getCanvas().style.cursor = value;
+					}
+					return value;
+				},
+				onClick: ({ x, y }) => {
+					const drawMode = window.drawRef?.getMode();
+
+					if (drawMode?.includes('draw') || drawMode?.includes('drag')) {
+						window.mapRef?.resize();
+						return;
+					}
+
+					const getLandGrid =
+						window.event.ctrlKey || window.event.metaKey || drawController.getValue('multiSelectLandGrids');
+
+					const { clickedFeature, layer } = getClickedFeature({ x, y, getLandGrid });
+					const previousClickedFeature = layerController.getValue('clickedFeature');
+					const clickOnSameFeature =
+						previousClickedFeature && previousClickedFeature?.object?.id === clickedFeature?.object?.id;
+					if (!clickedFeature || clickOnSameFeature) {
+						const selectedPlace = popupController.getValue('selectedPlaces');
+						if (!selectedPlace) {
+							// Reset the state when slected search is not places
+							popupController.reset();
+						}
+						// If the path is not '/' or ' ' and the map is not rendered through deal dialog
+						if (!['', '/'].includes(window.location.pathname) && transactBarView !== 'Map') {
+							history.replace({ pathname: '/' });
+						}
+						return;
+					}
+					if (!getLandGrid) {
+						drawBoundary(clickedFeature.object);
+					}
+
+					layerController.updateState({ clickedFeature });
+					onFeatureClick(clickedFeature, layer);
+				},
+			});
+		}
 	};
 
 	static getLayer = layerId => {
@@ -85,10 +151,6 @@ export default class DeckGlOverlay {
 
 		const layers = window?.deckOverlay?._props?.layers || [];
 		const foundLayer = layers.find(layer => layer.id === layerId);
-
-		if (!foundLayer) {
-			// console.warn(`Layer with id '${layerId}' not found.`);
-		}
 
 		return foundLayer;
 	};
@@ -107,49 +169,49 @@ export default class DeckGlOverlay {
 		});
 		DeckGlOverlay.dataRef[layerId] = props.data;
 		const currentLayers = window.deckOverlay?._props?.layers || [];
+		if (DeckGlOverlay.getLayer(layerId)) { return DeckGlOverlay.getLayer(layerId); }
+
 		currentLayers.push(newLayer);
-		DeckGlOverlay.setProps(currentLayers);
+		currentLayers.sort((a, b) => b.props.position - a.props.position);
+		window.deckOverlay.setProps({ layers: currentLayers });
 		return newLayer;
 	};
 
 	static moveLayer = (layerId, beforeLayer) => {
-		setTimeout(() => {
-			const layers = window.deckOverlay?._props?.layers || [];
-			const layerIndex = layers.findIndex(layer => layer.id === layerId);
-			const beforeLayerIndex = layers.findIndex(layer => layer.id === beforeLayer);
+		const layers = window.deckOverlay?._props?.layers || [];
 
-			if (layerIndex === -1) {
-				return;
-			}
+		// Find the indexes of `layerId` and `beforeLayerId`
+		const layerIndex = layers.findIndex(layer => layer.id === layerId);
+		const beforeLayerIndex = layers.findIndex(layer => layer.id === beforeLayer);
 
+		if (layerIndex === -1) {
+			return;
+		}
+
+		// Ensure `layerId` exists
+		if (layerIndex !== -1) {
+			// Remove the layer from its current position
 			const [layer] = layers.splice(layerIndex, 1);
-			if (beforeLayerIndex !== -1) {
-				layers.splice(beforeLayerIndex, 0, layer);
+
+			if (!beforeLayer) {
+				// Move the layer to the end if `beforeLayerId` is null
+				layers.push(layer);
+			} else if (beforeLayerIndex !== -1) {
+				// Insert the layer at the correct position before `beforeLayerId`
+				layers.splice(beforeLayerIndex - 1, 0, layer);
 			} else {
+				// If `beforeLayerId` is invalid, move the layer to the end
 				layers.push(layer);
 			}
+		}
 
-			window.deckOverlay.setProps({ layers });
-		}, 0);
-	};
-
-	static moveLayerToTop = layerId => {
-		setTimeout(() => {
-			const layers = window.deckOverlay._props.layers || [];
-			const layerIndex = layers.findIndex(layer => layer.id === layerId);
-
-			if (layerIndex === -1) {
-				return;
-			}
-
-			const [layer] = layers.splice(layerIndex, 1);
-			layers.push(layer);
-			window.deckOverlay.setProps({ layers });
-		}, 100);
+		// add layers in deck overlay
+		window.deckOverlay.setProps({ layers });
 	};
 
 	static removeLayer = layerId => {
 		const layers = window.deckOverlay._props.layers.filter(layer => layer.id !== layerId);
+		// add layers in deck overlay
 		window.deckOverlay.setProps({ layers });
 	};
 
@@ -180,7 +242,8 @@ export default class DeckGlOverlay {
 				data: DeckGlOverlay.dataRef[layerId], // Explicitly retain the generator function
 			});
 			layers[layerIndex] = updatedLayer;
-			DeckGlOverlay.setProps(layers);
+
+			window.deckOverlay.setProps({ layers: [...layers] });
 		}
 	};
 }

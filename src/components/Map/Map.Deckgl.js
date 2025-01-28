@@ -29,7 +29,7 @@ import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 
-import { drawController } from 'hookstate/drawStateController';
+import { detailCardController } from 'hookstate/detailCardController';
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { layerController } from 'hookstate/layerStateController';
@@ -37,7 +37,6 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { navController } from 'hookstate/navStateController';
 import { popupController } from 'hookstate/popupStateController';
-import { detailCardController } from 'hookstate/detailCardController';
 
 import { baseTenantsMaps } from 'utils/data';
 import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
@@ -46,7 +45,6 @@ import { layerRefs } from 'hookstate';
 
 import HugeRequest from './components/HugeRequest';
 import DeckGL from './DeckGL';
-import onRightClick from './DeckGL/helpers/onRightClick';
 import DefaultFiltersTest from './filtersDefaultTest';
 import { setMainMapState } from '../../actions';
 import { SRMode } from './MapBoxDrawRotate/index';
@@ -55,9 +53,8 @@ import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsBy
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { copy } from '../Shared/functions';
 import ZoomFault from './components/ZoomFault';
-import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
+import { extractUniqueFilters } from './DeckGL/helpers/common';
 import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
-import onFeatureClick from './DeckGL/helpers/onFeatureClick';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import MarkerIcon from './sprites/marker-icon.png';
 import {
@@ -90,6 +87,7 @@ const useStyles = makeStyles(() => ({
 			height: '100vh',
 			width: '100% !important',
 		},
+
 		'& .mapboxgl-popup-close-button': { display: 'none' },
 		// "& .mapboxgl-ctrl-group": { backgroundColor: "#0e111a" },
 		// "& .mapboxgl-ctrl button.mapboxgl-ctrl-zoom-in .mapboxgl-ctrl-icon": { backgroundImage: "url('data:image/svg+xml;charset=utf-8,%3Csvg width=\"29\" height=\"29\" viewBox=\"0 0 29 29\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"%23FFFFFF\"%3E%3Cpath d=\"M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5z\"/%3E%3C/svg%3E')" },
@@ -131,7 +129,7 @@ function Map({
 	layerPadding = null,
 }) {
 	// context states
-	const globalState = globalStateController.useState(['layers']);
+	const globalState = globalStateController.useState(['layers', 'mapReady']);
 	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues');
 	const { selectedShapeFile, selectedPlaces, popupStateValues } = popupController.useState(
 		['selectedShapeFile', 'selectedPlaces'],
@@ -474,10 +472,11 @@ function Map({
 	useEffect(() => {
 		if (stateApp.user && stateApp.user.mongoId) {
 			setLoading(true);
-
+			const applyShowableFilter = true;
 			getAllLayerSettingsByUser({
 				variables: {
 					userId: stateApp.user.mongoId,
+					applyShowableFilter,
 				},
 			});
 		}
@@ -643,43 +642,43 @@ function Map({
 		}
 	}, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
 
-	useEffect(() => {
-		// USE EFFECT FOR HEATMAP LAYER HANDLES
-		if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
-			stateApp.heatLayers.forEach(l => {
-				l.id.forEach(k => {
-					if (map?.getLayer(k)) {
-						map?.setLayoutProperty(k, 'visibility', 'none');
-					}
-				});
-			});
+	// useEffect(() => {
+	// 	// USE EFFECT FOR HEATMAP LAYER HANDLES
+	// 	if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
+	// 		stateApp.heatLayers.forEach(l => {
+	// 			l.id.forEach(k => {
+	// 				if (map?.getLayer(k)) {
+	// 					map?.setLayoutProperty(k, 'visibility', 'none');
+	// 				}
+	// 			});
+	// 		});
 
-			if (stateApp.checkedHeats.length > 0) {
-				const layers = stateApp.checkedHeats.slice(0);
-				layers.sort((a, b) => b - a);
-				if (layers.length > 0) {
-					let belowlayer = null;
-					for (let k = layers.length - 1; k >= 0; k--) {
-						const i = layers[k];
-						const currentLayerArray = stateApp.heatLayers[i].id;
+	// 		if (stateApp.checkedHeats.length > 0) {
+	// 			const layers = stateApp.checkedHeats.slice(0);
+	// 			layers.sort((a, b) => b - a);
+	// 			if (layers.length > 0) {
+	// 				let belowlayer = null;
+	// 				for (let k = layers.length - 1; k >= 0; k--) {
+	// 					const i = layers[k];
+	// 					const currentLayerArray = stateApp.heatLayers[i].id;
 
-						currentLayerArray.forEach(j => {
-							const mapLayer = map.getLayer(j);
-							if (typeof mapLayer !== 'undefined') {
-								if (map.getLayer(j)) {
-									map.setLayoutProperty(j, 'visibility', 'visible');
-									if (belowlayer != null) {
-										map.moveLayer(j, belowlayer);
-									}
-									belowlayer = j;
-								}
-							}
-						});
-					}
-				}
-			}
-		}
-	}, [map, stateApp.checkedHeats, stateApp.heatLayers]);
+	// 					currentLayerArray.forEach(j => {
+	// 						const mapLayer = map.getLayer(j);
+	// 						if (typeof mapLayer !== 'undefined') {
+	// 							if (map.getLayer(j)) {
+	// 								map.setLayoutProperty(j, 'visibility', 'visible');
+	// 								if (belowlayer != null) {
+	// 									map.moveLayer(j, belowlayer);
+	// 								}
+	// 								belowlayer = j;
+	// 							}
+	// 						}
+	// 					});
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
 	function getIndex(value, arr, prop) {
 		for (let i = 0; i < arr.length; i++) {
@@ -717,46 +716,6 @@ function Map({
 		}
 	}, [stateApp.filterSelectAllAbstract, map]);
 
-	// if this isn't fast enough we can try to only recalc length for features on the tile boundary
-	// if feature is entirely within a tile we difinitively know the length
-	// if it is on the tile boundary we know that the vector feature "may" cross tile boundaries so don't know the true
-	// length from a single tile
-	async function findBadLinestrings(map, tile) {
-		if (!tile) {
-			return;
-		}
-		let repaint = false;
-		const renderedLineStrings = [];
-		tile.querySourceFeatures(renderedLineStrings, {
-			filter: ['in', ['geometry-type'], ['literal', ['LineString', 'MultiLineString']]],
-			sourceLayer: 'wells',
-		});
-		renderedLineStrings.forEach(feature => {
-			const geometryLength = map.getFeatureState({
-				source: 'wellsVT',
-				sourceLayer: 'wells',
-				id: feature.id,
-			})?.geometryLength;
-			const newGeometryLength = Math.round(turf.length(feature.geometry, { units: 'feet' }), 0);
-			if (newGeometryLength > 20000 && !(geometryLength >= newGeometryLength)) {
-				map.setFeatureState(
-					{
-						source: 'wellsVT',
-						sourceLayer: 'wells',
-						id: feature.id,
-					},
-					{
-						geometryLength: Math.max(newGeometryLength, geometryLength || -1),
-					}
-				);
-				repaint = true;
-			}
-		});
-
-		if (repaint) {
-			map.triggerRepaint();
-		}
-	}
 
 	useEffect(() => {
 		if (mapStyles.length <= 0) {
@@ -856,76 +815,6 @@ function Map({
 			});
 			newMap.addControl(Draw);
 
-			newMap.on('sourcedata', e => {
-				if (e.sourceId === 'wellsVT') {
-					findBadLinestrings(e.target, e.tile);
-				}
-			});
-
-			const interval = setInterval(() => {
-				let isDragging = false;
-				let isDrawing = false;
-				if (window?.deckOverlay?._deck) {
-					window.mapRef?.on('draw.actionable', () => {
-						// console.log(window.drawRef?.getMode())
-						isDrawing = !['direct_select', 'simple_select'].includes(window.drawRef?.getMode());
-					});
-					window.deckOverlay._deck?.setProps({
-						onDragStart: () => {
-							isDragging = true;
-						},
-						onDragEnd: () => {
-							isDragging = false;
-						},
-						getCursor: ({ isHovering }) => {
-							const value = isDrawing ? 'crosshair' : isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab';
-							if (window?.mapRef?.getCanvas?.()?.style?.cursor !== value)
-								window.mapRef.getCanvas().style.cursor = value;
-							return value;
-						},
-						onClick: ({ x, y, coordinate }, { rightButton, srcEvent }) => {
-							const drawMode = window.drawRef?.getMode();
-
-							if (drawMode?.includes('draw') || drawMode?.includes('drag')) {
-								window.mapRef?.resize();
-								return;
-							}
-
-							if (rightButton || srcEvent.shiftKey) {
-								onRightClick({ x, y, coordinate });
-								return;
-							}
-
-							const getLandGrid =
-								window.event.ctrlKey || window.event.metaKey || drawController.getValue('multiSelectLandGrids');
-
-							const { clickedFeature, layer } = getClickedFeature({ x, y, getLandGrid });
-							const previousClickedFeature = layerController.getValue('clickedFeature');
-							const clickOnSameFeature =
-								previousClickedFeature && previousClickedFeature?.object?.id === clickedFeature?.object?.id;
-							if (!clickedFeature || clickOnSameFeature) {
-								const selectedPlace = selectedPlaces.get({ noproxy: true });
-								if (!selectedPlace) {
-									// Reset the state when slected search is not places
-									popupController.reset();
-								}
-								// If the path is not '/' or ' ' and the map is not rendered through deal dialog
-								if (!['', '/'].includes(window.location.pathname) && stateApp.transactBarView !== 'Map') {
-									history.replace({ pathname: '/' });
-								}
-								return;
-							}
-							if (!getLandGrid) {
-								drawBoundary(clickedFeature.object);
-							}
-
-							layerController.updateState({ clickedFeature });
-							onFeatureClick(clickedFeature, layer);
-						},
-					});
-					clearInterval(interval);
-				}
-			}, 500);
 
 			newMap.on('load', () => {
 				window.mapRef = null; // Remove the existing map instance to avoid rendering multiple maps
@@ -933,7 +822,7 @@ function Map({
 				window.mapRef = newMap;
 				window.drawRef = Draw;
 				// Initializing overlay
-				DeckGlLayer.initializeOverlay();
+				DeckGlLayer.initializeOverlay({ transactBarView: stateApp.transactBarView });
 				layerController.resetMapStates(true);
 
 				setStateApp(state => ({
@@ -948,24 +837,6 @@ function Map({
 					// add image to the active style and make it SDF-enabled
 					newMap.addImage('marker-icon', image, { sdf: true });
 				});
-				setTimeout(() => {
-					DeckGlLayer.addLayer({
-						layerId: 'top_deck_layer',
-						type: 'ScatterplotLayer',
-						props: {
-							data: [],
-						},
-					});
-
-					DeckGlLayer.addLayer({
-						layerId: 'first_deck_layer',
-						type: 'ScatterplotLayer',
-						beforeLayer: 'top_deck_layer',
-						props: {
-							data: [],
-						},
-					});
-				}, 250);
 
 				// FOR aoi_labels
 				newMap.addSource('aoi_label_source', {
@@ -980,6 +851,27 @@ function Map({
 				setMap(newMap);
 				setLoading(false);
 				mapStateController.updateState({ reintializeMap: false });
+
+				// Extract the current search string from the URL
+				const searchParams = new URLSearchParams(history?.location?.search);
+
+				if (!searchParams.has('zoom') ||
+					!searchParams.has('lng') ||
+					!searchParams.has('lat') ||
+					!searchParams?.size
+				) {
+					return; // Return early if any required parameter is missing
+				}
+				const lng = searchParams?.get("lng")
+				const lat = searchParams?.get("lat")
+				const zoom = searchParams?.get("zoom")
+				newMap.jumpTo({
+					center: {
+						lng,
+						lat
+					},
+					zoom: zoom,
+				});
 			});
 		};
 
@@ -1299,6 +1191,7 @@ function Map({
 		}
 	}, [mapStateValues.toggleZoomOut]);
 
+
 	useEffect(() => {
 		// use effect to toggle the map into a 3d state
 
@@ -1324,6 +1217,38 @@ function Map({
 			}
 		}
 	}, [mapStateValues.toggle3d]);
+
+		useEffect(() => {
+			const mapRef = window.mapRef;
+	
+			if (mapRef) {
+				// Update for values
+				const setCoordinateAtUrl = () => {
+					const url = new URL(window.location);
+	
+					// Create an object to hold all parameters
+					const params = {
+						lat: mapRef.getCenter()?.lat,
+						lng: mapRef.getCenter()?.lng,
+						zoom: mapRef.getZoom()
+					};
+	
+					// Iterate over the object and set all parameters at once
+					Object.entries(params).forEach(([key, value]) => {
+						url.searchParams.set(key, value);
+					});
+	
+					// Update the browser's URL
+					window.history.pushState({}, '', url);
+				};
+	
+				// Listen to the map events
+				mapRef.on('move', setCoordinateAtUrl);
+				mapRef.on('zoom', setCoordinateAtUrl);
+				mapRef.on('rotate', setCoordinateAtUrl);
+				setCoordinateAtUrl();
+			}
+		}, [globalState.mapReady]);
 
 	useEffect(() => {
 		// Map will be reset if we move to another page

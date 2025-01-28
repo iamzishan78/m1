@@ -18,7 +18,6 @@ import { AppContext } from 'AppContext';
 const CampaignManagement = () => {
 	const esIndex = 'campaigns_flat';
 	const TableKey = 'CampaignTable';
-	const searchFields = ['name', '_all'];
 	const [lastCampaignMinDate, setLastCampaignMinDate] = useState('');
 	const [appliedFilters, setAppliedFilters] = useState({
 		fromDate: null,
@@ -27,8 +26,6 @@ const CampaignManagement = () => {
 	const [fromDate, setFromDate] = useState(null);
 	const [toDate, setToDate] = useState(null);
 	const [stateApp] = useContext(AppContext);
-
-	const { stateValues } = tableController(TableKey).useState(['filters']);
 
 	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
 		fetchPolicy: 'no-cache',
@@ -108,14 +105,8 @@ const CampaignManagement = () => {
 			<CustomCampaignFilters
 				setFromDate={setFromDate}
 				setToDate={setToDate}
-				esIndex={esIndex}
-				searchFields={searchFields}
-				tableFilters={stateValues.filters}
-				appliedFilters={tableController(TableKey)?.getExternalFilter()}
 				appliedDateFilters={appliedFilters}
-				setAppliedFilters={setESFilters}
 				minDate={lastCampaignMinDate}
-				contactSearchQuery={stateApp.contactSearchQuery}
 			/>
 			<div style={{ padding: '0px 30px' }}>
 				<CampaignAnalytics
