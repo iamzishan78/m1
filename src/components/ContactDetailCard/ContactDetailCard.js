@@ -4,7 +4,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 // mui core components
-import { Grid, IconButton, Tabs, Tab, Menu, MenuItem, Badge, CircularProgress } from "@material-ui/core";
+import { Grid, IconButton, Tabs, Tab, Menu, MenuItem, Badge, CircularProgress, Tooltip } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import AddIcCallIcon from "@material-ui/icons/AddIcCall";
@@ -59,6 +59,10 @@ import { OWNERTYPE } from 'utils/data';
 import { getOpenCorporatesUrl } from "utils/helper";
 import OpenCorporatesIcon from "components/Shared/svgIcons/OpenCorporatesIcon";
 import { globalStateController } from "hookstate/globalStateController";
+import DialpadIcon from "../Shared/svgIcons/dialpad-icon";
+import { SYNC_CONTACT_TO_DIALPAD } from "../../graphQL/useMutationSyncContactToDialpad";
+import { showErrorMessage, showSuccessMessage } from 'actions';
+import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -472,6 +476,7 @@ function ContactDetailCard(props) {
     fetchPolicy: "network-only",
   });
   const [updateContact] = useMutation(UPDATECONTACT);
+  const [syncContactToDialpad] = useMutation(SYNC_CONTACT_TO_DIALPAD);
 
   const handleClick = (event) => setAnchorEl(event.currentTarget);
 
@@ -631,6 +636,20 @@ function ContactDetailCard(props) {
     }
   }
 
+  const handleContactSync = async () => {
+		syncContactToDialpad({
+			variables: { contactId: contactData?._id },
+			refetchQueries: ['getContact'],
+			awaitRefetchQueries: true,
+		}).then(({ data }) => {
+			if (data?.syncContactToDialpad && !data.syncContactToDialpad?.success) {
+				dispatch(showErrorMessage(data?.syncContactToDialpad?.message));
+			} else {
+				dispatch(showSuccessMessage('Contact synced successfully'));
+			}
+		});
+	};
+
   return contactData ? (
     <div style={{ position: "absolute", top: "60px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
       {/**
@@ -736,6 +755,21 @@ function ContactDetailCard(props) {
                   <Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" publicLeftBottom onlyTags />
                 </div>
                 <div className={classes.metaActions}>
+                <Tooltip title={contactData?.dialpadSyncAt?`Last Synced: ${moment(contactData?.dialpadSyncAt).format('MM/DD/YYYY, h:mm a')}`:`Sync to Dialpad`} placement="top-start">
+                    <Button
+                      color={contactData?.dialpadId? "primary" : "transparent"}
+                      className={!contactData?.dialpadId ? classes.contactDataButton : {}}
+                      variant={contactData?.dialpadId?"contained":""}
+                      startIcon={<DialpadIcon color={contactData?.dialpadId? "white" :"grey"} />}
+                      style={{ color: contactData?.dialpadId? "white" :"grey"}}
+                      onClick={() => {
+                        handleContactSync()
+                      }}
+                    >
+                      {contactData?.dialpadId?'Launch Dialpad':'Sync to Dialpad'}
+                    </Button>
+                  </Tooltip>
+                  
                   <FeatureFlag feature={FEATURES.IDICORE}>
                     <Button
                       className={classes.contactDataButton}
