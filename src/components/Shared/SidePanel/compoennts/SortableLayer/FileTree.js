@@ -4,10 +4,11 @@ import Sortly, { findDescendants, findParent } from 'react-sortly';
 
 import { Box, Paper } from '@material-ui/core';
 
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import update from 'immutability-helper';
 import PropTypes from 'prop-types';
 
+import { project } from 'components/MapControls/components/Layer/Common';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
@@ -15,6 +16,7 @@ import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 import { UPDATEUSERLAYERMETA } from 'graphQL/useMutationupdateLayersMeta';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
+import { GET_PROJECTED_LAYERS, ALLLAYERSETTINGSBYUSER } from 'graphQL/useQueryAllLayerSettingsByUser';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
@@ -28,6 +30,8 @@ const FileTree = ({ layerMap, panelItems }) => {
 	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 	const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 	const [updateUserLayersMeta] = useMutation(UPDATEUSERLAYERMETA);
+	const [getProjectedLayers] = useLazyQuery(GET_PROJECTED_LAYERS);
+	const [getAllLayerSettingsByUser] = useLazyQuery(ALLLAYERSETTINGSBYUSER);
 
 	const [stateApp] = useContext(AppContext);
 	const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, {
@@ -182,8 +186,42 @@ const FileTree = ({ layerMap, panelItems }) => {
 		setItems(itemsRef.current);
 	};
 
+	async function updateLayersAndState({ layerIds, direction, targetId, groupName, groupId }) {
+		// Update layers meta
+		await updateUserLayersMeta({
+			variables: {
+				userId: stateApp.user.mongoId,
+				layersMeta: {
+					layerId: layerIds,
+					direction,
+					targetId,
+					groupName,
+					groupId,
+				},
+			},
+		});
+
+		// Fetch and update projected layers
+		const projectedLayersResponse = await getProjectedLayers({
+			variables: {
+				userId: stateApp.user.mongoId,
+				project,
+			},
+		});
+		layerController.updateState({ projectedLayers: projectedLayersResponse.data.allLayerSettingsByUser });
+
+		// Fetch and update all layer settings
+		const updatedLayersResponse = await getAllLayerSettingsByUser({
+			variables: {
+				userId: stateApp.user.mongoId,
+				applyShowableFilter: true,
+			},
+		});
+		globalStateController.updateState({ layers: updatedLayersResponse.data.allLayerSettingsByUser });
+	}
+
 	const handleDragEnd = useCallback(
-		(oldItem, newItem) => {
+		async (oldItem, newItem) => {
 			if (oldItem.depth === 0 && newItem.depth === 1 && newItem.type === 'group') {
 				return revert();
 			}
@@ -234,45 +272,88 @@ const FileTree = ({ layerMap, panelItems }) => {
 			} else {
 				updateStateLayers([...layersWithoutGroup]);
 			}
-			const newIndex = layersWithoutGroup.findIndex(layer => layer.id === newItem.id);
-			if (newIndex === -1) {
-				return revert();
-			}
-			// Determine movement direction and target layer
-			let direction = null;
-			let targetId = null;
-			if (newIndex > 0) {
-				const layerAbove = layersWithoutGroup[newIndex - 1];
-				if (newItem.position < layerAbove.position) {
-					// Moved down
-					direction = 'below';
-					targetId = layerAbove.id;
+
+			if (newItem.type === 'group') {
+				// Find all descendants of the group
+				const itemIndex = items.findIndex(item => item.id === newItem.id);
+				const descendants = findDescendants(items, itemIndex).filter(item => !item.emptyLayer);
+
+				if (descendants.length === 0) {
+					return revert(); // Groups without descendants cannot be moved
 				}
-			}
-			if (newIndex < layersWithoutGroup.length - 1) {
-				const layerBelow = layersWithoutGroup[newIndex + 1];
-				if (newItem.position > layerBelow.position) {
-					// Moved up
+
+				const firstDescendant = descendants[0];
+				const lastDescendant = descendants[descendants.length - 1];
+
+				// Find the layer above the first descendant and below the last descendant
+				const firstDescendantIndex = layersWithoutGroup.findIndex(layer => layer.id === firstDescendant.id);
+				const lastDescendantIndex = layersWithoutGroup.findIndex(layer => layer.id === lastDescendant.id);
+
+				const layerAbove = firstDescendantIndex > 0 ? layersWithoutGroup[firstDescendantIndex - 1] : null;
+				const layerBelow =
+					lastDescendantIndex < layersWithoutGroup.length - 1 ? layersWithoutGroup[lastDescendantIndex + 1] : null;
+
+				let direction = null;
+				let targetId = null;
+
+				// Determine movement direction and target layer
+				if (layerBelow && lastDescendant.position > layerBelow.position) {
 					direction = 'above';
 					targetId = layerBelow.id;
+				} else if (layerAbove && firstDescendant.position < layerAbove.position) {
+					direction = 'below';
+					targetId = layerAbove.id;
+				} else {
+					return revert(); // No valid move
 				}
-			}
 
-			updateUserLayersMeta({
-				variables: {
-					userId: stateApp.user.mongoId,
-					layersMeta: {
-						layerId: newItem.id,
-						direction,
-						targetId,
-						groupName: newItem.groupName,
-						groupId: newItem.groupId,
-					},
-				},
-				refetchQueries: ['getAllLayerSettingsByUser'],
-				awaitRefetchQueries: true,
-			});
-			return null;
+				// Pass all descendant IDs for meta update
+				const descendantIds = descendants.map(descendant => descendant.id);
+
+				updateLayersAndState({
+					layerIds: descendantIds, // Or [newItem.id] for non-groups
+					direction,
+					targetId,
+					groupName: newItem.groupName,
+					groupId: newItem.groupId,
+				});
+
+				return null;
+			}
+			if (newItem.type !== 'group') {
+				const newIndex = layersWithoutGroup.findIndex(layer => layer.id === newItem.id);
+				if (newIndex === -1) {
+					return revert();
+				}
+				// Determine movement direction and target layer
+				let direction = null;
+				let targetId = null;
+				if (newIndex > 0) {
+					const layerAbove = layersWithoutGroup[newIndex - 1];
+					if (newItem.position < layerAbove.position) {
+						// Moved down
+						direction = 'below';
+						targetId = layerAbove.id;
+					}
+				}
+				if (newIndex < layersWithoutGroup.length - 1) {
+					const layerBelow = layersWithoutGroup[newIndex + 1];
+					if (newItem.position > layerBelow.position) {
+						// Moved up
+						direction = 'above';
+						targetId = layerBelow.id;
+					}
+				}
+
+				updateLayersAndState({
+					layerIds: [newItem.id],
+					direction,
+					targetId,
+					groupName: newItem.groupName,
+					groupId: newItem.groupId,
+				});
+				return null;
+			}
 		},
 		[items]
 	);
@@ -366,11 +447,6 @@ const FileTree = ({ layerMap, panelItems }) => {
 			</Paper>
 		</Box>
 	);
-};
-FileTree.propTypes = {
-	layerMap: PropTypes.array.isRequired,
-	panelItems: PropTypes.array.isRequired,
-	data: PropTypes.object,
 };
 
 export default memo(FileTree);

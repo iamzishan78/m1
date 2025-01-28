@@ -19,14 +19,17 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { v4 as uuid } from 'uuid';
 
 import { ADDLAYER } from 'graphQL/useMutationAddLayer';
+import { GET_PROJECTED_LAYERS } from 'graphQL/useQueryAllLayerSettingsByUser';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 
 import { globalStateController } from 'hookstate/globalStateController';
+import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
 import { AppContext } from 'AppContext';
 
 import { ColorPickerStyledBox, useLayerStyle, WidthPicker } from './Common';
+import { project } from '../Layer/Common';
 import { getDefaultSettings } from '../SourceLayerManager/fileUploadHelper';
 
 function NewLayerManager() {
@@ -40,6 +43,7 @@ function NewLayerManager() {
 
 	const [addLayer] = useMutation(ADDLAYER);
 	const [getShapeFileSchema, { data: shapeFileSchema }] = useLazyQuery(GET_SHAPE_FILE_SCHEMA);
+	const [getProjectedLayers] = useLazyQuery(GET_PROJECTED_LAYERS);
 
 	const layerType = layer.layerPaintProps[0]?.paintType;
 
@@ -101,7 +105,14 @@ function NewLayerManager() {
 			},
 			refetchQueries: ['getAllLayerSettingsByUser'],
 			awaitRefetchQueries: true,
-		}).then(() => {
+		}).then(async () => {
+			const response = await getProjectedLayers({
+				variables: {
+					userId: stateApp.user._id,
+					project,
+				},
+			});
+			layerController.updateState({ projectedLayers: response.data.allLayerSettingsByUser });
 			handleClose();
 		});
 	};

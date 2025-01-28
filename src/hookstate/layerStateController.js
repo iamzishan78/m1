@@ -918,10 +918,13 @@ const layerStateControllerHandler = state => {
 			window.drawRef = null;
 		},
 		generateUpdateFn: (layers, value, currentLayers, field) => {
+			debugger;
 			const updatefn = {};
 			layers.forEach(layer => {
+				debugger;
 				if (layer.type === 'group') {
 					layer.layers.forEach(l => {
+						debugger;
 						const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
 						if (layerIndex !== -1) {
 							if (field === 'showable') {
@@ -946,6 +949,7 @@ const layerStateControllerHandler = state => {
 		},
 
 		updateProjectedLayers: ({ layer, value, field }) => {
+			debugger;
 			const projectedLayers = layerState.projectedLayers.get({ noproxy: true });
 			const updatefn = layerController.generateUpdateFn([layer], value, projectedLayers, field);
 

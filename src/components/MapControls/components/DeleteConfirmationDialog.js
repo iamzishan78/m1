@@ -10,6 +10,7 @@ import { useMutation } from '@apollo/client';
 
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 
+import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 
 import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
@@ -71,29 +72,44 @@ export default function DeleteConfirmationDialog(props) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layersDeleted]);
 
-	const handleAccept = () => {
+	const handleAccept = async () => {
 		setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
-
+		// Determine the appropriate mutation to call
+		let updatedLayer;
 		if (props.layer.type === 'group') {
-			updateManyLayer({
+			const response = await updateManyLayer({
 				variables: {
 					layers: props.layer.layers.map(layer => ({ _id: layer.layerId, IsDeleted: true })),
 					layerGroupId: props.layer.id,
 				},
-				refetchQueries: ['getAllLayerSettingsByUser', 'getLayerGroups'],
 			});
+			updatedLayer = response?.data?.updateManyLayer || [];
 		} else {
-			updateLayer({
+			const response = await updateLayer({
 				variables: {
 					layer: {
 						_id: props.layer.layerId,
 						IsDeleted: true,
 					},
 				},
-				refetchQueries: ['getAllLayerSettingsByUser'],
-				// awaitRefetchQueries: true,
 			});
+			updatedLayer = response?.data?.updateLayer?.layer;
 		}
+
+		// Update the globalState and projectedLayers by filtering out the deleted layer(s)
+		layerController.updateState(prevState => ({
+			projectedLayers: prevState.projectedLayers.filter(
+				layer => layer.layerId !== updatedLayer._id // Compare layer.layerId with updatedLayer._id
+			),
+		}));
+
+		globalStateController.updateState(prevState => ({
+			layers: prevState.layers.filter(
+				layer => layer.layerId !== updatedLayer._id // Same comparison for globalState.layers
+			),
+		}));
+
+		setStateApp(state => ({ ...state, universalCircularLoaderAct: false }));
 	};
 
 	return (

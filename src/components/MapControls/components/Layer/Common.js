@@ -68,6 +68,18 @@ export const ColorPickerStyledBox = withStyles(() => ({
 	},
 }))(ColorBox);
 
+export const project = {
+	layerId: 1,
+	layerType: 1,
+	layerName: 1,
+	groupName: 1,
+	groupId: 1,
+	position: 1,
+	layerSettings: 1,
+	identifier: 1,
+	layerCategory: 1,
+};
+
 export const useStyles = makeStyles(() => ({
 	gridOnIcon: {
 		color: '#7f7f80',

@@ -2,13 +2,23 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Popper, Grow, Paper, MenuList, MenuItem, Typography, Collapse, IconButton } from '@material-ui/core';
+import {
+	Popper,
+	Grow,
+	Paper,
+	MenuList,
+	MenuItem,
+	Typography,
+	Collapse,
+	IconButton,
+	CircularProgress,
+	Backdrop,
+} from '@material-ui/core';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Dialog from '@material-ui/core/Dialog';
 import List from '@material-ui/core/List';
@@ -36,7 +46,7 @@ import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
 
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
-import { ALLLAYERSETTINGSBYUSER } from 'graphQL/useQueryAllLayerSettingsByUser';
+import { GET_PROJECTED_LAYERS } from 'graphQL/useQueryAllLayerSettingsByUser';
 import { GETLAYERBYID } from 'graphQL/useQueryLayerById';
 
 import { globalStateController } from 'hookstate/globalStateController';
@@ -46,6 +56,7 @@ import { showInfoMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
 import DeleteConfirmationDialog from '../DeleteConfirmationDialog';
+import { project } from '../Layer/Common';
 
 const paddingLeft = 6;
 const useStyles = makeStyles(theme => ({
@@ -184,8 +195,7 @@ export default function AddLayer(props) {
 	const layer_limit = 50;
 
 	const [stateApp, setStateApp] = useContext(AppContext);
-	const [getAllLayerSettingsByUser, { data: layerStates, loading: layerSettingsLoading }] =
-		useLazyQuery(ALLLAYERSETTINGSBYUSER);
+	const [getProjectedLayers, { data: layerStates, loading: layerSettingsLoading }] = useLazyQuery(GET_PROJECTED_LAYERS);
 	const [getLayerById] = useLazyQuery(GETLAYERBYID);
 	const [layerData, setLayerData] = useState(null);
 	const { globalStateValues } = globalStateController.useState(['layers'], 'globalStateValues');
@@ -210,26 +220,16 @@ export default function AddLayer(props) {
 	}, [layerStates]);
 
 	useEffect(() => {
-		// Fetch data on component mount
-		const project = {
-			layerId: 1,
-			layerType: 1,
-			layerName: 1,
-			groupName: 1,
-			groupId: 1,
-			position: 1,
-			layerSettings: 1,
-			identifier: 1,
-			layerCategory: 1,
-		};
-
-		getAllLayerSettingsByUser({
-			variables: {
-				userId: stateApp.user._id,
-				project,
-			},
-		});
-	}, []);
+		if (!projectedLayers || projectedLayers.length === 0) {
+			// Fetch data on component mount
+			getProjectedLayers({
+				variables: {
+					userId: stateApp.user._id,
+					project,
+				},
+			});
+		}
+	}, [projectedLayers, getProjectedLayers, stateApp.user._id]);
 
 	const updateStateLayers = currentLayers => {
 		setStateApp({ ...stateApp, layers: currentLayers });
@@ -271,6 +271,7 @@ export default function AddLayer(props) {
 	useOnClickOutside({ current: anchorEl }, handleMenuClose);
 
 	const handleApplyChange = (currentLayer, currentLayers) => {
+		debugger;
 		const layersToUpdate = [];
 		const layersSettingsToUpdate = [];
 		layersSettingsToUpdate.push({
@@ -313,6 +314,7 @@ export default function AddLayer(props) {
 	};
 
 	const handleLayerSettingChange = (layers, changeValue) => {
+		debugger;
 		const isReplace = typeof changeValue !== 'undefined';
 		const value = isReplace ? changeValue : !layers.some(l => l.layerSettings?.showable);
 		if (layers?.filter(row => row?.layerSettings?.showable === true).length < layer_limit) {
@@ -339,6 +341,7 @@ export default function AddLayer(props) {
 
 	useEffect(() => {
 		if (layerData) {
+			debugger;
 			const layerIndex = currentLayers.findIndex(clayer => clayer.layerId === layerData.layerId);
 			if (layerIndex !== -1) {
 				handleLayerSettingChange([layerData]);
@@ -377,18 +380,29 @@ export default function AddLayer(props) {
 	};
 
 	const changeShowAble = async layer => {
+		debugger;
 		layerController.updateProjectedLayers({ layer, field: 'showable', value: !layer?.layerSettings?.showable });
 		const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === layer.identifier);
 		let updatedLayer;
+		let layerIds = [];
+
+		if (layer.type === 'group' && Array.isArray(layer.layers)) {
+			layerIds = layer.layers.map(groupLayer => groupLayer.layerId);
+		} else {
+			layerIds = [layer.layerId];
+		}
+		console.log(layerIds);
 		if (layerIndex === -1) {
 			updatedLayer = await getLayerById({
 				variables: {
-					layerId: layer.layerId,
+					layerIds,
 					userId: stateApp.user._id,
 				},
 			});
 		}
 		if (updatedLayer?.data?.layerById && layerIndex === -1) {
+			debugger;
+			console.log(updatedLayer.data.layerById);
 			setLayerData(updatedLayer.data.layerById);
 			setCurrentLayers(prevLayers => sortBy([...prevLayers, updatedLayer.data.layerById], 'position'));
 			return;
@@ -509,69 +523,75 @@ export default function AddLayer(props) {
 							>
 								Select one or more of the available layers below to add them to your current map view
 							</Typography>
-
-							<div onClick={e => e.stopPropagation()}>
-								<StyledListItem2 button onClick={() => setOpenM1(!openM1)}>
-									<Checkbox
-										checked={selectAllMinerallayers}
-										color="darkgray"
-										onClick={e => e.stopPropagation()}
-										onChange={() => {
-											handleCheckAllLayers(M1Layers, !selectAllMinerallayers, 'M1');
-										}}
-										inputProps={{ 'aria-label': 'primary checkbox' }}
-									/>
-									<ListItemText primary="M1neral Platform Layers" />
-									{openM1 ? <ExpandLess /> : <ExpandMore />}
-								</StyledListItem2>
-								<Collapse in={openM1} timeout="auto" unmountOnExit>
-									<List className={classes.list}>
-										{M1Layers?.filter(
-											layer =>
-												(!props.search || layer.layerName?.toLowerCase().includes(props.search)) &&
-												!['Land Grid', 'TX GLO Units', 'TX GLO Active Leases', 'Rig Activity'].includes(layer.layerName)
-										)?.map((layer, index) => {
-											const labelId = `m1layer-list-label-${index}`;
-											if (layer.layerName === 'Recent Submitted Permits') {
-												return (
-													<FeatureFlag key={layer.layerName} feature={FEATURES.RECENTPERMITLAYER}>
-														<StyledListItem key={labelId} ContainerComponent="li">
+							{layerSettingsLoading ? (
+								<Backdrop style={{ zIndex: 999999, position: 'absolute', width: '100%' }} open={true} invisible={true}>
+									<CircularProgress size={80} disableShrink color="secondary" />
+								</Backdrop>
+							) : (
+								<div onClick={e => e.stopPropagation()}>
+									<StyledListItem2 button onClick={() => setOpenM1(!openM1)}>
+										<Checkbox
+											checked={selectAllMinerallayers}
+											color="darkgray"
+											onClick={e => e.stopPropagation()}
+											onChange={() => {
+												handleCheckAllLayers(M1Layers, !selectAllMinerallayers, 'M1');
+											}}
+											inputProps={{ 'aria-label': 'primary checkbox' }}
+										/>
+										<ListItemText primary="M1neral Platform Layers" />
+										{openM1 ? <ExpandLess /> : <ExpandMore />}
+									</StyledListItem2>
+									<Collapse in={openM1} timeout="auto" unmountOnExit>
+										<List className={classes.list}>
+											{M1Layers?.filter(
+												layer =>
+													(!props.search || layer.layerName?.toLowerCase().includes(props.search)) &&
+													!['Land Grid', 'TX GLO Units', 'TX GLO Active Leases', 'Rig Activity'].includes(
+														layer.layerName
+													)
+											)?.map((layer, index) => {
+												const labelId = `m1layer-list-label-${index}`;
+												if (layer.layerName === 'Recent Submitted Permits') {
+													return (
+														<FeatureFlag key={layer.layerName} feature={FEATURES.RECENTPERMITLAYER}>
+															<StyledListItem key={labelId} ContainerComponent="li">
+																<Checkbox
+																	checked={layer.layerSettings.showable}
+																	color="dark gray"
+																	onChange={() => changeShowAble(layer)}
+																	inputProps={{ 'aria-label': 'primary checkbox' }}
+																/>
+																<ListItemText id={labelId} primary={truncate(layer.layerName, THIRTY)} />
+															</StyledListItem>
+														</FeatureFlag>
+													);
+												} else if (layer.layerName !== 'Recent Submitted Permits') {
+													return (
+														<StyledListItem key={layer.layerNam} ContainerComponent="li">
 															<Checkbox
 																checked={layer.layerSettings.showable}
 																color="dark gray"
 																onChange={() => changeShowAble(layer)}
 																inputProps={{ 'aria-label': 'primary checkbox' }}
 															/>
-															<ListItemText id={labelId} primary={truncate(layer.layerName, THIRTY)} />
+															{/* Override layer manager name of Wells */}
+															<ListItemText
+																id={labelId}
+																primary={
+																	layer.layerName === 'Wells' ? 'Platform Wells' : truncate(layer.layerName, THIRTY)
+																}
+															/>
 														</StyledListItem>
-													</FeatureFlag>
-												);
-											} else if (layer.layerName !== 'Recent Submitted Permits') {
-												return (
-													<StyledListItem key={layer.layerNam} ContainerComponent="li">
-														<Checkbox
-															checked={layer.layerSettings.showable}
-															color="dark gray"
-															onChange={() => changeShowAble(layer)}
-															inputProps={{ 'aria-label': 'primary checkbox' }}
-														/>
-														{/* Override layer manager name of Wells */}
-														<ListItemText
-															id={labelId}
-															primary={
-																layer.layerName === 'Wells' ? 'Platform Wells' : truncate(layer.layerName, THIRTY)
-															}
-														/>
-													</StyledListItem>
-												);
-											} else {
-												return null;
-											}
-										})}
-									</List>
-								</Collapse>
-								<StyledListItem2 button onClick={() => setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers)}>
-									{/* <IconButton
+													);
+												} else {
+													return null;
+												}
+											})}
+										</List>
+									</Collapse>
+									<StyledListItem2 button onClick={() => setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers)}>
+										{/* <IconButton
                       size="small"
                       onClick={(event) => {
                         event.stopPropagation();
@@ -580,26 +600,23 @@ export default function AddLayer(props) {
                     >
                   <ClearButton />
                   </IconButton> */}
-									<ListItemText style={{ paddingLeft: '20px' }} primary="Client Specific Layers" />
-									<Button
-										color="secondary"
-										startIcon={<ClearButton />}
-										className={classes.multiSelectionTopBarButtons}
-										onClick={event => {
-											event.stopPropagation();
-											handleCheckAllLayers(UdLayers, false, 'UD');
-										}}
-									>
-										CLEAR ALL
-									</Button>
-									{isOpenUserDefinedLayers ? <ExpandLess /> : <ExpandMore />}
-								</StyledListItem2>
+										<ListItemText style={{ paddingLeft: '20px' }} primary="Client Specific Layers" />
+										<Button
+											color="secondary"
+											startIcon={<ClearButton />}
+											className={classes.multiSelectionTopBarButtons}
+											onClick={event => {
+												event.stopPropagation();
+												handleCheckAllLayers(UdLayers, false, 'UD');
+											}}
+										>
+											CLEAR ALL
+										</Button>
+										{isOpenUserDefinedLayers ? <ExpandLess /> : <ExpandMore />}
+									</StyledListItem2>
 
-								{/* Custom */}
-								<Collapse in={isOpenUserDefinedLayers} timeout="auto" unmountOnExit>
-									{layerSettingsLoading ? (
-										<CircularProgress size={80} />
-									) : (
+									{/* Custom */}
+									<Collapse in={isOpenUserDefinedLayers} timeout="auto" unmountOnExit>
 										<List className={classes.list}>
 											{UdLayers?.filter(
 												layer =>
@@ -798,9 +815,9 @@ export default function AddLayer(props) {
 												return null;
 											})}
 										</List>
-									)}
-								</Collapse>
-							</div>
+									</Collapse>
+								</div>
+							)}
 						</div>
 					</div>
 					{/* //// delete confirmation dialog */}
