@@ -348,15 +348,22 @@ const useMRTTable = tableKey => {
 						onColumnFiltersChange: filtersFunc => {
 							const columnFilters = tableState.filters.get({ noproxy: true });
 							const TableSchema = tableState.TableSchema.get({ noproxy: true });
+							const emptyFilters = ['empty', 'notEmpty'];
 
 							const formattedColumnFilters = (columnFilters || []).map(filter => ({
 								...filter,
 								id: filter.field,
+								value:
+									filter?.columnType === 'number' && emptyFilters.includes(filter?.searchType) ? ' ' : filter.value,
 							}));
 
 							const _newFilters = filtersFunc(formattedColumnFilters);
 
-							const newFilters = _newFilters;
+							const newFilters = _newFilters.map(filter => ({
+								...filter,
+								value:
+									filter?.columnType === 'number' && emptyFilters.includes(filter?.searchType) ? '0' : filter.value,
+							}));
 
 							const result = [];
 							newFilters.forEach(item => {
