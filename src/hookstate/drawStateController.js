@@ -19,7 +19,6 @@ import {
 	drawBoundary,
 	getDrawAdustedShape,
 } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
-import { removeSpaces } from 'components/MRTTable/utils/helper';
 import { DRAWING_MODES } from 'components/Navigation/NavigationContext';
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { calculateLandArea, shapeTypeLayers } from 'components/Shared/functions/shapeLayer';
@@ -799,7 +798,7 @@ const drawStateControllerHandler = state => {
 		};
 
 		const featureId = hat();
-		const layer = removeSpaces(currentAsset?.name);
+		const layer = currentAsset?.tableName;
 
 		const newShapeFeature = {
 			id: featureId,

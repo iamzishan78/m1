@@ -115,7 +115,7 @@ export default function Land() {
 					newList[key] = {
 						featureFlag: 'LANDMODULE',
 						title: item.name,
-						link: `/land/customAsset/${item.flatModel}`,
+						link: `/land/customAsset/${item.tableName}`,
 						component: 'DynamicAssetGrid',
 					};
 

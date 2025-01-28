@@ -6,8 +6,6 @@ import Button from '@material-ui/core/Button';
 import { useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 
-import { removeSpaces } from 'components/MRTTable/utils/helper';
-
 import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 
 import { tableController } from 'hookstate/tableController';
@@ -19,14 +17,13 @@ function DynamicAssetGridToolBar({ tableKey }) {
 	const tableState = Controller.useState(['fetchDynamicSchema']);
 	const tableStateValues = tableState.stateValues;
 
-	const { name } = tableStateValues.fetchDynamicSchema || {};
+	const { name, tableName } = tableStateValues.fetchDynamicSchema || {};
 
 	const [addAndUpdateInRunTimeModel] = useMutation(ADD_RECORD_IN_RUN_TIME_MODEL, {
 		onCompleted: data => {
 			const addedRecord = data?.addRecordInRunTimeModel?.asset || {};
 			if (addedRecord && addedRecord?._id) {
-				const model = removeSpaces(name);
-				history.push(`/land/customAsset/${model}/details/${addedRecord?._id}`);
+				history.push(`/land/customAsset/${tableName}/details/${addedRecord?._id}`);
 			}
 		},
 		fetchPolicy: 'no-cache',

@@ -46,6 +46,7 @@ const BottomContainer = () => {
 							fetchDynamicSchema: {
 								variables: { name: currentAsset?.name },
 								name: currentAsset?.name,
+								tableName: currentAsset?.tableName,
 								isAssociatedModel: true,
 								associatedModel: model.modelName,
 								associationKey: mrtDataMappingKey,

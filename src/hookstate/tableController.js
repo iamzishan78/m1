@@ -15,7 +15,7 @@ import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectChec
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
-import { formatGridViewToMRT, removeSpaces } from 'components/MRTTable/utils/helper';
+import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
@@ -171,14 +171,12 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 				modelName = fetchDynamicSchema.associatedModel;
 			} else {
 				key = item.mappingKey;
-				modelName = fetchDynamicSchema.name;
+				modelName = fetchDynamicSchema.tableName;
 			}
 
 			if (item.keyType === 'user') {
 				key = `${key}.name`;
 			}
-
-			const model = removeSpaces(modelName);
 
 			return {
 				...CommonSchema.STRING_COLUMN,
@@ -197,7 +195,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 						return (
 							<ColumnWithLink
 								value={renderedCellValue}
-								link={`/land/customAsset/${model}/details/${id}`}
+								link={`/land/customAsset/${modelName}/details/${id}`}
 								onClick={e => {
 									e.stopPropagation();
 									detailCardController.setBottomSelectedTab(0);
