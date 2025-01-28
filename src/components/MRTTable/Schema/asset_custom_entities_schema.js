@@ -28,9 +28,9 @@ const AssetCustomEntitiesMeta = {
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'tableName.keyword',
-			accessorFn: row => row?.tableName,
-			id: 'tableName',
+			name: 'name.keyword',
+			accessorFn: row => row?.name,
+			id: 'name',
 			header: 'Asset Name',
 		},
 		{

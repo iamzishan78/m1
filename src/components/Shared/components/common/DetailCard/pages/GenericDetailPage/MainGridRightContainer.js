@@ -55,10 +55,10 @@ const MainGridRightContainer = () => {
 				setCollapse={() => detailCardController.togglePullout()}
 				targetSourceId={currentAssetRecord?._id}
 				showDescription={false}
-				targetLabel={currentAsset?.tableName}
-				ownerTitle={`${currentAsset?.tableName} Owner`}
+				targetLabel={currentAsset?.name}
+				ownerTitle={`${currentAsset?.name} Owner`}
 				commentsWidth="23vw"
-				pageLink={`/land/customAsset/${removeSpaces(currentAsset?.tableName)}/details/${currentAssetRecord?._id}/documents`}
+				pageLink={`/land/customAsset/${removeSpaces(currentAsset?.name)}/details/${currentAssetRecord?._id}/documents`}
 				viewAllDocuments={!expandedCard}
 				menuComponent={
 					<IconButton className={classes.menuIcon} onClick={handleClick}>
@@ -95,7 +95,7 @@ const MainGridRightContainer = () => {
 						handleExpandClick('deleteConfirmation');
 					}}
 				>
-					{`Delete ${currentAsset?.tableName}`}
+					{`Delete ${currentAsset?.name}`}
 				</MenuItem>
 			</Menu>
 		</>

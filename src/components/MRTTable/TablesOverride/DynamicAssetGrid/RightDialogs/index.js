@@ -27,7 +27,7 @@ function DynamicAssetTableDialogs() {
 	const onSubmit = record => {
 		Loader.createToast('addAndUpdate', 'Add and Update in Progress');
 		addAndUpdateInRunTimeModel({
-			variables: { tableName: rest.tableName, record },
+			variables: { name: rest.name, record },
 		}).then(
 			res => {
 				if (res?.data?.addRecordInRunTimeModel) {
@@ -57,7 +57,7 @@ function DynamicAssetTableDialogs() {
 					columns={rest.columns}
 					onClose={handleCloseDialog}
 					onSubmit={onSubmit}
-					tableName={rest.tableName}
+					name={rest.name}
 				/>
 			)}
 		</>

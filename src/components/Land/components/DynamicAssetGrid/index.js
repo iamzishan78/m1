@@ -18,9 +18,9 @@ function DynamicAssetGrid() {
 			assetName: activeModule.title,
 			fetchDynamicSchema: {
 				variables: {
-					tableName: activeModule.title,
+					name: activeModule.title,
 				},
-				tableName: activeModule.title,
+				name: activeModule.title,
 			},
 		}),
 		[activeModule]

@@ -368,7 +368,7 @@ const ShapeActionsPopup = props => {
 				{mapCreationAsset.map(option => (
 					<MenuItem
 						key={option._id}
-						value={option.tableName}
+						value={option.name}
 						onClick={e => {
 							e.stopPropagation();
 							globalStateController.updateState({ currentAsset: option });
@@ -376,7 +376,7 @@ const ShapeActionsPopup = props => {
 							saveAndOpenMapAssetShapeDetail(option);
 						}}
 					>
-						{option.tableName}
+						{option.name}
 					</MenuItem>
 				))}
 			</Menu>

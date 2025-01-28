@@ -18,7 +18,7 @@ import { AppContext } from 'AppContext';
 function GenericDetailCard() {
 	const [stateApp, setStateApp] = useContext(AppContext);
 
-	const { id, tableName, paramId, type } = useParams();
+	const { id, name, paramId, type } = useParams();
 
 	const [openDialog, setOpenDialog] = useState(false);
 	const [assetRecord, setAssetRecord] = useState(null);
@@ -40,21 +40,21 @@ function GenericDetailCard() {
 	});
 
 	useEffect(() => {
-		let assetName = tableName ?? type;
+		let assetName = name ?? type;
 		const assetId = id ?? paramId;
 
 		assetName = replaceUnderscoreAndCapitalize(assetName);
 
 		if (assetName && assetId) {
 			getAsset({
-				variables: { tableName: assetName },
+				variables: { name: assetName },
 			});
 
 			getRecordFromAsset({
-				variables: { _id: assetId, tableName: assetName },
+				variables: { _id: assetId, name: assetName },
 			});
 		}
-	}, [id, tableName, paramId, type, getAsset, getRecordFromAsset]);
+	}, [id, name, paramId, type, getAsset, getRecordFromAsset]);
 
 	useEffect(() => {
 		detailCardController.updateState({ loading: true });

@@ -61,7 +61,7 @@ export default function DocumentsCard() {
 					{/* Height as 100% and marginTop as 30px*/}
 					<ViewDocuments
 						contactId={id ?? paramId}
-						relatedObjectType={currentAsset?.tableName}
+						relatedObjectType={currentAsset?.name}
 						user_id={stateApp.user.email}
 						openDeleteConfirmDialog={openDeleteConfirmDialog}
 						handleClose={handleDeleteCancel}

@@ -148,7 +148,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			sort,
 			filters,
 			parent: tableStateValues.tableKey,
-			isDynamicAsset: !!fetchDynamicSchema?.tableName,
+			isDynamicAsset: !!fetchDynamicSchema?.name,
 		};
 
 		// Update layer filters if filter layer type is defined

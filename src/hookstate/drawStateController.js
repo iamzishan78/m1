@@ -795,11 +795,11 @@ const drawStateControllerHandler = state => {
 
 		let properties = {
 			shapeName,
-			assetName: currentAsset?.tableName,
+			assetName: currentAsset?.name,
 		};
 
 		const featureId = hat();
-		const layer = removeSpaces(currentAsset?.tableName);
+		const layer = removeSpaces(currentAsset?.name);
 
 		const newShapeFeature = {
 			id: featureId,
@@ -825,13 +825,13 @@ const drawStateControllerHandler = state => {
 				shape: JSON.stringify(newShapeFeature),
 				layer,
 				shapeName,
-				assetName: currentAsset?.tableName,
+				assetName: currentAsset?.name,
 				user: user._id,
 			},
 		};
 
 		addRecordInRunTimeModel({
-			variables: { tableName: currentAsset?.tableName, record: mapAssetShapeData },
+			variables: { name: currentAsset?.name, record: mapAssetShapeData },
 		}).then(result => {
 			if (!result?.data?.addRecordInRunTimeModel?.success) {
 				dispatch(showErrorMessage(result?.data?.addRecordInRunTimeModel?.message));

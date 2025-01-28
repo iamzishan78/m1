@@ -131,10 +131,10 @@ function AssociationDialog() {
 
 			addAossciatedData({
 				variables: {
-					mainModelName: currentAsset?.tableName,
+					mainModelName: currentAsset?.name,
 					associatedModelName: currentAssociatedModel?.modelName,
 					descriptorObject: currentAssetRecord?._id,
-					descriptorType: currentAsset?.tableName,
+					descriptorType: currentAsset?.name,
 					relatedObject: selectedId,
 					relatedObjectType: currentAssociatedModel?.modelName,
 				},

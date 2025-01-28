@@ -126,7 +126,7 @@ function AssetAssociationDialog() {
 
 		upsertAssociatedModels({
 			variables: {
-				tableName: selectedAsset.tableName,
+				name: selectedAsset.name,
 				associatedModels: resultantModels, // Use the updated array
 			},
 		}).then(res => {
@@ -166,7 +166,7 @@ function AssetAssociationDialog() {
 					<div className={classes.header}>
 						<Grid container justify="space-between" direction="row" display="flex">
 							<Grid item>
-								<h3>Associate Models to {selectedAsset?.tableName}</h3>
+								<h3>Associate Models to {selectedAsset?.name}</h3>
 							</Grid>
 							<Grid item xs={6} className={classes.dialogActions}>
 								<IconButton onClick={handleClose}>

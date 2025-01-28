@@ -38,14 +38,14 @@ function CustomAssetEntityDialog() {
 	];
 	const { control, handleSubmit, watch, reset, setValue } = useForm({
 		defaultValues: {
-			table_name: '',
+			asset_name: '',
 			fields: defaultFields,
 			creation_place: '',
 		},
 	});
 
 	const fields = useWatch({ control, name: 'fields' });
-	const tableName = watch('table_name', ''); // Watch the "table_name" field
+	const name = watch('asset_name', ''); // Watch the "asset_name" field
 
 	const { stateValues } = tableGlobalController.useState(['AssetCustomEntityDialog', 'selectedAsset']);
 	const { type, isOpen } = stateValues.AssetCustomEntityDialog || {};
@@ -70,7 +70,7 @@ function CustomAssetEntityDialog() {
 
 	useEffect(() => {
 		reset({
-			table_name: selectedAsset?.tableName || '',
+			asset_name: selectedAsset?.name || '',
 			fields: selectedAsset?.modelKeys || defaultFields,
 			creation_place: selectedAsset?.creationPlace || '',
 		});
@@ -95,7 +95,7 @@ function CustomAssetEntityDialog() {
 
 		storeCustomAsset({
 			variables: {
-				tableName: data.table_name,
+				name: data.asset_name,
 				modelKeys: data.fields,
 				creationPlace: data.creation_place,
 			},
@@ -139,7 +139,7 @@ function CustomAssetEntityDialog() {
 									<Grid item xs={6}>
 										<Controller
 											control={control}
-											name="table_name"
+											name="asset_name"
 											render={field => (
 												<TextField
 													size="small"
@@ -209,10 +209,10 @@ function CustomAssetEntityDialog() {
 									</Button>
 									<Button
 										type="submit"
-										className={hasAtLeastOneKey && tableName ? classes.btnColor : ''}
+										className={hasAtLeastOneKey && name ? classes.btnColor : ''}
 										style={{ margin: '25px 25px 25px 5px' }}
 										variant="outlined"
-										disabled={hasAtLeastOneKey && tableName ? false : true}
+										disabled={hasAtLeastOneKey && name ? false : true}
 									>
 										{isCreateMode ? 'Create Asset' : 'Update Asset'}
 									</Button>

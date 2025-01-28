@@ -253,16 +253,6 @@ export default function DetailInfo() {
 
 				<Box display="flex" justifyContent="flex-end">
 					<ToggleEmptyFieldButton />
-					{/* <h4
-						className={classes.viewAll}
-						onClick={() => {
-							history.push(
-								`/land/customAsset/${removeSpaces(currentAsset?.tableName)}/details/${currentAssetRecord?._id}/detailedInformation`
-							);
-						}}
-					>
-						View All
-					</h4> */}
 				</Box>
 			</Grid>
 

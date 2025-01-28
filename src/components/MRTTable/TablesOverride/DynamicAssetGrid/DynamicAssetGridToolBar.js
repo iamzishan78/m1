@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
@@ -14,21 +14,18 @@ import { tableController } from 'hookstate/tableController';
 
 function DynamicAssetGridToolBar({ tableKey }) {
 	const history = useHistory();
-	const [tableName, setTableName] = useState('');
 
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState(['fetchDynamicSchema']);
 	const tableStateValues = tableState.stateValues;
 
-	useEffect(() => {
-		setTableName(tableStateValues.fetchDynamicSchema.tableName);
-	}, [tableStateValues.fetchDynamicSchema.tableName]);
+	const { name } = tableStateValues.fetchDynamicSchema || {};
 
 	const [addAndUpdateInRunTimeModel] = useMutation(ADD_RECORD_IN_RUN_TIME_MODEL, {
 		onCompleted: data => {
 			const addedRecord = data?.addRecordInRunTimeModel?.asset || {};
 			if (addedRecord && addedRecord?._id) {
-				const model = removeSpaces(tableName);
+				const model = removeSpaces(name);
 				history.push(`/land/customAsset/${model}/details/${addedRecord?._id}`);
 			}
 		},
@@ -39,7 +36,7 @@ function DynamicAssetGridToolBar({ tableKey }) {
 	const handleClick = () => {
 		addAndUpdateInRunTimeModel({
 			variables: {
-				tableName,
+				name,
 				record: {},
 			},
 		});
@@ -47,7 +44,7 @@ function DynamicAssetGridToolBar({ tableKey }) {
 	return (
 		<>
 			<Button variant="contained" color="primary" onClick={handleClick}>
-				{`+ ADD ${tableName}`}
+				{`+ ADD ${name}`}
 			</Button>
 		</>
 	);

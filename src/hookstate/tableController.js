@@ -171,7 +171,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 				modelName = fetchDynamicSchema.associatedModel;
 			} else {
 				key = item.mappingKey;
-				modelName = fetchDynamicSchema.tableName;
+				modelName = fetchDynamicSchema.name;
 			}
 
 			if (item.keyType === 'user') {

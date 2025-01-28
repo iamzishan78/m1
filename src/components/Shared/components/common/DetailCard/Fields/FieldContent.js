@@ -233,7 +233,7 @@ export default function FieldContent({
 			}}
 			value={get(editContent, 'campaignName', [])}
 			fullWidth
-			targetLabel={currentAsset?.tableName}
+			targetLabel={currentAsset?.name}
 			targetLabelId={id}
 			onKeyDown={event => keyDownHandler(event, ['campaignName'])}
 			onBlur={() => onBlurHandler(['campaignName'])}
