@@ -316,12 +316,16 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							return;
 						}
 
-						client.mutate({
-							mutation: PARSE_PDF_TEXTS,
-							variables: {
-								fileId: file_id,
-							},
-						});
+						client
+							.mutate({
+								mutation: PARSE_PDF_TEXTS,
+								variables: {
+									fileId: file_id,
+								},
+							})
+							.then(() => {
+								tableGlobalController.refetch();
+							});
 					})
 					.catch(err => console.log(err));
 
