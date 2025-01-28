@@ -13,13 +13,14 @@ function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode, contr
 		<MenuItem
 			divider={mode.divider}
 			onClick={() => {
-				const isBetween = previousFilter.includes('between');
+				const isBetween = ['betweenInclusive', 'between'].includes(previousFilter);
 				const isSingleMulti = ['singleselect', 'multiselect'].includes(mode.option);
 				const isEmptyNotEmpty = ['empty', 'notEmpty'].includes(mode.option);
 				const isPrevSingleMulti = ['singleselect', 'multiselect'].includes(previousFilter);
 
 				if (isBetween && isSingleMulti) {
 					controller(tableKey).setFilterMode(name, 'equals');
+					onSelectFilterMode('equals');
 					setTimeout(() => {
 						controller(tableKey).setFilterMode(name, mode.option);
 						onSelectFilterMode(mode.option);

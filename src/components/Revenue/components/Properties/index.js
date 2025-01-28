@@ -2,14 +2,10 @@ import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/styles';
 
-import { useLazyQuery } from '@apollo/client';
-
 import MRTTable from 'components/MRTTable';
 import AnalyticsCards from 'components/Revenue/components/Common/AnalyticsCards';
 import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
 import { setStateIfDeepEqual } from 'components/Shared/functions';
-
-import { GET_UNMAPPED_PROPERTY_COUNT } from 'graphQL/useQueryGetProperty';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController } from 'hookstate/tableController';
@@ -101,24 +97,10 @@ export default function Properties() {
 	const setESFilters = newFilter => {
 		if (newFilter.length === 0) {
 			ESFilters([]);
+			tableController('PropertiesTable').clearFilters();
 		}
 		setStateIfDeepEqual(ESFilters, newFilter);
 	};
-
-	const [getUnmappedPropertyCount, { data: getUnmappedPropertyCountResult }] = useLazyQuery(
-		GET_UNMAPPED_PROPERTY_COUNT,
-		{
-			fetchPolicy: 'no-cache',
-		}
-	);
-
-	useEffect(() => {
-		getUnmappedPropertyCount({
-			variables: {
-				filters: propertiesTableState?.filters,
-			},
-		});
-	}, [propertiesTableState?.filters]);
 
 	useEffect(() => {
 		return () => {
@@ -181,7 +163,6 @@ export default function Properties() {
 				setESFilters={setESFilters}
 				filterToggle={filterToggle}
 				setFilterToggle={setFilterToggle}
-				unmappedPropertyCount={getUnmappedPropertyCountResult?.getUnmappedPropertyCount?.unmappedCount}
 				clearFilter={tableController('PropertiesTable').clearFilter}
 			/>
 			<div className={classes.propertyTableInfContainer}>

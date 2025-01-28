@@ -38,6 +38,8 @@ import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
 import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
 import { GETCHECK } from 'graphQL/useQueryCheck';
 
+import { globalStateController } from 'hookstate/globalStateController';
+
 import MetaField from 'utils/MetaField';
 
 import { setRevenueKey } from 'actions';
@@ -221,6 +223,7 @@ export default function DetailComponents(props) {
 	const [isButtonScroll, setButtonScroll] = useState(false);
 	const [collapse, setCollapse] = useState(true);
 	const [stateApp, setStateApp] = useContext(AppContext);
+	const { globalStateValues } = globalStateController.useState(['showFieldModal', 'user'], 'globalStateValues');
 	const [anchorEl, setAnchorEl] = useState();
 	const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 	const [loader, setLoader] = useState(false);
@@ -339,7 +342,7 @@ export default function DetailComponents(props) {
 			updateOwner({
 				variables: {
 					descriptorObject: data.owner,
-					userId: stateApp.user.mongoId,
+					userId: globalStateValues.user.mongoId,
 					relatedObject: checksFlatData._id,
 					relatedObjectType: 'Check',
 				},
@@ -482,7 +485,7 @@ export default function DetailComponents(props) {
 							)}
 						</div>
 
-						{stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
+						{globalStateValues.showFieldModal && <MetaField columns={[]} category="Check" />}
 
 						{/**
 						 * Menu for meta data
