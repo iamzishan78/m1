@@ -6,7 +6,6 @@ import { ExpandMore as ExpandMoreIcon, NavigateNext as NavigateNextIcon } from '
 
 import PropTypes from 'prop-types';
 
-
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 
 const useStyles = makeStyles(() => ({

@@ -8,7 +8,7 @@ import {
 	faFileArchive,
 	faFileCode,
 	faFileImage,
-	faExternalLinkAlt
+	faExternalLinkAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -51,7 +51,7 @@ export default function get_file_icon(value) {
 				case 'geojson':
 					return <FontAwesomeIcon icon={faFileCode} style={{ fontSize: '1.4rem', color: '#82c91e' }} />;
 				case 'url':
-					return <FontAwesomeIcon  icon={faExternalLinkAlt} style={{ fontSize: '1.4rem', color: '#82c91e' }} />
+					return <FontAwesomeIcon icon={faExternalLinkAlt} style={{ fontSize: '1.4rem', color: '#82c91e' }} />;
 				default:
 					return <FontAwesomeIcon icon={faFile} style={{ fontSize: '1.4rem', color: 'grey' }} />;
 			}

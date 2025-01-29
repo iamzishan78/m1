@@ -3,9 +3,9 @@ import { Flipped } from 'react-flip-toolkit';
 import { useSelector } from 'react-redux';
 import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
 
-
 import { Box, Grid, ListItemIcon, FormControlLabel, Switch } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 import { DragIndicator } from '@material-ui/icons';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -26,6 +26,8 @@ import { mapStateController } from 'hookstate/mapStateController';
 
 import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';
+
+import NameWithTooltip from '../Common/NameWithTooltip';
 
 const ZERO = 0;
 const ONE = 1;
@@ -195,10 +197,16 @@ const LayerItem = React.memo(props => {
 										<ListItemIcon />
 									)}
 								</Box>
-
-								<Typography id={id} color="secondary" noWrap>
-									{name === 'Wells' ? 'Platform Wells' : name}
-								</Typography>
+								<NameWithTooltip
+									style={{
+										color: 'secondary',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap',
+									}}
+									index={hoverItemIndex}
+									title={name === 'Wells' ? 'Platform Wells' : name}
+									height={'18px'}
+								/>
 								<Box paddingLeft={1} display="flex">
 									{type === 'group' && (
 										<ListItemIcon onClick={handleClick}>

@@ -8,6 +8,7 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
 import { truncate } from 'components/Shared/functions';
+import NameWithTooltip from '../../SidePanel/compoennts/Common/NameWithTooltip';
 
 const useStyles = makeStyles(theme => ({
 	heading: ({ type }) => ({
@@ -67,9 +68,26 @@ function EditableTextField({
 			onMouseOver={() => !isEdit.mode && setEdit({ ...isEdit, able: true })}
 			onMouseLeave={() => setEdit({ ...isEdit, able: false })}
 		>
-			<Grid item style={isEdit.mode ? { width: '89%' } : { textAlign: 'left' }}>
+			<Grid
+				item
+				style={
+					isEdit.mode
+						? { width: '89%' }
+						: {
+								textAlign: 'left',
+								display: 'flex',
+								flexDirection: 'row',
+							}
+				}
+			>
 				{!isEdit.mode ? (
-					<Typography className={classes.heading}>{`${truncate(name, 35)}`}</Typography>
+					<NameWithTooltip
+						title={name}
+						style={{
+							width: '300px', // Approximate ellipsis width
+						}}
+						height={'100%'}
+					/>
 				) : (
 					<TextField
 						fullWidth={true}

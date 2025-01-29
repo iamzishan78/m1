@@ -301,11 +301,11 @@ export default [
 		actual_key: 'contact.tags',
 	},
 	{
-        label: "isPurchased",
-        mapped_key: "",
-        required: false,
-        actual_key: "isPurchased"
-    },
+		label: 'isPurchased',
+		mapped_key: '',
+		required: false,
+		actual_key: 'isPurchased',
+	},
 	// {
 	//   label: "Comments",
 	//   mapped_key: "",

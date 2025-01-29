@@ -255,7 +255,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 						ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
 						campaignPriority:
 							ownerToAdd.campaignPriority && (ownerToAdd.campaignPriority.value || ownerToAdd.campaignPriority),
-							isPurchased: ownerToAdd.isPurchased && (ownerToAdd.isPurchased.value || ownerToAdd.isPurchased),
+						isPurchased: ownerToAdd.isPurchased && (ownerToAdd.isPurchased.value || ownerToAdd.isPurchased),
 					},
 				},
 			});
@@ -331,7 +331,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 			rowData.qtr3 = qtr3;
 			rowData.qtr4 = qtr4;
 			rowData.contactStatus = selectedRow?.contact?.contactStatus;
-			rowData.isPurchased = (selectedRow?.isPurchased == 'true') ? true : false;
+			rowData.isPurchased = selectedRow?.isPurchased == 'true' ? true : false;
 			rowData.status = selectedRow?.contact?.status;
 			rowData.contactOwners = selectedRow?.contactOwners; // auto-complete the contact owner in slideout
 			rowData.relatedObject = selectedRow?.contactId || selectedRow?.ownerEntity;

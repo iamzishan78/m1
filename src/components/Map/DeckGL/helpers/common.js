@@ -27,6 +27,12 @@ const MAX_COLOR_VALUE = 251;
 const DEFAULT_COLOR_VALUE = 152;
 const MAX_COLOR_COMPONENT_VALUE = 255;
 
+const lineStyles = {
+	dots: [2, 2],
+	dashed: [10, 3],
+	connected: [10, 0],
+};
+
 export const random_hex_color_code = () => {
 	const n = (Math.random() * MAX_COLOR_VALUE_HEX * COLOR_MULTIPLIER).toString(SIXTEEN);
 	return `#${n.slice(0, SIX)}`;
@@ -211,10 +217,10 @@ export const filterUniqueFeatures = features => {
 };
 
 export const pickDeckObjects = ({ x, y, radius, depth }) => {
-	if (!window.mapRef?.__deck) {
+	if (!window?.deckOverlay?._deck) {
 		return null;
 	}
-	let deckFeatures = window.mapRef?.__deck?.pickMultipleObjects({
+	let deckFeatures = window?.deckOverlay?._deck?.pickMultipleObjects({
 		x,
 		y,
 		radius,
@@ -380,7 +386,6 @@ export const dividePolygon = polygon => {
 		],
 	]);
 
-	// console.log("Quadrants:", quadrants);
 	return [topLeft, topRight, bottomLeft, bottomRight];
 };
 export const getBeforeLayerId = (beforeLayer, layerFilters) =>
@@ -623,12 +628,62 @@ export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 	};
 };
 
+export const getLayerFillStyle = dbLayer => {
+	// const layerInteraction = dbLayer.layerSettings?.interaction;
+	const selectedFillStyle = dbLayer.layerSettings?.selectedFillStyle;
+	const selectAttrLabel = dbLayer.layerSettings?.selectedFillStyle?.label;
+	const attributeBasedStyles = dbLayer.layerSettings?.attributeBasedStyles;
+
+	return d => {
+		if (selectAttrLabel) {
+			let path = selectedFillStyle.value;
+			let keys = path?.split('.').slice(1, -1);
+			let value = _.get(d, keys) || _.get(d, path?.replace('.keyword', ''));
+			if (!value) {
+				keys = path?.split('.').slice(1, -1);
+				keys.unshift('properties');
+				value = _.get(d, keys);
+			}
+			const attrFillStyle = attributeBasedStyles[selectAttrLabel][value] || attributeBasedStyles[selectAttrLabel][''];
+			if (attrFillStyle) {
+				return attrFillStyle || dbLayer.layerSettings?.fillStyle;
+			}
+		}
+		return dbLayer.layerSettings?.fillStyle;
+	};
+};
+
+export const getLayerDashStyle = dbLayer => {
+	// const layerInteraction = dbLayer.layerSettings?.interaction;
+	const selectedLineStyle = dbLayer.layerSettings?.selectedLineStyle;
+	const selectAttrLabel = dbLayer.layerSettings?.selectedLineStyle?.label;
+	const attributeBasedLineStyles = dbLayer.layerSettings?.attributeBasedLineStyles;
+
+	return d => {
+		if (selectAttrLabel) {
+			let path = selectedLineStyle.value;
+			let keys = path?.split('.').slice(1, -1);
+			let value = _.get(d, keys) || _.get(d, path?.replace('.keyword', ''));
+			if (!value) {
+				keys = path?.split('.').slice(1, -1);
+				keys.unshift('properties');
+				value = _.get(d, keys);
+			}
+			const attrLineStyle =
+				attributeBasedLineStyles[selectAttrLabel][value] || attributeBasedLineStyles[selectAttrLabel][''];
+			if (attrLineStyle) {
+				return lineStyles[attrLineStyle] || lineStyles[dbLayer.layerSettings?.lineStyle] || lineStyles.connected;
+			}
+		}
+		return lineStyles[dbLayer.layerSettings?.lineStyle] || lineStyles.connected;
+	};
+};
+
 export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	const props = {};
-
+	// Getting layer interation settings
+	const layerInteraction = dbLayer.layerSettings?.interaction;
 	dbLayer.layerPaintProps?.forEach(prop => {
-		// Getting layer interation settings
-		const layerInteraction = dbLayer.layerSettings?.interaction;
 		const fillColor = prop.paintProps?.['fill-color'];
 		const fillOpacity = prop.paintProps?.['fill-opacity'];
 		const strokeWidth = prop.paintProps?.['strokeWidth'];
@@ -712,18 +767,50 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	});
 
 	if (labelProps && labelProps.visibility !== 'none') {
-		props.getTextSize = f => {
-			return f.properties.textSize;
+		props.getTextSize = () => {
+			return 20;
 		};
-		props.textMaxWidth = 500;
+		// props.textMaxWidth = 5;
 		props.pointType = 'text';
+
 		props.textFontFamily = 'Poppins';
-		props.textSizeUnits = 'meters';
+		// props.textSizeUnits = 'meters';
 	} else if (labelProps?.visibility) {
 		// Adhoc Fix
 		props.pointType = 'icon';
 	}
 
+	if (
+		layerInteraction.interactionDetail?.enableStrokeStyle &&
+		(dbLayer.layerSettings?.selectedLineStyle || dbLayer.layerSettings?.lineStyle)
+	) {
+		props.getDashArray = getLayerDashStyle(dbLayer);
+		props.dashJustified = true;
+		props.dashGapPickable = true;
+	}
+
+	if (
+		(layerInteraction.interactionDetail?.enableColorStyle && dbLayer.layerSettings?.selectedFillStyle) ||
+		dbLayer.layerSettings?.fillStyle
+	) {
+		// fill pattern props
+		props.stroked = true;
+		props.filled = true;
+		props.lineWidthMinPixels = 2;
+		props.fillPatternScale = 10;
+		props.fillPatternEnabled = true;
+
+		props.fillPatternMask = true;
+		props.getFillPatternScale = 1;
+		props.getFillPatternOffset = [0, 0];
+		props.getFillPattern = getLayerFillStyle(dbLayer);
+		props.fillPatternAtlas =
+			'https://raw.githubusercontent.com/visgl/deck.gl/master/examples/layer-browser/data/pattern.png';
+		props.fillPatternMapping =
+			'https://raw.githubusercontent.com/visgl/deck.gl/master/examples/layer-browser/data/pattern.json';
+	} else {
+		props.fillPatternEnabled = false;
+	}
 	return props;
 }
 

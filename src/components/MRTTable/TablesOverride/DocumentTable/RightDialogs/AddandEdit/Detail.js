@@ -269,8 +269,10 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		if (viewFilesResult && !fileDownload) {
 			let fileInformation = viewFilesResult?.viewFiles[0];
 			const splittedStrings = fileInformation?.name?.split('.');
-			const isFileExist =  selectedDocument?.url?.trim() ? false : true;
-			let docExtention = selectedDocument?.url?.trim() ? null : splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
+			const isFileExist = selectedDocument?.url?.trim() ? false : true;
+			let docExtention = selectedDocument?.url?.trim()
+				? null
+				: splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
 			setFileUpload({ upload: isFileExist, fileExtension: docExtention, fileInformation });
 		}
 

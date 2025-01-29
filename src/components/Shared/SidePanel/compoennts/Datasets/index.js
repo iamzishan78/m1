@@ -34,6 +34,7 @@ import { AppContext } from 'AppContext';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import DatasetMenu from './Menu';
+import NameWithTooltip from '../Common/NameWithTooltip';
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({
@@ -295,7 +296,7 @@ function Datasets({ headerButton, search, stateApp }) {
 										style={{ width: '100%' }}
 									>
 										<Grid item style={{ display: 'flex', flexDirection: 'inline' }}>
-											<Typography
+											<NameWithTooltip
 												style={{
 													color: '#ffff',
 													textOverflow: 'ellipsis',
@@ -303,9 +304,10 @@ function Datasets({ headerButton, search, stateApp }) {
 													overflow: 'hidden',
 													width: '254px',
 												}}
-											>
-												{sourceName}
-											</Typography>
+												index={index}
+												title={sourceName}
+												height={'18px'}
+											/>
 										</Grid>
 										<Grid item className="actionIcons">
 											<GridOnIcon id={'grid-icon-' + sourceName} className="actionIcon" />

@@ -1,6 +1,5 @@
 import React, { useEffect, useState, memo, useMemo } from 'react';
 
-
 import {
 	TextField,
 	InputAdornment,
@@ -113,8 +112,11 @@ function ViewOptions({ moduleName, buttonRef }) {
 		} else if (selectedTab === 'favorites') {
 			let data = null;
 
-			if (isTable) {data = allViews.filter(view => view.favouriteBy?.includes(getUser?._id));}
-			else {data = allViews.filter(view => view.isFavourite === true);}
+			if (isTable) {
+				data = allViews.filter(view => view.favouriteBy?.includes(getUser?._id));
+			} else {
+				data = allViews.filter(view => view.isFavourite === true);
+			}
 
 			setfilterViews(data);
 		} else {
