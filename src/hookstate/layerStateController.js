@@ -659,12 +659,12 @@ const layerStateControllerHandler = state => {
 
 		if (ifMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
 			handleMapBoxLayer(dbLayer);
-			return;
+			return null;
 		}
 
 		if (ifStaticMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
 			handleStaticMapBoxLayer(dbLayer);
-			return;
+			return null;
 		}
 
 		const meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
@@ -741,6 +741,7 @@ const layerStateControllerHandler = state => {
 				getPointRadius: newId,
 				fillPatternEnabled: newId,
 				getDashArray: newId,
+				getFillPattern: newId,
 			};
 		}
 		if (!boundingState.show?.current) {
@@ -749,7 +750,7 @@ const layerStateControllerHandler = state => {
 				...updatedProps,
 				visible: boundingState.show?.current,
 			});
-			return;
+			return null;
 		}
 
 		if (!boundingState.callApi) {
@@ -758,7 +759,7 @@ const layerStateControllerHandler = state => {
 				...updatedProps,
 				visible: boundingState.show?.current,
 			});
-			return;
+			return null;
 		}
 
 		updateLayer(dbLayer, updatedProps);
@@ -860,13 +861,13 @@ const layerStateControllerHandler = state => {
 
 		// Refresh all layers when the map is synchronized
 		if (identifier === 'all') {
-			  // Retrieve all layers from the global state
+			// Retrieve all layers from the global state
 			globalStateController.getValue('layers').forEach(layer => {
-				  // Handle each layer using the layer controller
+				// Handle each layer using the layer controller
 				layerController.handleDeckLayer(layer);
 			});
 		}
-		
+
 		const layer = globalStateController.getValue('layers').find(l => l.identifier === identifier);
 		if (updateTriggers) {
 			layerController.handleDeckLayer(layer, true);
