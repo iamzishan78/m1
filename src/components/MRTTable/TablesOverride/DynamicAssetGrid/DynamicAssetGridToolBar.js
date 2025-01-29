@@ -33,7 +33,7 @@ function DynamicAssetGridToolBar({ tableKey }) {
 	const handleClick = () => {
 		addAndUpdateInRunTimeModel({
 			variables: {
-				name,
+				tableName,
 				record: {},
 			},
 		});

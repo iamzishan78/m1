@@ -830,7 +830,7 @@ const drawStateControllerHandler = state => {
 		};
 
 		addRecordInRunTimeModel({
-			variables: { name: currentAsset?.name, record: mapAssetShapeData },
+			variables: { tableName: currentAsset?.tableName, record: mapAssetShapeData },
 		}).then(result => {
 			if (!result?.data?.addRecordInRunTimeModel?.success) {
 				dispatch(showErrorMessage(result?.data?.addRecordInRunTimeModel?.message));

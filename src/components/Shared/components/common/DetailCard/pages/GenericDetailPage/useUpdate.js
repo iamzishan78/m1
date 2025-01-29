@@ -31,7 +31,7 @@ const useUpdate = () => {
 			updateRecordInRunTimeModel({
 				variables: {
 					ids: [currentAssetRecord?._id],
-					name: currentAsset?.name,
+					tableName: currentAsset?.tableName,
 					record: {
 						[key]: value,
 					},
