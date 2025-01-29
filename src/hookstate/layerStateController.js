@@ -302,7 +302,7 @@ const layerStateControllerHandler = state => {
 			}
 
 			const isOutside = previousBounds ? !booleanWithin(newPolygon, previousBounds) : true;
-			const bboxIntersects = bbox && layerBBox ? booleanIntersects(bbox, bboxPolygon(layerBBox)) : true;
+			const bboxIntersects = bbox && layerBBox?.length > 0 ? booleanIntersects(bbox, bboxPolygon(layerBBox)) : true;
 			const show = visible && zoom > defaultZoom;
 
 			const lastBounds = previousBounds;

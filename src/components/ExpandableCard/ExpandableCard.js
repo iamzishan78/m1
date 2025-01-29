@@ -44,7 +44,6 @@ import { layerRefs } from 'hookstate';
 
 import ReportBugModal from './components/ReportBugModal';
 import { ExpandableCardContext } from './ExpandableCardContext';
-import { AppContext } from '../../AppContext';
 import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
 import { TRACKBYOBJECTID } from '../../graphQL/useQueryTrackByObjectId';
 import CommentsWithIcon from '../Shared/CommentsWithIcon';
@@ -62,36 +61,30 @@ function ExpandableCard(props) {
 	const history = useHistory();
 	const dispatch = useDispatch();
 
-	// contexts
-	const [stateApp, setStateApp] = useContext(AppContext);
 	const [stateExpandableCard, setStateExpandableCard, handleCloseExpandableCard] = useContext(ExpandableCardContext);
 
 	// States
 	const [openBugModal, setOpenBugModal] = useState(false);
 	const [toggleExpand, setToggleExpand] = useState(false);
 	const [isExpanded, setExpanded] = useState([]);
-	const { subTitle } = props;
-	const [title, setTitle] = useState(props.title);
-	const [parent] = useState(props.parent);
-	const [cardWidth] = useState(props.cardWidth);
 	const [cardWidthExpanded] = useState(props.cardWidthExpanded);
-	const [mouseX] = useState(props.mouseX);
-	const [mouseY] = useState(props.mouseY);
-	const [position] = useState(props.position);
 	const [breadcrumbs, setBreadcrumbs] = useState(null);
 	const [cardLeft, setCardLeft] = useState(props.cardLeft);
 	const [cardTop, setCardTop] = useState(props.cardTop);
 	const [width, setWidth] = useState(props.cardWidth);
 	const [target, setTarget] = useState({});
-	const [targetSourceId] = useState(props.targetSourceId);
-	const [targetLabel] = useState(props.targetLabel);
+
 	const [openDialog, setOpenDialog] = useState(false);
 	const [deleteLoading, setDeleteLoading] = useState(false);
 	const [anchorEl, setAnchorEl] = useState();
 
+	const { title, targetLabel, subTitle, parent, targetSourceId, mouseX, mouseY, position, cardWidth } = props
+
 	const {
 		stateValues: { selectedShape, selectedWell },
 	} = popupController.useState(['selectedShape', 'selectedWell']);
+
+	const { globalState } = globalStateController.useState(['user'], 'globalState');
 
 	const handleMenuClick = event => {
 		setAnchorEl(event.currentTarget);
@@ -284,11 +277,6 @@ function ExpandableCard(props) {
 
 	const classes = useStyles(props);
 
-	//  UseEffects
-	useEffect(() => {
-		setTitle(props.title);
-	}, [props.title, props.targetLabel]);
-
 	useEffect(() => {
 		const searchParams = new URLSearchParams(window.location.search?.replace('?', ''));
 		const paramBreadCrumbs = searchParams.get('breadcrumbs');
@@ -301,15 +289,15 @@ function ExpandableCard(props) {
 	}, [history.location?.state?.breadcrumbs, history?.location?.state?.showWellBreadcrumb]);
 
 	useEffect(() => {
-		if (stateApp.user && stateApp.user.mongoId && targetSourceId) {
+		if (globalState.user && globalState.user.mongoId && targetSourceId) {
 			trackByObjectId({
 				variables: {
-					userId: stateApp.user.mongoId,
+					userId: globalState.user.mongoId,
 					objectId: targetSourceId.toLowerCase(),
 				},
 			});
 		}
-	}, [stateApp.user.mongoId, targetSourceId]);
+	}, [globalState.user.mongoId, targetSourceId]);
 
 	useEffect(() => {
 		if (dataTrack) {
@@ -421,7 +409,7 @@ function ExpandableCard(props) {
 				popupController.reset();
 			}
 
-			setStateApp(state => ({
+			window.setStateApp(state => ({
 				...state,
 				viewDoc: null,
 				rotateableFeature: null,
@@ -609,7 +597,6 @@ function ExpandableCard(props) {
 								className={classes.prevlocation}
 								color="inherit"
 								onClick={() => {
-									// setStateApp({ ...stateApp, DocumentDrawer: false });
 									history.push(breadcrumb.url);
 								}}
 							>
@@ -617,12 +604,7 @@ function ExpandableCard(props) {
 							</Typography>
 						))}
 						<Typography
-							// className={classes.prevlocation}
 							color="inherit"
-						// onClick={() => {
-						//   setStateApp({ ...stateApp, DocumentDrawer: true });
-						//   history.push("/documents");
-						// }}
 						>
 							Wells
 						</Typography>
