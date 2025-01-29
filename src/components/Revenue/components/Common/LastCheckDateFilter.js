@@ -179,6 +179,7 @@ const LastCheckDateFilter = ({
 					lastCheckMinDate={lastCheckMinDate}
 					onChange={setSelectedFilter}
 					datesInputWidth={2}
+					setAllDateToNull={false}
 				/>
 				{extraFitlers.includes('propertyGroup') && (
 					<Grid item xs md={2}>
