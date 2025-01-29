@@ -277,7 +277,7 @@ const drawStateControllerHandler = state => {
 					filled: true,
 					getFillColor: [173, 216, 230, 150],
 				},
-				window.mapRef.getLayer('Land Grid_selection')?.implementation
+				'Land Grid_selection'
 			);
 		}
 

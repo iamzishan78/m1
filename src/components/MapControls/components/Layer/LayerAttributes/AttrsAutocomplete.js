@@ -5,10 +5,10 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { Typography, TextField } from '@mui/material';
 
 // Autocomplete for showing summary fields in dropdown
-const AttrsAutocomplete = ({ options, selectedValue, setSelectedValue }) => {
+const AttrsAutocomplete = ({ options, selectedValue, setSelectedValue, typography }) => {
 	return (
 		<div style={{ margin: '8px 0' }}>
-			<Typography style={{ fontSize: '1.2rem', margin: '8px 0' }}>Color based on</Typography>
+			<Typography style={{ fontSize: '1.2rem', margin: '8px 0' }}>{typography}</Typography>
 			<Autocomplete
 				options={options}
 				getOptionLabel={option => option['label']}

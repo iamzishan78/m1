@@ -26,7 +26,7 @@ const onRightClick = ({ x, y, coordinate }) => {
 			layerId => !layerId.startsWith('AbstractGeo') && !layerId.startsWith('Pls')
 		);
 
-		const layers = window.mapRef?.__deck?.layerManager?.layers?.filter(l => layerIds.includes(l.props.id)) || [];
+		const layers = window?.deckOverlay?._deck?.layerManager?.layers?.filter(l => layerIds.includes(l.props.id)) || [];
 
 		layers.forEach(layer => {
 			if (!layer?.props?.data) {

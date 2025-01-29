@@ -86,21 +86,16 @@ export const createShapeLabelLayer = feature => {
 };
 
 export const drawWellBoundary = coordinates => {
-	if (!window.mapRef) {
-		return;
-	}
-
 	const layerId = 'boundary-layer';
 
-	if (window.mapRef.getLayer(layerId)) {
-		window.mapRef.removeLayer(layerId);
+	if (DeckGlLayer.getLayer(layerId)) {
+		DeckGlLayer.removeLayer(layerId);
 	}
 
 	if (coordinates && coordinates.length > 0 && coordinates[0]) {
-		new DeckGlLayer({
+		DeckGlLayer.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
-			beforeLayer: 'top_deck_layer',
 			props: {
 				data: [
 					{
@@ -113,12 +108,17 @@ export const drawWellBoundary = coordinates => {
 				],
 				getFillColor: [255, 255, 0],
 				getLineColor: [255, 255, 0],
+				fillPatternEnabled: false,
 				pointRadiusMinPixels: 2.5,
 				lineWidthMinPixels: 1.5,
 				pointRadiusMaxPixels: 10,
 				lineWidthMaxPixels: 8,
 				getPointRadius: 50,
 				getLineWidth: 20,
+				parameters: {
+					depthTest: false, // Disable depth testing to draw points on top
+				},
+				position: 0,
 			},
 		});
 	}
@@ -132,15 +132,14 @@ export const drawPlaceBoundary = coordinates => {
 
 	const layerId = 'boundary-layer';
 
-	if (window.mapRef.getLayer(layerId)) {
-		window.mapRef.removeLayer(layerId);
+	if (DeckGlLayer.getLayer(layerId)) {
+		DeckGlLayer.removeLayer(layerId);
 	}
 
 	if (coordinates && coordinates.length > 0 && coordinates[0]) {
-		new DeckGlLayer({
+		DeckGlLayer.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
-			beforeLayer: 'top_deck_layer',
 			props: {
 				data: [
 					{
@@ -162,6 +161,7 @@ export const drawPlaceBoundary = coordinates => {
 				parameters: {
 					depthTest: false, // Disable depth testing to draw points on top
 				},
+				position: 0,
 			},
 		});
 	}
@@ -174,16 +174,15 @@ export const drawBoundary = (selectedUserDefinedLayer, layer_Id) => {
 
 	const layerId = layer_Id || 'boundary-layer';
 
-	if (window.mapRef.getLayer(layerId)) {
-		window.mapRef.removeLayer(layerId);
+	if (DeckGlLayer.getLayer(layerId)) {
+		DeckGlLayer.removeLayer(layerId);
 	}
 
 	if (selectedUserDefinedLayer?.geometry) {
 		const type = selectedUserDefinedLayer.geometry.type;
-		new DeckGlLayer({
+		DeckGlLayer.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
-			beforeLayer: 'top_deck_layer',
 			props: {
 				data: [
 					{
@@ -205,6 +204,7 @@ export const drawBoundary = (selectedUserDefinedLayer, layer_Id) => {
 				parameters: {
 					depthTest: false, // Disable depth testing to draw points on top
 				},
+				position: 0,
 			},
 		});
 	}

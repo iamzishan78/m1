@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
 		border: '2px dashed #dddddd',
 		marginBottom: '30px',
 	},
-	disabledDropzoneClass : {
+	disabledDropzoneClass: {
 		'&:hover': { backgroundColor: '#eee' },
 	},
 	bold: {
@@ -55,7 +55,7 @@ const useStyles = makeStyles(theme => ({
 		fontSize: '14px',
 		display: 'block',
 		marginBottom: '5px',
-	}
+	},
 }));
 
 export default function UploadZone({ setFileUpload, relatedObjectType, customClass, title, setUrl, url }) {
@@ -71,22 +71,22 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 		}
 	};
 
-	const validateUrl = (value) => {
+	const validateUrl = value => {
 		// Regex for basic URL validation
 		const urlRegex = /^https:\/\/([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[\w\d-._~:/?#[\]@!$&'()*+,;=]*)?$/;
 		return urlRegex.test(value);
-	  };
+	};
 
-	const handleUrlChange = (event) => {
+	const handleUrlChange = event => {
 		const value = event.target.value;
 		const isValid = validateUrl(value);
-		setUrl({...url, value: value, isValid: isValid  });
+		setUrl({ ...url, value: value, isValid: isValid });
 	};
 
 	const handleUrlBlur = () => {
 		// Validate URL when the field loses focus
 		const error = url?.value && !validateUrl(url?.value) ? true : false;
-		const isValid = (error || !url?.value)  ? false : true;
+		const isValid = error || !url?.value ? false : true;
 		setUrl({ ...url, error: error, isValid: isValid });
 	};
 
@@ -101,10 +101,8 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 						filesLimit={1}
 						dropzoneText={'+'}
 						maxFileSize={104857600}
-						dropzoneClass={`${classes.dropzoneClassCRM} ${(url?.value ? classes.disabledDropzoneClass : '')}`} 
-						dropzoneProps={
-							{disabled:(url?.value ?? false)}
-						}
+						dropzoneClass={`${classes.dropzoneClassCRM} ${url?.value ? classes.disabledDropzoneClass : ''}`}
+						dropzoneProps={{ disabled: url?.value ?? false }}
 					></DropzoneAreaBase>
 
 					<Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
@@ -115,7 +113,7 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 								fontSize: '14px',
 								fontWeight: 'bold',
 								color: '#666',
-								fontFamily: 'Poppins'
+								fontFamily: 'Poppins',
 							}}
 						>
 							--------- OR ---------
@@ -134,19 +132,24 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 								width: '100%',
 								padding: '8px',
 								borderRadius: '4px',
-								border: url.error ? "1px solid red" : "",
+								border: url.error ? '1px solid red' : '',
 							}}
-							onBlur={() =>
-								handleUrlBlur()
-							}
+							onBlur={() => handleUrlBlur()}
 						/>
-						    {/* Error Message */}
-							{url.error && (
-								<div style={{ marginTop: '8px', fontSize: '14px'}}>
-									<span style={{ color: 'red', marginTop: '8px', fontSize: '14px' }}> { `The path ${url?.value} is invalid`} </span><br/> 
-									<span style={{ marginTop: '8px', fontSize: '14px' }}> { `This must be an external URL such as http://example.com`} </span> 
-								</div>
-							)}
+						{/* Error Message */}
+						{url.error && (
+							<div style={{ marginTop: '8px', fontSize: '14px' }}>
+								<span style={{ color: 'red', marginTop: '8px', fontSize: '14px' }}>
+									{' '}
+									{`The path ${url?.value} is invalid`}{' '}
+								</span>
+								<br />
+								<span style={{ marginTop: '8px', fontSize: '14px' }}>
+									{' '}
+									{`This must be an external URL such as http://example.com`}{' '}
+								</span>
+							</div>
+						)}
 					</div>
 				</Container>
 			</div>

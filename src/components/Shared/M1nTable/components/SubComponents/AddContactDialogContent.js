@@ -557,24 +557,18 @@ export default function AddContactDialogContent(props) {
 			<Grid item xs={12}>
 				<h3>Purchased Data Exists</h3>
 				<Autocomplete
-				id="isPurchased"
-				className={classes.fieldWidth}
-				options={isPurchasedOptions.filter(u => u.label)}
-				onChange={(e, isPurchased) => {
-					setNewContact({ ...newContact, isPurchased: isPurchased?.value });
-				}}
-				value={isPurchasedOptions.find(option => option?.value === newContact.isPurchased) || null}
-				getOptionLabel={option => option.label}
-				getOptionSelected={option => option.value === newContact.isPurchased}
-				renderInput={params => (
-					<TextField
-					size="small"
-					{...params}
-					className={classes.maxWidth}
-					multiline
-					value={newContact.isPurchased}
-					/>
-				)}
+					id="isPurchased"
+					className={classes.fieldWidth}
+					options={isPurchasedOptions.filter(u => u.label)}
+					onChange={(e, isPurchased) => {
+						setNewContact({ ...newContact, isPurchased: isPurchased?.value });
+					}}
+					value={isPurchasedOptions.find(option => option?.value === newContact.isPurchased) || null}
+					getOptionLabel={option => option.label}
+					getOptionSelected={option => option.value === newContact.isPurchased}
+					renderInput={params => (
+						<TextField size="small" {...params} className={classes.maxWidth} multiline value={newContact.isPurchased} />
+					)}
 				/>
 			</Grid>
 		</Grid>

@@ -14,7 +14,7 @@ export const initialState = {
 	instrument: '',
 	custom_data: null,
 	fileId: null,
-	url: null
+	url: null,
 };
 
 export const createViewFormState = hookstate({});

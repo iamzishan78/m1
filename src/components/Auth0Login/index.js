@@ -87,9 +87,9 @@ const Auth0Login = props => {
 			.then(response => {
 				return response?.data?.bypassLogin?.success
 					? {
-							user: response.data.bypassLogin.user,
-							sessionData: response.data.bypassLogin.sessionData,
-						}
+						user: response.data.bypassLogin.user,
+						sessionData: response.data.bypassLogin.sessionData,
+					}
 					: null;
 			})
 			.catch(error => console.log(error));
