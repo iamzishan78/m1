@@ -94,12 +94,21 @@ export default function Properties() {
 
 	const [esFilters, ESFilters] = useState([]);
 
-	const setESFilters = newFilter => {
+	const setESFilters = (newFilter, oldFilters) => {
 		if (newFilter.length === 0) {
 			ESFilters([]);
 			tableController('PropertiesTable').clearFilters();
 		}
+
 		setStateIfDeepEqual(ESFilters, newFilter);
+
+		setTimeout(() => {
+			if (oldFilters && oldFilters?.length) {
+				oldFilters.forEach(filter => {
+					tableController('PropertiesTable').clearFilter(filter.field);
+				});
+			}
+		}, 100);
 	};
 
 	useEffect(() => {

@@ -62,6 +62,7 @@ const LastCheckDateFilter = ({
 	const [propertyFilter, setPropertyFilter] = useState([]);
 	const [checkNumberFilter, setCheckNumberFilter] = useState();
 	const [propertyNumberFilter, setPropertyNumberFilter] = useState();
+	const [oldFilter, setOldFilter] = useState();
 
 	const reportGroupFilters = useRef([]);
 
@@ -155,7 +156,7 @@ const LastCheckDateFilter = ({
 
 		if (!deepEqual(filters, copy(esFilters))) {
 			// prevent from unnecessary re rendering
-			setESFilters(filters);
+			setESFilters(filters, oldFilter);
 		}
 		setFilterToggle(!filterToggle);
 		// disabling this because a dependency causes infinite loop in useEffect
@@ -184,7 +185,10 @@ const LastCheckDateFilter = ({
 						<ReportGroupHeader
 							type="Properties"
 							esFilters={propertiesReportGroup || []}
-							setESFilters={value => setPropertyFilter(value)}
+							setESFilters={(value, oldFilters) => {
+								setOldFilter(oldFilters);
+								setPropertyFilter(value);
+							}}
 							setFilterToggle={() => {}}
 							isBackground={false}
 							noUpdate={true}
