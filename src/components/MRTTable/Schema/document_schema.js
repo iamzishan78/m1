@@ -199,23 +199,6 @@ const DocumentMeta = {
 
 		{
 			...CommonSchema.ACTION_COLUMN,
-			name: 'docContent',
-			id: 'docContent',
-			header: 'Doc Content',
-			accessorFn: row => row?.docContent?.map(t => t.text)?.join(' ') || '',
-			muiTableBodyCellProps: {
-				sx: {
-					maxHeight: '250px',
-					overflowY: 'auto',
-					display: 'flex',
-					alignItems: 'start',
-				},
-			},
-			size: 400,
-		},
-
-		{
-			...CommonSchema.ACTION_COLUMN,
 			name: 'fileDownload',
 			id: 'fileDownload',
 			header: ' ',
