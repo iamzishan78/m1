@@ -226,7 +226,11 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	});
 
 	const [fileUpload, setFileUpload] = useState({ upload: false, fileExtension: null, fileInformation: '' });
-	const [url, setUrl] = useState({ isValid: selectedDocument?.url ? true : false, value: selectedDocument?.url, error: false });
+	const [url, setUrl] = useState({
+		isValid: selectedDocument?.url ? true : false,
+		value: selectedDocument?.url,
+		error: false,
+	});
 	const [inputFile, setInputFile] = useState(null);
 	const [fileDownload, setFileDownload] = useState(false);
 
@@ -240,8 +244,10 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		if (viewFilesResult && !fileDownload) {
 			let fileInformation = viewFilesResult?.viewFiles[0];
 			const splittedStrings = fileInformation?.name?.split('.');
-			const isFileExist =  selectedDocument?.url?.trim() ? false : true;
-			let docExtention = selectedDocument?.url?.trim() ? null : splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
+			const isFileExist = selectedDocument?.url?.trim() ? false : true;
+			let docExtention = selectedDocument?.url?.trim()
+				? null
+				: splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
 			setFileUpload({ upload: isFileExist, fileExtension: docExtention, fileInformation });
 		}
 
@@ -292,7 +298,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 				};
 
 				Loader.createToast('DocumentUpdating', 'Document Updating in Progress');
-			
+
 				saveDocument(document);
 				handleClose();
 			}
@@ -312,11 +318,11 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	}, [selectedDocument]);
 
 	useEffect(() => {
-		const value = url?.isValid ? url?.value : null
-		formState?.url?.set(value) 
-	}, [url])
+		const value = url?.isValid ? url?.value : null;
+		formState?.url?.set(value);
+	}, [url]);
 
-	const saveDocument = (document) => {
+	const saveDocument = document => {
 		updateDocument({
 			variables: {
 				document,
@@ -337,7 +343,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 
 			tableGlobalController.refetch();
 		});
-	}
+	};
 
 	const uploadFile = () => {
 		Loader.createToast('FileUploading', 'File Uploading in Progress');
@@ -596,7 +602,14 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 
 				{!fileUpload?.fileExtension ? (
 					<div className={classes.Uploadcomp}>
-						<UploadZone userId={getUser?._id} fileId={selectedDocument?._id} setFileUpload={setFileUpload} title={'Upload Document'} setUrl={setUrl} url={url} />
+						<UploadZone
+							userId={getUser?._id}
+							fileId={selectedDocument?._id}
+							setFileUpload={setFileUpload}
+							title={'Upload Document'}
+							setUrl={setUrl}
+							url={url}
+						/>
 					</div>
 				) : null}
 				<div className={classes.dialogFooter}>
@@ -622,13 +635,13 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						color="secondary"
 						size="medium"
 						disableElevation
-						disabled={!fileUpload?.upload && !url?.isValid }
+						disabled={!fileUpload?.upload && !url?.isValid}
 						onClick={() => {
 							if (fileUpload?.upload) {
 								uploadFile();
 							} else {
 								delete formStateValues.tableKey;
-								saveDocument({ ...formStateValues, fileId : null});
+								saveDocument({ ...formStateValues, fileId: null });
 								handleClose();
 							}
 						}}

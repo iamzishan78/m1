@@ -80,7 +80,13 @@ function GridIcon() {
 				id="snapGridButton"
 				className={mapControlsStateValues.mapGridCardActivated ? classes.selected : classes.gridOnIcon}
 				onClick={() => {
-					history.replace({ pathname: '/' }); // reset path to default
+					 // Extract the current search query from the location object
+					 const currentSearch = location.search;
+					 // Replace the pathname but retain the query parameters
+					 history.replace({
+						 pathname: '/', // Set the new path
+						 search: currentSearch, // Retain the current search parameters
+					 });
 					popupController.reset(); // close expanded card
 					mapControlsController.toggleMapGridCardAtived();
 					mapControlsController.updateState({

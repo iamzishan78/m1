@@ -131,12 +131,12 @@ const contactForm = ({ getValues, setValue }) => {
 			},
 		},
 		{
-			label: "Purchased Data Exists",
-			name: "isPurchased",
-			renderField: "autoComplete",
+			label: 'Purchased Data Exists',
+			name: 'isPurchased',
+			renderField: 'autoComplete',
 			defaultOptions: [
-			  { label: 'Yes', value: "true" },
-			  { label: 'No', value: "false" },
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
 			],
 			onChange: value => {
 				const booleanValue = value === true || value === 'true';

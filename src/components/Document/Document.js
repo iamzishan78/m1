@@ -40,8 +40,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function DocumentComponent() {
 	const classes = useStyles();
-  	const location = useLocation();
-
+	const location = useLocation();
 
 	const [getDbData, { data: elasticData }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
@@ -51,7 +50,7 @@ export default function DocumentComponent() {
 	const getDocIdFromUrl = () => {
 		const match = location.pathname.match(/details\/([^/]+)/);
 		return match ? match[1] : null;
-	  };
+	};
 
 	useEffect(() => {
 		return () => {
@@ -77,17 +76,14 @@ export default function DocumentComponent() {
 						keep_alive: '1micros',
 					},
 					search: {},
-					filters: { field: '_id', 
-						value: [idFromUrl]
-					},
+					filters: { field: '_id', value: [idFromUrl] },
 					sort: [],
 				},
 			});
-
 		}
-	  }, [location]);
-	
-	  useEffect(() => {
+	}, [location]);
+
+	useEffect(() => {
 		if (elasticData?.getDbData?.hits?.length) {
 			tableGlobalController.updateState({
 				documentDialog: {
@@ -96,13 +92,13 @@ export default function DocumentComponent() {
 					selectedRow: elasticData?.getDbData?.hits[0],
 				},
 			});
-		
+
 			slidoutStateController.updateState({
 				newEntity: false,
 				title: 'File Detail',
 			});
 		}
-	  }, [elasticData])
+	}, [elasticData]);
 
 	return (
 		<div className={classes.root}>

@@ -84,7 +84,7 @@ function FileName({ docInfo }) {
 									e.stopPropagation();
 									if (docExtention === 'url') {
 										window.open(docInfo?.fileName, '_blank');
-										return
+										return;
 									}
 									window.history.pushState('', '', `/documents/${docInfo._id}/view`);
 									handleViewFile(docInfo._id);

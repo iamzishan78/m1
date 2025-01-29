@@ -38,7 +38,7 @@ const onAbstactLayerClick = (feature, action, sourceId) => {
 		};
 	}
 
-	new DeckGlLayer({
+	DeckGlLayer.addLayer({
 		layerId: 'Land Grid_selection',
 		type: 'GeoJsonLayer',
 		props: {

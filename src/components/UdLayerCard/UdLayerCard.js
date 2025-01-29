@@ -139,7 +139,6 @@ function UdLayerCard(props) {
 		};
 	}, [props.selectedUserDefinedLayer, shapeFeature]);
 
-	console.log(selectedUserDefinedLayer);
 	const handleCloseLeftSidePanel = () => {
 		mapControlsController.setState({ expandedPanel: false });
 	};
