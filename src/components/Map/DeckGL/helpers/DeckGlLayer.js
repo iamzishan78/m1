@@ -1,4 +1,4 @@
-import { ScatterplotLayer, LineLayer, PolygonLayer, TextLayer } from '@deck.gl/layers';
+import { ScatterplotLayer, LineLayer, PolygonLayer, TextLayer, GeoJsonLayer } from '@deck.gl/layers';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { isEqual } from 'lodash';
 
@@ -53,6 +53,12 @@ const Layers = {
 	},
 	GeoJsonLayer: {
 		component: M1neralGeojsonLayer,
+		defaultProps: {
+			parameters: { depthTest: false },
+		},
+	},
+	SimpleGeoJsonLayer: {
+		component: GeoJsonLayer,
 		defaultProps: {
 			parameters: { depthTest: false },
 		},
@@ -169,7 +175,9 @@ export default class DeckGlOverlay {
 		});
 		DeckGlOverlay.dataRef[layerId] = props.data;
 		const currentLayers = window.deckOverlay?._props?.layers || [];
-		if (DeckGlOverlay.getLayer(layerId)) { return DeckGlOverlay.getLayer(layerId); }
+		if (DeckGlOverlay.getLayer(layerId)) {
+			return DeckGlOverlay.getLayer(layerId);
+		}
 
 		currentLayers.push(newLayer);
 		currentLayers.sort((a, b) => b.props.position - a.props.position);

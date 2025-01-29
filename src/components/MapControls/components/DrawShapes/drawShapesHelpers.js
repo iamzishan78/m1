@@ -13,6 +13,19 @@ export const calculateShapeCenter = geo => {
 	return center.geometry.coordinates;
 };
 
+const calculateLandArea = feature => {
+	if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
+		const areaInSqMeters = area(feature);
+		const areaInAcres = convertArea(areaInSqMeters, 'meters', 'acres');
+		return `${Math.round(areaInAcres * 100) / 100}`;
+	}
+	if (feature.geometry.type === 'LineString') {
+		const distanceInMiles = length(feature, { units: 'miles' });
+		return `${Math.round(distanceInMiles * 100) / 100} miles`;
+	}
+	return null;
+};
+
 export const addCustomShapeProperties = (feature, Draw) => {
 	try {
 		spatialDataAttributes.forEach(attribute => {
@@ -27,21 +40,10 @@ export const addCustomShapeProperties = (feature, Draw) => {
 				default:
 			}
 			Draw?.setFeatureProperty(feature.id, attribute, data);
+			return null;
 		});
 	} catch (e) {
 		console.log(e);
-	}
-};
-
-const calculateLandArea = feature => {
-	if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
-		const areaInSqMeters = area(feature);
-		const areaInAcres = convertArea(areaInSqMeters, 'meters', 'acres');
-		return `${Math.round(areaInAcres * 100) / 100}`;
-	}
-	if (feature.geometry.type === 'LineString') {
-		const distanceInMiles = length(feature, { units: 'miles' });
-		return `${Math.round(distanceInMiles * 100) / 100} miles`;
 	}
 };
 
@@ -223,8 +225,8 @@ export const drawBoundaries = shapes => {
 };
 
 export const clearSelectedAbstracts = () => {
-	if (window.mapRef?.getLayer('Land Grid_selection')) {
-		window.mapRef.removeLayer('Land Grid_selection');
+	if (DeckGlLayer?.getLayer('Land Grid_selection')) {
+		DeckGlLayer.removeLayer('Land Grid_selection');
 	}
 	drawController.updateState({
 		selectedAbstracts: [],
@@ -340,6 +342,32 @@ export const getDrawAdustedShape = (multiPolygon, selectedQuarters) => {
 	return newShape;
 };
 
+export const changeModeToScaleRotate = draw => {
+	if (!draw) {
+		return;
+	}
+	const all = draw.getAll();
+	const feature = all.features.find(f => f.properties.isrotate);
+	if (feature) {
+		// draw.changeMode("direct_select", { featureId: feature.id, });
+		draw.changeMode('tx_poly', {
+			// required
+			featureId: feature.id,
+			canScale: true,
+			canRotate: true, // only rotation enabled
+			canTrash: false, // disable feature delete
+
+			rotatePivot: SRCenter.Center, // rotate around center
+			scaleCenter: SRCenter.Opposite, // scale around opposite vertex
+
+			singleRotationPoint: true, // only one rotation point
+			rotationPointRadius: 1.1, // offset rotation point
+
+			canSelectFeatures: true,
+		});
+	}
+};
+
 export const getRotateAbleShapeFromSelectedQuarters = (currentFeature, draw) => {
 	let bbox = turf.bbox(currentFeature);
 	currentFeature = turf.bboxPolygon(bbox);
@@ -390,30 +418,4 @@ export const getRotateAbleShapeFromSelectedQuarters = (currentFeature, draw) => 
 	setTimeout(() => {
 		changeModeToScaleRotate(draw);
 	}, 1000);
-};
-
-export const changeModeToScaleRotate = draw => {
-	if (!draw) {
-		return;
-	}
-	const all = draw.getAll();
-	const feature = all.features.find(f => f.properties.isrotate);
-	if (feature) {
-		// draw.changeMode("direct_select", { featureId: feature.id, });
-		draw.changeMode('tx_poly', {
-			// required
-			featureId: feature.id,
-			canScale: true,
-			canRotate: true, // only rotation enabled
-			canTrash: false, // disable feature delete
-
-			rotatePivot: SRCenter.Center, // rotate around center
-			scaleCenter: SRCenter.Opposite, // scale around opposite vertex
-
-			singleRotationPoint: true, // only one rotation point
-			rotationPointRadius: 1.1, // offset rotation point
-
-			canSelectFeatures: true,
-		});
-	}
 };
