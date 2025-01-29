@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 
+import { Typography } from '@material-ui/core';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { IconButton, Tooltip, ToggleButton } from '@mui/material';
-import { Typography } from '@material-ui/core';
 
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -87,19 +87,38 @@ function ToolbarActions({ table, tableKey, children }) {
 					: tableStateValues?.data?.total - excludedIds?.length,
 				customValue: tableStateValues?.customValue,
 			};
+
+			deletedData = Object.keys(deletedKeys).reduce((acc, key) => {
+				const { value } = deletedKeys[key];
+
+				if (value) {
+					acc[key] = value;
+				}
+
+				return acc;
+			}, {});
 		} else {
 			deletedData = Object.keys(deletedKeys).reduce((acc, key) => {
 				const { key: originalKey, func, value } = deletedKeys[key];
-				acc[key] =
-					selectedRows?.length > 0
-						? selectedRows.map(item => {
-								let val;
-								if (originalKey) val = _.get(item, originalKey);
-								if (func) val = func(val);
-								if (value) val = value;
-								return val;
-							})
-						: null;
+
+				if (value) {
+					acc[key] = value;
+					return acc;
+				}
+
+				if (selectedRows?.length > 0) {
+					acc[key] = selectedRows.map(item => {
+						let val;
+						if (originalKey) {
+							val = _.get(item, originalKey);
+						}
+						if (func) {
+							val = func(val);
+						}
+						return val;
+					});
+				}
+
 				return acc;
 			}, {});
 			deletedData.bypassSelectAll = deletedKeys?.bypassSelectAll;
@@ -113,8 +132,6 @@ function ToolbarActions({ table, tableKey, children }) {
 				userId: getUser?._id,
 				ESVariables,
 				isSelectAll: !!tableStateValues?.isAllRowsSelected || (tableStateValues?.isSubSetSelect ? true : false),
-				assetName: tableStateValues?.assetName,
-				associatedAssetName: tableStateValues?.associatedAssetName,
 			},
 		});
 

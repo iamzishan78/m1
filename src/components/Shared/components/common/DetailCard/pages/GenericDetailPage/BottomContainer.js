@@ -51,6 +51,15 @@ const BottomContainer = () => {
 								associatedModel: model.modelName,
 								associationKey: mrtDataMappingKey,
 							},
+							deletedKeys: {
+								mainRecord: { key: '_id' },
+								assetTableName: {
+									value: currentAsset.tableName,
+								},
+								associatedAssetName: {
+									value: model.modelName,
+								},
+							},
 						},
 					},
 				};

@@ -23,6 +23,12 @@ function DynamicAssetGrid() {
 				name: activeModule.title,
 				tableName: activeModule.tableName,
 			},
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				assetTableName: {
+					value: activeModule.tableName,
+				},
+			},
 		}),
 		[activeModule]
 	);
