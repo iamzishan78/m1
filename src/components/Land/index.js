@@ -115,13 +115,19 @@ export default function Land() {
 					newList[key] = {
 						featureFlag: 'LANDMODULE',
 						title: item.name,
+						name: item.name,
+						tableName: item.tableName,
+						modelName: item.modelName,
 						link: `/land/customAsset/${item.tableName}`,
 						component: 'DynamicAssetGrid',
 					};
 
 					newList[`${key}_DETAIL`] = {
 						featureFlag: 'LANDMODULE',
-						link: '/land/customAsset/:name/details/:id',
+						name: item.name,
+						tableName: item.tableName,
+						modelName: item.modelName,
+						link: '/land/customAsset/:tableName/details/:id',
 						component: 'GenericDetailCardContainer',
 						value: 'GenericDetailCardContainer',
 						hideSearch: true,
@@ -132,7 +138,10 @@ export default function Land() {
 
 					newList[`${key}_DETAIL_DOCUMENTS`] = {
 						featureFlag: 'LANDMODULE',
-						link: '/land/customAsset/:name/details/:id/documents',
+						name: item.name,
+						tableName: item.tableName,
+						modelName: item.modelName,
+						link: '/land/customAsset/:tableName/details/:id/documents',
 						component: 'DocumentsCardContainer',
 						value: 'DocumentsCardContainer',
 						hideSearch: true,

@@ -14,13 +14,14 @@ function DynamicAssetGrid() {
 	// Override meta for dynamic grid
 	const overrideMeta = useMemo(
 		() => ({
-			esIndex: activeModule.title.replace(/\s+/g, '').toLowerCase() + '_flats',
+			esIndex: activeModule.modelName,
 			assetName: activeModule.title,
 			fetchDynamicSchema: {
 				variables: {
 					name: activeModule.title,
 				},
 				name: activeModule.title,
+				tableName: activeModule.tableName,
 			},
 		}),
 		[activeModule]

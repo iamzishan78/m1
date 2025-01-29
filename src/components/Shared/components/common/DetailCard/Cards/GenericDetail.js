@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect, useMemo, memo } from 'react';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { useLazyQuery } from '@apollo/client';
 
 import ConfirmationDialog from 'components/ContactDetailCard/components/ConfirmationDialog';
-import { replaceUnderscoreAndCapitalize } from 'components/MRTTable/utils/helper';
 import DetailLayout from 'components/Shared/components/common/DetailCard/DetailLayout';
 
 import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
@@ -18,7 +18,9 @@ import { AppContext } from 'AppContext';
 function GenericDetailCard() {
 	const [stateApp, setStateApp] = useContext(AppContext);
 
-	const { id, name, paramId, type } = useParams();
+	const { id, tableName, paramId, type } = useParams();
+
+	const { activeModule } = useSelector(({ common }) => common);
 
 	const [openDialog, setOpenDialog] = useState(false);
 	const [assetRecord, setAssetRecord] = useState(null);
@@ -40,10 +42,8 @@ function GenericDetailCard() {
 	});
 
 	useEffect(() => {
-		let assetName = name ?? type;
+		let assetName = activeModule?.name ?? type;
 		const assetId = id ?? paramId;
-
-		assetName = replaceUnderscoreAndCapitalize(assetName);
 
 		if (assetName && assetId) {
 			getAsset({
@@ -51,10 +51,10 @@ function GenericDetailCard() {
 			});
 
 			getRecordFromAsset({
-				variables: { _id: assetId, name: assetName },
+				variables: { _id: assetId, tableName },
 			});
 		}
-	}, [id, name, paramId, type, getAsset, getRecordFromAsset]);
+	}, [id, tableName, activeModule, paramId, type, getAsset, getRecordFromAsset]);
 
 	useEffect(() => {
 		detailCardController.updateState({ loading: true });
