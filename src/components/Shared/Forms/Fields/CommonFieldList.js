@@ -11,6 +11,8 @@ import CustomTextField from 'components/Shared/components/Fields/CustomTextField
 import DateField from 'components/Shared/components/Fields/DateField';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 
+import { globalStateController } from 'hookstate/globalStateController';
+
 const useStyles = makeStyles(() => ({
 	text: {
 		'& div': {
@@ -32,11 +34,10 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 		const fieldKey = (field.key || field.esKey).replaceAll('.keyword', '');
 
 		const handleEdit = () => {
-			window.setStateApp(stateApp => ({
-				...stateApp,
-				selectedMeta: field,
+			globalStateController.updateState?.({
 				showFieldModal: true,
-			}));
+				selectedMeta: field,
+			});
 		};
 
 		const isMetaField = field._id && field.category;

@@ -9,7 +9,7 @@ function OwnerTypeCell({ contactOwner }) {
 	const globalState = tableGlobalController.useState(['users']);
 	const users = globalState.stateValues.users;
 	if (!contactOwner?.name) return <p></p>;
-	contactOwner = users.find(user => user?.name === contactOwner?.name) || contactOwner;
+	contactOwner = users?.find(user => user?.name === contactOwner?.name) || contactOwner;
 	// Component will show avatar based onn user name and profile image
 	return (
 		<div

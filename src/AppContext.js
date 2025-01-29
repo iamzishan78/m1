@@ -134,7 +134,6 @@ const AppProvider = props => {
 		viewDoc: null,
 		pdfView: null,
 		selectedAgreement: null,
-		selectedMeta: null,
 		selectedView: null,
 		filtersData: [],
 		shapeEditMode: '',

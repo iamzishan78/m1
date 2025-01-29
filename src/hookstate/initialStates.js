@@ -27,6 +27,7 @@ export const globalInitialState = {
 	bypassType: '',
 	tenant: null,
 	layerSettingsLoading: false,
+	selectedIconTpe: 'Chip',
 };
 
 export const globalState = hookstate(copy(globalInitialState));
@@ -387,7 +388,7 @@ export const mapStateInitialState = {
 	mapVars: defaultMapVars,
 	defaultMapVars,
 	isDefaultViewAllowed: true,
-	isMapRefreshing: false
+	isMapRefreshing: false,
 };
 
 export const mapState = hookstate(copy(mapStateInitialState));

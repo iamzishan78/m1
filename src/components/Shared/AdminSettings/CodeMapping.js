@@ -15,9 +15,9 @@ import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import MetaField from 'utils/MetaField';
+import { globalStateController } from 'hookstate/globalStateController';
 
-import { AppContext } from 'AppContext';
+import MetaField from 'utils/MetaField';
 
 const useStyles = makeStyles(() => ({
 	actionBar: ({ isBackground }) => ({
@@ -316,7 +316,7 @@ const CodeMappingHeader = ({
 	settingsFor,
 }) => {
 	const classes = useStyles({ isBackground, isShrink });
-	const [stateApp, setStateApp] = useContext(AppContext);
+	const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
 
 	return (
 		<>
@@ -347,11 +347,10 @@ const CodeMappingHeader = ({
 												<EditIcon
 													onClick={() => {
 														const selectedMeta = metaData.find(meta => meta.esKey === option.key);
-														setStateApp(stateApp => ({
-															...stateApp,
+														globalStateController.updateState?.({
 															showFieldModal: true,
 															selectedMeta: selectedMeta,
-														}));
+														});
 													}}
 													style={{
 														alignSelf: 'center',
@@ -371,7 +370,9 @@ const CodeMappingHeader = ({
 					</FormControl>
 				</Grid>
 			</Grid>
-			{stateApp.showFieldModal && <MetaField columns={[]} category={mappingType?.category} esKey={mappingType?.key} />}
+			{globalStateValues.showFieldModal && (
+				<MetaField columns={[]} category={mappingType?.category} esKey={mappingType?.key} />
+			)}
 		</>
 	);
 };

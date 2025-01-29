@@ -104,11 +104,8 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 									setIsOpen(false);
 									globalStateController.updateState({
 										showFieldModal: true,
-									});
-									window.setStateApp(stateApp => ({
-										...stateApp,
 										selectedMeta: column,
-									}));
+									});
 								}}
 							>
 								<Grid

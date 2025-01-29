@@ -87,7 +87,7 @@ const TractInterestOwnerMeta = {
 			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
 				// Check if the contact is purchased
-				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
+				const isPurchased = [true, 'true', 'True'].includes(row?.original?.isPurchased);
 				return (
 					<div
 						style={{
@@ -395,14 +395,17 @@ const TractInterestOwnerMeta = {
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'contact.isPurchased',
+			name: 'isPurchased',
+			id: 'isPurchased',
 			header: 'Purchased Data Exists',
 			filterSelectOptions: [
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
+			type: 'boolean',
 			Cell: ({ row }) => {
-				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
 			},
 			isSearchField: false,

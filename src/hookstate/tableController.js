@@ -46,9 +46,10 @@ function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY or MM/DD/YY format
 	const mmddyyyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{1,7}$/; // Allows 1 to 7 digits for the year
 	const mmddyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{2}$/; // Two-digit year format
+	const iso8601 = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/; // ISO 8601
 
 	// Check if the inputString matches the date format
-	return mmddyyyy.test(inputString) || mmddyy.test(inputString);
+	return mmddyyyy.test(inputString) || mmddyy.test(inputString) || iso8601.test(inputString);
 }
 
 async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey) {
@@ -147,6 +148,10 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 
 	// Fetch dynamic grid columns
 	const customAsset = result?.data?.getCustomAssetInfo?.asset;
+	globalStateController.updateState({
+		currentAsset: customAsset,
+	});
+
 	let columns = customAsset?.modelKeys || [];
 
 	let associatedModel = {};
@@ -677,7 +682,7 @@ const tableESStateControllerHandler = state => ({
 		if (column?.isArrayKey) {
 			filter.isArrayKey = true;
 		}
-		if (column?.type === 'date') {
+		if (column?.type === 'date' || column?.columnType === 'date') {
 			filter.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 			if (filter.type !== 'advanced' || (filter.type === 'advanced' && !filter.searchType)) {
 				filter.type = 'advanced';

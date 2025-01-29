@@ -5,7 +5,7 @@ import { Warning as WarningIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 
 import FilterIcon from 'components/Common/SvgIcons/Filter';
@@ -99,7 +99,6 @@ export default function AnalyticsCards({
 	totalCount,
 	cardsDefault,
 	landSearchQuery,
-	unmappedPropertyCount = 0,
 	setESFilters,
 	setFilterToggle,
 	filterToggle,
@@ -168,9 +167,11 @@ export default function AnalyticsCards({
 
 			let count = currentAgg?.count || 0;
 
-			cards[1].points = count;
-			cards[2].points = totalCount - count;
-			setCards(cards);
+			if (esIndex !== 'properties_flat') {
+				cards[1].points = count;
+				cards[2].points = totalCount - count;
+				setCards(cards);
+			}
 		},
 	});
 
@@ -179,13 +180,15 @@ export default function AnalyticsCards({
 		fetchPolicy: 'no-cache',
 		onCompleted: aggsData => {
 			const approvedCount = get(aggsData, 'getDbAggs.aggregations.approvedCount') || [];
+			const unmappedCount = get(aggsData, 'getDbAggs.aggregations.unmappedCount') || [];
 
 			const inPayCounts = approvedCount.find(a => a.status === 'InPay')?.count || 0;
 			const notInPayCounts = approvedCount.find(a => a.status === 'NotInPay')?.count || 0;
-			const apprrovedCount = approvedCount.find(a => a.status?.toLowerCase?.() === 'approved')?.count || 0;
+			// const apprrovedCount = approvedCount.find(a => a.status?.toLowerCase?.() === 'approved')?.count || 0;
+			const unmappedPropertyCount = unmappedCount.find(a => isEmpty(a.wells?._id))?.count || 0;
 			// const otherCounts = approvedCount.find(a => !a.status)?.count || 0;
 
-			setCardPoint(totalCount - apprrovedCount, 3);
+			// setCardPoint(totalCount - apprrovedCount, 3);
 
 			if (esIndex === 'properties_flat') {
 				cards[1].points = inPayCounts;
@@ -223,6 +226,9 @@ export default function AnalyticsCards({
 					approvedCount: {
 						terms: { field: 'status.keyword' },
 					},
+					unmappedCount: {
+						terms: { field: 'wells._id.keyword' },
+					},
 				},
 			},
 		});
@@ -235,7 +241,7 @@ export default function AnalyticsCards({
 		} else {
 			setCards(cardsDefault);
 		}
-	}, [totalCount]);
+	}, [totalCount, esFilters, landSearchQuery]);
 
 	const handleFilterClick = key => {
 		if (key === 'inpay' || key === 'notinpay') {
@@ -334,7 +340,6 @@ AnalyticsCards.propTypes = {
 	totalCount: PropTypes.number,
 	cardsDefault: PropTypes.object,
 	landSearchQuery: PropTypes.func,
-	unmappedPropertyCount: PropTypes.number,
 	setESFilters: PropTypes.func,
 	setFilterToggle: PropTypes.func,
 	filterToggle: PropTypes.func,

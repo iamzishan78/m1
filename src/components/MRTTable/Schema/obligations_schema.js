@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 
-import CheckIcon from '@material-ui/icons/LocalAtm';
+import CheckIcon from '@material-ui/icons/Check';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
@@ -143,8 +143,10 @@ const ObligationsMeta = {
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
-			Cell: ({ renderedCellValue }) => {
-				return renderedCellValue === 'true' ? (
+			Cell: ({ row }) => {
+				const isClosed = row.original?.isClosed;
+
+				return isClosed === 'true' ? (
 					<div style={{ textAlign: 'center' }}>
 						<CheckIcon id="checkIcon" />
 					</div>
