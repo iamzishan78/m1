@@ -57,7 +57,7 @@ const formFields = [
 	},
 ];
 
-const ExternalTools = () => {
+const Integrations = () => {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 
@@ -155,4 +155,4 @@ const ExternalTools = () => {
 	);
 };
 
-export default ExternalTools;
+export default Integrations;

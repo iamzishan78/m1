@@ -562,11 +562,11 @@ export const AdminManagementRoutes = {
 		noCheck: true,
 		showSettingString: false,
 	},
-	EXTERNALTOOLS: {
+	INTEGRATION: {
 		featureFlag: 'AlWAYSSHOW',
-		title: 'External Tools',
-		link: '/admin/externalTools',
-		component: 'ExternalTools',
+		title: 'Integrations',
+		link: '/admin/integrations',
+		component: 'Integrations',
 		noCheck: true,
 		showSettingString: false,
 	},

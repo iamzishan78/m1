@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Switch, Route, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
-import ExternalTools from 'components/ExternalTools';
+import Integrations from 'components/Integrations';
 
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
 import { AppContext } from 'AppContext';
@@ -26,7 +26,7 @@ const Components = {
 	Reindex,
 	BulkDataEditing,
 	BulkDataEditingDetail,
-	ExternalTools,
+	Integrations,
 };
 
 function isM1neralAddress(email) {
@@ -73,6 +73,7 @@ export default function Admin() {
 		if (!isM1neralAddress(stateApp.user.email)) {
 			delete allPaths['FLATTENING'];
 			delete allPaths['REINDEX'];
+			delete allPaths['INTEGRATION'];
 		}
 		const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.CONTACTSUBMENU);
 		// const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);
