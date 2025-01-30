@@ -1,18 +1,20 @@
 import React, { memo } from 'react';
 
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
+
 import { copy } from 'utils/helper';
 
 import DateField from './Fields/DateField';
 import OwnerField from './Fields/OwnerField';
-import SummaryDropdown from './Fields/SummaryDropdown';
-import SummaryUsersList from './Fields/SummaryUsersList';
-import SummaryTextField from './Fields/SummaryTextField';
 import ShapeAutoComplete from './Fields/shapeAutoComplete';
 import SimpleSelectField from './Fields/SimpleSelectFIeld';
 import SummaryAutoComplete from './Fields/SummaryAutoComplete';
+import SummaryDropdown from './Fields/SummaryDropdown';
+import SummaryTextField from './Fields/SummaryTextField';
+import SummaryUsersList from './Fields/SummaryUsersList';
 
-const GenericFields = memo(({ field: fieldObj, summaryDataValues }) => {
+const GenericFields = ({ field: fieldObj, summaryDataValues }) => {
 	const field = copy(fieldObj);
 	const isMetaField = field._id && field.category;
 
@@ -96,6 +98,21 @@ const GenericFields = memo(({ field: fieldObj, summaryDataValues }) => {
 		default:
 			return <div>{`Unsupported Field Type : ${field.type}`}</div>;
 	}
-});
+};
 
-export default GenericFields;
+GenericFields.propTypes = {
+	field: PropTypes.shape({
+		_id: PropTypes.string,
+		category: PropTypes.string,
+		mappingKey: PropTypes.string,
+		key: PropTypes.string.isRequired,
+		keyType: PropTypes.string,
+		type: PropTypes.string,
+		options: PropTypes.array,
+		payload: PropTypes.object,
+		shapeType: PropTypes.string,
+	}),
+	summaryDataValues: PropTypes.object.isRequired,
+};
+
+export default memo(GenericFields);
