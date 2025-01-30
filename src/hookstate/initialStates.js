@@ -107,47 +107,6 @@ export const jobInitialState = {
 export const jobState = hookstate(copy(jobInitialState));
 
 /* -------------------------------------------------------------------------- */
-/*                           Map Controls Controller                          */
-/* -------------------------------------------------------------------------- */
-
-export const mapControlsInitialState = {
-	searchValue: '',
-	fileUploadedContent: null,
-	fileUploaded: null,
-	selectedControl: 'layer',
-	layerAddControl: null,
-	selectedMapControl: null,
-	openSpeedDial: true,
-	anchorEl: null,
-	layers: [
-		{ name: 'Basins', value: 'basinLayer' },
-		{ name: 'Pipelines', value: 'pipelineLayer' },
-		{ name: 'Surveys', value: 'surveyLayer' },
-	],
-	userData: null,
-	heatmaps: null,
-	selectedBaseMap: '',
-	addLayer: false,
-	manageSourceLayer: false,
-	manageLayer: false,
-	editDraw: false,
-	map: null,
-	Draw: null,
-	mapStyleList: [],
-	expandedPanel: true,
-	// TODO: Remove conflicting selectedLayer states
-	selectedLayerControl: null,
-	selectedLayer: null,
-	selectedDataset: null,
-	layerGridCard: false,
-
-	// From Redux MapGridCard
-	mapGridCardActivated: false,
-};
-
-export const mapControls = hookstate(copy(mapControlsInitialState));
-
-/* -------------------------------------------------------------------------- */
 /*                           Layer Styling Controller                          */
 /* -------------------------------------------------------------------------- */
 
