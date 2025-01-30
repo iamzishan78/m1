@@ -87,7 +87,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 	const tenantName = UserSession.getStorageItem('tenantName');
 
 	const formState = sideDialogController('tractInterestDialog').useCompleteState();
-	const formStateValues = formState?.get({ noproxy: true });
+	const formStateValues = formState;
 
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user;

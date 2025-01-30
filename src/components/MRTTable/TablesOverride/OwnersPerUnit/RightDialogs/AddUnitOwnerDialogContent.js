@@ -110,7 +110,7 @@ export default function AddUnitOwnerDialogContent({
 	const dispatch = useDispatch();
 
 	const formState = sideDialogController('unitInterestDialog').useCompleteState();
-	const formStateValues = formState?.get({ noproxy: true });
+	const formStateValues = formState;
 	const [metafields, setMetaFields] = useState([]);
 
 	const { user } = globalStateController.useState(['user']);
