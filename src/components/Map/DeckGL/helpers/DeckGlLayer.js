@@ -135,7 +135,7 @@ export default class DeckGlOverlay {
 						}
 						// If the path is not '/' or ' ' and the map is not rendered through deal dialog
 						if (!['', '/'].includes(window.location.pathname) && transactBarView !== 'Map') {
-							history.replace({ pathname: '/' });
+							window.history.replaceState({}, '', '/');
 						}
 						return;
 					}
