@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const ALL_CUSTOM_ASSET_INFO = gql`
-	query getAllCustomAssetInfo {
-		getAllCustomAssetInfo
+	query getAllCustomAssetInfo($type: String) {
+		getAllCustomAssetInfo(type: $type)
 	}
 `;
 

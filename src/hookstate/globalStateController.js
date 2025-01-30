@@ -21,7 +21,8 @@ export const globalInitialState = {
 	bypassType: '',
 	tenant: null,
 	layerSettingsLoading: false,
-	abstract_geo: {}
+	abstract_geo: {},
+	selectedIconTpe: 'Chip',
 };
 
 class GlobalStateController extends StateController {
@@ -45,9 +46,9 @@ class GlobalStateController extends StateController {
 		const bypass = simpleAuthBypass
 			? { bypassLogin: true, bypassType: 'SimpleBypass' }
 			: {
-				bypassLogin: bypassTenants.includes(tenant.name),
-				bypassType: 'Auth0Bypass',
-			};
+					bypassLogin: bypassTenants.includes(tenant.name),
+					bypassType: 'Auth0Bypass',
+				};
 
 		if (bypass.bypassLogin) {
 			this.updateState({ ...bypass, tenant });

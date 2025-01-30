@@ -140,7 +140,7 @@ const Activities = () => {
 	const [getContactsForActivity, { data: getContactsForActivityResult }] = useLazyQuery(GET_CONTACTS_FOR_ACTIVITY, {
 		fetchPolicy: 'no-cache',
 		onCompleted: () => {
-			slidoutStateController.updateState({ loader: false })
+			slidoutStateController.updateState({ loader: false });
 		},
 	});
 
@@ -152,10 +152,10 @@ const Activities = () => {
 	const [activityFilterByOwner, setActivityFilterByOwner] = useState('all');
 	const [activityFilterByResponsibleParty, setActivityFilterByResponsibleParty] = useState('all');
 	const [activityFilterByTime, setActivityFilterByTime] = useState('all');
-	const activitiesGridState = tableController('ActivitiesTable').useState(['filters']).stateValues;
+	const activitiesGridState = tableController('ObligationsTable').useState(['filters']).stateValues;
 	const [view, setView] = React.useState(Views.MONTH);
 
-	const { selectedActivityId } = slidoutStateController.useState(['selectedActivityId'])
+	const { selectedActivityId } = slidoutStateController.useState(['selectedActivityId']);
 
 	const obligationOptions = React.useMemo(() => {
 		if (activitiesData?.activities) {
@@ -246,29 +246,32 @@ const Activities = () => {
 
 	useEffect(() => {
 		if (selectedActivityId) {
-			slidoutStateController.updateState({ selectedActivity: events.find(act => act._id === selectedActivityId) })
+			slidoutStateController.updateState({ selectedActivity: events.find(act => act._id === selectedActivityId) });
 		} else {
-			slidoutStateController.updateState({ selectedActivity: null })
+			slidoutStateController.updateState({ selectedActivity: null });
 		}
 	}, [selectedActivityId]);
 
 	useEffect(() => {
 		if (activitiesGridState) {
-			tableController('ActivitiesTable').clearFilters();
-			const filters = [
-				{ field: 'type.keyword', value: 'Expiration', notInclude: true },
-				{ field: 'type.keyword', value: 'Option to Extend', notInclude: true },
-			];
+			tableController('ObligationsTable').clearFilters();
+			const filters = [];
 
 			if (activityFilterByType && activityFilterByType !== 'all') {
 				filters.push({ field: 'type.keyword', value: activityFilterByType });
+			} else {
+				tableController('ObligationsTable').clearFilter('type.keyword');
 			}
 			if (activityFilterByType && activityFilterByOwner !== 'all') {
 				filters.push({ field: 'ownerId.keyword', value: activityFilterByOwner });
+			} else {
+				tableController('ObligationsTable').clearFilter('ownerId.keyword');
 			}
 
 			if (activityFilterByResponsibleParty && activityFilterByResponsibleParty !== 'all') {
 				filters.push({ field: 'responsibleParty.keyword', value: activityFilterByResponsibleParty });
+			} else {
+				tableController('ObligationsTable').clearFilter('responsibleParty.keyword');
 			}
 			const today = moment().format('yyyy-MM-DD');
 			switch (activityFilterByTime) {
@@ -324,7 +327,7 @@ const Activities = () => {
 	};
 
 	const onModalOpen = () => {
-		slidoutStateController.updateState({ loader: true })
+		slidoutStateController.updateState({ loader: true });
 		getContactsForActivity({
 			variables: { activityId: selectedActivityId },
 		}).then(() => {
@@ -333,7 +336,7 @@ const Activities = () => {
 	};
 
 	const setSelectedActivityId = id => {
-		slidoutStateController.updateState({ selectedActivityId: id })
+		slidoutStateController.updateState({ selectedActivityId: id });
 	};
 
 	useEffect(() => {
@@ -348,7 +351,7 @@ const Activities = () => {
 		});
 
 		return () => {
-			slidoutStateController.updateState({ selectedActivityId: 'id', selectedActivity: null })
+			slidoutStateController.updateState({ selectedActivityId: 'id', selectedActivity: null });
 			slidoutStateController.hideSlideout();
 		};
 	}, []);

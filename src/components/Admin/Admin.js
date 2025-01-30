@@ -14,6 +14,7 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
 
 import { AdminManagementRoutes } from 'utils/data';
+import { UserSession } from 'utils/user';
 
 import { AppContext } from 'AppContext';
 
@@ -35,7 +36,7 @@ function isM1neralAddress(email) {
 }
 
 function isTestEnv() {
-	let tenantName = window.sessionStorage.getItem('tenantName');
+	let tenantName = UserSession.getStorageItem('tenantName');
 
 	let validTenants = ['frontier', 'm1development', 'localhost'];
 	let isValidTenant = validTenants.map(tenant => tenant.toLowerCase()).includes(tenantName.toLowerCase());

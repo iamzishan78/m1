@@ -19,6 +19,7 @@ import { Dialog } from '@mui/material';
 import { useMutation, useLazyQuery, gql } from '@apollo/client';
 import { isEmpty } from 'lodash';
 import get from 'lodash/get';
+import PropTypes from 'prop-types';
 
 import LimitExceedPopUp from 'components/MapControls/components/popup/LimitExceedPopup';
 import ShapeEditActions from 'components/MapControls/components/popup/ShapeEditActions';
@@ -29,11 +30,11 @@ import { getPolygonString } from 'components/Shared/functions';
 import { shapeTypeLayers, calculateLandArea } from 'components/Shared/functions/shapeLayer';
 import ConvertContact from 'components/Shared/svgIcons/convert_contact';
 
+import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 import { ALL_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
-import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 
 import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
@@ -233,7 +234,11 @@ const ShapeActionsPopup = props => {
 
 	useEffect(() => {
 		// Get all custom assets
-		getAllCustomAsset();
+		getAllCustomAsset({
+			variables: {
+				type: 'Custom',
+			},
+		});
 	}, [getAllCustomAsset]);
 
 	useEffect(() => {
@@ -675,6 +680,12 @@ const ShapeActionsPopup = props => {
 			)}
 		</>
 	);
+};
+
+ShapeActionsPopup.propTypes = {
+	classes: PropTypes.object.isRequired,
+	children: PropTypes.node,
+	onlyAddShape: PropTypes.bool,
 };
 
 export default ShapeActionsPopup;

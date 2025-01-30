@@ -424,7 +424,13 @@ function ExpandableCard(props) {
 				viewDoc: null,
 				rotateableFeature: null,
 			}));
-			history.replace({ pathname: '/' });
+			// Extract the current search query from the location object
+			const currentSearch = location.search;
+			// Replace the pathname but retain the query parameters
+			history.replace({
+				pathname: '/', // Set the new path
+				search: currentSearch, // Retain the current search parameters
+			});
 		}
 		handleCloseExpandableCard();
 		//if EC is inside map popup you need to close it
@@ -617,10 +623,10 @@ function ExpandableCard(props) {
 						<Typography
 							// className={classes.prevlocation}
 							color="inherit"
-						// onClick={() => {
-						//   setStateApp({ ...stateApp, DocumentDrawer: true });
-						//   history.push("/documents");
-						// }}
+							// onClick={() => {
+							//   setStateApp({ ...stateApp, DocumentDrawer: true });
+							//   history.push("/documents");
+							// }}
 						>
 							Wells
 						</Typography>
@@ -760,16 +766,16 @@ function ExpandableCard(props) {
 								)}
 
 							{stateExpandableCard.expanded &&
-								targetLabel !== 'activity' &&
-								targetLabel !== 'contact' &&
-								parent !== 'table' ? (
+							targetLabel !== 'activity' &&
+							targetLabel !== 'contact' &&
+							parent !== 'table' ? (
 								parent !== 'table' &&
-									targetLabel !== 'well' &&
-									targetLabel !== 'expandedWell' &&
-									targetLabel !== 'parcel' &&
-									!selectedShape &&
-									targetLabel !== 'expandedParcel' &&
-									targetLabel !== 'recent_submitted_permits' ? (
+								targetLabel !== 'well' &&
+								targetLabel !== 'expandedWell' &&
+								targetLabel !== 'parcel' &&
+								!selectedShape &&
+								targetLabel !== 'expandedParcel' &&
+								targetLabel !== 'recent_submitted_permits' ? (
 									<Tooltip title={'Shrink'} placement="top">
 										<IconButton color="secondary" onClick={handleShrink} aria-label="shrink" className={classes.icons}>
 											<ShrinkIcon viewBox="0 0 64 64" color="secondary" />
@@ -826,27 +832,27 @@ function ExpandableCard(props) {
 													targetLabel === 'unit' ||
 													targetLabel === 'agreement' ||
 													targetLabel === 'activity') && (
-														<>
-															{' '}
-															<IconButton size="small" component="span" onClick={handleMenuClick}>
-																<MoreVertIcon id="expandCardVertIcon" color="secondary" size="medium" />
-															</IconButton>
-															<Menu
-																id="dealMenu"
-																anchorEl={anchorEl}
-																open={Boolean(anchorEl)}
-																onClose={handleMenuClose}
-																className={classes.menu}
-															>
-																<MenuItem onClick={openConfirmationDialog} data-testid="delete-icon">
-																	<ListItemIcon>
-																		<DeleteIcon size="medium" />
-																	</ListItemIcon>
-																	<ListItemText>Delete</ListItemText>
-																</MenuItem>
-															</Menu>
-														</>
-													)}
+													<>
+														{' '}
+														<IconButton size="small" component="span" onClick={handleMenuClick}>
+															<MoreVertIcon id="expandCardVertIcon" color="secondary" size="medium" />
+														</IconButton>
+														<Menu
+															id="dealMenu"
+															anchorEl={anchorEl}
+															open={Boolean(anchorEl)}
+															onClose={handleMenuClose}
+															className={classes.menu}
+														>
+															<MenuItem onClick={openConfirmationDialog} data-testid="delete-icon">
+																<ListItemIcon>
+																	<DeleteIcon size="medium" />
+																</ListItemIcon>
+																<ListItemText>Delete</ListItemText>
+															</MenuItem>
+														</Menu>
+													</>
+												)}
 											</>
 										)}
 									</Tooltip>

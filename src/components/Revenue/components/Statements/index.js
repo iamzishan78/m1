@@ -84,6 +84,10 @@ export default function RevenueStatements() {
 	}, [stateValues.globalSearch]);
 
 	const setESFilters = newFilter => {
+		if (newFilter.length === 0) {
+			ESFilters([]);
+			tableController('RevenueStatementsTable').clearFilters();
+		}
 		ESFilters(newFilter);
 	};
 

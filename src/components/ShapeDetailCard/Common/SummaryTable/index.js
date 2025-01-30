@@ -419,12 +419,9 @@ export default function SummaryTableInfo({
 																	if (data.isCustom) {
 																		setTableDataState({ [`${data.key}key`]: true });
 																	} else {
-																		setStateApp(stateApp => ({
-																			...stateApp,
-																			selectedMeta: data,
-																		}));
 																		globalStateController.updateState({
 																			showFieldModal: true,
+																			selectedMeta: data,
 																		});
 																	}
 																}}

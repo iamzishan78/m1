@@ -9,8 +9,10 @@ import MRTTable from 'components/MRTTable';
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 
+import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableController } from 'hookstate/tableController';
 
+import { esIndexDateFilterKeyMap, esIndexFilterKeyMap } from 'utils/data';
 import { getDateFilters } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
@@ -18,7 +20,6 @@ import { AppContext } from 'AppContext';
 import ActivitiesDashboardFilter from './ActivitiesDashboardFilter';
 import ActivitiesSlideout from './ActivitiesSlideout';
 import ActivityAnalytics from './ActivityAnalytics';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -26,12 +27,13 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-export const getActivityFilters = (appliedFilters, tableKey) => {
+export const getActivityFilters = (appliedFilters, tableKey, esIndex) => {
 	let filters = [];
 	if (appliedFilters) {
+		const dateKey = esIndexDateFilterKeyMap[esIndex];
 		let range = [];
 		range = getDateFilters({
-			dateTime: {
+			[dateKey || 'dateTime']: {
 				from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
 				to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
 			},
@@ -40,7 +42,7 @@ export const getActivityFilters = (appliedFilters, tableKey) => {
 			filters = [...filters, ...range];
 		}
 		range = getDateFilters({
-			endDateTime: {
+			[dateKey || 'endDateTime']: {
 				from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
 				to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
 			},
@@ -56,13 +58,14 @@ export const getActivityFilters = (appliedFilters, tableKey) => {
 		} else {
 			tableController(tableKey).clearFilter('contact.campaigns');
 		}
+		const qualifierKey = esIndexFilterKeyMap[esIndex];
 		if (appliedFilters.qualifier) {
 			filters.push({
-				field: 'ownerName.keyword',
+				field: qualifierKey,
 				value: appliedFilters.qualifier,
 			});
 		} else {
-			tableController(tableKey).clearFilter('ownerName.keyword');
+			tableController(tableKey).clearFilter(qualifierKey);
 		}
 		if (!filters.length && appliedFilters.length) {
 			filters = appliedFilters;
@@ -73,7 +76,7 @@ export const getActivityFilters = (appliedFilters, tableKey) => {
 
 const ActivitiesDashboard = () => {
 	const classes = useStyles();
-	const { selectedActivityId } = slidoutStateController.useState(['selectedActivityId'])
+	const { selectedActivityId } = slidoutStateController.useState(['selectedActivityId']);
 
 	const tableKey = 'ActivitiesTable';
 	const esIndex = 'activities_flat';
@@ -122,7 +125,7 @@ const ActivitiesDashboard = () => {
 	}, [getDbMinValue]);
 
 	useEffect(() => {
-		tableController(tableKey).setFilters(getActivityFilters(appliedFilters, tableKey));
+		tableController(tableKey).setFilters(getActivityFilters(appliedFilters, tableKey, esIndex));
 	}, [appliedFilters]);
 
 	useEffect(() => {
@@ -133,7 +136,7 @@ const ActivitiesDashboard = () => {
 
 	useEffect(() => {
 		return () => {
-			slidoutStateController.updateState({ selectedActivityId: '', selectedActivity: null, show: false })
+			slidoutStateController.updateState({ selectedActivityId: '', selectedActivity: null, show: false });
 		};
 	}, []);
 
@@ -145,6 +148,7 @@ const ActivitiesDashboard = () => {
 		<div className={classes.root}>
 			<ActivitiesDashboardFilter
 				esIndex={esIndex}
+				tableKey={tableKey}
 				searchFields={searchFields}
 				setFilterToggle={setFilterToggle}
 				filterToggle={filterToggle}
@@ -170,6 +174,8 @@ const ActivitiesDashboard = () => {
 				module={'Activities'}
 				searchFields={activitiesTableState.searchFields}
 				globalFilter={activitiesTableState.globalFilter}
+				tableKey={tableKey}
+				esIndex={esIndex}
 			/>
 			<MRTTable
 				name={tableKey}
@@ -178,12 +184,12 @@ const ActivitiesDashboard = () => {
 						{ field: 'category.keyword', value: 'CRM' },
 						{ field: 'type.keyword', value: 'Expiration', type: 'advanced', searchType: 'notEquals' },
 					],
-					maxTableHeight: '42vh',
+					maxTableHeight: '55vh',
 				}}
 			/>
 			<ActivitiesSlideout
 				activityId={selectedActivityId}
-				setSelectedActivityId={(id) => slidoutStateController.updateState({ selectedActivityId: id })}
+				setSelectedActivityId={id => slidoutStateController.updateState({ selectedActivityId: id })}
 				getContactsForActivity={getContactsForActivity}
 			/>
 		</div>

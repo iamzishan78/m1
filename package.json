@@ -47,7 +47,7 @@
 		"connected-react-router": "^6.9.1",
 		"craco-esbuild": "^0.5.0",
 		"cypress-wait-until": "^3.0.2",
-		"deck.gl": "^8.4.10",
+		"deck.gl": "^8.9.10",
 		"dompurify": "^2.3.10",
 		"email-validator": "^2.0.4",
 		"esbuild": "^0.19.8",
@@ -192,6 +192,7 @@
 		"start-server-and-test": "^1.15.4"
 	},
 	"lint-staged": {
+		"*.{js,jsx}": "eslint --fix --max-warnings=0",
 		"*.{js,jsx,css,md,html,json}": "prettier --cache --write"
 	}
 }

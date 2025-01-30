@@ -160,6 +160,18 @@ export default function RevenueAnalytics(props) {
 		fetchPolicy: 'no-cache',
 	});
 
+	// Function to get the appropriate table state values based on the comparison report type
+	const getTableStateValues = () => {
+		// Check if the comparison report is 'Check Detail Comparison'
+		if (comparisonReport === 'Check Detail Comparison') {
+			// Return the comparison table state for 'Check Detail Comparison'
+			return comparisonTableState;
+		} else {
+			// Otherwise, return the sales volume comparison table state
+			return salesVolumeComparisonTableState;
+		}
+	};
+
 	const getPropertyOptions = async () => {
 		const propertyNumbersPromise = new Promise((resolve, reject) => {
 			getPropertyNumbers({
@@ -206,7 +218,6 @@ export default function RevenueAnalytics(props) {
 			setPropertyNumbers(propertiesOptions?.map(hit => hit.key) || []);
 			setCheckNumbers(checkOptions?.map(hit => hit.key) || []);
 		})();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		comparisonTableState?.filters,
 		comparisonTableState?.data?.total,
@@ -214,25 +225,12 @@ export default function RevenueAnalytics(props) {
 		salesVolumeComparisonTableState?.data?.total,
 	]);
 
-	// Function to get the appropriate table state values based on the comparison report type
-	const getTableStateValues = () => {
-		// Check if the comparison report is 'Check Detail Comparison'
-		if (comparisonReport === 'Check Detail Comparison') {
-			// Return the comparison table state for 'Check Detail Comparison'
-			return comparisonTableState;
-		} else {
-			// Otherwise, return the sales volume comparison table state
-			return salesVolumeComparisonTableState;
-		}
-	};
-
 	useEffect(() => {
 		getCheckDetailData({
 			variables: {
 				index: 'checkdetailsinterestscomparison_flat',
 			},
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -255,7 +253,6 @@ export default function RevenueAnalytics(props) {
 			data = sortBy(data, ['ReportDate']);
 			setCheckDetailsData(data);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [checkDetailData]);
 
 	useEffect(() => {
@@ -268,13 +265,12 @@ export default function RevenueAnalytics(props) {
 	}, [getDbMinValue]);
 
 	useEffect(() => {
-		setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
+		setFromDate(moment().subtract(1, 'year').startOf('year').format('yyyy-MM-DD'));
 		setToDate(moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD'));
 	}, []);
 
 	useEffect(() => {
 		setFilters([...(propertiesReportGroup || []), ...(filters || [])]);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [propertiesReportGroup]);
 
 	useEffect(() => {
@@ -288,7 +284,6 @@ export default function RevenueAnalytics(props) {
 				filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
 			},
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [filters, toDate, fromDate]);
 
 	const onChangeDates = (fromDate, toDate) => {
@@ -316,7 +311,6 @@ export default function RevenueAnalytics(props) {
 			setTableKey('SalesVolumeComparisonTable');
 		}
 		setEsFilters(newFilters);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [comparisonReport]);
 
 	const setESFilters = useCallback(

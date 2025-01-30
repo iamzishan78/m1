@@ -2,8 +2,7 @@ import React, { useEffect, useState, Fragment, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
-import { Grid, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
+import { Grid, InputAdornment, CircularProgress, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Autorenew as AutorenewIcon } from '@material-ui/icons';
@@ -13,12 +12,13 @@ import AddIcCallIcon from '@mui/icons-material/AddIcCall';
 
 import { useMutation } from '@apollo/client';
 import { get, set, isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 
 import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
-import { SUMMARY_FIELDS, featureFlagChanges } from 'components/ContactDetailedInfo/helper';
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { SUMMARY_FIELDS, featureFlagChanges, contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { NumberFormatComma } from 'components/Shared/Forms/Formatting/NumberFormatComma';
+import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
 import TextSmsIcon from 'components/Shared/svgIcons/textsms';
 import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
 import vf_number from 'components/Shared/valueformatters/vf_number';
@@ -98,6 +98,14 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 
 	const [contactInterest, setContactInterest] = useState();
 
+	const getCommaValue = value => {
+		if (value && !value.includes('.')) {
+			return vf_number(Number(value.replace(/,/g, '')));
+		} else {
+			return value;
+		}
+	};
+
 	useEffect(() => {
 		if (!isEmpty(contactData)) {
 			let _contact = { ...contactData };
@@ -116,14 +124,6 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			setFormState(true);
 		}
 	}, [contactData, reset, isFormSet]);
-
-	const getCommaValue = value => {
-		if (value && !value.includes('.')) {
-			return vf_number(Number(value.replace(/,/g, '')));
-		} else {
-			return value;
-		}
-	};
 
 	const updateFieldData = (key, value) => {
 		if (contactData[key] === value) {
@@ -154,12 +154,8 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			refetchQueries: ['getContact'],
 			awaitRefetchQueries: false,
 		})
-			.then(result => {
-				setLoading(null);
-			})
-			.catch(error => {
-				setLoading(null);
-			});
+			.then(() => setLoading(null))
+			.catch(() => setLoading(null));
 	};
 
 	const isChanged = (key, value) => {
@@ -185,10 +181,10 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			direction="column"
 			className={classes.container}
 		>
-			{SUMMARY_FIELDS(contactData).map((field, key) => (
+			{SUMMARY_FIELDS(contactData).map(field => (
 				<Grid
 					item
-					key={key}
+					key={JSON.stringify(field)}
 					style={{ position: 'relative', width: '100%', marginRight: '30px', maxWidth: '44%', flexBasis: '7%' }}
 				>
 					<Grid container className={classes.gridStyle}>
@@ -203,11 +199,8 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 								name={field.key}
 								render={params => {
 									const isValueOveridden = isChanged(field.key, params.value);
-
-									// eslint-disable-next-line react-hooks/rules-of-hooks
 									const initialized = useRef(false);
 
-									// eslint-disable-next-line react-hooks/rules-of-hooks
 									useEffect(() => {
 										if (initialized.current) {
 											return;
@@ -236,152 +229,147 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 									return (
 										<Fragment>
 											{field.type !== 'autocomplete' ? (
-												<TextField
-													{...params}
-													id={`field-${key}`}
-													variant="outlined"
-													margin="dense"
-													type="text"
-													fullWidth
-													InputLabelProps={{
-														shrink: true,
+												<TextFieldComponent
+													fieldConfig={{
+														size: 'small',
+														type: 'text',
+														fullWidth: true,
+														variant: 'outlined',
+														margin: 'dense',
 													}}
-													onBlur={event => {
-														let currValue = event.target.value;
-
-														if (field.key.includes('offerPriceSum') || field.key.includes('nraSum')) {
-															// params.onChange(parseFloat(event.target.value).toFixed(2));
-														}
-
-														if (
-															field.key.includes('offerPriceSum') ||
-															field.key.includes('nraSum') ||
-															field.key.includes('maxOfferPriceSum') ||
-															field.key.includes('closedPriceSum')
-														) {
-															currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''));
-														}
-
-														const prevValue = get(contactData, field.key) || '';
-
-														if (currValue != prevValue) {
-															updateFieldData(field.key, currValue);
-														}
-													}}
-													onChange={({ target }) => {
-														params.onChange(target.value);
-													}}
-													onKeyUp={e => {
-														if (e.key === 'Enter') {
-															e.target.blur();
-														}
-													}}
-													disabled={field.disabled}
-													className={`${classes.field} ${isValueOveridden ? classes.baseValueChanged : null}`}
-													value={field.value ?? params.value}
-													// If field type = "email", show mail icon adornment
-													// If field info is updating, show loading as adornment
-													// If field is one of 'homePhone', 'mobilePhone', 'AltPhone', show phone icon adornment
-													// else show nothing
-													InputProps={{
-														inputComponent:
-															field.type === 'currency'
-																? CurrencyFormatCustom
-																: field.key.includes('nraSum')
-																	? NumberFormatComma
-																	: undefined,
-														endAdornment:
-															field.type === 'email' && contactData[field.key] ? (
-																<InputAdornment position="end">
-																	{/* Email quick actions icons */}
-																	<Tooltip title={'Email'} placement="top">
-																		<IconButton
-																			id="mail-icon"
-																			href={`mailto: ${contactData.primaryEmail}`}
-																			className={classes.emailAdornment}
-																		>
-																			<EmailOutlinedIcon htmlColor="#757575" />
-																		</IconButton>
-																	</Tooltip>
-																</InputAdornment>
-															) : field.isPhoneNumber && contactData[field.key] ? (
-																<>
-																	{/* Phone quick actions icons */}
+													fieldAttributes={{
+														name: field.key,
+														value: field.value ?? params.value,
+														allowEdit: true,
+														inputRef: field.inputRef,
+														disabled: field.disabled,
+														InputLabelProps: { shrink: true },
+														InputProps: {
+															inputComponent:
+																field.type === 'currency'
+																	? CurrencyFormatCustom
+																	: field.key.includes('nraSum')
+																		? NumberFormatComma
+																		: undefined,
+															endAdornment:
+																field.type === 'email' && contactData[field.key] ? (
 																	<InputAdornment position="end">
-																		<Tooltip title={'Voice Mail'} placement="top">
+																		{/* Email quick actions icons */}
+																		<Tooltip title={'Email'} placement="top">
 																			<IconButton
-																				id="voicemail-icon"
+																				id="mail-icon"
+																				href={`mailto: ${contactData.primaryEmail}`}
 																				className={classes.emailAdornment}
-																				onClick={() =>
-																					handleQuickActionActivity({
-																						phoneNumber: contactData[field.key],
-																						type: 'call',
-																					})
-																				}
 																			>
-																				<VoiceMailIcon htmlColor="#757575" />
+																				<EmailOutlinedIcon htmlColor="#757575" />
 																			</IconButton>
 																		</Tooltip>
 																	</InputAdornment>
+																) : field.isPhoneNumber && contactData[field.key] ? (
+																	<>
+																		{/* Phone quick actions icons */}
+																		<InputAdornment position="end">
+																			<Tooltip title={'Voice Mail'} placement="top">
+																				<IconButton
+																					id="voicemail-icon"
+																					className={classes.emailAdornment}
+																					onClick={() =>
+																						handleQuickActionActivity({
+																							phoneNumber: contactData[field.key],
+																							type: 'call',
+																						})
+																					}
+																				>
+																					<VoiceMailIcon htmlColor="#757575" />
+																				</IconButton>
+																			</Tooltip>
+																		</InputAdornment>
 
-																	<InputAdornment position="end">
-																		<Tooltip title={'Text SMS'} placement="top">
-																			<IconButton
-																				id="textsms-icon"
-																				className={classes.emailAdornment}
-																				onClick={() =>
-																					handleQuickActionActivity({
-																						phoneNumber: contactData[field.key],
-																						type: 'text_message',
-																					})
-																				}
-																			>
-																				<TextSmsIcon htmlColor="#757575" />
-																			</IconButton>
-																		</Tooltip>
-																	</InputAdornment>
+																		<InputAdornment position="end">
+																			<Tooltip title={'Text SMS'} placement="top">
+																				<IconButton
+																					id="textsms-icon"
+																					className={classes.emailAdornment}
+																					onClick={() =>
+																						handleQuickActionActivity({
+																							phoneNumber: contactData[field.key],
+																							type: 'text_message',
+																						})
+																					}
+																				>
+																					<TextSmsIcon htmlColor="#757575" />
+																				</IconButton>
+																			</Tooltip>
+																		</InputAdornment>
 
-																	<InputAdornment position="end">
-																		<Tooltip title={'Call'} placement="top">
-																			<IconButton
-																				id="call-icon"
-																				href={`tel: ${contactData[field.key]}`}
-																				className={classes.emailAdornment}
-																			>
-																				<AddIcCallIcon htmlColor="#757575" />
-																			</IconButton>
-																		</Tooltip>
-																	</InputAdornment>
-																</>
-															) : activeLoadingField === field.key ? (
-																<CircularProgress className={classes.loader} size={22} color="secondary" />
-															) : activeLoadingField === field.key ? (
-																<CircularProgress className={classes.loader} size={22} color="secondary" />
-															) : (
-																<>
-																	{isValueOveridden && (
-																		<AutorenewIcon
-																			htmlColor="#757575"
-																			onClick={() => {
-																				const key = `evaluatedContactInterests.${field.key.split('.')[1]}`;
+																		<InputAdornment position="end">
+																			<Tooltip title={'Call'} placement="top">
+																				<IconButton
+																					id="call-icon"
+																					href={`tel: ${contactData[field.key]}`}
+																					className={classes.emailAdornment}
+																				>
+																					<AddIcCallIcon htmlColor="#757575" />
+																				</IconButton>
+																			</Tooltip>
+																		</InputAdornment>
+																	</>
+																) : activeLoadingField === field.key ? (
+																	<CircularProgress className={classes.loader} size={22} color="secondary" />
+																) : activeLoadingField === field.key ? (
+																	<CircularProgress className={classes.loader} size={22} color="secondary" />
+																) : (
+																	<>
+																		{isValueOveridden && (
+																			<AutorenewIcon
+																				htmlColor="#757575"
+																				onClick={() => {
+																					const key = `evaluatedContactInterests.${field.key.split('.')[1]}`;
 
-																				let value = get(contactData, key);
-																				if (
-																					field.key.includes('offerPriceSum') ||
-																					field.key.includes('nraSum') ||
-																					field.key.includes('maxOfferPriceSum') ||
-																					field.key.includes('closedPriceSum')
-																				) {
-																					value = parseFloat(value).toFixed(2);
-																				}
+																					let value = get(contactData, key);
+																					if (
+																						field.key.includes('offerPriceSum') ||
+																						field.key.includes('nraSum') ||
+																						field.key.includes('maxOfferPriceSum') ||
+																						field.key.includes('closedPriceSum')
+																					) {
+																						value = parseFloat(value).toFixed(2);
+																					}
 
-																				updateFieldData(field.key, value);
-																				params.onChange(value);
-																			}}
-																		/>
-																	)}
-																</>
-															),
+																					updateFieldData(field.key, value);
+																					params.onChange(value);
+																				}}
+																			/>
+																		)}
+																	</>
+																),
+														},
+													}}
+													fieldEvents={{
+														onChange: value => params.onChange(value),
+														onKeyUp: event => event.key === 'Enter' && event.target.blur(),
+														onBlur: value => {
+															let currValue = value;
+
+															if (field.key.includes('offerPriceSum') || field.key.includes('nraSum')) {
+																// params.onChange(parseFloat(event.target.value).toFixed(2));
+															}
+
+															if (
+																field.key.includes('offerPriceSum') ||
+																field.key.includes('nraSum') ||
+																field.key.includes('maxOfferPriceSum') ||
+																field.key.includes('closedPriceSum')
+															) {
+																currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''));
+															}
+
+															const prevValue = get(contactData, field.key) || '';
+
+															if (currValue != prevValue) {
+																updateFieldData(field.key, currValue);
+															}
+														},
 													}}
 												/>
 											) : (
@@ -407,3 +395,20 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 		</Grid>
 	);
 }
+
+SummaryFields.propTypes = {
+	fields: PropTypes.arrayOf(
+		PropTypes.shape({
+			key: PropTypes.string.isRequired,
+			type: PropTypes.string,
+			value: PropTypes.any,
+			disabled: PropTypes.bool,
+			isPhoneNumber: PropTypes.bool,
+			inputRef: PropTypes.object,
+		})
+	).isRequired,
+	contactData: PropTypes.object.isRequired,
+	activeLoadingField: PropTypes.string,
+	updateFieldData: PropTypes.func.isRequired,
+	handleQuickActionActivity: PropTypes.func.isRequired,
+};

@@ -36,6 +36,7 @@ const useStyles = makeStyles(theme => ({
 
 const ActivitiesDashboardFilter = ({
 	esIndex,
+	tableKey,
 	searchFields,
 	setFilterToggle,
 	filterToggle,
@@ -79,6 +80,7 @@ const ActivitiesDashboardFilter = ({
 						qualifier={qualifier}
 						setQualifier={setQualifier}
 						esIndex={esIndex}
+						tableKey={tableKey}
 						searchFields={searchFields}
 						tableFilters={tableFilters}
 						appliedFilters={appliedFilters}

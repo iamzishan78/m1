@@ -8,6 +8,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { makeStyles } from '@material-ui/core/styles';
 import EditIcon from '@material-ui/icons/Edit';
 
+import PropTypes from 'prop-types';
+
 import { copy } from 'components/Shared/functions';
 
 import { globalStateController } from 'hookstate/globalStateController';
@@ -29,7 +31,15 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange, column, onClose }) => {
+const SelectField = ({
+	dropdownOptions,
+	value,
+	isSingleSelect,
+	onCustomKeyChange,
+	column,
+	onClose,
+	dropdownPosition,
+}) => {
 	const classes = useStyles();
 	const [dropDownValues, setDropDownValues] = useState([]);
 	const [displayedOptions, setDisplayedOptions] = useState(100);
@@ -44,6 +54,17 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 	};
 
 	const { colors } = defaultTheme;
+
+	const onFilterChange = search => {
+		const filteroptions = JSON.parse(
+			JSON.stringify(dropdownOptions.filter(op => op.value?.toLowerCase()?.includes(search.toLowerCase())))
+		);
+		filteroptions.unshift(defaultValue);
+		setDropDownValues(filteroptions);
+		const endIndex = Math.min(displayedOptions, filteroptions.length);
+		const initialOptions = filteroptions.slice(0, endIndex);
+		setOptions([...initialOptions, { label: 'edit', value: 'editOption' }]);
+	};
 
 	useEffect(() => {
 		onFilterChange('');
@@ -74,7 +95,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 				<>
 					{props.options.map((opt, index) => {
 						return (
-							<React.Fragment key={index}>
+							<React.Fragment key={opt.value}>
 								{index === props.options.length - 5 && <Waypoint onEnter={handleScroll} />}
 								<MyOption setValue={props.setValue} opt={opt} index={index} />
 							</React.Fragment>
@@ -83,6 +104,10 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 				</>
 			</components.MenuList>
 		);
+	};
+	CustomMenuList.propTypes = {
+		options: PropTypes.array.isRequired,
+		setValue: PropTypes.func.isRequired,
 	};
 
 	const MyOption = ({ opt, setValue, index }) => {
@@ -109,12 +134,8 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 									onClose();
 									globalStateController.updateState({
 										showFieldModal: true,
-									});
-									setStateApp(stateApp => ({
-										...stateApp,
 										selectedMeta: column,
-										showFieldModal: true,
-									}));
+									});
 								}}
 							>
 								<Grid
@@ -224,15 +245,10 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 		);
 	};
 
-	const onFilterChange = search => {
-		const filteroptions = JSON.parse(
-			JSON.stringify(dropdownOptions.filter(op => op.value?.toLowerCase()?.includes(search.toLowerCase())))
-		);
-		filteroptions.unshift(defaultValue);
-		setDropDownValues(filteroptions);
-		const endIndex = Math.min(displayedOptions, filteroptions.length);
-		const initialOptions = filteroptions.slice(0, endIndex);
-		setOptions([...initialOptions, { label: 'edit', value: 'editOption' }]);
+	MyOption.propTypes = {
+		opt: PropTypes.object.isRequired,
+		setValue: PropTypes.func.isRequired,
+		index: PropTypes.number.isRequired,
 	};
 
 	const handleKeyDown = e => {
@@ -281,15 +297,25 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 	};
 
 	const selectStyles = {
-		control: provided => ({ ...provided, minWidth: 240, margin: 8 }),
-		menu: () => ({ boxShadow: 'inset 0 1px 0 rgba(0, 0, 0, 0.1)' }),
+		control: provided => ({
+			...provided,
+			minWidth: 240,
+			margin: 8,
+		}),
+		menu: provided => ({
+			...provided,
+			position: 'absolute',
+			top: dropdownPosition === 'top' ? 'auto' : '100%',
+			bottom: dropdownPosition === 'top' ? '100%' : 'auto',
+			boxShadow: 'inset 0 1px 0 rgba(0, 0, 0, 0.1)',
+			zIndex: 9999,
+			backgroundColor: 'white',
+			maxHeight: '200px',
+			overflowY: 'auto',
+		}),
 		menuPortal: base => ({
 			...base,
 			zIndex: 9999,
-			backgroundColor: 'white',
-			position: 'fixed',
-			maxHeight: '200px',
-			overflowY: 'auto',
 		}),
 	};
 
@@ -348,6 +374,16 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 			menuPortalTarget={document.body}
 		/>
 	);
+};
+SelectField.propTypes = {
+	dropdownOptions: PropTypes.array.isRequired,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+	isSingleSelect: PropTypes.bool,
+	onCustomKeyChange: PropTypes.func.isRequired,
+	column: PropTypes.object.isRequired,
+	onClose: PropTypes.func.isRequired,
+	dropdownPosition: PropTypes.string,
+	ref: PropTypes.object,
 };
 
 export default SelectField;
