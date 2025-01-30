@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-
 import { Typography, Grid, TextField, Link, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
@@ -25,7 +24,8 @@ import useStyles from 'components/ContactDetailCard/components/FieldContent/styl
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
-import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
+import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomTypography from 'components/Shared/FormsFieldsData/Fields/CustomTypography';
 import { formatDate } from 'components/Shared/functions';
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
 import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
@@ -576,7 +576,6 @@ export default function FieldContent({
 								InputProps: {
 									autoComplete: 'nope',
 								},
-								allowEdit: true,
 							}}
 						/>
 					)
@@ -603,20 +602,9 @@ export default function FieldContent({
 
 		if (textArray.length > 0) {
 			const renderGenericField = !metaField || (metaField?.type && ['link', 'text'].includes(metaField.type));
-			if (renderGenericField) {
-				return (
-					<TextFieldComponent
-						fieldConfig={{
-							size: 'small',
-						}}
-						fieldAttributes={{
-							value: textArray,
-							valueType: metaField?.type,
-							allowEdit: false,
-						}}
-					/>
-				);
-			} else if (onlyChildren) {result = children || '';}
+
+			if (renderGenericField) {return <CustomTypography value={textArray} />;}
+			else if (onlyChildren) {result = children || '';}
 			else {result = formatFieldValue(textArray.join(', '), metaField);}
 		} else {result = `${name ? name + ' ' : ''} Not Available`;}
 

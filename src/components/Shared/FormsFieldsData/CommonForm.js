@@ -8,8 +8,8 @@ import PropTypes from 'prop-types';
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
+import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
-import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
 
 import { sideDialogController } from 'hookstate/sideDialogController';
 
@@ -25,7 +25,6 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 			watch,
 			error,
 			fieldConfig: {
-				autoFocus: item.autoFocus,
 				type: item.type,
 				size: item.size,
 				fullWidth: item.fullWidth,
@@ -33,25 +32,17 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 				variant: item.variant,
 				disabled: item.disabled,
 				required: item.required,
-				margin: item.margin,
 			},
 			fieldAttributes: {
 				name: item.name,
-				value: item.value,
-				valueType: item.valueType,
-				inputRef: item.inputRef,
 				label: item.label,
-				placeholder: item.placeholder,
+				defaultValue: item.defaultValue,
 				InputProps: item.InputProps,
-				InputLabelProps: item.InputLabelProps,
 				isValueOverridden: item.isValueOverridden,
-				allowEdit: item.allowEdit,
 			},
 			fieldEvents: {
-				onKeyUp: item.onKeyUp,
-				onKeyDown: item.onKeyDowm,
-				onBlur: value => item.onBlur(value),
-				onChange: value => item.onChange(value),
+				onBlur: item.onBlur,
+				onChange: item.onChange,
 			},
 		};
 
