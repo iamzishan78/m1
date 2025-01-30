@@ -187,6 +187,7 @@ export const formatDate = (date, simple = true) => {
 export const processInBatches = async (promises, batchSize) => {
 	for (let i = 0; i < promises.length; i += batchSize) {
 		const batch = promises.slice(i, i + batchSize);
+		// eslint-disable-next-line no-await-in-loop
 		await Promise.all(batch);
 	}
 };
@@ -240,4 +241,24 @@ export const mergeArrays = (arr1, arr2, uniqueField) => {
 
 	// Convert the merged object back to an array
 	return values(mergedKeyed);
+};
+
+export const normalizeUrl = url => {
+	if (!/^https?:\/\//i.test(url)) {
+		return `https://${url}`;
+	}
+	return url;
+};
+
+export const isValidUrl = string => {
+	const pattern = new RegExp(
+		'^(https?:\\/\\/)?' + // Optional protocol
+			'((localhost|' + // Allow "localhost"
+			'(\\w+(-\\w+)*\\.)+[a-zA-Z]{2,}))' + // Domain name with at least one dot and valid TLD
+			'(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*' + // Port and path
+			'(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?' + // Query string (optional)
+			'(\\#[-a-zA-Z\\d_]*)?$', // Fragment (optional)
+		'i'
+	);
+	return pattern.test(string);
 };

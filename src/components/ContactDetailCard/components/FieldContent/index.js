@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
-import { Typography, Grid } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Link from '@material-ui/core/Link';
+
+import { Typography, Grid, TextField, Link, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { get } from 'lodash';
+import { get, has } from 'lodash';
 import loadashFilter from 'lodash/filter';
+import PropTypes from 'prop-types';
 
 import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import CopyPurchaseInfo from 'components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo';
@@ -26,6 +25,7 @@ import useStyles from 'components/ContactDetailCard/components/FieldContent/styl
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
 import { formatDate } from 'components/Shared/functions';
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
 import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
@@ -85,146 +85,12 @@ export default function FieldContent({
 
 	const [statusOptions, setStatusOptions] = useState([]);
 
-	useEffect(() => {
-		getFilters({
-			variables: {
-				esIndex: 'contacts_flat',
-				filterKey: 'status.keyword',
-				size: 50,
-			},
-		});
-	}, [getFilters]);
-
-	useEffect(() => {
-		if (filtersData?.getESFilterList?.hits) {
-			const allFiltersData = filtersData.getESFilterList.hits.map(hit => hit.key);
-			let filterData = filtersData.getESFilterList.hits.map(hit => hit.key);
-			for (let i = 0; i < contactStatusOptions.length; i++) {
-				filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
-			}
-			for (let i = 0; i < contactStatusOptions.length; i++) {
-				if (
-					(contactStatusOptions[i].notInclude && allFiltersData.find(d => d === contactStatusOptions[i].value)) ||
-					!contactStatusOptions[i].notInclude
-				) {
-					filterData.push(contactStatusOptions[i].label);
-				}
-			}
-			setStatusOptions(filterData);
-		}
-	}, [filtersData]);
-
-	useEffect(() => {
-		const ignorableFieldsInCount = ['contactOwnerId'];
-
-		if (content) {
-			setEditContent({ ...content });
-			setShowContent({ ...content });
-
-			let count = 0;
-			for (const fieldName in content) {
-				if (content.hasOwnProperty(fieldName) && !ignorableFieldsInCount.includes(fieldName)) {
-					count++;
-				}
-			}
-			setFieldsCount(count);
-		}
-	}, [content]);
-
-	useEffect(() => {
-		editContent.ownerType && handleUpdating();
-	}, [editContent.ownerType]);
-
-	useEffect(() => {
-		if (fieldsCount <= 1) {
-			let fieldName;
-			for (const key in editContent) {
-				fieldName = key;
-				break;
-			}
-			if (document.getElementById('fieldContentInput' + fieldName)) {
-				document.getElementById('fieldContentInput' + fieldName).focus();
-			}
-		}
-	}, [edit]);
-
-	const getOrganizedContent = () => {
-		let textArray = [];
-		for (const key in showContent) {
-			if (showContent.hasOwnProperty(key) && showContent[key] && showContent[key] !== '') {
-				if (
-					key === 'zip' ||
-					key === 'country' ||
-					key === 'zipAlt' ||
-					key === 'countryAlt' ||
-					key === 'title' ||
-					key === 'firstName' ||
-					key === 'middleName' ||
-					key === 'lastName' ||
-					key === 'suffix'
-				) {
-					textArray = [[textArray.join(', '), showContent[key]].join(' ')];
-				} else if (key === 'jobTitle') {
-					textArray = [[textArray.join(', '), showContent[key]].join(' - ')];
-				} else if (key === 'contactOwner' || key === 'contactOwnerId') {
-					if (key === 'contactOwner') {
-						textArray.push(showContent[key] || '');
-					}
-				} else {
-					textArray.push(showContent[key]);
-				}
-			}
-		}
-
-		return textArray;
-	};
-
-	const handleEditClick = (e, isCopy = false) => {
-		e.persist();
-		e.preventDefault();
-		if (isCopy) {
-			navigator.clipboard.writeText(getOrganizedContent() || '');
-		} else {
-			setEdit(!edit ? e.currentTarget : null);
-		}
-	};
-
-	const keyDownHandler = (event, fieldNames) => {
-		event.stopPropagation();
-		const fields = {};
-		fieldNames.forEach(field => (fields[field] = content[field]));
-		if (event.key === 'Escape') {
-			setEdit(null);
-			setEditContent({ ...fields });
-		}
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			handleUpdating();
-		}
-	};
-
-	const onBlurHandler = fieldNames => {
-		const fields = {}; // Initialize an empty object to store field values
-
-		// Iterate over fieldNames and assign corresponding values from content object
-		fieldNames.forEach(field => (fields[field] = content[field]));
-		// Check if editContent exists and has more than one property, return if true
-		// if editContent has more than one property we don't need to close popup on blur
-		if (Object.keys(editContent || {})?.length > 1) {
-			return;
-		}
-
-		// Reset edit state and update editContent with field values
-		setEdit(null); // It closes popup on blur
-		setEditContent({ ...fields });
-	};
-
 	const handleUpdating = (val = null) => {
 		const customData = {};
 
 		// Iterate over the keys of the original object
 		for (const key in editContent) {
-			if (editContent.hasOwnProperty(key)) {
+			if (has(editContent, key)) {
 				// Check if the key starts with 'custom_data.'
 				if (key.startsWith('custom_data.')) {
 					// Extract the custom field name
@@ -344,6 +210,140 @@ export default function FieldContent({
 		setEdit(null);
 	};
 
+	useEffect(() => {
+		getFilters({
+			variables: {
+				esIndex: 'contacts_flat',
+				filterKey: 'status.keyword',
+				size: 50,
+			},
+		});
+	}, [getFilters]);
+
+	useEffect(() => {
+		if (filtersData?.getESFilterList?.hits) {
+			const allFiltersData = filtersData.getESFilterList.hits.map(hit => hit.key);
+			let filterData = filtersData.getESFilterList.hits.map(hit => hit.key);
+			for (let i = 0; i < contactStatusOptions.length; i++) {
+				filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
+			}
+			for (let i = 0; i < contactStatusOptions.length; i++) {
+				if (
+					(contactStatusOptions[i].notInclude && allFiltersData.find(d => d === contactStatusOptions[i].value)) ||
+					!contactStatusOptions[i].notInclude
+				) {
+					filterData.push(contactStatusOptions[i].label);
+				}
+			}
+			setStatusOptions(filterData);
+		}
+	}, [filtersData]);
+
+	useEffect(() => {
+		const ignorableFieldsInCount = ['contactOwnerId'];
+
+		if (content) {
+			setEditContent({ ...content });
+			setShowContent({ ...content });
+
+			let count = 0;
+			for (const fieldName in content) {
+				if (has(content, fieldName) && !ignorableFieldsInCount.includes(fieldName)) {
+					count++;
+				}
+			}
+			setFieldsCount(count);
+		}
+	}, [content]);
+
+	useEffect(() => {
+		editContent.ownerType && handleUpdating();
+	}, [editContent.ownerType]);
+
+	useEffect(() => {
+		if (fieldsCount <= 1) {
+			let fieldName;
+			for (const key in editContent) {
+				fieldName = key;
+				break;
+			}
+			if (document.getElementById('fieldContentInput' + fieldName)) {
+				document.getElementById('fieldContentInput' + fieldName).focus();
+			}
+		}
+	}, [edit]);
+
+	const getOrganizedContent = () => {
+		let textArray = [];
+		for (const key in showContent) {
+			if (has(showContent, key) && showContent[key] && showContent[key] !== '') {
+				if (
+					key === 'zip' ||
+					key === 'country' ||
+					key === 'zipAlt' ||
+					key === 'countryAlt' ||
+					key === 'title' ||
+					key === 'firstName' ||
+					key === 'middleName' ||
+					key === 'lastName' ||
+					key === 'suffix'
+				) {
+					textArray = [[textArray.join(', '), showContent[key]].join(' ')];
+				} else if (key === 'jobTitle') {
+					textArray = [[textArray.join(', '), showContent[key]].join(' - ')];
+				} else if (key === 'contactOwner' || key === 'contactOwnerId') {
+					if (key === 'contactOwner') {
+						textArray.push(showContent[key] || '');
+					}
+				} else {
+					textArray.push(showContent[key]);
+				}
+			}
+		}
+
+		return textArray;
+	};
+
+	const handleEditClick = (e, isCopy = false) => {
+		e.persist();
+		e.preventDefault();
+		if (isCopy) {
+			navigator.clipboard.writeText(getOrganizedContent() || '');
+		} else {
+			setEdit(!edit ? e.currentTarget : null);
+		}
+	};
+
+	const keyDownHandler = (event, fieldNames) => {
+		event.stopPropagation();
+		const fields = {};
+		fieldNames.forEach(field => (fields[field] = content[field]));
+		if (event.key === 'Escape') {
+			setEdit(null);
+			setEditContent({ ...fields });
+		}
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			handleUpdating();
+		}
+	};
+
+	const onBlurHandler = fieldNames => {
+		const fields = {}; // Initialize an empty object to store field values
+
+		// Iterate over fieldNames and assign corresponding values from content object
+		fieldNames.forEach(field => (fields[field] = content[field]));
+		// Check if editContent exists and has more than one property, return if true
+		// if editContent has more than one property we don't need to close popup on blur
+		if (Object.keys(editContent || {})?.length > 1) {
+			return;
+		}
+
+		// Reset edit state and update editContent with field values
+		setEdit(null); // It closes popup on blur
+		setEditContent({ ...fields });
+	};
+
 	const formatFieldValue = (val, metaField) => {
 		if (metaField?.type === 'date') {
 			return formatDate(val);
@@ -373,7 +373,7 @@ export default function FieldContent({
 						/>
 					);
 				}
-			} else if (editContent.hasOwnProperty(fieldName)) {
+			} else if (has(editContent, fieldName)) {
 				const metaField = metafields ? metafields.find(meta => meta?.esKey === fieldName) : null;
 				inputsArray.push(
 					fieldName === 'contactStatus' ? (
@@ -553,27 +553,31 @@ export default function FieldContent({
 							onBlur={() => onBlurHandler([fieldName])}
 						/>
 					) : (
-						<TextField
-							key={'fieldContentInput' + fieldName}
-							id={'fieldContentInput' + fieldName}
-							data-testid={fieldName}
-							className={classes.editTextField}
-							variant="outlined"
-							size="small"
-							autoComplete="nope"
-							fullWidth
-							label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
-							multiline
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onChange={e => {
-								e.persist();
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: e.target.value,
-								}));
+						<TextFieldComponent
+							fieldEvents={{
+								onChange: value => {
+									setEditContent(editContent => ({
+										...editContent,
+										[fieldName]: value,
+									}));
+								},
+								onKeyDown: event => keyDownHandler(event, [fieldName]),
+								onBlur: () => onBlurHandler([fieldName]),
 							}}
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
+							fieldConfig={{
+								autoFocus: true,
+								size: 'small',
+								variant: 'outlined',
+							}}
+							fieldAttributes={{
+								name: fieldName,
+								value: editContent[fieldName] === null ? '' : editContent[fieldName],
+								label: fieldsCount > 1 ? textFieldLabels(fieldName) : null,
+								InputProps: {
+									autoComplete: 'nope',
+								},
+								allowEdit: true,
+							}}
 						/>
 					)
 				);
@@ -593,6 +597,31 @@ export default function FieldContent({
 	}
 
 	let textArray = getOrganizedContent();
+
+	function getFormattedText({ textArray, onlyChildren, children, metaField, name }) {
+		let result;
+
+		if (textArray.length > 0) {
+			const renderGenericField = !metaField || (metaField?.type && ['link', 'text'].includes(metaField.type));
+			if (renderGenericField) {
+				return (
+					<TextFieldComponent
+						fieldConfig={{
+							size: 'small',
+						}}
+						fieldAttributes={{
+							value: textArray,
+							valueType: metaField?.type,
+							allowEdit: false,
+						}}
+					/>
+				);
+			} else if (onlyChildren) {result = children || '';}
+			else {result = formatFieldValue(textArray.join(', '), metaField);}
+		} else {result = `${name ? name + ' ' : ''} Not Available`;}
+
+		return result;
+	}
 
 	const renderOutput = Object.keys(content).includes('campaigns') ? (
 		<CampaignField
@@ -630,13 +659,7 @@ export default function FieldContent({
 							display: 'inline-block',
 						}}
 					>
-						{textArray.length > 0
-							? onlyChildren
-								? children
-									? children
-									: ''
-								: formatFieldValue(textArray.join(', '), metaField)
-							: `${name ? name + ' ' : ''} Not Available`}{' '}
+						{getFormattedText({ textArray, onlyChildren, children, metaField, name })}
 					</span>
 					{!onlyChildren && !disabled && (
 						<PencilEditIcon
@@ -827,3 +850,64 @@ export const Status = ({ setDocumentType, value, options, ...other }) => {
 		/>
 	);
 };
+
+Status.propTypes = {
+	setDocumentType: PropTypes.func.isRequired,
+	value: PropTypes.string.isRequired,
+	options: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
+FieldContent.propTypes = {
+	children: PropTypes.node,
+	id: PropTypes.string.isRequired,
+	isPurchased: PropTypes.bool,
+	entity: PropTypes.string,
+	melissaRecordId: PropTypes.string,
+	melissaAddressRecordId: PropTypes.string,
+	content: PropTypes.object.isRequired,
+	childrenLeft: PropTypes.node,
+	onlyChildren: PropTypes.bool,
+	name: PropTypes.string,
+	noMargin: PropTypes.bool,
+	noInputFooter: PropTypes.bool,
+	linkType: PropTypes.oneOf([LinkTypes.Mail, LinkTypes.Simple]),
+	fieldType: PropTypes.oneOf([FieldTypes.Contact, FieldTypes.MelissaRecord, FieldTypes.MelissaAddressRecord]),
+	isEdited: PropTypes.bool,
+	isMerged: PropTypes.bool,
+	disabled: PropTypes.bool,
+	row: PropTypes.object,
+	handleQuickActionActivity: PropTypes.func,
+	metafields: PropTypes.array,
+};
+
+// FieldContent.propTypes = {
+// 	children: PropTypes.node,
+// 	id: PropTypes.string.isRequired,
+// 	isPurchased: PropTypes.bool,
+// 	entity: PropTypes.string,
+// 	melissaRecordId: PropTypes.string,
+// 	melissaAddressRecordId: PropTypes.string,
+// 	content: PropTypes.object.isRequired,
+// 	childrenLeft: PropTypes.node,
+// 	onlyChildren: PropTypes.bool,
+// 	name: PropTypes.string,
+// 	noMargin: PropTypes.bool,
+// 	noInputFooter: PropTypes.bool,
+// 	linkType: PropTypes.oneOf(Object.values(LinkTypes)),
+// 	fieldType: PropTypes.oneOf(Object.values(FieldTypes)),
+// 	isEdited: PropTypes.bool,
+// 	isMerged: PropTypes.bool,
+// 	disabled: PropTypes.bool,
+// 	row: PropTypes.object,
+// 	handleQuickActionActivity: PropTypes.func,
+// 	metafields: PropTypes.arrayOf(
+// 		PropTypes.shape({
+// 			esKey: PropTypes.string,
+// 			type: PropTypes.string,
+// 			dropdownOptions: PropTypes.arrayOf(
+// 				PropTypes.shape({
+// 					value: PropTypes.string,
+// 				})
+// 			),
+// 		})
+// 	),
+// };
