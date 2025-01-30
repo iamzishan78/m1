@@ -7,8 +7,8 @@ import { copy } from 'utils/helper';
 
 import DateField from './Fields/DateField';
 import OwnerField from './Fields/OwnerField';
-import ShapeAutoComplete from './Fields/shapeAutoComplete';
-import SimpleSelectField from './Fields/SimpleSelectFIeld';
+import ShapeAutoComplete from './Fields/shapeAutoComplete_';
+import SimpleSelectField from './Fields/SimpleSelectFIeld_';
 import SummaryAutoComplete from './Fields/SummaryAutoComplete';
 import SummaryDropdown from './Fields/SummaryDropdown';
 import SummaryTextField from './Fields/SummaryTextField';
