@@ -214,10 +214,11 @@ export default function ReportGroupHeader({
 								fullWidth
 								className={classes.viewSwitcher}
 								onChange={e => {
+									const oldGridView = gridViews?.getGridViews?.gridViews.find(view => view.name === reportingGroup);
 									setReportingGroup(e.target.value);
 									const gridView = gridViews?.getGridViews?.gridViews.find(view => view.name === e.target.value);
 									if (gridView) {
-										setESFilters(copy(gridView.filters));
+										setESFilters(copy(gridView.filters), oldGridView?.filters);
 										setFilterToggle(value => !value);
 										// selectGridView(gridView)
 									} else {
@@ -229,9 +230,11 @@ export default function ReportGroupHeader({
 								{!gridViews?.getGridViews?.gridViews.find(gridView => gridView?.name === All_TYPE) && (
 									<MenuItem value={All_TYPE}>{All_TYPE}</MenuItem>
 								)}
-								{gridViews?.getGridViews?.gridViews.map(view => (
-									<MenuItem value={view.name}>{view.name}</MenuItem>
-								))}
+								{gridViews?.getGridViews?.gridViews
+									.filter(view => view?.filters?.length || view?.name === All_TYPE)
+									?.map(view => (
+										<MenuItem value={view.name}>{view.name}</MenuItem>
+									))}
 							</Select>
 						</FormControl>
 					)}
