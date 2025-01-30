@@ -1087,9 +1087,7 @@ function Map({
 
 	useEffect(() => {
 		if (map && selectedPlaces) {
-			const places = selectedPlaces.get({
-				noproxy: true,
-			});
+			const places = selectedPlaces;
 			if (!places) {
 				return;
 			}
