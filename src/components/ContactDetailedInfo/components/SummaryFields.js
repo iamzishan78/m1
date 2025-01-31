@@ -276,9 +276,20 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 
                                 <InputAdornment position="end">
                                   <Tooltip title={"Call"} placement="top">
-                                    <IconButton id="call-icon" href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>
-                                      <AddIcCallIcon htmlColor="#757575" />
-                                    </IconButton>
+                                  <IconButton
+																				id="call-icon"
+																				href={contactData.dialpadId ? '' : `tel: ${contactData[field.key]}`}
+																				className={classes.emailAdornment}
+																				onClick={() => {
+																					contactData.dialpadId &&
+																						handleQuickActionActivity({
+																							phoneNumber: contactData[field.key],
+																							type: 'dialpad',
+																						});
+																				}}
+																			>
+																				<AddIcCallIcon htmlColor="#757575" />
+																		</IconButton>
                                   </Tooltip>
                                 </InputAdornment>
                                 </>

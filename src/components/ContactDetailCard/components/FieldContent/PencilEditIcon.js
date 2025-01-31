@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Grid } from "@material-ui/core";
 import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -11,6 +11,9 @@ import useStyles from 'components/ContactDetailCard/components/FieldContent/styl
 import CopyIcon from "components/Shared/svgIcons/CopyIcon";
 import TextSmsIcon from "components/Shared/svgIcons/textsms";
 import VoiceMailIcon from "components/Shared/svgIcons/voicemail";
+import AddIcCallIcon from '@mui/icons-material/AddIcCall';
+import { globalStateController } from "hookstate/globalStateController";
+
 
 function PencilEditIcon({
     onClick,
@@ -26,6 +29,8 @@ function PencilEditIcon({
 }) {
     const classes = useStyles();
     const [copied, setCopied] = useState(false); // Add new state for updating copy icon tooltip value
+    const { globalState } = globalStateController.useState(['contactData'], 'globalState');
+
 
      // Destructure the first key-value pair from `editContent`
      const [editFieldKey, editFieldValue] = Object.entries(editContent || {})?.[0] || [];
@@ -123,6 +128,21 @@ function PencilEditIcon({
                         className={classes.pencilIcon}
                     />
                 </IconButton>
+            </Tooltip>
+            <Tooltip title={"Call"} placement="top">
+                <IconButton size="small"
+                href={globalState?.contactData?.dialpadId ? '' : `tel: ${editFieldValue}`}
+                className={classes.emailAdornment}
+                onClick={() => {
+                    globalState?.contactData?.dialpadId &&
+                        handleQuickActionActivity({
+                            phoneNumber: editFieldValue,
+                            type: 'dialpad',
+                        });
+                }}
+                 >
+					<AddIcCallIcon htmlColor="#757575" id={'dialpad'}/>
+				</IconButton>
             </Tooltip>
             </> )}
         </React.Fragment>

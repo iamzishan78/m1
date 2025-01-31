@@ -61,8 +61,9 @@ import OpenCorporatesIcon from 'components/Shared/svgIcons/OpenCorporatesIcon';
 import { globalStateController } from 'hookstate/globalStateController';
 import DialpadIcon from '../Shared/svgIcons/dialpad-icon';
 import { SYNC_CONTACT_TO_DIALPAD } from '../../graphQL/useMutationSyncContactToDialpad';
-import { showErrorMessage, showSuccessMessage } from 'actions';
+import { showErrorMessage, showInfoMessage, showSuccessMessage } from 'actions';
 import moment from 'moment';
+import { INITIATE_DIALPAD_CALL } from 'graphQL/useMutationInitiateCall';
 
 const useStyles = makeStyles(theme => ({
 	Contacts: {
@@ -477,6 +478,7 @@ function ContactDetailCard(props) {
 	});
 	const [updateContact] = useMutation(UPDATECONTACT);
 	const [syncContactToDialpad] = useMutation(SYNC_CONTACT_TO_DIALPAD);
+	const [initiateDialpadCall] = useMutation(INITIATE_DIALPAD_CALL);
 
 	const handleClick = event => setAnchorEl(event.currentTarget);
 
@@ -551,6 +553,7 @@ function ContactDetailCard(props) {
 	useEffect(() => {
 		if (data && data.contact) {
 			setContactData({ ...data.contact, metaOwner: { _id: data.contact.contactOwnerId } });
+			globalStateController.updateState({ contactData: data.contact });
 			setStateApp(stateApp => ({
 				...stateApp,
 				currentContatcAtivities: data.contact.activityLog,
@@ -621,22 +624,40 @@ function ContactDetailCard(props) {
 		if (data) {
 			// Set actions activity data
 			const { phoneNumber, type } = data;
-			const isCall = type === 'call';
+			if (type !== 'dialpad') {
+				const isCall = type === 'call';
 
-			const activityData = {
-				activity_name: isCall ? `Called ${getName(contactData)}` : `Texted ${getName(contactData)}`,
-				activity_type: type,
-				activity_outcome: isCall ? 'Left Message' : 'Sent Text',
-				activity_notes: isCall ? `Left VM at ${phoneNumber}` : `Sent text message to ${phoneNumber}`,
-				activity_status: { key: 'Completed', value: true },
-			};
+				const activityData = {
+					activity_name: isCall ? `Called ${getName(contactData)}` : `Texted ${getName(contactData)}`,
+					activity_type: type,
+					activity_outcome: isCall ? 'Left Message' : 'Sent Text',
+					activity_notes: isCall ? `Left VM at ${phoneNumber}` : `Sent text message to ${phoneNumber}`,
+					activity_status: { key: 'Completed', value: true },
+				};
 
-			setActivityDialog(true);
-			setActionActivityData(activityData);
+				setActivityDialog(true);
+				setActionActivityData(activityData);
+			} else {
+				if (contactData?.dialpadId && stateApp?.user?.dialpad) {
+					dispatch(showInfoMessage('Initiating call...'));
+					initiateDialpadCall({
+						variables: { phoneNumber: data.phoneNumber },
+					}).then(({ data }) => {
+						if (data?.initiateDialpadCall?.success) {
+							dispatch(showSuccessMessage('Call initiated successfully'));
+						} else {
+							dispatch(showErrorMessage(data?.initiateDialpadCall?.message));
+						}
+					});
+				}else if(contactData?.dialpadId && !stateApp?.user?.dialpad){
+					dispatch(showErrorMessage('User not found on Dialpad. Please Contact Admin.'));
+				}
+			}
 		}
 	};
 
 	const handleContactSync = async () => {
+		dispatch(showInfoMessage('Syncing contact to Dialpad...'));
 		syncContactToDialpad({
 			variables: { contactId: contactData?._id },
 			refetchQueries: ['getContact'],
