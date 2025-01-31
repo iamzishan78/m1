@@ -1,15 +1,22 @@
 import React, { Suspense, useContext, useEffect } from 'react';
+
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { agreementLayers } from 'components/Shared/functions/shapeLayer';
-import { popupController } from 'hookstate/popupStateController';
-import { ExpandableCardContext } from 'components/ExpandableCard/ExpandableCardContext';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+import { makeStyles } from '@material-ui/core/styles';
+
 import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types'; // Import PropTypes
+
+import { ExpandableCardContext } from 'components/ExpandableCard/ExpandableCardContext';
+import { agreementLayers } from 'components/Shared/functions/shapeLayer';
+
+import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { popupController } from 'hookstate/popupStateController';
 import { tableGlobalController } from 'hookstate/tableController';
+
 import { formatLayerForMap } from 'utils/helper';
 
 // Lazy load components
@@ -81,13 +88,14 @@ export default function ShapeCardProvider({ type }) {
 					<Card className={classes.card}>
 						<CardContent className={classes.content}>
 							<Suspense fallback={<CircularProgress color="secondary" />}>
-								{type === 'unit' && (
+								{type === 'unit' && dataCustomLayer?.customLayer?.layer === 'unit' && (
 									<UnitDetailCard id={popupVals?.selectedShape?.id} dataCustomLayer={dataCustomLayer} />
 								)}
-								{agreementLayers.includes(type) && (
-									<AgreementDetailCard id={popupVals?.selectedShape?.id} dataCustomLayer={dataCustomLayer} />
-								)}
-								{type === 'parcel' && (
+								{agreementLayers.includes(type) &&
+									dataCustomLayer?.customLayer?.shapeJson?.properties?.type === 'agreement' && (
+										<AgreementDetailCard id={popupVals?.selectedShape?.id} dataCustomLayer={dataCustomLayer} />
+									)}
+								{type === 'parcel' && dataCustomLayer?.customLayer?.layer === 'parcel' && (
 									<ParcelsDetailCard
 										id={popupVals.selectedShape.id}
 										selectTabIndex={popupVals.parcelDetailCardTabIndex}
@@ -104,3 +112,8 @@ export default function ShapeCardProvider({ type }) {
 		</>
 	);
 }
+
+// Add PropTypes validation
+ShapeCardProvider.propTypes = {
+	type: PropTypes.string.isRequired, // Define type as a required string
+};
