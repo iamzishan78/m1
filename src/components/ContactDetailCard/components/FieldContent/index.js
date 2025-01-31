@@ -24,7 +24,7 @@ import useStyles from 'components/ContactDetailCard/components/FieldContent/styl
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
-import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 import CustomTypography from 'components/Shared/FormsFieldsData/Fields/CustomTypography';
 import { formatDate } from 'components/Shared/functions';
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
@@ -375,211 +375,249 @@ export default function FieldContent({
 				}
 			} else if (has(editContent, fieldName)) {
 				const metaField = metafields ? metafields.find(meta => meta?.esKey === fieldName) : null;
-				inputsArray.push(
-					fieldName === 'contactStatus' ? (
-						<ContactStatus
-							className={classes.maxWidth}
-							setValue={value => {
-								let val = value.name;
-								const data = contactStatusOptions.find(s => s.label === val);
-								if (data) {
-									val = data.value;
-								}
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: val,
-								}));
-								handleUpdating(val);
-							}}
-							fieldKey="contactStatus"
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-						/>
-					) : fieldName === 'status' ? (
-						<Status
-							className={classes.maxWidth}
-							options={statusOptions}
-							setDocumentType={value => {
-								let val = value.name;
-								const data = contactStatusOptions.find(s => s.label === val);
-								if (data) {
-									val = data.value;
-								}
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: val,
-								}));
-								handleUpdating(val);
-							}}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-						/>
-					) : fieldName === 'timeZone' ? (
-						<Autocomplete
-							id={'fieldContentInput' + fieldName}
-							key={'fieldContentInput' + fieldName}
-							options={timeZoneOptions}
-							getOptionLabel={option => option || editContent[fieldName]}
-							onChange={(e, data) => {
-								e.persist();
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: data || '',
-								}));
-							}}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							autoComplete
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-							style={{ width: '100%' }}
-							renderInput={params => (
-								<TextField
-									{...params}
-									label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
-									className={classes.editTextField}
-								/>
-							)}
-						/>
-					) : fieldName.startsWith('custom_data') && metaField?.type === 'dropdown' ? (
-						<Autocomplete
-							id={'fieldContentInput' + fieldName}
-							key={'fieldContentInput' + fieldName}
-							options={metaField?.dropdownOptions.map(option => option?.value)}
-							getOptionLabel={option => option || editContent[fieldName]}
-							onChange={(e, data) => {
-								e.persist();
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: data || '',
-								}));
-							}}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							autoComplete
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-							style={{ width: '100%' }}
-							renderInput={params => (
-								<TextField
-									{...params}
-									label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
-									className={classes.editTextField}
-								/>
-							)}
-						/>
-					) : fieldName.startsWith('custom_data') && metaField?.type === 'multiselect' ? (
-						<ReactSelectField
-							fullWidth
-							showUnderline
-							showChevron={true}
-							index={'contacts'}
-							dropdownOptions={metaField?.dropdownOptions}
-							column={metaField}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onCustomKeyChange={value => {
-								const fields = {}; // Initialize an empty object to store field values
-								fields[fieldName] = value;
+				let component;
 
-								// Reset edit state and update editContent with field values
-								setEdit(null); // It closes popup on blur
-								setEditContent({ ...fields });
-								handleUpdating(value);
-							}}
-						/>
-					) : fieldName.startsWith('custom_data') && metaField?.type === 'date' ? (
-						<>
-							<TextField
-								key={'fieldContentInput' + fieldName}
-								id={'fieldContentInput' + fieldName}
-								data-testid={fieldName}
-								className={classes.editTextField}
-								variant="outlined"
-								size="small"
-								autoComplete="nope"
-								fullWidth
-								label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
-								multiline={false} // For date fields, multiline should be false
-								type="date" // Use date type for date picker
-								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-								onChange={e => {
-									e.persist();
+				switch (fieldName) {
+					case 'contactStatus':
+						component = (
+							<ContactStatus
+								className={classes.maxWidth}
+								setValue={value => {
+									let val = value.name;
+									const data = contactStatusOptions.find(s => s.label === val);
+									if (data) {
+										val = data.value;
+									}
 									setEditContent(editContent => ({
 										...editContent,
-										[fieldName]: e.target.value, // Ensure value is in YYYY-MM-DD format
+										[fieldName]: val,
 									}));
+									handleUpdating(val);
 								}}
+								fieldKey="contactStatus"
+								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
 								onKeyDown={event => keyDownHandler(event, [fieldName])}
 								onBlur={() => onBlurHandler([fieldName])}
 							/>
-						</>
-					) : fieldName === 'ownerType' ? (
-						<EntityType
-							className={classes.maxWidth}
-							setDocumentType={value => {
-								let val = value.name;
-								const data = contactStatusOptions.find(s => s.label === val);
-								if (data) {
-									val = data.value;
-								}
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: val,
-								}));
-							}}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-						/>
-					) : fieldName === 'outcome' ? (
-						<AutoCompleteAddNewField
-							id="contact-detail-outcome"
-							queryParams={{
-								esIndex: 'contacts_flat',
-								filterKey: 'outcome.keyword',
-								size: 50,
-							}}
-							onChange={data => {
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: data.name || '',
-								}));
+						);
+						break;
 
-								handleUpdating(data.name);
-							}}
-							defaultOptions={outcomeOptions}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-						/>
-					) : (
-						<TextFieldComponent
-							fieldEvents={{
-								onChange: value => {
+					case 'status':
+						component = (
+							<Status
+								className={classes.maxWidth}
+								options={statusOptions}
+								setDocumentType={value => {
+									let val = value.name;
+									const data = contactStatusOptions.find(s => s.label === val);
+									if (data) {
+										val = data.value;
+									}
 									setEditContent(editContent => ({
 										...editContent,
-										[fieldName]: value,
+										[fieldName]: val,
 									}));
-								},
-								onKeyDown: event => keyDownHandler(event, [fieldName]),
-								onBlur: () => onBlurHandler([fieldName]),
-							}}
-							fieldConfig={{
-								autoFocus: true,
-								size: 'small',
-								variant: 'outlined',
-							}}
-							fieldAttributes={{
-								name: fieldName,
-								value: editContent[fieldName] === null ? '' : editContent[fieldName],
-								label: fieldsCount > 1 ? textFieldLabels(fieldName) : null,
-								InputProps: {
-									autoComplete: 'nope',
-								},
-							}}
-						/>
-					)
-				);
+									handleUpdating(val);
+								}}
+								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+								onBlur={() => onBlurHandler([fieldName])}
+							/>
+						);
+						break;
+
+					case 'timeZone':
+						component = (
+							<Autocomplete
+								id={'fieldContentInput' + fieldName}
+								key={'fieldContentInput' + fieldName}
+								options={timeZoneOptions}
+								getOptionLabel={option => option || editContent[fieldName]}
+								onChange={(e, data) => {
+									e.persist();
+									setEditContent(editContent => ({
+										...editContent,
+										[fieldName]: data || '',
+									}));
+								}}
+								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+								autoComplete
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+								onBlur={() => onBlurHandler([fieldName])}
+								style={{ width: '100%' }}
+								renderInput={params => (
+									<TextField
+										{...params}
+										label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+										className={classes.editTextField}
+									/>
+								)}
+							/>
+						);
+						break;
+
+					case 'ownerType':
+						component = (
+							<EntityType
+								className={classes.maxWidth}
+								setDocumentType={value => {
+									let val = value.name;
+									const data = contactStatusOptions.find(s => s.label === val);
+									if (data) {
+										val = data.value;
+									}
+									setEditContent(editContent => ({
+										...editContent,
+										[fieldName]: val,
+									}));
+								}}
+								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+								onBlur={() => onBlurHandler([fieldName])}
+							/>
+						);
+						break;
+
+					case 'outcome':
+						component = (
+							<AutoCompleteAddNewField
+								id="contact-detail-outcome"
+								queryParams={{
+									esIndex: 'contacts_flat',
+									filterKey: 'outcome.keyword',
+									size: 50,
+								}}
+								onChange={data => {
+									setEditContent(editContent => ({
+										...editContent,
+										[fieldName]: data.name || '',
+									}));
+									handleUpdating(data.name);
+								}}
+								defaultOptions={outcomeOptions}
+								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+								onBlur={() => onBlurHandler([fieldName])}
+							/>
+						);
+						break;
+
+					default:
+						if (fieldName.startsWith('custom_data')) {
+							switch (metaField?.type) {
+								case 'dropdown':
+									component = (
+										<Autocomplete
+											id={'fieldContentInput' + fieldName}
+											key={'fieldContentInput' + fieldName}
+											options={metaField?.dropdownOptions.map(option => option?.value)}
+											getOptionLabel={option => option || editContent[fieldName]}
+											onChange={(e, data) => {
+												e.persist();
+												setEditContent(editContent => ({
+													...editContent,
+													[fieldName]: data || '',
+												}));
+											}}
+											value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+											autoComplete
+											onKeyDown={event => keyDownHandler(event, [fieldName])}
+											onBlur={() => onBlurHandler([fieldName])}
+											style={{ width: '100%' }}
+											renderInput={params => (
+												<TextField
+													{...params}
+													label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+													className={classes.editTextField}
+												/>
+											)}
+										/>
+									);
+									break;
+
+								case 'multiselect':
+									component = (
+										<ReactSelectField
+											fullWidth
+											showUnderline
+											showChevron={true}
+											index={'contacts'}
+											dropdownOptions={metaField?.dropdownOptions}
+											column={metaField}
+											value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+											onCustomKeyChange={value => {
+												const fields = {};
+												fields[fieldName] = value;
+												setEdit(null); // It closes popup on blur
+												setEditContent({ ...fields });
+												handleUpdating(value);
+											}}
+										/>
+									);
+									break;
+
+								case 'date':
+									component = (
+										<TextField
+											key={'fieldContentInput' + fieldName}
+											id={'fieldContentInput' + fieldName}
+											data-testid={fieldName}
+											className={classes.editTextField}
+											variant="outlined"
+											size="small"
+											autoComplete="nope"
+											fullWidth
+											label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+											multiline={false}
+											type="date"
+											value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+											onChange={e => {
+												e.persist();
+												setEditContent(editContent => ({
+													...editContent,
+													[fieldName]: e.target.value,
+												}));
+											}}
+											onKeyDown={event => keyDownHandler(event, [fieldName])}
+											onBlur={() => onBlurHandler([fieldName])}
+										/>
+									);
+									break;
+							}
+						} else {
+							component = (
+								<CustomTextField
+									fieldEvents={{
+										onChange: value => {
+											setEditContent(editContent => ({
+												...editContent,
+												[fieldName]: value,
+											}));
+										},
+										onKeyDown: event => keyDownHandler(event, [fieldName]),
+										onBlur: () => onBlurHandler([fieldName]),
+									}}
+									fieldConfig={{
+										autoFocus: true,
+										size: 'small',
+										variant: 'outlined',
+									}}
+									fieldAttributes={{
+										name: fieldName,
+										value: editContent[fieldName] === null ? '' : editContent[fieldName],
+										label: fieldsCount > 1 ? textFieldLabels(fieldName) : null,
+										InputProps: {
+											autoComplete: 'nope',
+										},
+									}}
+								/>
+							);
+						}
+				}
+
+				if (component) {
+					inputsArray.push(component);
+				}
 			}
 		}
 
@@ -591,7 +629,7 @@ export default function FieldContent({
 						<span>Return</span> to save
 					</p>
 				),
-			]; /////return an input if only one field
+			];
 		}
 	}
 
@@ -603,10 +641,16 @@ export default function FieldContent({
 		if (textArray.length > 0) {
 			const renderGenericField = !metaField || (metaField?.type && ['link', 'text'].includes(metaField.type));
 
-			if (renderGenericField) {return <CustomTypography value={textArray} />;}
-			else if (onlyChildren) {result = children || '';}
-			else {result = formatFieldValue(textArray.join(', '), metaField);}
-		} else {result = `${name ? name + ' ' : ''} Not Available`;}
+			if (renderGenericField) {
+				return <CustomTypography value={textArray} />;
+			} else if (onlyChildren) {
+				result = children || '';
+			} else {
+				result = formatFieldValue(textArray.join(', '), metaField);
+			}
+		} else {
+			result = `${name ? name + ' ' : ''} Not Available`;
+		}
 
 		return result;
 	}
