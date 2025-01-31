@@ -151,7 +151,7 @@ class PopupStateController extends StateController {
 	 */
 	reset() {
 		// Overwrite entire state with fresh initialState
-		this.reset();
+		super.reset();
 
 		// Re-draw shapes
 		drawBoundary();

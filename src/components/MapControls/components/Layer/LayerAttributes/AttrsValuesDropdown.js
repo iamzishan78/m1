@@ -153,13 +153,13 @@ const AttrsValuesDropdown = ({
 			};
 		});
 
-		setAttributeBasedColors(prevColors => ({
-			...prevColors,
+		setAttributeBasedColors({
+			...attributeBasedColors,
 			[selectedValue.label]: options.reduce((acc, { label, color }) => {
 				acc[label] = color;
 				return acc;
 			}, {}),
-		}));
+		});
 
 		return options;
 		// eslint-disable-next-line react-hooks/exhaustive-deps

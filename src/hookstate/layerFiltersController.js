@@ -1,4 +1,3 @@
-
 import { deepEqual } from 'components/Shared/functions';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
@@ -225,7 +224,7 @@ class LayerFiltersController extends StateController {
 
 		if (!deepEqual(filters.variables, initialVariables)) {
 			const mergedFilters = [...initialVariables.filters, ...mapViewFilters];
-			const updatedVariables = { ...filters, variables: { ...initialVariables, filters: mergedFilters } }; t
+			const updatedVariables = { ...filters, variables: { ...initialVariables, filters: mergedFilters } };
 			this.updateState({ [layerType]: updatedVariables });
 			layerController.resetBounds(layerType);
 		}

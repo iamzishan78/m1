@@ -40,7 +40,7 @@ export class StateController {
 	}
 
 	useCompleteState() {
-		return useAtom(this.state);
+		return this.useState(Object.keys(this.focusState));
 	}
 
 	useScopeState(key) {
@@ -88,7 +88,7 @@ export class StateController {
 	}
 
 	reset() {
-		store.set(this.state, this.initialState);
+		this.setState(this.initialState);
 	}
 
 	resetState(key) {

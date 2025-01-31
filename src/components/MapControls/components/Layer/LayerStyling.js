@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 import { Grid, IconButton, Divider, FormControlLabel, Switch, Tooltip, ClickAwayListener } from '@material-ui/core';
 import { Close as CloseIcon } from '@material-ui/icons';
@@ -19,10 +19,9 @@ import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { getLayerKey } from 'hookstate/helpers';
+import { layerStylingController } from 'hookstate/layersStylingController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
-
-import { AppContext } from 'AppContext';
 
 import { ifRgbaConvt, useStyles, WidthPicker } from './Common';
 import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
@@ -30,17 +29,11 @@ import AttrsFillStyleDropdown from './LayerAttributes/AttrsFillStyleDropdown';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
 import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
 import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
-import { layerStylingController } from 'hookstate/layersStylingController';
 
 function LayerStyling() {
 	const classes = useStyles();
-	const { mapControlsStateValues, ...mapControlStates } = mapControlsController.useState(
-		['selectedLayer'],
-		'mapControlsStateValues'
-	);
-
-	const layerStylingState = layerStylingController.useCompleteState();
-	const layerStylingStateValues = layerStylingState?.get({ noproxy: true });
+	const { selectedLayer } = mapControlsController.useState(['selectedLayer']);
+	const { user } = globalStateController.useState(['user']);
 
 	const {
 		width,
@@ -62,10 +55,31 @@ function LayerStyling() {
 		layerLabelVisibility,
 		layerClickability,
 		strokeColor,
+		layerInitialized,
 		strokeWidth,
-	} = layerStylingStateValues;
-
-	const selectedLayer = mapControlsStateValues.selectedLayer;
+	} = layerStylingController.useState([
+		'width',
+		'fillColor',
+		'fillStyle',
+		'lineStyle',
+		'enablefillColor',
+		'enableStrokeColor',
+		'enableStrokeStyle',
+		'enableColorStyle',
+		'selectedValue',
+		'selectedStrokeValue',
+		'selectedFillStyle',
+		'selectedLineStyle',
+		'attributeBasedColors',
+		'attributeBasedStrokeColors',
+		'attributeBasedStyles',
+		'attributeBasedLineStyles',
+		'layerLabelVisibility',
+		'layerClickability',
+		'strokeColor',
+		'strokeWidth',
+		'layerInitialized',
+	]);
 
 	const layerType = selectedLayer.layerPaintProps[0]?.paintType;
 
@@ -95,7 +109,6 @@ function LayerStyling() {
 	}
 
 	const [rows, setRows] = useState(0);
-	const [stateApp] = useContext(AppContext);
 
 	const [layerFeaturesCount, { data: layerDataCount }] = useLazyQuery(LAYERS_FEATURES_COUNT);
 
@@ -119,7 +132,7 @@ function LayerStyling() {
 		if (colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey) {
 			getMetaData({
 				variables: {
-					user: stateApp.user?.mongoId,
+					user: user?.mongoId,
 					category: colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey,
 				},
 			});
@@ -132,7 +145,9 @@ function LayerStyling() {
 
 	useEffect(() => {
 		const hookStateAppLayers = globalStateController.getValue('layers');
-		if (!layerStylingStateValues?.layerInitialized) return null;
+		if (!layerInitialized) {
+			return null;
+		}
 		if (
 			(hookStateAppLayers &&
 				selectedLayer &&
@@ -170,7 +185,7 @@ function LayerStyling() {
 					variables: {
 						settings: {
 							_id: currentLayer._id,
-							user: stateApp.user.mongoId,
+							user: user.mongoId,
 							layer: selectedLayer.layerId,
 							layerPaintProps: currentLayer.layerPaintProps,
 							layerSettings: currentLayer.layerSettings,
@@ -224,7 +239,7 @@ function LayerStyling() {
 			selectedLayer.layerShapeName = selectedLayer.layerShapeName || selectedLayer.layerCategory;
 			layerFeaturesCount({ variables: { fileId: selectedLayer.file, layerShapeName: selectedLayer.layerShapeName } });
 		}
-	}, [mapControlStates.selectedLayer.file, layerFeaturesCount]);
+	}, [selectedLayer.file, layerFeaturesCount]);
 
 	useEffect(() => {
 		layerStylingController.setFillColor(initialFillColor);

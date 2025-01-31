@@ -105,11 +105,3 @@ export const jobInitialState = {
 };
 
 export const jobState = hookstate(copy(jobInitialState));
-
-/* -------------------------------------------------------------------------- */
-/*                           Layer Styling Controller                          */
-/* -------------------------------------------------------------------------- */
-
-export const layerStylingInitialState = {};
-
-export const layerStyling = hookstate(copy(layerStylingInitialState));
