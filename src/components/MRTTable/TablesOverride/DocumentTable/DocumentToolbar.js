@@ -23,7 +23,21 @@ const docSearchColumn = {
 	name: 'docSearch',
 	id: 'docSearch',
 	header: 'Doc Search',
-	accessorFn: row => row?.docSearch?.map(t => t.text)?.join(' ...... ') || '',
+	accessorFn: row => {
+		const data = row?.docSearch?.data;
+
+		if (!data) {
+			return '';
+		}
+
+		const globalFilter = tableController('DocumentTable').getValue('globalFilter');
+
+		const search = data.filter(({ text }) =>
+			globalFilter.split(' ').some(search => text.toLowerCase().includes(search))
+		);
+
+		return search?.map(t => t.text)?.join(' ...... ') || '';
+	},
 	muiTableBodyCellProps: {
 		sx: {
 			maxHeight: '250px',
