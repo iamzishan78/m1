@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers */
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,6 +29,7 @@ import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 
+import { detailCardController } from 'hookstate/detailCardController';
 import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
@@ -38,7 +38,6 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { navController } from 'hookstate/navStateController';
 import { popupController } from 'hookstate/popupStateController';
-import { detailCardController } from 'hookstate/detailCardController';
 
 import { baseTenantsMaps } from 'utils/data';
 import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
@@ -475,11 +474,11 @@ function Map({
 	useEffect(() => {
 		if (stateApp.user && stateApp.user.mongoId) {
 			setLoading(true);
-			const applyShowableFilter = true;
+			const onlyShowable = true;
 			getAllLayerSettingsByUser({
 				variables: {
 					userId: stateApp.user.mongoId,
-					applyShowableFilter,
+					onlyShowable,
 				},
 			});
 		}

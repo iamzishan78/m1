@@ -25,6 +25,8 @@ import {
 } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
+import { GET_PROJECTED_LAYERS } from 'graphQL/useQueryAllLayerSettingsByUser';
+
 import { getLayerKey } from 'hookstate/helpers';
 import { hookStateController } from 'hookstate/hookStateController';
 
@@ -918,19 +920,18 @@ const layerStateControllerHandler = state => {
 			window.drawRef = null;
 		},
 		generateUpdateFn: (layers, value, currentLayers, field) => {
-			debugger;
 			const updatefn = {};
 			layers.forEach(layer => {
-				debugger;
 				if (layer.type === 'group') {
 					layer.layers.forEach(l => {
-						debugger;
 						const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
 						if (layerIndex !== -1) {
 							if (field === 'showable') {
-								updatefn[layerIndex] = { layerSettings: { [field]: { $set: value } } };
+								updatefn[layerIndex] = {
+									layerSettings: { [field]: { $set: value === 'clear' ? false : !l?.layerSettings?.showable } },
+								};
 							} else {
-								updatefn[layerIndex] = { [field]: { $set: value } };
+								updatefn[layerIndex] = { [field]: { $set: value === 'clear' ? false : value } };
 							}
 						}
 					});
@@ -938,9 +939,9 @@ const layerStateControllerHandler = state => {
 					const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === layer.identifier);
 					if (layerIndex !== -1) {
 						if (field === 'showable') {
-							updatefn[layerIndex] = { layerSettings: { [field]: { $set: value } } };
+							updatefn[layerIndex] = { layerSettings: { [field]: { $set: value === 'clear' ? false : value } } };
 						} else {
-							updatefn[layerIndex] = { [field]: { $set: value } };
+							updatefn[layerIndex] = { [field]: { $set: value === 'clear' ? false : value } };
 						}
 					}
 				}
@@ -948,11 +949,32 @@ const layerStateControllerHandler = state => {
 			return updatefn;
 		},
 
-		updateProjectedLayers: ({ layer, value, field }) => {
-			debugger;
-			const projectedLayers = layerState.projectedLayers.get({ noproxy: true });
-			const updatefn = layerController.generateUpdateFn([layer], value, projectedLayers, field);
+		getProjectedLayers: async client => {
+			const user = globalStateController.getValue('user');
+			const resp = await client.query({
+				query: GET_PROJECTED_LAYERS,
+				variables: {
+					userId: user._id,
+					project: {
+						file: 1,
+						layerId: 1,
+						layerType: 1,
+						layerName: 1,
+						groupName: 1,
+						groupId: 1,
+						position: 1,
+						layerSettings: 1,
+						identifier: 1,
+						layerCategory: 1,
+					},
+				},
+			});
+			layerController.updateState({ projectedLayers: resp.data.allLayerSettingsByUser });
+		},
 
+		updateProjectedLayers: ({ layer, value, field }) => {
+			const projectedLayers = layerState.projectedLayers.get({ noproxy: true });
+			const updatefn = layerController.generateUpdateFn(layer, value, projectedLayers, field);
 			layerController.updateState({ projectedLayers: update(projectedLayers, updatefn) });
 		},
 	};

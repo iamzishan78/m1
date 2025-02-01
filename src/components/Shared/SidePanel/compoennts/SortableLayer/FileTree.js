@@ -214,7 +214,7 @@ const FileTree = ({ layerMap, panelItems }) => {
 		const updatedLayersResponse = await getAllLayerSettingsByUser({
 			variables: {
 				userId: stateApp.user.mongoId,
-				applyShowableFilter: true,
+				onlyShowable: true,
 			},
 		});
 		globalStateController.updateState({ layers: updatedLayersResponse.data.allLayerSettingsByUser });

@@ -14,6 +14,7 @@ import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 import { REMOVE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 
+import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 
 import { Modals } from 'styles/Modal';
@@ -22,6 +23,7 @@ import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
 export default function DeleteSourceAndCategoryConfirmationDialog(props) {
+	debugger;
 	const dispatch = useDispatch();
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [updateDataset] = useMutation(UPDATE_DATASET, { refetchQueries: ['getDatasets'], awaitRefetchQueries: true });
@@ -35,12 +37,14 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 
 	const isSource = !props.actionItem?.category;
 	const title = isSource ? 'Datasource' : 'Category';
-	const layers = stateApp?.layers?.filter(layer =>
-		isSource
-			? layer.file === props.actionItem.dataset?.file
-			: layer.file === props.actionItem.dataset?.file &&
-				layer.layerShapeName === props.actionItem.category.layerShapeName
-	);
+	const layers = layerController
+		.getValue('projectedLayers')
+		.filter(layer =>
+			isSource
+				? layer.file === props.actionItem.dataset?.file
+				: layer.file === props.actionItem.dataset?.file &&
+					layer.layerShapeName === props.actionItem.category.layerShapeName
+		);
 
 	useEffect(() => {
 		if (layersDeleted && layersDeleted.updateManyLayer) {
@@ -68,6 +72,7 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 	}, [layersDeleted]);
 
 	const handleAccept = () => {
+		debugger;
 		setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
 
 		if (isSource) {
@@ -92,8 +97,14 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 				variables: {
 					layers: layers.map(layer => ({ _id: layer.layerId, IsDeleted: true })),
 				},
-				refetchQueries: ['getAllLayerSettingsByUser'],
 			});
+			layerController.updateState(prevState => ({
+				projectedLayers: prevState.projectedLayers.filter(layer => !layers.some(l => l.layerId === layer.layerId)),
+			}));
+
+			globalStateController.updateState(prevState => ({
+				layers: prevState.layers.filter(layer => !layers.some(l => l.layerId === layer.layerId)),
+			}));
 		} else {
 			setStateApp(state => ({
 				...state,

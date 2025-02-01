@@ -69,6 +69,7 @@ export const ColorPickerStyledBox = withStyles(() => ({
 }))(ColorBox);
 
 export const project = {
+	file: 1,
 	layerId: 1,
 	layerType: 1,
 	layerName: 1,

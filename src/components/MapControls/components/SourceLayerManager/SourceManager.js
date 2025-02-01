@@ -32,8 +32,9 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
-import { useMutation } from '@apollo/client';
+import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
 import update from 'immutability-helper';
+import { sortBy } from 'lodash';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
 import PropTypes from 'prop-types';
 
@@ -47,6 +48,8 @@ import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
+import { GETLAYERBYFILEID } from 'graphQL/useQuerylayerByFileIds';
+import { GETLAYERBYID } from 'graphQL/useQueryLayerById';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
@@ -229,6 +232,9 @@ function SourceManager(props) {
 
 	const { stateApp } = props;
 	const { globalStateValues } = globalStateController.useState(['layers', 'datasets'], 'globalStateValues');
+	const {
+		layerStateValues: { projectedLayers },
+	} = layerController.useState(['projectedLayers'], 'layerStateValues');
 	const [openM1, setOpenM1] = React.useState(true);
 	const [isOpenUserSources, setIsOpenUserSources] = React.useState(true);
 	const [openDataSets, setOpenDataSets] = React.useState({});
@@ -237,19 +243,31 @@ function SourceManager(props) {
 	const [openUDLayers, setUDLayersStates] = useState([]);
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const [actionItem, setActionItem] = React.useState(null);
+	const [layerData, setLayerData] = useState([]);
+	const [newLayerData, setNewLayerData] = useState([]);
+	// const [selectAllMineralSources, setselectAllMineralSources] = React.useState(false);
 
 	const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
 	const [updateDataset] = useMutation(UPDATE_DATASET, { refetchQueries: ['getDatasets'], awaitRefetchQueries: true });
 	const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
+	const [getLayerByFileId] = useLazyQuery(GETLAYERBYFILEID);
+	const [getLayerById] = useLazyQuery(GETLAYERBYID);
 	const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, {
 		refetchQueries: ['getUserMapSettings', 'getDatasets'],
 		awaitRefetchQueries: true,
 	});
 
+	const layer_limit = 50;
+
 	const updateStateLayers = currentLayers => {
 		stateApp.layers = currentLayers;
 		globalStateController.updateState({ layers: currentLayers });
 	};
+
+	const client = useApolloClient();
+	useEffect(() => {
+		layerController.getProjectedLayers(client);
+	}, []);
 
 	useEffect(() => {
 		if (!deepEqual(currentLayers, globalStateValues.layers)) {
@@ -259,7 +277,7 @@ function SourceManager(props) {
 
 	const M1Layers = React.useMemo(() => {
 		// Filter layers
-		const layers = currentLayers?.filter(
+		const layers = projectedLayers?.filter(
 			layer =>
 				layer.layerCategory === 'M1 Layer' ||
 				['Parcels', 'Agreements', 'Units', 'Area of Interest', 'My Wells'].includes(layer.groupName || layer.layerName)
@@ -280,10 +298,11 @@ function SourceManager(props) {
 				index = 0;
 			}
 		}
+
 		return layers?.filter(
 			UdLayer => !((UdLayer.layerCategory === 'M1 Layer' || UdLayer.groupName === 'Agreements') && UdLayer.groupId)
 		);
-	}, [currentLayers]);
+	}, [projectedLayers]);
 
 	const selectAllMineralSources = React.useMemo(() => {
 		let check = true;
@@ -302,78 +321,116 @@ function SourceManager(props) {
 		return check;
 	}, [M1Layers]);
 
-	const handleApplyChange = currentLayers => {
-		if (!deepEqual(currentLayers, globalStateValues.layers)) {
-			const layersToUpdate = [];
-			const layersSettingsToUpdate = [];
-			for (let i = 0; i < currentLayers.length; i++) {
-				if (!deepEqualObjects(currentLayers[i], globalStateValues.layers[i])) {
-					layersSettingsToUpdate.push({
-						_id: currentLayers[i]._id,
-						layerSettings: currentLayers[i].layerSettings,
+	const handleApplyChange = (currentLayers, allLayers) => {
+		// Initialize arrays to hold layers and settings
+		const layersToUpdate = [];
+		const layersSettingsToUpdate = [];
+
+		// Loop over each layer in the currentLayers array
+		currentLayers.forEach(currentLayer => {
+			// Add current layer's update data to layersToUpdate
+			layersToUpdate.push({
+				_id: currentLayer.layerId,
+				layerName: currentLayer.layerName,
+				groupName: currentLayer.groupName,
+			});
+
+			// Add layer settings data to layersSettingsToUpdate
+			layersSettingsToUpdate.push({
+				_id: currentLayer._id,
+				user: stateApp.user._id,
+				layer: currentLayer.layerId,
+				layerSettings: currentLayer.layerSettings,
+				layerPaintProps: currentLayer.layerPaintProps,
+			});
+		});
+
+		// Save to stateApp
+		updateStateLayers([...allLayers]);
+
+		// Save to MongoDB
+		if (layersToUpdate.length > 0) {
+			updateManyLayer({
+				variables: {
+					layers: layersToUpdate,
+				},
+			});
+
+			updateManyUserLayerSettings({
+				variables: {
+					manySettings: layersSettingsToUpdate,
+				},
+			}).then(({ data }) => {
+				// Check if any settings were updated and update all layers
+				if (data?.updateManyUserLayerSettings?.res?.length) {
+					// Loop through each response and update the corresponding layers
+					data.updateManyUserLayerSettings.res.forEach(res => {
+						const updatedLayer = allLayers.find(l => l.layerId === res.layer);
+						if (!updatedLayer?._id) {
+							updatedLayer._id = res._id;
+						}
 					});
-					layersToUpdate.push({
-						_id: currentLayers[i].layerId,
-						layerName: currentLayers[i].layerName,
-						groupName: currentLayers[i].groupName,
-					});
+					// Update the state with the updated layers
+					updateStateLayers([...allLayers]);
 				}
-			}
-
-			// //// saving to stateApp
-			updateStateLayers([...currentLayers]);
-
-			//// saving to mongo
-			if (layersToUpdate.length > 0) {
-				updateManyLayer({
-					variables: {
-						layers: layersToUpdate,
-					},
-				});
-
-				updateManyUserLayerSettings({
-					variables: {
-						manySettings: layersSettingsToUpdate,
-					},
-				});
-			}
+			});
 		}
 	};
 
-	const handleCurrentLayersChange = () => {
-		setCurrentLayers(currentLayers => {
-			handleApplyChange(currentLayers);
-			return currentLayers;
-		});
-	};
-
-	// Common function added to change Layer showable key
 	const handleLayerSettingChange = (layers, changeValue) => {
-		const updatefn = {};
+		debugger;
 		const isReplace = typeof changeValue !== 'undefined';
-
-		layers.forEach(layer => {
-			if (layer.type === 'group') {
-				const value = isReplace ? changeValue : !layer.layers.find(l => l.layerSettings.showable);
-				layer.layers.forEach(l => {
-					const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
-					updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
-					layerController.handleDeckLayer({ ...l, layerSettings: { ...l.layerSettings, showable: value } });
-				});
-			} else {
-				const value = isReplace ? changeValue : !layer.layerSettings.showable;
-				const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === layer.identifier);
-				updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
+		const value = isReplace ? changeValue : !layers.some(l => l.layerSettings?.showable);
+		if (layers?.filter(row => row?.layerSettings?.showable === true).length < layer_limit) {
+			const updatefn = layerController.generateUpdateFn(layers, value, currentLayers, 'showable');
+			const updatedLayers = update(currentLayers, updatefn);
+			setCurrentLayers(updatedLayers);
+			layers.forEach(layer => {
 				layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, showable: value } });
-			}
-		});
-
-		setCurrentLayers(update(currentLayers, updatefn));
-		handleCurrentLayersChange();
+			});
+			const updatedIndexes = Object.keys(updatefn);
+			const layersToPass = updatedIndexes.map(index => updatedLayers[index]);
+			// Pass all updated layers to handleApplyChange
+			handleApplyChange(layersToPass, updatedLayers);
+		} else {
+			dispatch(showInfoMessage('Cannot add additional layer. Number of active layers cannot exceed ' + layer_limit));
+		}
 	};
+
+	useEffect(() => {
+		debugger;
+		if (layerData?.length) {
+			const fileIds = layerData.map(l => l.file);
+			// Check if all layers in layerIds exist in currentLayers
+			const allLayersExist = fileIds.every(fileId => currentLayers.some(clayer => clayer.file === fileId));
+
+			if (allLayersExist) {
+				// If all layers exist, process them with handleLayerSettingChange
+				handleLayerSettingChange(layerData);
+			}
+		}
+		setLayerData(null);
+	}, [currentLayers]);
+
+	useEffect(() => {
+		debugger;
+		if (newLayerData?.length) {
+			const layerIds = newLayerData.map(l => l.layerId);
+
+			// Check if all layers in layerIds exist in currentLayers
+			const allLayersExist = layerIds.every(layerId => currentLayers.some(clayer => clayer.layerId === layerId));
+
+			if (allLayersExist) {
+				// If all layers exist, process them with handleLayerSettingChange
+				handleLayerSettingChange(newLayerData);
+			}
+		}
+		setNewLayerData(null);
+	}, [currentLayers]);
 
 	// Common function added for User layer which uses handleLayerSettingChange internally
-	const changeUserSources = (sources, value) => {
+	const changeUserSources = async (sources, value) => {
+		debugger;
 		const settings = {};
 		const fileIds = sources
 			.map((source, index) => {
@@ -386,6 +443,25 @@ function SourceManager(props) {
 			})
 			.filter(fileId => fileId);
 		const layers = currentLayers.filter(layer => fileIds.includes(layer.file));
+		const pLayers = projectedLayers.filter(layer => fileIds.includes(layer.file));
+		layerController.updateProjectedLayers({ layer: pLayers, field: 'showable', value });
+
+		if (value && layers.length == 0) {
+			// If turning on, fetch missing layers
+			let updatedLayers = await getLayerByFileId({
+				variables: {
+					fileIds,
+					userId: stateApp.user._id,
+				},
+			});
+
+			if (updatedLayers?.data?.layerByFileId?.length) {
+				setLayerData(updatedLayers.data.layerByFileId);
+				setCurrentLayers(prevLayers => sortBy([...prevLayers, ...updatedLayers.data.layerByFileId], 'position'));
+				return;
+			}
+		}
+
 		handleLayerSettingChange(layers, value);
 
 		updateUserMapSettings({
@@ -414,6 +490,33 @@ function SourceManager(props) {
 		setCurrentLayers(update(currentLayers, updatefn));
 	};
 
+	const handleCheckAllLayers = async (layers, value) => {
+		const projectedUpdateFn = layerController.generateUpdateFn(layers, value, projectedLayers, 'showable');
+		layerController.updateState({ projectedLayers: update(projectedLayers, projectedUpdateFn) });
+
+		const missingLayers = layers.filter(layer => !currentLayers.some(clayer => clayer.identifier === layer.identifier));
+
+		// Fetch missing layers if any exist
+		if (missingLayers.length > 0) {
+			const layerIds = missingLayers.map(layer => layer.layerId);
+			try {
+				const updatedLayer = await getLayerById({
+					variables: { layerIds, userId: stateApp.user._id },
+				});
+				if (updatedLayer?.data?.layerById && missingLayers) {
+					setNewLayerData(updatedLayer.data.layerById);
+					setCurrentLayers(prevLayers => sortBy([...prevLayers, ...updatedLayer.data.layerById], 'position'));
+
+					return;
+				}
+			} catch (error) {
+				console.error('Error fetching missing layers:', error);
+			}
+		}
+
+		handleLayerSettingChange(layers, value);
+	};
+
 	async function handleFileInput(fileObj) {
 		if (!fileObj?.[0]?.file) {
 			return;
@@ -433,6 +536,48 @@ function SourceManager(props) {
 		});
 	}
 
+	const changeShowAble = async layer => {
+		layerController.updateProjectedLayers({
+			layer: [layer],
+			field: 'showable',
+			value: !layer?.layerSettings?.showable,
+		});
+		let layersToCheck = [];
+		if (layer.type === 'group' && Array.isArray(layer.layers)) {
+			layersToCheck = layer.layers;
+		} else {
+			layersToCheck = [layer];
+		}
+
+		// Check if every layer in the group (or the individual layer) already exists in currentLayers
+		const allLayersExist = layersToCheck.every(l => currentLayers.some(clayer => clayer.identifier === l.identifier));
+		let updatedLayer;
+		let layerIds = [];
+
+		if (layer.type === 'group' && Array.isArray(layer.layers)) {
+			layerIds = layer.layers.map(groupLayer => groupLayer.layerId);
+		} else {
+			layerIds = [layer.layerId];
+		}
+
+		if (!allLayersExist) {
+			updatedLayer = await getLayerById({
+				variables: {
+					layerIds,
+					userId: stateApp.user._id,
+				},
+			});
+		}
+		if (updatedLayer?.data?.layerById && !allLayersExist) {
+			setNewLayerData(updatedLayer.data.layerById);
+			setCurrentLayers(prevLayers => sortBy([...prevLayers, ...updatedLayer.data.layerById], 'position'));
+			return;
+		}
+
+		const layersToUpdate = layer.type === 'group' && Array.isArray(layer.layers) ? layer.layers : [layer];
+		handleLayerSettingChange(layersToUpdate);
+	};
+
 	const checkIfDeleteAllow = layer => {
 		if (layer.name === 'Agreements' || layer.groupName === 'Agreements') {
 			return false;
@@ -451,6 +596,7 @@ function SourceManager(props) {
 	useOnClickOutside({ current: anchorEl }, handleMenuClose);
 
 	const datasetNameChange = (item, name) => {
+		debugger;
 		const isSource = !actionItem?.category;
 		if (isSource) {
 			actionItem.dataset.sourceName = name;
@@ -526,7 +672,7 @@ function SourceManager(props) {
 											color="darkgray"
 											onClick={e => e.stopPropagation()}
 											onChange={() => {
-												handleLayerSettingChange(M1Layers, !selectAllMineralSources);
+												handleCheckAllLayers(M1Layers, !selectAllMineralSources);
 											}}
 											inputProps={{ 'aria-label': 'primary checkbox' }}
 										/>
@@ -639,7 +785,7 @@ function SourceManager(props) {
 														<Checkbox
 															checked={layer.layerSettings.showable}
 															color="dark gray"
-															onChange={() => handleLayerSettingChange([layer])}
+															onChange={() => changeShowAble(layer)}
 															inputProps={{ 'aria-label': 'primary checkbox' }}
 														/>
 
@@ -651,8 +797,7 @@ function SourceManager(props) {
 																	? 'Tracts'
 																	: layer.layerName === 'Wells'
 																		? 'Platform Wells'
-																		: // eslint-disable-next-line no-magic-numbers
-																			truncate(layer.layerName, 30)
+																		: truncate(layer.layerName, 30)
 															}
 														/>
 
