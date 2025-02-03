@@ -9,6 +9,7 @@ import CloseIcon from '@material-ui/icons/Close';
 
 import { useMutation } from '@apollo/client';
 import { get } from 'lodash';
+import PropTypes from 'prop-types'; // Import PropTypes
 
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 
@@ -31,6 +32,7 @@ const useStyles = makeStyles(theme => ({
 		background: 'rgba(1, 17, 51, 1.0)',
 		color: '#fff',
 		borderRadius: '25px',
+		zIndex: '99999999',
 	},
 	mapOverlayInner: {
 		boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
@@ -259,7 +261,7 @@ export default function DrawShapes() {
 	const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER);
 
 	const { mapReady, globalStateValues } = globalStateController.useState(['mapReady'], 'globalStateValues');
-	const popupState = popupController.useState(['selectedUserDefinedLayer', , 'selectedShape']);
+	const popupState = popupController.useState(['selectedUserDefinedLayer', 'selectedShape']);
 	const drawState = drawController.useState([
 		'showShapeActionsPopup',
 		'currentFeature',
@@ -377,30 +379,9 @@ export default function DrawShapes() {
 	}
 
 	return null;
-
-	// return (
-	// 	<>
-	// 		{showDrawShapePopup && (
-	// 			<ClickAwayListener onClickAway={handleClose}>
-	// 				<div className={classes.mapOverlay}>
-	// 					<div className={classes.mapOverlayInner}>
-	// 						<div className={classes.content}>
-	// 							<DrawShapePopup handleClose={handleClose} classes={classes}>
-	// 								<span className={classes.clearAction}>
-	// 									<Tooltip title="Close">
-	// 										<IconButton size="small" onClick={actionClose} aria-label="Close" className={classes.clearAction}>
-	// 											<CloseIcon className="close" fontSize="small" />
-	// 										</IconButton>
-	// 									</Tooltip>
-	// 								</span>
-	// 							</DrawShapePopup>
-	// 						</div>
-	// 					</div>
-	// 				</div>
-	// 			</ClickAwayListener>
-	// 		)}
-	// 		{showAddAndEditShapePopup && <AddShapePopup upsertCustomLayer={upsertCustomLayer} />}
-	// 		{drawStateValues.showAddShapePopup && <AddShapePopup onlyAddShape upsertCustomLayer={upsertCustomLayer} />}
-	// 	</>
-	// );
 }
+
+AddShapePopup.propTypes = {
+	onlyAddShape: PropTypes.bool, // Adjust type based on actual usage
+	upsertCustomLayer: PropTypes.func.isRequired,
+};

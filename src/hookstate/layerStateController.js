@@ -711,11 +711,13 @@ const layerStateControllerHandler = state => {
 		}
 
 		const visible = dbLayer.layerSettings.showable && dbLayer.layerSettings.visiable !== false;
+		const isDrawing = drawController.getValue('isDrawing');
 
 		let updatedProps = {
 			pickable,
 			visible,
 			showable: dbLayer.layerSettings.showable,
+			opacity: isDrawing ? 0.2 : 1,
 		};
 
 		const labelProps =
@@ -742,6 +744,7 @@ const layerStateControllerHandler = state => {
 				fillPatternEnabled: newId,
 				getDashArray: newId,
 				getFillPattern: newId,
+				opacity: newId,
 			};
 		}
 		if (!boundingState.show?.current) {
