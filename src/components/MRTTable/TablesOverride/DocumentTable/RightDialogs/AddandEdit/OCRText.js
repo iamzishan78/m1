@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
-import { Box, Skeleton, TextField, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Skeleton, TextField, Typography } from '@mui/material';
 
 import { useMutation, useQuery } from '@apollo/client';
 import { useHookstate } from '@hookstate/core';
 import { isEqual } from 'lodash';
 import PropTypes from 'prop-types';
 
-import { UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
+import { PARSE_PDF_TEXTS, UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
 import { GET_FILE_OCR_TEXT } from 'graphQL/useQueryViewFile';
 
 const EditableLine = ({ text, onUpdate }) => {
@@ -29,18 +29,22 @@ const EditableLine = ({ text, onUpdate }) => {
 		setValue(text);
 	}, [text]);
 
-	return isEditing ? (
-		<TextField
-			value={value}
-			autoFocus
-			onChange={e => setValue(e.target.value)}
-			onBlur={handleBlur}
-			onKeyDown={handleKeyDown}
-			fullWidth
-			size="small"
-			variant="standard"
-		/>
-	) : (
+	if (isEditing) {
+		return (
+			<TextField
+				value={value}
+				autoFocus
+				onChange={e => setValue(e.target.value)}
+				onBlur={handleBlur}
+				onKeyDown={handleKeyDown}
+				fullWidth
+				size="small"
+				variant="standard"
+			/>
+		);
+	}
+
+	return (
 		<Box
 			onClick={() => setIsEditing(true)}
 			sx={{
@@ -62,6 +66,9 @@ const OCRText = ({ selectedDocument }) => {
 	});
 
 	const [updatePDFText] = useMutation(UPDATE_PDF_TEXTS, { refetchQueries: ['getFileOCRText'] });
+	const [parsePDFText, { loading: generatingOCR }] = useMutation(PARSE_PDF_TEXTS, {
+		refetchQueries: ['getFileOCRText'],
+	});
 
 	const isChanged = useHookstate(false);
 	const lines = useHookstate([]);
@@ -117,9 +124,24 @@ const OCRText = ({ selectedDocument }) => {
 
 	if (!lines.get()?.length) {
 		return (
-			<Typography sx={{ textAlign: 'center', marginTop: '20px', fontStyle: 'italic', color: 'gray' }}>
-				No text found in the document.
-			</Typography>
+			<Box sx={{ textAlign: 'center', marginTop: '20px' }}>
+				<Typography sx={{ textAlign: 'center', marginTop: '20px', fontStyle: 'italic', color: 'gray' }}>
+					No text found in the document.
+				</Typography>
+
+				<Button
+					variant="contained"
+					onClick={() => parsePDFText({ variables: { fileId: selectedDocument?._id } })}
+					disabled={generatingOCR || !selectedDocument?._id}
+					startIcon={generatingOCR ? <CircularProgress size={20} /> : null}
+					sx={{
+						backgroundColor: '#2BAFDE',
+						marginTop: '1rem',
+					}}
+				>
+					{generatingOCR ? 'Generating OCR...' : 'Generate OCR Data'}
+				</Button>
+			</Box>
 		);
 	}
 
