@@ -462,6 +462,7 @@ function ContactDetailCard(props) {
 	const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
 	const [showActivityDialog, setActivityDialog] = useState(null);
 	const [purchaseData, setPurchaseData] = useState([]);
+	const [dialpadConnect, setDialpadConnect] = useState(false);
 	const [actionActivityData, setActionActivityData] = useState(null); // State for actions activity data
 	// Fetching global stateValues
 	const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
@@ -558,6 +559,9 @@ function ContactDetailCard(props) {
 				...stateApp,
 				currentContatcAtivities: data.contact.activityLog,
 			}));
+			if (data.contact?.dialpadIds?.length) {
+				setDialpadConnect(true);
+			}
 		}
 	}, [data, stateApp.contactUpdated]);
 
@@ -638,7 +642,7 @@ function ContactDetailCard(props) {
 				setActivityDialog(true);
 				setActionActivityData(activityData);
 			} else {
-				if (contactData?.dialpadId && stateApp?.user?.dialpad) {
+				if (dialpadConnect && stateApp?.user?.dialpad) {
 					dispatch(showInfoMessage('Initiating call...'));
 					initiateDialpadCall({
 						variables: { phoneNumber: data.phoneNumber },
@@ -649,7 +653,7 @@ function ContactDetailCard(props) {
 							dispatch(showErrorMessage(data?.initiateDialpadCall?.message));
 						}
 					});
-				}else if(contactData?.dialpadId && !stateApp?.user?.dialpad){
+				} else if (dialpadConnect && !stateApp?.user?.dialpad) {
 					dispatch(showErrorMessage('User not found on Dialpad. Please Contact Admin.'));
 				}
 			}
@@ -799,20 +803,20 @@ function ContactDetailCard(props) {
 										placement="top-start"
 									>
 										<Button
-											color={contactData?.dialpadId ? 'primary' : 'transparent'}
-											className={!contactData?.dialpadId ? classes.contactDataButton : {}}
-											variant={contactData?.dialpadId ? 'contained' : ''}
-											startIcon={<DialpadIcon color={contactData?.dialpadId ? 'white' : 'grey'} />}
-											style={{ color: contactData?.dialpadId ? 'white' : 'grey' }}
+											color={dialpadConnect ? 'primary' : 'transparent'}
+											className={!dialpadConnect ? classes.contactDataButton : {}}
+											variant={dialpadConnect ? 'contained' : ''}
+											startIcon={<DialpadIcon color={dialpadConnect ? 'white' : 'grey'} />}
+											style={{ color: dialpadConnect ? 'white' : 'grey' }}
 											onClick={() => {
-												if (!contactData?.dialpadId) {
+												if (!dialpadConnect) {
 													handleContactSync();
 												} else {
 													window.open('https://dialpad.com/app/contacts/frequent', '_blank');
 												}
 											}}
 										>
-											{contactData?.dialpadId ? 'Launch Dialpad' : 'Sync to Dialpad'}
+											{dialpadConnect ? 'Launch Dialpad' : 'Sync to Dialpad'}
 										</Button>
 									</Tooltip>
 

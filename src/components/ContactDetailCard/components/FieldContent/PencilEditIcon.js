@@ -131,10 +131,10 @@ function PencilEditIcon({
             </Tooltip>
             <Tooltip title={"Call"} placement="top">
                 <IconButton size="small"
-                href={globalState?.contactData?.dialpadId ? '' : `tel: ${editFieldValue}`}
+                href={globalState?.contactData?.dialpadIds?.length ? '' : `tel: ${editFieldValue}`}
                 className={classes.emailAdornment}
                 onClick={() => {
-                    globalState?.contactData?.dialpadId &&
+                    globalState?.contactData?.dialpadIds?.length &&
                         handleQuickActionActivity({
                             phoneNumber: editFieldValue,
                             type: 'dialpad',

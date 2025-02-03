@@ -278,10 +278,10 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
                                   <Tooltip title={"Call"} placement="top">
                                   <IconButton
 																				id="call-icon"
-																				href={contactData.dialpadId ? '' : `tel: ${contactData[field.key]}`}
+																				href={contactData?.dialpadIds?.length ? '' : `tel: ${contactData[field.key]}`}
 																				className={classes.emailAdornment}
 																				onClick={() => {
-																					contactData.dialpadId &&
+																					contactData?.dialpadIds?.length &&
 																						handleQuickActionActivity({
 																							phoneNumber: contactData[field.key],
 																							type: 'dialpad',
