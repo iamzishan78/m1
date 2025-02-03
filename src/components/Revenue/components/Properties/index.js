@@ -97,7 +97,6 @@ export default function Properties() {
 	const setESFilters = (newFilter, oldFilters) => {
 		if (newFilter.length === 0) {
 			ESFilters([]);
-			tableController('PropertiesTable').clearFilters();
 		}
 
 		setStateIfDeepEqual(ESFilters, newFilter);
