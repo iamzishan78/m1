@@ -262,7 +262,7 @@ function SourceManager(props) {
 		const layers = currentLayers?.filter(
 			layer =>
 				layer.layerCategory === 'M1 Layer' ||
-				['Parcels', 'Agreements', 'Units', 'Area of Interest', 'My Wells'].includes(layer.groupName || layer.layerName)
+				['Parcels', 'Agreements', 'Units', 'Area of Interest', 'My Wells'].includes(layer.groupName || layer.identifier)
 		);
 		const groupHandled = [];
 		for (let index = 0; index < layers.length; index++) {
@@ -481,8 +481,8 @@ function SourceManager(props) {
 		<div id="sourceManagerDiv" style={{ height: '100%', display: 'flex', width: '100%' }}>
 			<DropzoneAreaBase
 				onAdd={handleFileInput}
-				onDelete={() => {}}
-				onAlert={() => {}}
+				onDelete={() => { }}
+				onAlert={() => { }}
 				filesLimit={1}
 				maxFileSize={104857600}
 				dropzoneClass={classes.dropzoneClass}
@@ -540,9 +540,7 @@ function SourceManager(props) {
 													(!props.search ||
 														layer.name?.toLowerCase().includes(props.search) ||
 														layer.layerName?.toLowerCase().includes(props.search)) &&
-													!['Land Grid', 'TX GLO Units', 'TX GLO Active Leases', 'Rig Activity'].includes(
-														layer.layerName
-													)
+													!['Land Grid'].includes(layer.identifier)
 												);
 											})?.map((layer, index) => {
 												const labelId = `m1layer-list-label-${index}`;
@@ -647,16 +645,11 @@ function SourceManager(props) {
 														<ListItemText
 															id={labelId}
 															primary={
-																layer.layerName === 'Parcels'
-																	? 'Tracts'
-																	: layer.layerName === 'Wells'
-																		? 'Platform Wells'
-																		: // eslint-disable-next-line no-magic-numbers
-																			truncate(layer.layerName, 30)
+																truncate(layer.layerName, 30)
 															}
 														/>
 
-														{layer.layerName === 'Units' && (
+														{layer.identifier === 'Units' && (
 															<FeatureFlag feature={FEATURES.UNITIMPORT}>
 																<ListItemSecondaryAction>
 																	<IconButton
@@ -672,7 +665,7 @@ function SourceManager(props) {
 															</FeatureFlag>
 														)}
 
-														{layer.layerName === 'Parcels' && (
+														{layer.identifier === 'Parcels' && (
 															<FeatureFlag feature={FEATURES.TRACTIMPORT}>
 																<ListItemSecondaryAction>
 																	<IconButton
@@ -771,7 +764,7 @@ function SourceManager(props) {
 																		// const labelId = `m1layer-list-label-${index}`;
 																		return (
 																			<StyledListItem
-																				key={layer.layerName || layer.name}
+																				key={layer.identifier || layer.name}
 																				ContainerComponent="li"
 																				style={{ padding: 10 }}
 																			>

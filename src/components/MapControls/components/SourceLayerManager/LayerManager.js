@@ -385,7 +385,7 @@ export default function AddLayer(props) {
 	};
 
 	const checkIfcustomLayerCopy = layer => {
-		const customLayers = ['Units', 'Parcels', 'Tracts', 'Agreements', 'Deeds', 'Leases', 'Contracts', 'Surfaces'];
+		const customLayers = ['Units', 'Parcels', 'Agreements', 'Deeds', 'Leases', 'Contracts', 'Surfaces'];
 		if (customLayers.includes(layer.identifier)) {
 			return false;
 		}
@@ -421,7 +421,7 @@ export default function AddLayer(props) {
 	}, [currentLayers]);
 
 	return (
-		<ClickAwayListener onClickAway={() => {}}>
+		<ClickAwayListener onClickAway={() => { }}>
 			<>
 				<div style={{ height: '100%', display: 'flex', width: '100%' }}>
 					<div>
@@ -461,42 +461,24 @@ export default function AddLayer(props) {
 										{M1Layers?.filter(
 											layer =>
 												(!props.search || layer.layerName?.toLowerCase().includes(props.search)) &&
-												!['Land Grid', 'TX GLO Units', 'TX GLO Active Leases', 'Rig Activity'].includes(layer.layerName)
+												!['Land Grid'].includes(layer.layerName)
 										)?.map((layer, index) => {
 											const labelId = `m1layer-list-label-${index}`;
-											if (layer.layerName === 'Recent Submitted Permits') {
-												return (
-													<FeatureFlag feature={FEATURES.RECENTPERMITLAYER}>
-														<StyledListItem key={index} ContainerComponent="li">
-															<Checkbox
-																checked={layer.layerSettings.showable}
-																color="dark gray"
-																onChange={() => changeShowAble(layer)}
-																inputProps={{ 'aria-label': 'primary checkbox' }}
-															/>
-															<ListItemText id={labelId} primary={truncate(layer.layerName, 30)} />
-														</StyledListItem>
-													</FeatureFlag>
-												);
-											} else if (layer.layerName !== 'Recent Submitted Permits') {
-												return (
-													<StyledListItem key={index} ContainerComponent="li">
-														<Checkbox
-															checked={layer.layerSettings.showable}
-															color="dark gray"
-															onChange={() => changeShowAble(layer)}
-															inputProps={{ 'aria-label': 'primary checkbox' }}
-														/>
-														{/* Override layer manager name of Wells */}
-														<ListItemText
-															id={labelId}
-															primary={layer.layerName === 'Wells' ? 'Platform Wells' : truncate(layer.layerName, 30)}
-														/>
-													</StyledListItem>
-												);
-											} else {
-												return null;
-											}
+											return (
+												<StyledListItem ContainerComponent="li">
+													<Checkbox
+														checked={layer.layerSettings.showable}
+														color="dark gray"
+														onChange={() => changeShowAble(layer)}
+														inputProps={{ 'aria-label': 'primary checkbox' }}
+													/>
+													{/* Override layer manager name of Wells */}
+													<ListItemText
+														id={labelId}
+														primary={truncate(layer.layerName, 30)}
+													/>
+												</StyledListItem>
+											);
 										})}
 									</List>
 								</Collapse>
@@ -622,105 +604,80 @@ export default function AddLayer(props) {
 													</Accordion>
 												);
 											}
-											//// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
-											if (layer.identifier !== 'Tracked Owners') {
-												if (layer.layerName === 'Tracked Wells' || layer.layerName === 'User Tags') {
-													let layerName = '';
-													if (props?.data?.layerName === 'Tracked Wells') {
-														layerName = FEATURES.TRACKEDWELLSLAYER;
-													} else if (props?.data?.layerName === 'User Tags') {
-														layerName = FEATURES.USERTAGSLAYER;
-													}
-													return (
-														<FeatureFlag feature={layerName}>
-															<StyledListItem key={index} ContainerComponent="li">
-																<Checkbox
-																	checked={layer.layerSettings.showable}
-																	color="dark gray"
-																	onChange={() => changeShowAble(layer)}
-																	inputProps={{ 'aria-label': 'primary checkbox' }}
-																/>
-																<ListItemText id={labelId} primary={layer.layerName} />
-															</StyledListItem>
-														</FeatureFlag>
-													);
-												} else {
-													return (
-														<StyledListItem key={index} ContainerComponent="li">
-															<Checkbox
-																checked={layer.layerSettings.showable}
-																color="dark gray"
-																onChange={() => changeShowAble(layer)}
-																inputProps={{ 'aria-label': 'primary checkbox' }}
+
+											return (
+												<StyledListItem ContainerComponent="li">
+													<Checkbox
+														checked={layer.layerSettings.showable}
+														color="dark gray"
+														onChange={() => changeShowAble(layer)}
+														inputProps={{ 'aria-label': 'primary checkbox' }}
+													/>
+													{layer.layerType === 'file layer' || checkIfcustomLayerCopy(layer) ? (
+														<>
+															{/* Layer */}
+															<EditableTextField
+																onChange={changeLayerName}
+																item={layer}
+																name={layer.layerName}
+																isEditable={false}
+																openEditField={
+																	layer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'
+																}
 															/>
-															{layer.layerType === 'file layer' || checkIfcustomLayerCopy(layer) ? (
-																<>
-																	{/* Layer */}
-																	<EditableTextField
-																		onChange={changeLayerName}
-																		item={layer}
-																		name={layer.layerName}
-																		isEditable={false}
-																		openEditField={
-																			layer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'
-																		}
-																	/>
 
-																	{checkIfDeleteAllow(layer) && (
-																		<MoreHorizIcon
-																			aria-controls={'source-menu'}
-																			className={'moreSourceIcon ' + classes.moreSourceIcon}
-																			onClick={e => {
-																				e.stopPropagation();
-																				handleClick(e);
-																				setActionItem({ layer });
-																			}}
-																		/>
-																	)}
-																</>
-															) : (
-																<ListItemText
-																	id={labelId}
-																	primary={layer.layerName === 'Parcels' ? 'Tracts' : layer.layerName}
+															{checkIfDeleteAllow(layer) && (
+																<MoreHorizIcon
+																	aria-controls={'source-menu'}
+																	className={'moreSourceIcon ' + classes.moreSourceIcon}
+																	onClick={e => {
+																		e.stopPropagation();
+																		handleClick(e);
+																		setActionItem({ layer });
+																	}}
 																/>
 															)}
+														</>
+													) : (
+														<ListItemText
+															id={labelId}
+															primary={layer.layerName}
+														/>
+													)}
 
-															{layer.layerName === 'Units' && (
-																<FeatureFlag feature={FEATURES.UNITIMPORT}>
-																	<ListItemSecondaryAction>
-																		<IconButton
-																			edge="end"
-																			size="small"
-																			onClick={() => {
-																				history.push('/bulkupload/units');
-																			}}
-																		>
-																			<UploadIcon opacity="1.0" small />
-																		</IconButton>
-																	</ListItemSecondaryAction>
-																</FeatureFlag>
-															)}
+													{layer.identifier === 'Units' && (
+														<FeatureFlag feature={FEATURES.UNITIMPORT}>
+															<ListItemSecondaryAction>
+																<IconButton
+																	edge="end"
+																	size="small"
+																	onClick={() => {
+																		history.push('/bulkupload/units');
+																	}}
+																>
+																	<UploadIcon opacity="1.0" small />
+																</IconButton>
+															</ListItemSecondaryAction>
+														</FeatureFlag>
+													)}
 
-															{layer.layerName === 'Parcels' && (
-																<FeatureFlag feature={FEATURES.TRACTIMPORT}>
-																	<ListItemSecondaryAction>
-																		<IconButton
-																			edge="end"
-																			size="small"
-																			onClick={() => {
-																				history.push('/bulkupload/tracts');
-																			}}
-																		>
-																			<UploadIcon opacity="1.0" small />
-																		</IconButton>
-																	</ListItemSecondaryAction>
-																</FeatureFlag>
-															)}
-														</StyledListItem>
-													);
-												}
-											}
-											return null;
+													{layer.identifier === 'Parcels' && (
+														<FeatureFlag feature={FEATURES.TRACTIMPORT}>
+															<ListItemSecondaryAction>
+																<IconButton
+																	edge="end"
+																	size="small"
+																	onClick={() => {
+																		history.push('/bulkupload/tracts');
+																	}}
+																>
+																	<UploadIcon opacity="1.0" small />
+																</IconButton>
+															</ListItemSecondaryAction>
+														</FeatureFlag>
+													)}
+												</StyledListItem>
+											);
 										})}
 									</List>
 								</Collapse>
