@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect, Fragment, useCallback, useMemo, memo } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import {
@@ -41,7 +42,7 @@ import PropTypes from 'prop-types';
 import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { truncate, copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
+import { truncate, copy, deepEqual } from 'components/Shared/functions';
 import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
 
 import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
@@ -55,6 +56,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
+import { showInfoMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
 import DeleteSourceAndCategoryConfirmationDialog from './DeleteSourceAndCategoryConfirmationDialog';
@@ -228,6 +230,7 @@ function useOnClickOutside(ref, handler) {
 
 function SourceManager(props) {
 	const classes = useStyles();
+	const dispatch = useDispatch();
 	let history = useHistory();
 
 	const { stateApp } = props;
@@ -378,7 +381,6 @@ function SourceManager(props) {
 	};
 
 	const handleLayerSettingChange = (layers, changeValue) => {
-		debugger;
 		const isReplace = typeof changeValue !== 'undefined';
 		const value = isReplace ? changeValue : !layers.some(l => l.layerSettings?.showable);
 		if (layers?.filter(row => row?.layerSettings?.showable === true).length < layer_limit) {
@@ -398,7 +400,6 @@ function SourceManager(props) {
 	};
 
 	useEffect(() => {
-		debugger;
 		if (layerData?.length) {
 			const fileIds = layerData.map(l => l.file);
 			// Check if all layers in layerIds exist in currentLayers
@@ -413,7 +414,6 @@ function SourceManager(props) {
 	}, [currentLayers]);
 
 	useEffect(() => {
-		debugger;
 		if (newLayerData?.length) {
 			const layerIds = newLayerData.map(l => l.layerId);
 
@@ -430,7 +430,6 @@ function SourceManager(props) {
 
 	// Common function added for User layer which uses handleLayerSettingChange internally
 	const changeUserSources = async (sources, value) => {
-		debugger;
 		const settings = {};
 		const fileIds = sources
 			.map((source, index) => {
@@ -596,7 +595,6 @@ function SourceManager(props) {
 	useOnClickOutside({ current: anchorEl }, handleMenuClose);
 
 	const datasetNameChange = (item, name) => {
-		debugger;
 		const isSource = !actionItem?.category;
 		if (isSource) {
 			actionItem.dataset.sourceName = name;

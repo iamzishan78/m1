@@ -345,7 +345,6 @@ export default function AddLayer(props) {
 	}, [currentLayers]);
 
 	const handleCheckAllLayers = async (layers, value, layerType) => {
-		debugger;
 		const projectedUpdateFn = layerController.generateUpdateFn(layers, value, projectedLayers, 'showable');
 		layerController.updateState({ projectedLayers: update(projectedLayers, projectedUpdateFn) });
 
@@ -498,7 +497,11 @@ export default function AddLayer(props) {
 	}, [projectedLayers]);
 
 	const M1Layers = React.useMemo(() => {
-		return projectedLayers?.filter(layer => layer.layerCategory === 'M1 Layer');
+		return projectedLayers?.filter(
+			layer =>
+				layer.layerCategory === 'M1 Layer' ||
+				['Parcels', 'Agreements', 'Units', 'Area of Interest', 'My Wells'].includes(layer.groupName || layer.layerName)
+		);
 	}, [projectedLayers]);
 	const checkAllLayers = (layers, layerType) => {
 		let check = true;
