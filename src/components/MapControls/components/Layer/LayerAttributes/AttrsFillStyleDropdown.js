@@ -20,6 +20,7 @@ const useStyles = makeStyles(() => ({
 	dropdownContainer: {
 		width: '485px',
 		fontFamily: 'Arial, sans-serif',
+		position: 'relative',
 	},
 	dropdown: {
 		border: '1px solid #ccc',
@@ -60,18 +61,21 @@ const useStyles = makeStyles(() => ({
 		cursor: 'pointer',
 	},
 	fillBox: {
-		width: '24px', // Set the width to match the image width
-		height: '30px', // Set the height to match the image height
-		border: 'none', // Remove the border
-		textAlign: 'center', // Optional, in case you want to center align content inside
-		lineHeight: '30px', // Optional, only needed if you're using text inside
-		backgroundColor: 'transparent', // Remove the background color
-		overflow: 'hidden', // Ensure no content goes outside the box
+		width: '24px',
+		height: '30px',
+		border: 'none',
+		textAlign: 'center',
+		lineHeight: '30px',
+		backgroundColor: 'transparent',
+		overflow: 'hidden',
 	},
 	textFieldInput: {
 		height: '50px',
 		cursor: 'pointer',
 		marginTop: '10px',
+	},
+	highlighted: {
+		backgroundColor: '#e0e0e0', // Highlight color
 	},
 }));
 
@@ -86,13 +90,11 @@ const AttrsFillStyleDropdown = ({
 }) => {
 	const classes = useStyles();
 	const [displayDropdown, setDisplayDropdown] = useState(false);
-	const [selectedOption, setSelectedOption] = useState('');
+	const [selectedOption, setSelectedOption] = useState(null);
 	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
-		if (!selectedValue) {
-			return;
-		}
+		if (!selectedValue) {return;}
 
 		let esIndex = selectedLayer.layerType === 'file layer' ? 'shapefile_flat' : 'shapes_flat';
 		const layerType =
@@ -166,23 +168,25 @@ const AttrsFillStyleDropdown = ({
 		<>
 			{selectedValue ? (
 				<div className={classes.dropdownContainer}>
-					<div className={classes.dropdown}>
+					<div className={classes.dropdown} onClick={() => setDisplayDropdown(prev => !prev)}>
 						<span>{selectedValue ? selectedValue['label'] : ''}</span>
-						<span className={classes.arrowIcon} style={{ transform: 'rotate(180deg)' }}></span>
+						<span
+							className={classes.arrowIcon}
+							style={{
+								transform: displayDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
+							}}
+						></span>
 					</div>
-					{attroptions?.length > 0 && (
+					{displayDropdown && attroptions?.length > 0 && (
 						<ul className={classes.dropdownList}>
 							{attroptions.map(option => (
 								<li
-									key={option?.value}
-									className={classes.listItem}
+									key={option?.label}
+									className={`${classes.listItem} ${selectedOption?.label === option.label ? classes.highlighted : ''}`}
 									onClick={() => {
 										setSelectedOption(option);
 										setFillStyle(option['style']);
-										setDisplayDropdown(!displayDropdown);
-									}}
-									style={{
-										backgroundColor: '#fff',
+										setDisplayDropdown(true);
 									}}
 								>
 									<span>{option['label'] === '' ? '(Blank)' : option['label']}</span>
@@ -190,7 +194,7 @@ const AttrsFillStyleDropdown = ({
 										<img
 											src={styleImageMap[option.style]}
 											alt={option.label || 'Style'}
-											style={{ width: '100%', height: '100%', objectFit: 'contain' }} // Make the image fill the container
+											style={{ width: '100%', height: '100%', objectFit: 'contain' }}
 										/>
 									</div>
 								</li>

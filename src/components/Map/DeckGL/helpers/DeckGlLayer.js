@@ -1,4 +1,4 @@
-import { ScatterplotLayer, LineLayer, PolygonLayer, TextLayer } from '@deck.gl/layers';
+import { ScatterplotLayer, LineLayer, PolygonLayer, TextLayer, GeoJsonLayer } from '@deck.gl/layers';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { isEqual } from 'lodash';
 
@@ -53,6 +53,12 @@ const Layers = {
 	},
 	GeoJsonLayer: {
 		component: M1neralGeojsonLayer,
+		defaultProps: {
+			parameters: { depthTest: false },
+		},
+	},
+	SimpleGeoJsonLayer: {
+		component: GeoJsonLayer,
 		defaultProps: {
 			parameters: { depthTest: false },
 		},
@@ -129,7 +135,7 @@ export default class DeckGlOverlay {
 						}
 						// If the path is not '/' or ' ' and the map is not rendered through deal dialog
 						if (!['', '/'].includes(window.location.pathname) && transactBarView !== 'Map') {
-							history.replace({ pathname: '/' });
+							window.history.replaceState({}, '', '/');
 						}
 						return;
 					}

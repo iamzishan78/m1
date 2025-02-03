@@ -4,7 +4,26 @@ import { GeoJsonLayer, TextLayer } from '@deck.gl/layers';
 import * as turf from '@turf/turf';
 
 const transformFields = input => {
-	const mapping = {
+	const commonMapping = {
+		visible: 'visible',
+	};
+
+	const geojsonProps = { ...input };
+
+	const getKeysByMapping = mapping => {
+		const props = {};
+		for (const [oldKey, newKey] of Object.entries(mapping)) {
+			if (oldKey in input) {
+				props[newKey] = input[oldKey];
+				delete geojsonProps[oldKey];
+			}
+		}
+		Object.keys(commonMapping).forEach(key => {
+			props[key] = input[key];
+		});
+		return props;
+	};
+	const textLayerMapping = {
 		getText: 'getText',
 		getTextColor: 'getColor',
 		getTextAngle: 'getAngle',
@@ -35,28 +54,17 @@ const transformFields = input => {
 		textExtensions: 'extensions',
 	};
 
-	const newObject = {};
-	const remainingObject = { ...input };
+	const textProps = getKeysByMapping(textLayerMapping);
 
-	for (const [oldKey, newKey] of Object.entries(mapping)) {
-		if (oldKey in input) {
-			newObject[newKey] = input[oldKey];
-			delete remainingObject[oldKey];
-		}
-	}
-
-	return [
-		remainingObject,
-		{
-			...newObject,
-			visible: remainingObject?.visible,
-		},
-	];
+	return {
+		geojsonProps,
+		textProps,
+	};
 };
 
 class M1neralGeojsonLayer extends CompositeLayer {
 	renderLayers() {
-		const [geojsonProps, textProps] = transformFields(this.props);
+		const { geojsonProps, textProps } = transformFields(this.props);
 		// GeoJsonLayer
 		const geoJsonLayer = new GeoJsonLayer({
 			...geojsonProps,
