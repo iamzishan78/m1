@@ -119,24 +119,28 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 				props: {},
 				onClick: () => {},
 			},
-			{
-				name: 'OCR Text',
-				Icon: props => (
-					<Badge
-						anchorOrigin={{
-							vertical: 'top',
-							horizontal: 'right',
-						}}
-						color="primary"
-					>
-						<NotesIcon {...props} />
-					</Badge>
-				),
-				Component: () => <OCRText selectedDocument={selectedDocument} />,
-				props: {},
-				onClick: () => {},
-				width: '64vw',
-			},
+			...(selectedDocument?.fileName?.includes('.pdf')
+				? [
+						{
+							name: 'OCR Text',
+							Icon: props => (
+								<Badge
+									anchorOrigin={{
+										vertical: 'top',
+										horizontal: 'right',
+									}}
+									color="primary"
+								>
+									<NotesIcon {...props} />
+								</Badge>
+							),
+							Component: () => <OCRText selectedDocument={selectedDocument} />,
+							props: {},
+							onClick: () => {},
+							width: '64vw',
+						},
+					]
+				: []),
 		],
 		[selectedDocument, wellsCount]
 	);
