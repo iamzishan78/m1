@@ -182,6 +182,28 @@ const LayerMeta = {
 			},
 		},
 	},
+	'dynamic data layer': {
+		defaultZoom: 1,
+		geoField: 'assetShape.shapeJson.geometry',
+		hasText: true,
+		isFilterable: true,
+		propsFunc: getGeoJsonLayerProps,
+		props: {},
+		layer: {
+			id: 'geojson',
+			type: 'GeoJsonLayer',
+			getProps: layerId => {
+				return {
+					data: deckLayers[layerId].getData([]),
+					pointRadiusMinPixels: 5,
+					pointRadiusMaxPixels: 15,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
+				};
+			},
+		},
+	},
 	'Recent Submitted Permits': {
 		defaultZoom: 0,
 		propsFunc: getGeoJsonLayerProps,
@@ -326,9 +348,11 @@ const layerStateControllerHandler = state => {
 			}
 
 			const isFileLayer = dbLayer?.layerType === 'file layer';
+			const isDynamicLayer = dbLayer?.layerType === 'dynamic data layer';
 
 			if (
 				!isFileLayer &&
+				!isDynamicLayer &&
 				!deckGlLayerIdentifiers.includes(dbLayer?.identifier) &&
 				!isCustomLayerCopy(dbLayer?.identifier) &&
 				!deckGlLandGridIdentifiers.includes(dbLayer?.identifier) &&
@@ -677,6 +701,7 @@ const layerStateControllerHandler = state => {
 		const beforeLayerId = getBeforeLayerId(dbLayer.identifier);
 
 		const isFileLayer = dbLayer.layerType === 'file layer';
+		const isDynamicLayer = dbLayer?.layerType === 'dynamic data layer';
 
 		const isAgreementLayer = agreementLayerIdentifiers.some(layer =>
 			dbLayer?.identifier?.toLowerCase().includes(layer.toLowerCase())
@@ -689,7 +714,9 @@ const layerStateControllerHandler = state => {
 
 		const filterKey = isFileLayer
 			? `${dbLayer.file}_${dbLayer.layerShapeName}`
-			: getLayerKey(filterIdentifier, layerFilters);
+			: isDynamicLayer
+				? 'DynamicAsset'
+				: getLayerKey(filterIdentifier, layerFilters);
 
 		let {
 			[filterKey]: filters,
@@ -764,6 +791,19 @@ const layerStateControllerHandler = state => {
 
 		updateLayer(dbLayer, updatedProps);
 
+		const getFilters = () => {
+			if (isFileLayer) {
+				return generateFileFilters({ fileLayer: dbLayer, extendFilters: filters });
+			}
+
+			if (isDynamicLayer) {
+				filters.variables.index = dbLayer.layerPaintProps[0].id;
+				return filters;
+			}
+
+			return filters;
+		};
+
 		getBoundsQuery({
 			multiQuery: meta.multiQuery,
 			layerId,
@@ -772,9 +812,10 @@ const layerStateControllerHandler = state => {
 			boundingState,
 			geoField: meta.geoField,
 			isFileLayer,
+			isDynamicLayer,
 			polygonFilter,
 			polygonsFilter,
-			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
+			filters: getFilters(),
 			onData: data => {
 				if (!Array.isArray(data)) {
 					return null;

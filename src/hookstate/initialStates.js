@@ -317,6 +317,12 @@ export const layerFilterInitialState = {
 	Basins: {
 		layerName: 'Basins',
 	},
+	DynamicAsset: {
+		variables: {
+			isDynamicAsset: true,
+			filters: [],
+		},
+	},
 };
 
 export const layerFilters = hookstate(copy(layerFilterInitialState));
