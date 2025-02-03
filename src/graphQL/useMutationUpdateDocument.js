@@ -19,3 +19,12 @@ export const PARSE_PDF_TEXTS = gql`
 		}
 	}
 `;
+export const UPDATE_PDF_TEXTS = gql`
+	mutation updatePDFText($fileId: ID, $lineTexts: [JSON]) {
+		updatePDFText(fileId: $fileId, lineTexts: $lineTexts) {
+			success
+			message
+			error
+		}
+	}
+`;
