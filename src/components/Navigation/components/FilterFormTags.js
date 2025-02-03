@@ -60,7 +60,6 @@ export default function FilterFormProduction() {
 				...stateApp,
 				wellListFromTagsFilter: [...(dataAllTaggedWells?.allTaggedWells || [])],
 			}));
-			stateApp.toggleLayersActivity('User Tags', true);
 
 			stateNav.filterTagsLoading(false);
 		}

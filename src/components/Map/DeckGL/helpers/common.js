@@ -383,9 +383,6 @@ export const dividePolygon = polygon => {
 	// console.log("Quadrants:", quadrants);
 	return [topLeft, topRight, bottomLeft, bottomRight];
 };
-export const getBeforeLayerId = (beforeLayer, layerFilters) =>
-	beforeLayer?.layerPaintProps?.[0]?.id ||
-	Object.values(layerFilters).find(layer => layer.layerName === beforeLayer?.identifier)?.id;
 
 export const getPolygonStringFromBBox = bbox => {
 	const isBBoxObj = bbox.top_left && bbox.bottom_right;

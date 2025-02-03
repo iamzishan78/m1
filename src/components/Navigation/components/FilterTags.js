@@ -46,13 +46,12 @@ export default function FilterTags() {
 				stateApp.toggleLayersActivity('Wells', true);
 			}
 
-			stateApp.toggleLayersActivity('User Tags', false);
 			setStateNav(stateNav => ({
 				...stateNav,
 				selectedTags: [],
 				wellsIdsFromTags: [],
 				filterTags: null,
-				filterTagsLoading: () => {},
+				filterTagsLoading: () => { },
 			}));
 			setStateApp(stateApp => ({
 				...stateApp,

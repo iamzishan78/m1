@@ -10,7 +10,7 @@ const random_rgb = () => {
 	return 'rgb(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ')';
 };
 
-export const getDefaultSettings = (type, layerName, sourceProps, bbox) => {
+export const getDefaultSettings = (type, layerName, bbox) => {
 	const idColor = random_rgb();
 	let paintProps = {};
 	if (type === 'Point' || type === 'MultiPoint') {
@@ -45,7 +45,6 @@ export const getDefaultSettings = (type, layerName, sourceProps, bbox) => {
 	let layerPaintProps = [
 		{
 			id: layerName,
-			sourceProps: sourceProps,
 			paintType: type,
 			paintProps: paintProps,
 		},
@@ -90,13 +89,4 @@ export const SimpleOrShapeFileImport = async params => {
 		},
 	});
 	jobController.toggleBulkUpload();
-	// } else {
-	//     Loader.createToast('layer-creation', 'Layer creation in progress')
-	//     const interval = setInterval(() => {
-	//         if (stateApp.map.isSourceLoaded(sourceProps)) {
-	//             Loader.successToast('layer-creation', 'Layer created')
-	//             clearInterval(interval);
-	//         }
-	//     }, 1000);
-	// }
 };
