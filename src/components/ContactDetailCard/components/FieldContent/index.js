@@ -938,36 +938,3 @@ FieldContent.propTypes = {
 	handleQuickActionActivity: PropTypes.func,
 	metafields: PropTypes.array,
 };
-
-// FieldContent.propTypes = {
-// 	children: PropTypes.node,
-// 	id: PropTypes.string.isRequired,
-// 	isPurchased: PropTypes.bool,
-// 	entity: PropTypes.string,
-// 	melissaRecordId: PropTypes.string,
-// 	melissaAddressRecordId: PropTypes.string,
-// 	content: PropTypes.object.isRequired,
-// 	childrenLeft: PropTypes.node,
-// 	onlyChildren: PropTypes.bool,
-// 	name: PropTypes.string,
-// 	noMargin: PropTypes.bool,
-// 	noInputFooter: PropTypes.bool,
-// 	linkType: PropTypes.oneOf(Object.values(LinkTypes)),
-// 	fieldType: PropTypes.oneOf(Object.values(FieldTypes)),
-// 	isEdited: PropTypes.bool,
-// 	isMerged: PropTypes.bool,
-// 	disabled: PropTypes.bool,
-// 	row: PropTypes.object,
-// 	handleQuickActionActivity: PropTypes.func,
-// 	metafields: PropTypes.arrayOf(
-// 		PropTypes.shape({
-// 			esKey: PropTypes.string,
-// 			type: PropTypes.string,
-// 			dropdownOptions: PropTypes.arrayOf(
-// 				PropTypes.shape({
-// 					value: PropTypes.string,
-// 				})
-// 			),
-// 		})
-// 	),
-// };
