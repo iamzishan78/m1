@@ -197,14 +197,15 @@ const LayerItem = React.memo(props => {
 										<ListItemIcon />
 									)}
 								</Box>
-								<NameWithTooltip style={{
-									color: 'secondary',
-									textOverflow: 'ellipsis',
-									whiteSpace: 'nowrap',
-								}}
+								<NameWithTooltip
+									style={{
+										color: 'secondary',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap',
+									}}
 									index={hoverItemIndex}
 									title={name === 'Wells' ? 'Platform Wells' : name}
-									height={"18px"}
+									height={'18px'}
 								/>
 								<Box paddingLeft={1} display="flex">
 									{type === 'group' && (

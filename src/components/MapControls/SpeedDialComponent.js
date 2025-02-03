@@ -244,7 +244,7 @@ export function SpeedDialComponent(props) {
 		}
 
 		if (action === 'syncMap') {
-			mapStateController.updateState({ isMapRefreshing : true });
+			mapStateController.updateState({ isMapRefreshing: true });
 		}
 
 		if (window.drawRef && window.drawRef.getMode() !== 'simple_select') {

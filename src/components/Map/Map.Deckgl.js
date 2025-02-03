@@ -136,7 +136,15 @@ function Map({
 		'popupStateValues'
 	);
 	const { mapStateValues } = mapStateController.useState(
-		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut', 'isDefaultViewAllowed', 'reintializeMap', 'isMapRefreshing'],
+		[
+			'mapVars',
+			'defaultMapVars',
+			'toggle3d',
+			'toggleZoomOut',
+			'isDefaultViewAllowed',
+			'reintializeMap',
+			'isMapRefreshing',
+		],
 		'mapStateValues'
 	);
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
@@ -716,7 +724,6 @@ function Map({
 		}
 	}, [stateApp.filterSelectAllAbstract, map]);
 
-
 	useEffect(() => {
 		if (mapStyles.length <= 0) {
 			return;
@@ -815,7 +822,6 @@ function Map({
 			});
 			newMap.addControl(Draw);
 
-
 			newMap.on('load', () => {
 				window.mapRef = null; // Remove the existing map instance to avoid rendering multiple maps
 				window.drawRef = null; //  Remove the existing map instance to avoid rendering multiple maps
@@ -855,20 +861,16 @@ function Map({
 				// Extract the current search string from the URL
 				const searchParams = new URLSearchParams(history?.location?.search);
 
-				if (!searchParams.has('zoom') ||
-					!searchParams.has('lng') ||
-					!searchParams.has('lat') ||
-					!searchParams?.size
-				) {
+				if (!searchParams.has('zoom') || !searchParams.has('lng') || !searchParams.has('lat') || !searchParams?.size) {
 					return; // Return early if any required parameter is missing
 				}
-				const lng = searchParams?.get('lng')
-				const lat = searchParams?.get('lat')
-				const zoom = searchParams?.get('zoom')
+				const lng = searchParams?.get('lng');
+				const lat = searchParams?.get('lat');
+				const zoom = searchParams?.get('zoom');
 				newMap.jumpTo({
 					center: {
 						lng,
-						lat
+						lat,
 					},
 					zoom: zoom,
 				});
@@ -882,12 +884,12 @@ function Map({
 
 	useEffect(() => {
 		if (mapStateValues.isMapRefreshing) {
-			  // Reset bounds for all layers
+			// Reset bounds for all layers
 			layerController.resetBounds('all');
 			// Update the map state to indicate that refreshing is complete
-			mapStateController.updateState({ isMapRefreshing : false });
+			mapStateController.updateState({ isMapRefreshing: false });
 		}
-	}, [mapStateValues.isMapRefreshing])
+	}, [mapStateValues.isMapRefreshing]);
 	// Use effect for removing shape filter
 	useEffect(() => {
 		if (!loading) {
@@ -1191,7 +1193,6 @@ function Map({
 		}
 	}, [mapStateValues.toggleZoomOut]);
 
-
 	useEffect(() => {
 		// use effect to toggle the map into a 3d state
 
@@ -1230,7 +1231,7 @@ function Map({
 				const params = {
 					lat: mapRef.getCenter()?.lat,
 					lng: mapRef.getCenter()?.lng,
-					zoom: mapRef.getZoom()
+					zoom: mapRef.getZoom(),
 				};
 
 				// Iterate over the object and set all parameters at once
@@ -1240,7 +1241,7 @@ function Map({
 
 				// Update the browser's URL
 				window.history.replaceState({}, '', url);
-			}, 500)
+			}, 500);
 
 			// Listen to the map events
 			mapRef.on('move', setCoordinateAtUrl);

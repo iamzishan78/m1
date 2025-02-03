@@ -68,17 +68,25 @@ function EditableTextField({
 			onMouseOver={() => !isEdit.mode && setEdit({ ...isEdit, able: true })}
 			onMouseLeave={() => setEdit({ ...isEdit, able: false })}
 		>
-			<Grid item style={isEdit.mode ? { width: '89%' } : {
-				textAlign: 'left',
-				display: "flex",
-				flexDirection: "row"
-			}}>
+			<Grid
+				item
+				style={
+					isEdit.mode
+						? { width: '89%' }
+						: {
+								textAlign: 'left',
+								display: 'flex',
+								flexDirection: 'row',
+							}
+				}
+			>
 				{!isEdit.mode ? (
-					<NameWithTooltip title={name}
+					<NameWithTooltip
+						title={name}
 						style={{
-							width: "300px", // Approximate ellipsis width
+							width: '300px', // Approximate ellipsis width
 						}}
-						height={"100%"}
+						height={'100%'}
 					/>
 				) : (
 					<TextField
