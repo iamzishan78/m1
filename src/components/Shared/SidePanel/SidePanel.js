@@ -118,62 +118,21 @@ export default function SidePanel() {
 						const mappedLayers = currentLayers.map(layer => {
 							return layer.identifier === 'Land Grid'
 								? {
-										...layer,
-										layerSettings: {
-											...layer.layerSettings,
-											visiable: !visible,
-											showable: !visible,
-										},
-									}
+									...layer,
+									layerSettings: {
+										...layer.layerSettings,
+										visiable: !visible,
+										showable: !visible,
+									},
+								}
 								: layer;
 						});
-
 						globalStateController.updateState({ layers: mappedLayers });
 						stateApp.layers = [...mappedLayers];
-
-						// Update checked base layers for indices 0(Map Labels) and 2(Roads)
-						let newChecked = [...stateApp.checkedBaseLayers];
-						[0, 2].map(baseIndex => {
-							const baseLayer = stateApp.baseMapLayers[baseIndex];
-
-							// Check if the base layer exists
-							if (baseLayer) {
-								const currentIndex = newChecked.indexOf(baseIndex);
-
-								// If Land Grid is being turned on and the base layer is not in newChecked, add it
-								if (!visible && currentIndex === -1) {
-									newChecked.push(baseIndex);
-								}
-								// If Land Grid is being turned off and the base layer is in newChecked, remove it
-								else if (visible && currentIndex !== -1) {
-									newChecked.splice(currentIndex, 1);
-								}
-							}
-						});
-
-						setStateApp(stateApp => ({
-							...stateApp,
-							checkedBaseLayers: newChecked, // set new checked base layers
-						}));
-						layerController.handleDeckLayer({
-							...layer,
-							layerSettings: {
-								...layer.layerSettings,
-								visiable: !visible,
-								showable: !visible,
-							},
-							identifier: 'AbstractGeo',
-						});
-						layerController.handleDeckLayer({
-							...layer,
-							layerSettings: {
-								...layer.layerSettings,
-								visiable: !visible,
-								showable: !visible,
-							},
-							identifier: 'Pls',
-						});
-
+						// Handle DeckGL layers
+						['AbstractGeo', 'Pls'].forEach(identifier =>
+							layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: !visible, showable: !visible }, identifier })
+						);
 						// saving to mongo
 						updateLayerSettings({
 							variables: {
@@ -284,8 +243,8 @@ export default function SidePanel() {
 	//   for Marketplace Panel
 	useEffect(() => {
 		if (panelType === 'marketplace') {
-			setDragFunction(() => {});
-			setToggleFunction(() => {});
+			setDragFunction(() => { });
+			setToggleFunction(() => { });
 			// setPanelItems(stateApp.layers);
 			setPanelTitle('Marketplace');
 			setPanelButton(null);
