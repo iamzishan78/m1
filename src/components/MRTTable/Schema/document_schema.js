@@ -199,8 +199,8 @@ const DocumentMeta = {
 
 		{
 			...CommonSchema.ACTION_COLUMN,
-			name: 'actionMenu',
-			id: 'actionMenu',
+			name: 'fileDownload',
+			id: 'fileDownload',
 			header: ' ',
 			size: 70,
 			Cell: ({ row }) => {
@@ -210,8 +210,8 @@ const DocumentMeta = {
 
 		{
 			...CommonSchema.ACTION_COLUMN,
-			name: 'actionMenu2',
-			id: 'actionMenu2',
+			name: 'fileView',
+			id: 'fileView',
 			header: ' ',
 			size: 70,
 			Cell: ({ row }) => {

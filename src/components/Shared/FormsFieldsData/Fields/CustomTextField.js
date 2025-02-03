@@ -5,9 +5,6 @@ import { Grid, TextField } from '@mui/material';
 
 import PropTypes from 'prop-types';
 
-import ReadOnlyField from './ReadOnlyField';
-
-
 const classes = {
 	maxWidth: {
 		width: '100%',
@@ -21,7 +18,7 @@ const classes = {
 	},
 };
 
-function TextFieldComponent({
+function CustomTextField({
 	watch = null,
 	error = null,
 	control = null,
@@ -40,14 +37,13 @@ function TextFieldComponent({
 	fieldAttributes: {
 		name = '',
 		value = '',
-		valueType = null,
 		inputRef = null,
 		label = '',
 		placeholder = '',
 		InputProps = {},
 		InputLabelProps = {},
+		defaultValue = null,
 		isValueOverridden = () => false,
-		allowEdit = false,
 	} = {},
 }) {
 	const [baseValueChanged, setbaseValueChanged] = useState(false);
@@ -57,46 +53,39 @@ function TextFieldComponent({
 		if (watchTextFieldValue && isValueOverridden) {
 			setbaseValueChanged(isValueOverridden(watchTextFieldValue));
 		}
-	}, [watchTextFieldValue, isValueOverridden]);
-
-	if (!allowEdit) {
-		return <ReadOnlyField value={value} type={valueType} />;
-	}
+	}, [watchTextFieldValue]);
 
 	const renderTextField = (props = {}) => {
 		return (
 			<TextField
 				type={type}
 				size={size}
-				value={value}
+				value={props?.value || value}
 				margin={margin}
 				autoFocus={autoFocus}
 				fullWidth={fullWidth}
 				multiline={multiline}
 				placeholder={placeholder}
 				disabled={disabled ?? false}
+				defaultValue={defaultValue}
 				variant={variant || 'filled'}
 				data-testid={`${name}-field`}
 				inputRef={inputRef || props?.ref || null}
-				onKeyUp={allowEdit && onKeyUp ? onKeyUp : () => {}}
-				onKeyDown={allowEdit && onKeyDown ? onKeyDown : () => {}}
+				onKeyUp={onKeyUp ? onKeyUp : () => {}}
+				onKeyDown={onKeyDown ? onKeyDown : () => {}}
 				sx={baseValueChanged ? classes.baseValueChanged : classes.maxWidth}
 				InputProps={InputProps}
 				InputLabelProps={InputLabelProps}
 				error={required && !watchTextFieldValue && error}
 				onChange={e => {
-					const value = e.target.value;
-					if (allowEdit) {
-						onChange && onChange(value);
-						props?.onChange && props?.onChange(value);
-					}
+					onChange ? onChange(e.target.value) : props?.onChange(e.target.value);
 				}}
 				onBlur={e => {
 					let value = e.target.value || '';
-					if (allowEdit) {
-						onBlur && onBlur(value);
-						props?.onBlur && props.onBlur(value);
+					if (onBlur) {
+						value = onBlur(value);
 					}
+					props?.onChange && props?.onChange(value);
 				}}
 			/>
 		);
@@ -118,7 +107,7 @@ function TextFieldComponent({
 		</Grid>
 	);
 }
-TextFieldComponent.propTypes = {
+CustomTextField.propTypes = {
 	watch: PropTypes.func,
 	error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 	control: PropTypes.object,
@@ -142,51 +131,17 @@ TextFieldComponent.propTypes = {
 	fieldAttributes: PropTypes.shape({
 		name: PropTypes.string,
 		value: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-		valueType: PropTypes.string,
 		inputRef: PropTypes.object,
 		label: PropTypes.string,
 		placeholder: PropTypes.string,
 		InputProps: PropTypes.object,
 		InputLabelProps: PropTypes.object,
 		isValueOverridden: PropTypes.func,
-		allowEdit: PropTypes.bool,
 	}),
 	ref: PropTypes.object,
 	onChange: PropTypes.func,
 	onBlur: PropTypes.func,
+	value: PropTypes.string,
 };
 
-TextFieldComponent.defaultProps = {
-	watch: null,
-	error: false,
-	control: null,
-	fieldEvents: {},
-	fieldConfig: {
-		autoFocus: false,
-		type: 'text',
-		size: 'medium',
-		fullWidth: true,
-		multiline: false,
-		variant: 'standard',
-		disabled: false,
-		required: false,
-		margin: '',
-	},
-	fieldAttributes: {
-		name: '',
-		value: '',
-		valueType: null,
-		inputRef: null,
-		label: '',
-		placeholder: '',
-		InputProps: {},
-		InputLabelProps: {},
-		isValueOverridden: () => false,
-		allowEdit: false,
-	},
-	ref: null,
-	onChange: null,
-	onBlur: null,
-};
-
-export default TextFieldComponent;
+export default CustomTextField;

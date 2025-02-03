@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { IconButton, TextField, withStyles, Typography, Grid, Divider, Box, Container } from '@material-ui/core';
+import { IconButton, TextField, withStyles, Typography, Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -11,7 +11,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
 import { BlockBlobClient } from '@azure/storage-blob';
 import _ from 'lodash';
 import loadashFilter from 'lodash/filter';
@@ -24,7 +24,7 @@ import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
-import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import { PARSE_PDF_TEXTS, UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
@@ -198,6 +198,8 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 
+	const client = useApolloClient();
+
 	const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(DOCUMENT_TYPE, {
 		fetchPolicy: 'no-cache',
 	});
@@ -233,6 +235,29 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	});
 	const [inputFile, setInputFile] = useState(null);
 	const [fileDownload, setFileDownload] = useState(false);
+
+	const saveDocument = document => {
+		updateDocument({
+			variables: {
+				document,
+			},
+			refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
+			awaitRefetchQueries: true,
+		}).then(res => {
+			if (res?.data?.updateDocumentFile) {
+				const { success, message } = res.data.updateDocumentFile;
+				if (success) {
+					Loader.successToast('DocumentUpdating', message);
+				} else {
+					Loader.errorToast('DocumentUpdating', message);
+				}
+			} else {
+				Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
+			}
+
+			tableGlobalController.refetch();
+		});
+	};
 
 	useEffect(() => {
 		if (selectedDocument?._id || fileDownload) {
@@ -287,7 +312,23 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 					.then(res => {
 						if (res?._response?.status !== CREATED_STATUS) {
 							dispatch(showErrorMessage('Upload failed'));
+							return;
 						}
+
+						if (fileUpload.fileExtension !== 'pdf') {
+							return;
+						}
+
+						client
+							.mutate({
+								mutation: PARSE_PDF_TEXTS,
+								variables: {
+									fileId: file_id,
+								},
+							})
+							.then(() => {
+								tableGlobalController.refetch();
+							});
 					})
 					.catch(err => console.log(err));
 
@@ -321,29 +362,6 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		const value = url?.isValid ? url?.value : null;
 		formState?.url?.set(value);
 	}, [url]);
-
-	const saveDocument = document => {
-		updateDocument({
-			variables: {
-				document,
-			},
-			refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
-			awaitRefetchQueries: true,
-		}).then(res => {
-			if (res?.data?.updateDocumentFile) {
-				const { success, message } = res.data.updateDocumentFile;
-				if (success) {
-					Loader.successToast('DocumentUpdating', message);
-				} else {
-					Loader.errorToast('DocumentUpdating', message);
-				}
-			} else {
-				Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
-			}
-
-			tableGlobalController.refetch();
-		});
-	};
 
 	const uploadFile = () => {
 		Loader.createToast('FileUploading', 'File Uploading in Progress');

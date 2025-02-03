@@ -296,16 +296,17 @@ function Datasets({ headerButton, search, stateApp }) {
 										style={{ width: '100%' }}
 									>
 										<Grid item style={{ display: 'flex', flexDirection: 'inline' }}>
-											<NameWithTooltip style={{
-												color: '#ffff',
-												textOverflow: 'ellipsis',
-												whiteSpace: 'nowrap',
-												overflow: 'hidden',
-												width: '254px',
-											}}
+											<NameWithTooltip
+												style={{
+													color: '#ffff',
+													textOverflow: 'ellipsis',
+													whiteSpace: 'nowrap',
+													overflow: 'hidden',
+													width: '254px',
+												}}
 												index={index}
 												title={sourceName}
-												height={"18px"}
+												height={'18px'}
 											/>
 										</Grid>
 										<Grid item className="actionIcons">

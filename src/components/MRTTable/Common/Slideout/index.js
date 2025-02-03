@@ -2,15 +2,19 @@ import React, { memo } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
+import PropTypes from 'prop-types';
+
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 
-import 'components/Transact/components/DealDialog/dialog.css';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
 import Dialog from './Dialog';
 import DialogHeader from './DialogHeader';
 
-const useStyles = makeStyles(theme => ({
+import 'components/Transact/components/DealDialog/dialog.css';
+
+const useStyles = makeStyles(() => ({
 	dealDetailRoot: {
 		'& .MuiDialog-paper': {
 			overflowY: 'hidden',
@@ -36,13 +40,15 @@ function Slideout({ show, deleteFunc }) {
 		return null;
 	}
 
+	const { stateValues } = slidoutStateController.useState(['view']);
+
 	return (
 		<>
 			<div className={classes.dealDetailRoot}>
 				<RightDialog
 					open={true}
 					handleClickDialogClose={handleClose}
-					width="28vw"
+					width={stateValues.view?.width || '28vw'}
 					hiddenOverflow
 					noBorder
 					hideBackdrop={true}
@@ -54,5 +60,10 @@ function Slideout({ show, deleteFunc }) {
 		</>
 	);
 }
+
+Slideout.propTypes = {
+	show: PropTypes.bool,
+	deleteFunc: PropTypes.func.isRequired,
+};
 
 export default memo(Slideout);

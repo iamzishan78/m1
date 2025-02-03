@@ -249,16 +249,3 @@ export const normalizeUrl = url => {
 	}
 	return url;
 };
-
-export const isValidUrl = string => {
-	const pattern = new RegExp(
-		'^(https?:\\/\\/)?' + // Optional protocol
-			'((localhost|' + // Allow "localhost"
-			'(\\w+(-\\w+)*\\.)+[a-zA-Z]{2,}))' + // Domain name with at least one dot and valid TLD
-			'(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*' + // Port and path
-			'(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?' + // Query string (optional)
-			'(\\#[-a-zA-Z\\d_]*)?$', // Fragment (optional)
-		'i'
-	);
-	return pattern.test(string);
-};
