@@ -583,36 +583,13 @@ export default function FieldContent({
 										/>
 									);
 									break;
+
 								default:
-									component = (
-										<CustomTextField
-											fieldEvents={{
-												onChange: value => {
-													setEditContent(editContent => ({
-														...editContent,
-														[fieldName]: value,
-													}));
-												},
-												onKeyDown: event => keyDownHandler(event, [fieldName]),
-												onBlur: () => onBlurHandler([fieldName]),
-											}}
-											fieldConfig={{
-												autoFocus: true,
-												size: 'small',
-												variant: 'outlined',
-											}}
-											fieldAttributes={{
-												name: fieldName,
-												value: editContent[fieldName] === null ? '' : editContent[fieldName],
-												label: fieldsCount > 1 ? textFieldLabels(fieldName) : null,
-												InputProps: {
-													autoComplete: 'nope',
-												},
-											}}
-										/>
-									);
+									break;
 							}
-						} else {
+						}
+
+						if (!component) {
 							component = (
 								<CustomTextField
 									fieldEvents={{
