@@ -2,10 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Typography } from '@material-ui/core';
-import { Collapse } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
-import { Popper, Grow, Paper, MenuList, MenuItem } from '@material-ui/core';
+import { Typography, Collapse, IconButton,Divider, Popper, Grow, Paper, MenuList, MenuItem } from '@material-ui/core';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Box from '@material-ui/core/Box';
@@ -47,6 +44,11 @@ import { AppContext } from 'AppContext';
 import DeleteConfirmationDialog from '../DeleteConfirmationDialog';
 
 const useStyles = makeStyles(theme => ({
+	accordion: {
+		'& .MuiAccordionSummary-content': {
+			margin: '0px !important',
+		},
+	},
 	subHeaderItem: {
 		backgroundColor: '#011133 !important',
 		minWidth: '350px',
@@ -202,14 +204,13 @@ export default function AddLayer(props) {
 		if (!deepEqual(currentLayers, globalStateValues.layers)) {
 			setCurrentLayers(copy(globalStateValues.layers));
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentLayers, layers]);
 
 	const handleClick = event => {
 		setAnchorEl(event.currentTarget);
 	};
 
-	const handleMenuClose = e => {
+	const handleMenuClose = () => {
 		setAnchorEl(null);
 	};
 
@@ -447,7 +448,7 @@ export default function AddLayer(props) {
 										checked={selectAllMinerallayers}
 										color="darkgray"
 										onClick={e => e.stopPropagation()}
-										onChange={e => {
+										onChange={() => {
 											handleCheckAllLayers(M1Layers, !selectAllMinerallayers, 'M1');
 										}}
 										inputProps={{ 'aria-label': 'primary checkbox' }}
@@ -459,101 +460,105 @@ export default function AddLayer(props) {
 									<List className={classes.list}>
 										{M1Layers?.filter(
 											layer =>
-												(!props.search || layer.layerName?.toLowerCase().includes(props.search)) &&
-												!['Land Grid'].includes(layer.layerName)
+												!props.search ||
+											layer.name?.toLowerCase().includes(props?.search?.toLowerCase()) ||
+											layer.layerName?.toLowerCase().includes(props?.search?.toLowerCase())
 										)?.map((layer, index) => {
 											const labelId = `m1layer-list-label-${index}`;
 
 											if (layer.type === 'group') {
 												return (
-													<Accordion>
-														<AccordionSummary
-															// expandIcon={<ExpandMoreIcon />}
-															aria-controls="panel1a-content"
-															id="panel1a-header"
-															style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
-															onClick={() => {
-																const _index = openUDLayers.findIndex(l => l === index);
-																if (_index === -1) {
-																	setUDLayersStates([...openUDLayers, index]);
-																} else {
-																	setUDLayersStates(openUDLayers.filter(l => l !== index));
-																}
-															}}
-														>
-															<StyledListItem>
-																<Checkbox
-																	checked={!!layer.layers.find(l => l.layerSettings.showable)}
-																	color="dark gray"
-																	onClick={event => event.stopPropagation()}
-																	onChange={e => handleLayerSettingChange([layer])}
-																	inputProps={{ 'aria-label': 'primary checkbox' }}
-																/>
-																{/* Group */}
-																<EditableTextField
-																	onChange={changeLayerName}
-																	item={layer}
-																	name={layer.name}
-																	isEditable={false}
-																	showExpandIcon
-																	openUd={openUDLayers.includes(index)}
-																	openEditField={layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'}
-																/>
-																{checkIfDeleteAllow(layer) && (
-																	<MoreHorizIcon
-																		aria-controls={'source-menu'}
-																		className={'moreIcon ' + classes.moreIcon}
-																		onClick={e => {
-																			e.stopPropagation();
-																			handleClick(e);
-																			setActionItem({ group: layer });
-																		}}
+													<>
+														<Accordion key={labelId} className={classes.accordion}>
+															<AccordionSummary
+																// expandIcon={<ExpandMoreIcon />}
+																aria-controls="panel1a-content"
+																id="panel1a-header"
+																style={{ padding: 0, margin: 0, marginBottom: 0 }}
+																onClick={() => {
+																	const _index = openUDLayers.findIndex(l => l === index);
+																	if (_index === -1) {
+																		setUDLayersStates([...openUDLayers, index]);
+																	} else {
+																		setUDLayersStates(openUDLayers.filter(l => l !== index));
+																	}
+																}}
+															>
+																<StyledListItem>
+																	<Checkbox
+																		checked={!!layer.layers.find(l => l.layerSettings.showable)}
+																		color="dark gray"
+																		onClick={event => event.stopPropagation()}
+																		onChange={() => handleLayerSettingChange([layer])}
+																		inputProps={{ 'aria-label': 'primary checkbox' }}
 																	/>
-																)}
-															</StyledListItem>
-														</AccordionSummary>
-														<Box paddingLeft={2} paddingRight={2}>
-															<List className={classes.list}>
-																{layer.layers.map((groupLayer, index) => (
-																	<StyledListItem key={index} ContainerComponent="li">
-																		<Checkbox
-																			checked={groupLayer.layerSettings.showable}
-																			color="dark gray"
-																			onChange={() => handleLayerSettingChange([groupLayer])}
-																			inputProps={{ 'aria-label': 'primary checkbox' }}
+																	{/* Group */}
+																	<EditableTextField
+																		onChange={changeLayerName}
+																		item={layer}
+																		name={layer.name}
+																		isEditable={false}
+																		showExpandIcon
+																		openUd={openUDLayers.includes(index)}
+																		openEditField={layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'}
+																	/>
+																	{checkIfDeleteAllow(layer) && (
+																		<MoreHorizIcon
+																			aria-controls={'source-menu'}
+																			className={'moreIcon ' + classes.moreIcon}
+																			onClick={e => {
+																				e.stopPropagation();
+																				handleClick(e);
+																				setActionItem({ group: layer });
+																			}}
 																		/>
-																		{/* Group Layer */}
-																		<EditableTextField
-																			onChange={changeLayerName}
-																			item={groupLayer}
-																			name={groupLayer.layerName}
-																			isEditable={false}
-																			openEditField={
-																				groupLayer?.layerId === actionItem?.layer?.layerId &&
-																				actionItem?.type === 'editName'
-																			}
-																		/>
-																		{checkIfDeleteAllow(groupLayer) && (
-																			<MoreHorizIcon
-																				aria-controls={'source-menu'}
-																				className={'moreSourceIcon ' + classes.moreSourceIcon}
-																				onClick={e => {
-																					e.stopPropagation();
-																					handleClick(e);
-																					setActionItem({ layer: groupLayer });
-																				}}
+																	)}
+																</StyledListItem>
+															</AccordionSummary>
+															<Box paddingLeft={2} paddingRight={2}>
+																<List className={classes.list}>
+																	{layer.layers.map((groupLayer, index) => (
+																		<StyledListItem key={`${groupLayer.layerName - index}`} ContainerComponent="li">
+																			<Checkbox
+																				checked={groupLayer.layerSettings.showable}
+																				color="dark gray"
+																				onChange={() => handleLayerSettingChange([groupLayer])}
+																				inputProps={{ 'aria-label': 'primary checkbox' }}
 																			/>
-																		)}
-																	</StyledListItem>
-																))}
-															</List>
-														</Box>
-													</Accordion>
+																			{/* Group Layer */}
+																			<EditableTextField
+																				onChange={changeLayerName}
+																				item={groupLayer}
+																				name={groupLayer.layerName}
+																				isEditable={false}
+																				openEditField={
+																					groupLayer?.layerId === actionItem?.layer?.layerId &&
+																					actionItem?.type === 'editName'
+																				}
+																			/>
+																			{checkIfDeleteAllow(groupLayer) && (
+																				<MoreHorizIcon
+																					aria-controls={'source-menu'}
+																					className={'moreSourceIcon ' + classes.moreSourceIcon}
+																					onClick={e => {
+																						e.stopPropagation();
+																						handleClick(e);
+																						setActionItem({ layer: groupLayer });
+																					}}
+																				/>
+																			)}
+																		</StyledListItem>
+																	))}
+																</List>
+															</Box>
+														</Accordion>
+														<Divider style={{ height: '2px' }} />
+													</>
 												);
 											}
 
 											return (
-												<StyledListItem ContainerComponent="li">
+												<StyledListItem ContainerComponent="li" key={labelId}>
 													<Checkbox
 														checked={layer.layerSettings.showable}
 														color="dark gray"
@@ -625,100 +630,104 @@ export default function AddLayer(props) {
 										{UdLayers?.filter(
 											layer =>
 												!props.search ||
-												layer.name?.toLowerCase().includes(props.search) ||
-												layer.layerName?.toLowerCase().includes(props.search)
+												layer.name?.toLowerCase().includes(props?.search?.toLowerCase()) ||
+												layer.layerName?.toLowerCase().includes(props?.search?.toLowerCase())
 										)?.map((layer, index) => {
 											const labelId = `udlayer-list-label-${index}`;
 											if (layer.type === 'group') {
 												return (
-													<Accordion>
-														<AccordionSummary
-															// expandIcon={<ExpandMoreIcon />}
-															aria-controls="panel1a-content"
-															id="panel1a-header"
-															style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
-															onClick={() => {
-																const _index = openUDLayers.findIndex(l => l === index);
-																if (_index === -1) {
-																	setUDLayersStates([...openUDLayers, index]);
-																} else {
-																	setUDLayersStates(openUDLayers.filter(l => l !== index));
-																}
-															}}
-														>
-															<StyledListItem>
-																<Checkbox
-																	checked={!!layer.layers.find(l => l.layerSettings.showable)}
-																	color="dark gray"
-																	onClick={event => event.stopPropagation()}
-																	onChange={e => handleLayerSettingChange([layer])}
-																	inputProps={{ 'aria-label': 'primary checkbox' }}
-																/>
-																{/* Group */}
-																<EditableTextField
-																	onChange={changeLayerName}
-																	item={layer}
-																	name={layer.name}
-																	isEditable={false}
-																	showExpandIcon
-																	openUd={openUDLayers.includes(index)}
-																	openEditField={layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'}
-																/>
-																{checkIfDeleteAllow(layer) && (
-																	<MoreHorizIcon
-																		aria-controls={'source-menu'}
-																		className={'moreIcon ' + classes.moreIcon}
-																		onClick={e => {
-																			e.stopPropagation();
-																			handleClick(e);
-																			setActionItem({ group: layer });
-																		}}
+													<>
+														<Accordion key={labelId} className={classes.accordion}>
+															<AccordionSummary
+																// expandIcon={<ExpandMoreIcon />}
+																aria-controls="panel1a-content"
+																id="panel1a-header"
+																style={{ padding: 0, margin: 0, marginBottom: 0 }}
+																onClick={() => {
+																	const _index = openUDLayers.findIndex(l => l === index);
+																	if (_index === -1) {
+																		setUDLayersStates([...openUDLayers, index]);
+																	} else {
+																		setUDLayersStates(openUDLayers.filter(l => l !== index));
+																	}
+																}}
+															>
+																<StyledListItem>
+																	<Checkbox
+																		checked={!!layer.layers.find(l => l.layerSettings.showable)}
+																		color="dark gray"
+																		onClick={event => event.stopPropagation()}
+																		onChange={() => handleLayerSettingChange([layer])}
+																		inputProps={{ 'aria-label': 'primary checkbox' }}
 																	/>
-																)}
-															</StyledListItem>
-														</AccordionSummary>
-														<Box paddingLeft={2} paddingRight={2}>
-															<List className={classes.list}>
-																{layer.layers.map((groupLayer, index) => (
-																	<StyledListItem key={index} ContainerComponent="li">
-																		<Checkbox
-																			checked={groupLayer.layerSettings.showable}
-																			color="dark gray"
-																			onChange={() => handleLayerSettingChange([groupLayer])}
-																			inputProps={{ 'aria-label': 'primary checkbox' }}
+																	{/* Group */}
+																	<EditableTextField
+																		onChange={changeLayerName}
+																		item={layer}
+																		name={layer.name}
+																		isEditable={false}
+																		showExpandIcon
+																		openUd={openUDLayers.includes(index)}
+																		openEditField={layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'}
+																	/>
+																	{checkIfDeleteAllow(layer) && (
+																		<MoreHorizIcon
+																			aria-controls={'source-menu'}
+																			className={'moreIcon ' + classes.moreIcon}
+																			onClick={e => {
+																				e.stopPropagation();
+																				handleClick(e);
+																				setActionItem({ group: layer });
+																			}}
 																		/>
-																		{/* Group Layer */}
-																		<EditableTextField
-																			onChange={changeLayerName}
-																			item={groupLayer}
-																			name={groupLayer.layerName}
-																			isEditable={false}
-																			openEditField={
-																				groupLayer?.layerId === actionItem?.layer?.layerId &&
-																				actionItem?.type === 'editName'
-																			}
-																		/>
-																		{checkIfDeleteAllow(groupLayer) && (
-																			<MoreHorizIcon
-																				aria-controls={'source-menu'}
-																				className={'moreSourceIcon ' + classes.moreSourceIcon}
-																				onClick={e => {
-																					e.stopPropagation();
-																					handleClick(e);
-																					setActionItem({ layer: groupLayer });
-																				}}
+																	)}
+																</StyledListItem>
+															</AccordionSummary>
+															<Box paddingLeft={2} paddingRight={2}>
+																<List className={classes.list}>
+																	{layer.layers.map((groupLayer, index) => (
+																		<StyledListItem key={`${groupLayer.layerName - index}`} ContainerComponent="li">
+																			<Checkbox
+																				checked={groupLayer.layerSettings.showable}
+																				color="dark gray"
+																				onChange={() => handleLayerSettingChange([groupLayer])}
+																				inputProps={{ 'aria-label': 'primary checkbox' }}
 																			/>
-																		)}
-																	</StyledListItem>
-																))}
-															</List>
-														</Box>
-													</Accordion>
+																			{/* Group Layer */}
+																			<EditableTextField
+																				onChange={changeLayerName}
+																				item={groupLayer}
+																				name={groupLayer.layerName}
+																				isEditable={false}
+																				openEditField={
+																					groupLayer?.layerId === actionItem?.layer?.layerId &&
+																					actionItem?.type === 'editName'
+																				}
+																			/>
+																			{checkIfDeleteAllow(groupLayer) && (
+																				<MoreHorizIcon
+																					aria-controls={'source-menu'}
+																					className={'moreSourceIcon ' + classes.moreSourceIcon}
+																					onClick={e => {
+																						e.stopPropagation();
+																						handleClick(e);
+																						setActionItem({ layer: groupLayer });
+																					}}
+																				/>
+																			)}
+																		</StyledListItem>
+																	))}
+																</List>
+															</Box>
+
+														</Accordion>
+														<Divider style={{ height: '2px' }} />
+													</>
 												);
 											}
 
 											return (
-												<StyledListItem ContainerComponent="li">
+												<StyledListItem ContainerComponent="li" key={labelId}>
 													<Checkbox
 														checked={layer.layerSettings.showable}
 														color="dark gray"

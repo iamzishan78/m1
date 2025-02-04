@@ -59,6 +59,11 @@ import DeleteSourceAndCategoryConfirmationDialog from './DeleteSourceAndCategory
 const SPACING = 6;
 
 const useStyles = makeStyles(theme => ({
+	accordion: {
+		'& .MuiAccordionSummary-content': {
+			margin: '0px !important',
+		},
+	},
 	subHeaderItem: {
 		backgroundColor: '#011133 !important',
 		minWidth: '350px',
@@ -538,8 +543,8 @@ function SourceManager(props) {
 											{M1Layers?.filter(layer => {
 												return (
 													(!props.search ||
-														layer.name?.toLowerCase().includes(props.search) ||
-														layer.layerName?.toLowerCase().includes(props.search)) &&
+														layer.name?.toLowerCase().includes(props.search?.toLowerCase()) ||
+														layer.layerName?.toLowerCase().includes(props.search?.toLowerCase())) &&
 													!['Land Grid'].includes(layer.identifier)
 												);
 											})?.map((layer, index) => {
@@ -547,12 +552,13 @@ function SourceManager(props) {
 
 												if (layer.type === 'group') {
 													return (
-														<Accordion key={`group-${layer.name}`}>
+														<>
+														<Accordion key={`group-${layer.name}`} className={classes.accordion}>
 															<AccordionSummary
 																// expandIcon={<ExpandMoreIcon />}
 																aria-controls="panel1a-content"
 																id="panel1a-header"
-																style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
+																style={{ padding: 0, marginTop: 0, marginBottom: 0 }}
 																onClick={() => {
 																	const _index = openUDLayers.findIndex(l => l === index);
 																	if (_index === -1) {
@@ -629,6 +635,8 @@ function SourceManager(props) {
 																</List>
 															</Box>
 														</Accordion>
+														<Divider style={{height:'2px'}}/>
+													</>
 													);
 												}
 
@@ -707,11 +715,10 @@ function SourceManager(props) {
 										{isOpenUserSources ? <ExpandLess /> : <ExpandMore />}
 									</StyledListItem2>
 									<Collapse in={isOpenUserSources} timeout="auto" unmountOnExit>
-										{globalStateValues.datasets
-											?.filter(layer => {
-												return !props.search || layer.name?.toLowerCase().includes(props.search);
-											})
-											?.map(dataset => (
+										{globalStateValues.datasets?.filter(dataset => {
+												const isDatasetLayer = dataset.categories.find((category)=> category.name?.toLowerCase().includes(props.search?.toLowerCase()) || category?.layerName?.toLowerCase().includes(props.search?.toLowerCase()))
+												return !props.search || dataset?.name?.toLowerCase().includes(props.search?.toLowerCase()) || dataset?.sourceName?.toLowerCase().includes(props.search?.toLowerCase()) || isDatasetLayer;
+											})?.map(dataset => (
 												<Fragment key={dataset._id}>
 													{dataset.sourceName !== 'M1 Platform' ? (
 														<>
