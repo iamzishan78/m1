@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
-import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 
 import { sideDialogController } from 'hookstate/sideDialogController';
@@ -128,7 +128,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 
 					default: {
 						const formattedFieldProps = getFormattedFieldProps({ item, watch, error, key: index });
-						renderedField = <TextFieldComponent {...formattedFieldProps} />;
+						renderedField = <CustomTextField {...formattedFieldProps} />;
 						break;
 					}
 				}
