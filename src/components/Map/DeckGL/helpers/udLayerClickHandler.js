@@ -42,6 +42,18 @@ const udLayerClickHandler = (feature, stateLayer) => {
 			expandedCard: true,
 			selectedShape: { ...feature.properties, feature: selectedUserDefinedLayer },
 		};
+	} else if (stateLayer.layerType === 'dynamic data layer') {
+		const layerName = feature.properties.type || stateLayer.layerName.replaceAll(' ', '').toLowerCase();
+
+		const newPath = `/map/${layerName}/${feature.properties.id}`;
+		if (history?.location.pathname !== newPath) {
+			history?.replace(newPath);
+		}
+
+		popupStateVal = {
+			expandedCard: true,
+			selectedShape: { ...feature.properties, feature: selectedUserDefinedLayer },
+		};
 	} else if (isAoi) {
 		let drawStateVal;
 

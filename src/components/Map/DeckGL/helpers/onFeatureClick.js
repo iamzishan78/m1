@@ -30,7 +30,7 @@ import udLayerClickHandler from './udLayerClickHandler';
 
 const onWellClick = (object, layerId) => {
 	if (!object) {
-		return;
+		return null;
 	}
 
 	const feature = copy(object);
@@ -72,7 +72,7 @@ const onWellClick = (object, layerId) => {
 
 const onDataLayerClick = (object, layerId, layer) => {
 	if (!object || !layer) {
-		return;
+		return null;
 	}
 
 	const feature = copy(object);
@@ -88,7 +88,7 @@ const onDataLayerClick = (object, layerId, layer) => {
 
 const onPointClick = (object, layerId, layer) => {
 	if (!object || !layer) {
-		return;
+		return null;
 	}
 
 	const feature = copy(object);
@@ -108,7 +108,7 @@ const onPointClick = (object, layerId, layer) => {
 
 const onFileLayerClick = (object, layerId, layer) => {
 	if (!object || !layer) {
-		return;
+		return null;
 	}
 
 	const feature = copy(object);
@@ -138,9 +138,11 @@ const onFileLayerClick = (object, layerId, layer) => {
 			break;
 
 		case 'LineString':
-			let polygonObj = lineString(feature.geometry.coordinates);
-			if (booleanWithin(polygonObj, bboxPolygon)) {
-				isGeometryWithinBbox = true;
+			{
+				let polygonObj = lineString(feature.geometry.coordinates);
+				if (booleanWithin(polygonObj, bboxPolygon)) {
+					isGeometryWithinBbox = true;
+				}
 			}
 			break;
 
@@ -166,7 +168,7 @@ const onFileLayerClick = (object, layerId, layer) => {
 
 const onLandGridClick = (object, layerId, layer) => {
 	if (!object || !layer) {
-		return;
+		return null;
 	}
 
 	const feature = copy(object);
@@ -200,7 +202,7 @@ const onFeatureClick = (feature, layer) => {
 		return;
 	}
 
-	if (ifDeckGlDataLayerIdentifiers(feature.layer.id)) {
+	if (ifDeckGlDataLayerIdentifiers(feature.layer.id) || layer.layerType === 'dynamic data layer') {
 		switch (feature.featureType || feature.object?.geometry?.type) {
 			case 'MultiPolygon':
 			case 'Polygon':
