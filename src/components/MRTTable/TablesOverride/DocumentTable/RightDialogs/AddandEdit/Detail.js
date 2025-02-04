@@ -24,7 +24,7 @@ import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
-import { PARSE_PDF_TEXTS, UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import { UPDATE_DOCUMENT, UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
@@ -32,6 +32,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { CREATED_STATUS, ONE_MB } from 'utils/consts';
+import { convertFile } from 'utils/tesseractHelper';
 
 import { showErrorMessage } from 'actions';
 
@@ -319,16 +320,23 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							return;
 						}
 
-						client
-							.mutate({
-								mutation: PARSE_PDF_TEXTS,
-								variables: {
-									fileId: file_id,
-								},
-							})
-							.then(() => {
-								tableGlobalController.refetch();
-							});
+						convertFile(fileUpload.fileInformation, (texts, error) => {
+							if (error) {
+								return;
+							}
+
+							client
+								.mutate({
+									mutation: UPDATE_PDF_TEXTS,
+									variables: {
+										fileId: file_id,
+										pageTexts: texts.map((text, index) => ({ text, page: index + 1 })),
+									},
+								})
+								.then(() => {
+									tableGlobalController.refetch();
+								});
+						});
 					})
 					.catch(err => console.log(err));
 
