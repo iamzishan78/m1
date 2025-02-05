@@ -129,7 +129,7 @@ const OCRText = ({ selectedDocument }) => {
 	}, []);
 
 	useEffect(() => {
-		lines.set(data?.getFileOCRText?.data?.data || []);
+		lines.set(data?.getFileOCRText?.data || []);
 	}, [data]);
 
 	if (loading) {
