@@ -9,8 +9,6 @@ import { Box, CircularProgress } from '@material-ui/core';
 
 import { useLazyQuery } from '@apollo/client';
 
-import { deepEqual } from 'components/Shared/functions';
-
 import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
 
 import { globalStateController } from 'hookstate/globalStateController';
@@ -98,13 +96,13 @@ const SortableLayer = ({ mongoId, search }) => {
 						}
 						if (!item.groupId) {
 							const showable =
-								item.layerSettings.showable && !['Tracked Owners', 'Agreement', 'Land Grid'].includes(item.identifier);
+								item.layerSettings.showable && !['Agreement', 'Land Grid'].includes(item.identifier);
 							layerAndGroups.push({
 								...item,
 								visiable: item.layerSettings.visiable,
 								showable,
 								layerSettings: { ...item.layerSettings, showable },
-								name: item.layerName === 'Parcels' ? 'Tracts' : item.layerName,
+								name: item.layerName,
 								depth: 0,
 								type: 'layer',
 								id: item._id,

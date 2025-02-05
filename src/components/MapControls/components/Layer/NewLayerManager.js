@@ -31,12 +31,8 @@ import { getDefaultSettings } from '../SourceLayerManager/fileUploadHelper';
 
 function NewLayerManager() {
 	const [stateApp] = useContext(AppContext);
-	const sourceProps = '' + uuid() + '_source';
 
-	const [layer] = useState({
-		createBy: stateApp.user.mongoId,
-		...getDefaultSettings('Polygon', '', sourceProps),
-	});
+	const [layer] = useState({ createBy: stateApp.user.mongoId, ...getDefaultSettings('Polygon', '') });
 
 	const [addLayer] = useMutation(ADDLAYER);
 	const [getShapeFileSchema, { data: shapeFileSchema }] = useLazyQuery(GET_SHAPE_FILE_SCHEMA);
@@ -72,9 +68,8 @@ function NewLayerManager() {
 		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
 		const layerShapeName = source.name === 'M1 Platform' ? null : selectCategory.name;
 		const identifier =
-			source.name === 'M1 Platform' ? selectCategory.label.replace('Tracts', 'Parcels') + uuid() : layerName + uuid();
+			source.name === 'M1 Platform' ? selectCategory.label + uuid() : layerName + uuid();
 
-		const sourceProps = identifier + '_source';
 
 		addLayer({
 			variables: {
@@ -93,7 +88,6 @@ function NewLayerManager() {
 					defaultSettings: getDefaultSettings(
 						selectCategory.layerGeometry,
 						layerName,
-						sourceProps,
 						selectCategory.bbox
 					),
 					layerSchema: shapeFileSchema?.getShapeFileSchema || [],

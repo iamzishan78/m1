@@ -19,11 +19,11 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { Badge, IconButton } from '@mui/material';
 
 import { globalStateController } from 'hookstate/globalStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 
 import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';
-import { mapControlsController } from 'hookstate/mapControlsController';
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({
@@ -182,7 +182,7 @@ const LayerItem = React.memo(props => {
 								</Box>
 
 								<Typography id={id} color="secondary" noWrap>
-									{name === 'Wells' ? 'Platform Wells' : name}
+									{name}
 								</Typography>
 								<Box paddingLeft={1} display="flex">
 									{type === 'group' && (
