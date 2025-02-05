@@ -109,10 +109,7 @@ const CampaignManagement = () => {
 				minDate={lastCampaignMinDate}
 			/>
 			<div style={{ padding: '0px 30px' }}>
-				<CampaignAnalytics
-					appliedFilters={tableController(TableKey)?.getExternalFilter()}
-					contactSearchQuery={stateApp.contactSearchQuery}
-				/>
+				<CampaignAnalytics TableKey={TableKey} contactSearchQuery={stateApp.contactSearchQuery} />
 				<MRTTable name={TableKey} />
 			</div>
 		</div>
