@@ -33,6 +33,7 @@ function CustomTextField({
 		disabled = false,
 		required = false,
 		margin = '',
+		customStyleClass = '',
 	} = {},
 	fieldAttributes: {
 		name = '',
@@ -70,6 +71,7 @@ function CustomTextField({
 				defaultValue={defaultValue}
 				variant={variant || 'filled'}
 				data-testid={`${name}-field`}
+				className={customStyleClass}
 				inputRef={inputRef || props?.ref || null}
 				onKeyUp={onKeyUp ? onKeyUp : () => {}}
 				onKeyDown={onKeyDown ? onKeyDown : () => {}}

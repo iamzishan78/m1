@@ -236,12 +236,13 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 														fullWidth: true,
 														variant: 'outlined',
 														margin: 'dense',
+														disabled: field.disabled,
+														customStyleClass: `${classes.field} ${isValueOveridden ? classes.baseValueChanged : null}`,
 													}}
 													fieldAttributes={{
 														name: field.key,
 														value: field.value ?? params.value,
 														inputRef: field.inputRef,
-														disabled: field.disabled,
 														InputLabelProps: { shrink: true },
 														InputProps: {
 															inputComponent:
