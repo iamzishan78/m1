@@ -563,11 +563,10 @@ export const AdminManagementRoutes = {
 		showSettingString: false,
 	},
 	INTEGRATION: {
-		featureFlag: 'AlWAYSSHOW',
+		featureFlag: 'DIALPAD_INTEGRATION',
 		title: 'Integrations',
 		link: '/admin/integrations',
 		component: 'Integrations',
-		noCheck: true,
 		showSettingString: false,
 	},
 	// CUSTOMIZATIONS: {

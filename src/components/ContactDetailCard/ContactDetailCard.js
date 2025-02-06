@@ -559,7 +559,7 @@ function ContactDetailCard(props) {
 				...stateApp,
 				currentContatcAtivities: data.contact.activityLog,
 			}));
-			if (data.contact?.dialpadIds?.length) {
+			if (data.contact?.dialpadIds?.length && stateApp.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION)) {
 				setDialpadConnect(true);
 			}
 		}
@@ -794,6 +794,7 @@ function ContactDetailCard(props) {
 									<Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" publicLeftBottom onlyTags />
 								</div>
 								<div className={classes.metaActions}>
+								<FeatureFlag feature={FEATURES.DIALPAD_INTEGRATION}>
 									<Tooltip
 										title={
 											contactData?.dialpadSyncAt
@@ -819,6 +820,7 @@ function ContactDetailCard(props) {
 											{dialpadConnect ? 'Launch Dialpad' : 'Sync to Dialpad'}
 										</Button>
 									</Tooltip>
+									</FeatureFlag>
 
 									<FeatureFlag feature={FEATURES.IDICORE}>
 										<Button

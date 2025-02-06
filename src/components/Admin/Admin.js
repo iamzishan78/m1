@@ -98,6 +98,12 @@ export default function Admin() {
 				allAllowedPaths[path] = allPaths[path];
 			}
 		});
+
+		Object.keys(allPaths).forEach(path => {
+			if (allPaths[path].featureFlag === 'DIALPAD_INTEGRATION') {
+				allAllowedPaths[path] = allPaths[path];
+			}
+		});
 		setAllowablePaths(allAllowedPaths);
 	}, [stateApp?.user]);
 

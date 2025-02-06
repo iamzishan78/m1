@@ -13,6 +13,7 @@ import TextSmsIcon from "components/Shared/svgIcons/textsms";
 import VoiceMailIcon from "components/Shared/svgIcons/voicemail";
 import AddIcCallIcon from '@mui/icons-material/AddIcCall';
 import { globalStateController } from "hookstate/globalStateController";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 
 function PencilEditIcon({
@@ -29,7 +30,9 @@ function PencilEditIcon({
 }) {
     const classes = useStyles();
     const [copied, setCopied] = useState(false); // Add new state for updating copy icon tooltip value
-    const { globalState } = globalStateController.useState(['contactData'], 'globalState');
+    const { globalState } = globalStateController.useState(['contactData','user'], 'globalState');
+
+    const feature = globalState?.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION)
 
 
      // Destructure the first key-value pair from `editContent`
@@ -131,10 +134,10 @@ function PencilEditIcon({
             </Tooltip>
             <Tooltip title={"Call"} placement="top">
                 <IconButton size="small"
-                href={globalState?.contactData?.dialpadIds?.length ? '' : `tel: ${editFieldValue}`}
+                href={globalState?.contactData?.dialpadIds?.length && feature ? '' : `tel: ${editFieldValue}`}
                 className={classes.emailAdornment}
                 onClick={() => {
-                    globalState?.contactData?.dialpadIds?.length &&
+                    globalState?.contactData?.dialpadIds?.length && feature &&
                         handleQuickActionActivity({
                             phoneNumber: editFieldValue,
                             type: 'dialpad',
