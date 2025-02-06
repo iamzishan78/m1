@@ -59,6 +59,11 @@ import DeleteSourceAndCategoryConfirmationDialog from './DeleteSourceAndCategory
 const SPACING = 6;
 
 const useStyles = makeStyles(theme => ({
+	accordion: {
+		'& .MuiAccordionSummary-content': {
+			margin: '0px !important',
+		},
+	},
 	subHeaderItem: {
 		backgroundColor: '#011133 !important',
 		minWidth: '350px',
@@ -262,7 +267,7 @@ function SourceManager(props) {
 		const layers = currentLayers?.filter(
 			layer =>
 				layer.layerCategory === 'M1 Layer' ||
-				['Parcels', 'Agreements', 'Units', 'Area of Interest', 'My Wells'].includes(layer.groupName || layer.layerName)
+				['Parcels', 'Agreements', 'Units', 'Area of Interest', 'My Wells'].includes(layer.groupName || layer.identifier)
 		);
 		const groupHandled = [];
 		for (let index = 0; index < layers.length; index++) {
@@ -538,99 +543,100 @@ function SourceManager(props) {
 											{M1Layers?.filter(layer => {
 												return (
 													(!props.search ||
-														layer.name?.toLowerCase().includes(props.search) ||
-														layer.layerName?.toLowerCase().includes(props.search)) &&
-													!['Land Grid', 'TX GLO Units', 'TX GLO Active Leases', 'Rig Activity'].includes(
-														layer.layerName
-													)
+														layer.name?.toLowerCase().includes(props.search?.toLowerCase()) ||
+														layer.layerName?.toLowerCase().includes(props.search?.toLowerCase())) &&
+													!['Land Grid'].includes(layer.identifier)
 												);
 											})?.map((layer, index) => {
 												const labelId = `m1layer-list-label-${index}`;
 
 												if (layer.type === 'group') {
 													return (
-														<Accordion key={`group-${layer.name}`}>
-															<AccordionSummary
-																// expandIcon={<ExpandMoreIcon />}
-																aria-controls="panel1a-content"
-																id="panel1a-header"
-																style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
-																onClick={() => {
-																	const _index = openUDLayers.findIndex(l => l === index);
-																	if (_index === -1) {
-																		setUDLayersStates([...openUDLayers, index]);
-																	} else {
-																		setUDLayersStates(openUDLayers?.filter(l => l !== index));
-																	}
-																}}
-															>
-																<Checkbox
-																	checked={!!layer.layers.find(l => l.layerSettings?.showable)}
-																	color="dark gray"
-																	onClick={event => event.stopPropagation()}
-																	onChange={() => handleLayerSettingChange([layer])}
-																	inputProps={{ 'aria-label': 'primary checkbox' }}
-																/>
-																<EditableTextField
-																	onChange={changeLayerName}
-																	item={layer}
-																	name={layer.name}
-																	isEditable={checkIfDeleteAllow(layer)}
-																	showExpandIcon
-																	openUd={openUDLayers.includes(index)}
-																/>
-																{checkIfDeleteAllow(layer) && (
-																	<ListItemSecondaryAction onClick={e => e.stopPropagation()}>
-																		<Tooltip title="Delete" placement="top">
-																			<IconButton
-																				edge="end"
-																				size="small"
-																				onClick={() => {
-																					setOpenDeleteDialog(layer);
-																				}}
-																			>
-																				<DeleteIcon />
-																			</IconButton>
-																		</Tooltip>
-																	</ListItemSecondaryAction>
-																)}
-															</AccordionSummary>
-															<Box paddingLeft={2} paddingRight={2}>
-																<List className={classes.list}>
-																	{layer.layers?.map(groupLayer => (
-																		<StyledListItem key={groupLayer.layerName} ContainerComponent="li">
-																			<Checkbox
-																				checked={groupLayer?.layerSettings?.showable}
-																				color="dark gray"
-																				onChange={() => handleLayerSettingChange([groupLayer])}
-																				inputProps={{ 'aria-label': 'primary checkbox' }}
-																			/>
-																			<EditableTextField
-																				onChange={changeLayerName}
-																				item={groupLayer}
-																				name={groupLayer.layerName}
-																				isEditable={checkIfDeleteAllow(layer)}
-																			/>
-																			<ListItemSecondaryAction>
-																				{checkIfDeleteAllow(layer) && (
-																					<Tooltip title="Delete" placement="top">
-																						<IconButton
-																							edge="end"
-																							size="small"
-																							onClick={() => {
-																								setOpenDeleteDialog(groupLayer);
-																							}}
-																						>
-																							<DeleteIcon />
-																						</IconButton>
-																					</Tooltip>
-																				)}
-																			</ListItemSecondaryAction>
-																		</StyledListItem>
-																	))}
-																</List>
-															</Box>
-														</Accordion>
+														<>
+															<Accordion key={`group-${layer.name}`} className={classes.accordion}>
+																<AccordionSummary
+																	// expandIcon={<ExpandMoreIcon />}
+																	aria-controls="panel1a-content"
+																	id="panel1a-header"
+																	style={{ padding: 0, marginTop: 0, marginBottom: 0 }}
+																	onClick={() => {
+																		const _index = openUDLayers.findIndex(l => l === index);
+																		if (_index === -1) {
+																			setUDLayersStates([...openUDLayers, index]);
+																		} else {
+																			setUDLayersStates(openUDLayers?.filter(l => l !== index));
+																		}
+																	}}
+																>
+																	<Checkbox
+																		checked={!!layer.layers.find(l => l.layerSettings?.showable)}
+																		color="dark gray"
+																		onClick={event => event.stopPropagation()}
+																		onChange={() => handleLayerSettingChange([layer])}
+																		inputProps={{ 'aria-label': 'primary checkbox' }}
+																	/>
+																	<EditableTextField
+																		onChange={changeLayerName}
+																		item={layer}
+																		name={layer.name}
+																		isEditable={checkIfDeleteAllow(layer)}
+																		showExpandIcon
+																		openUd={openUDLayers.includes(index)}
+																	/>
+																	{checkIfDeleteAllow(layer) && (
+																		<ListItemSecondaryAction onClick={e => e.stopPropagation()}>
+																			<Tooltip title="Delete" placement="top">
+																				<IconButton
+																					edge="end"
+																					size="small"
+																					onClick={() => {
+																						setOpenDeleteDialog(layer);
+																					}}
+																				>
+																					<DeleteIcon />
+																				</IconButton>
+																			</Tooltip>
+																		</ListItemSecondaryAction>
+																	)}
+																</AccordionSummary>
+																<Box paddingLeft={2} paddingRight={2}>
+																	<List className={classes.list}>
+																		{layer.layers?.map(groupLayer => (
+																			<StyledListItem key={groupLayer.layerName} ContainerComponent="li">
+																				<Checkbox
+																					checked={groupLayer?.layerSettings?.showable}
+																					color="dark gray"
+																					onChange={() => handleLayerSettingChange([groupLayer])}
+																					inputProps={{ 'aria-label': 'primary checkbox' }}
+																				/>
+																				<EditableTextField
+																					onChange={changeLayerName}
+																					item={groupLayer}
+																					name={groupLayer.layerName}
+																					isEditable={checkIfDeleteAllow(layer)}
+																				/>
+																				<ListItemSecondaryAction>
+																					{checkIfDeleteAllow(layer) && (
+																						<Tooltip title="Delete" placement="top">
+																							<IconButton
+																								edge="end"
+																								size="small"
+																								onClick={() => {
+																									setOpenDeleteDialog(groupLayer);
+																								}}
+																							>
+																								<DeleteIcon />
+																							</IconButton>
+																						</Tooltip>
+																					)}
+																				</ListItemSecondaryAction>
+																			</StyledListItem>
+																		))}
+																	</List>
+																</Box>
+															</Accordion>
+															<Divider style={{ height: '2px' }} />
+														</>
 													);
 												}
 
@@ -644,19 +650,9 @@ function SourceManager(props) {
 														/>
 
 														{/* Override layer source names of Parcel and Wells */}
-														<ListItemText
-															id={labelId}
-															primary={
-																layer.layerName === 'Parcels'
-																	? 'Tracts'
-																	: layer.layerName === 'Wells'
-																		? 'Platform Wells'
-																		: // eslint-disable-next-line no-magic-numbers
-																			truncate(layer.layerName, 30)
-															}
-														/>
+														<ListItemText id={labelId} primary={truncate(layer.layerName, 30)} />
 
-														{layer.layerName === 'Units' && (
+														{layer.identifier === 'Units' && (
 															<FeatureFlag feature={FEATURES.UNITIMPORT}>
 																<ListItemSecondaryAction>
 																	<IconButton
@@ -672,7 +668,7 @@ function SourceManager(props) {
 															</FeatureFlag>
 														)}
 
-														{layer.layerName === 'Parcels' && (
+														{layer.identifier === 'Parcels' && (
 															<FeatureFlag feature={FEATURES.TRACTIMPORT}>
 																<ListItemSecondaryAction>
 																	<IconButton
@@ -715,8 +711,18 @@ function SourceManager(props) {
 									</StyledListItem2>
 									<Collapse in={isOpenUserSources} timeout="auto" unmountOnExit>
 										{globalStateValues.datasets
-											?.filter(layer => {
-												return !props.search || layer.name?.toLowerCase().includes(props.search);
+											?.filter(dataset => {
+												const isDatasetLayer = dataset.categories.find(
+													category =>
+														category.name?.toLowerCase().includes(props.search?.toLowerCase()) ||
+														category?.layerName?.toLowerCase().includes(props.search?.toLowerCase())
+												);
+												return (
+													!props.search ||
+													dataset?.name?.toLowerCase().includes(props.search?.toLowerCase()) ||
+													dataset?.sourceName?.toLowerCase().includes(props.search?.toLowerCase()) ||
+													isDatasetLayer
+												);
 											})
 											?.map(dataset => (
 												<Fragment key={dataset._id}>
@@ -771,7 +777,7 @@ function SourceManager(props) {
 																		// const labelId = `m1layer-list-label-${index}`;
 																		return (
 																			<StyledListItem
-																				key={layer.layerName || layer.name}
+																				key={layer.identifier || layer.name}
 																				ContainerComponent="li"
 																				style={{ padding: 10 }}
 																			>

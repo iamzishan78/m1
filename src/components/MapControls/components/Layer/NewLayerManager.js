@@ -31,12 +31,8 @@ import { getDefaultSettings } from '../SourceLayerManager/fileUploadHelper';
 
 function NewLayerManager() {
 	const [stateApp] = useContext(AppContext);
-	const sourceProps = '' + uuid() + '_source';
 
-	const [layer] = useState({
-		createBy: stateApp.user.mongoId,
-		...getDefaultSettings('Polygon', '', sourceProps),
-	});
+	const [layer] = useState({ createBy: stateApp.user.mongoId, ...getDefaultSettings('Polygon', '') });
 
 	const [addLayer] = useMutation(ADDLAYER);
 	const [getShapeFileSchema, { data: shapeFileSchema }] = useLazyQuery(GET_SHAPE_FILE_SCHEMA);

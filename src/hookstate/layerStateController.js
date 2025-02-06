@@ -182,32 +182,8 @@ const LayerMeta = {
 			},
 		},
 	},
-	'Recent Submitted Permits': {
-		defaultZoom: 0,
-		propsFunc: getGeoJsonLayerProps,
-		props: {},
-		layer: {
-			id: 'geojson',
-			type: 'GeoJsonLayer',
-			getProps: layerId => {
-				return {
-					data: deckLayers[layerId].getData([]),
-					pointRadiusMinPixels: 5,
-					lineWidthMinPixels: 2,
-					pointRadiusMaxPixels: 15,
-					lineWidthMaxPixels: 10,
-					parameters: {
-						depthTest: false, // Disable depth testing to draw points on top
-					},
-				};
-			},
-		},
-	},
 	Basins: {
 		id: 'basinLayer',
-	},
-	Pipelines: {
-		id: 'pipelineLayer',
 	},
 	'file layer': {
 		defaultZoom: 10,
@@ -512,10 +488,7 @@ const layerStateControllerHandler = state => {
 		// Layer data and converting it to geojson
 		let layerData = null;
 		if (dbLayer.identifier === 'Search') {
-			layerData = baseLayerController.getValue('wellListFromSearch');
-		}
-		if (dbLayer.identifier === 'Rig Activity') {
-			layerData = baseLayerController.getValue('rigsData');
+			layerData = layerController.getValue('wellListFromSearch');
 		}
 
 		// Return if we not get any data
@@ -878,7 +851,6 @@ const layerStateControllerHandler = state => {
 	};
 
 	const resetMapStates = (mapReady = false) => {
-		const rigsData = baseLayerController.getValue('rigsData');
 		const client = baseLayerController.getValue('client');
 		removeLayers(false);
 		popupController.reset();
@@ -898,7 +870,7 @@ const layerStateControllerHandler = state => {
 			});
 		});
 
-		baseLayerController.setState({ rigsData, client });
+		baseLayerController.setState({ client });
 		navController.reset();
 		mapControlsController.setState({
 			selectedControl: mapControlsController.getValue('selectedControl'),

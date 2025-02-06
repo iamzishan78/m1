@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 import { Grid, Card, CardContent, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
@@ -9,8 +9,9 @@ import PropTypes from 'prop-types';
 
 import vf_number, { vf_number_to_precision } from 'components/Shared/valueformatters/vf_number';
 
-// Queries
 import { GET_CAMPAIGN_ANALYTICS } from 'graphQL/useQueryCampaignAnalytics';
+
+import { tableController } from 'hookstate/tableController';
 
 import { getActivityAnalyticsFilters } from 'utils/helper';
 
@@ -51,14 +52,18 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }) {
+export default function CampaignAnalytics({ contactSearchQuery, TableKey }) {
 	const classes = useStyles();
 	const [analyticsData, setAnalyticsData] = useState({});
 	const precision = 9;
 
+	const { filters } = tableController(TableKey).useState(['filters']);
+
 	const [getCampaignAnalytics, { data }] = useLazyQuery(GET_CAMPAIGN_ANALYTICS, {
 		fetchPolicy: 'no-cache',
 	});
+
+	const appliedFilters = useMemo(() => tableController(TableKey)?.getExternalFilter(), [filters]);
 
 	useEffect(() => {
 		if (data?.campaignAnalytics) {
@@ -148,6 +153,6 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
 }
 
 CampaignAnalytics.propTypes = {
-	appliedFilters: PropTypes.object.isRequired,
+	TableKey: PropTypes.string.isRequired,
 	contactSearchQuery: PropTypes.string.isRequired,
 };

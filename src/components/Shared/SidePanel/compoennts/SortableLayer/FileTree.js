@@ -8,9 +8,6 @@ import { useMutation } from '@apollo/client';
 import update from 'immutability-helper';
 import PropTypes from 'prop-types';
 
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 import { UPDATEUSERLAYERMETA } from 'graphQL/useMutationupdateLayersMeta';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
@@ -315,51 +312,16 @@ const FileTree = ({ layerMap, panelItems }) => {
 				<Box className={classes.fileTree} data-testid="layers">
 					<Flipper flipKey={filpKeys}>
 						<Sortly items={items} maxDepth={1} onChange={handleChange}>
-							{props => {
-								if (['Recent Submitted Permits', 'Tracked Wells', 'User Tags'].includes(props?.data?.layerName)) {
-									let layerName = '';
-									switch (props?.data?.layerName) {
-										case 'Recent Submitted Permits':
-											layerName = FEATURES.RECENTPERMITLAYER;
-											break;
-
-										case 'Tracked Wells':
-											layerName = FEATURES.TRACKEDWELLSLAYER;
-											break;
-
-										case 'User Tags':
-											layerName = FEATURES.USERTAGSLAYER;
-											break;
-
-										default:
-											break;
-									}
-
-									return (
-										<FeatureFlag feature={layerName}>
-											<LayerItem
-												{...props}
-												onToggleCollapse={handleToggleCollapse}
-												onToggleGroup={handleToggleGroup}
-												onDragEnd={handleDragEnd}
-												onDragBegin={handleDragBegin}
-												updateLayer={updateLayer}
-											/>
-										</FeatureFlag>
-									);
-								} else {
-									return (
-										<LayerItem
-											{...props}
-											onToggleCollapse={handleToggleCollapse}
-											onToggleGroup={handleToggleGroup}
-											onDragEnd={handleDragEnd}
-											onDragBegin={handleDragBegin}
-											updateLayer={updateLayer}
-										/>
-									);
-								}
-							}}
+							{props => (
+								<LayerItem
+									{...props}
+									onToggleCollapse={handleToggleCollapse}
+									onToggleGroup={handleToggleGroup}
+									onDragEnd={handleDragEnd}
+									onDragBegin={handleDragBegin}
+									updateLayer={updateLayer}
+								/>
+							)}
 						</Sortly>
 					</Flipper>
 				</Box>

@@ -267,11 +267,7 @@ function LayerStyling() {
 					<Grid item md={11}>
 						{/* Override layer styling names of Parcel and Wells */}
 						<Typography variant="h5" noWrap>
-							{selectedLayer.layerName === 'Parcels'
-								? 'Tracts'
-								: selectedLayer.layerName === 'Wells'
-									? 'Platform Wells'
-									: selectedLayer.layerName}
+							{selectedLayer.layerName}
 						</Typography>
 					</Grid>
 					<Grid item>

@@ -11,7 +11,6 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
 import { useMutation } from '@apollo/client';
-import { v4 as uuid } from 'uuid';
 
 import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';
 
@@ -49,8 +48,6 @@ const CreateLayerDialog = () => {
 			return setError(true);
 		}
 
-		const source = groupName + uuid() + '_source';
-
 		createDatasetLayers({
 			variables: {
 				dataset,
@@ -58,7 +55,7 @@ const CreateLayerDialog = () => {
 				layerNames,
 				isCreateLayers: true,
 				defaultSettings: dataset.categories.map(({ layerGeometry, name, bbox }) =>
-					getDefaultSettings(layerGeometry, name, source, bbox)
+					getDefaultSettings(layerGeometry, name, bbox)
 				),
 				shouldUpdateDataset: false,
 			},
