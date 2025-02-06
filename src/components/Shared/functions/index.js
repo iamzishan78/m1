@@ -244,21 +244,18 @@ export const mergeArrays = (arr1, arr2, uniqueField) => {
 };
 
 export const normalizeUrl = url => {
-	if (!/^https?:\/\//i.test(url)) {
-		return `https://${url}`;
+	if (typeof url !== 'string' || !url.trim()) {
+		return ''; // Handle invalid input
 	}
-	return url;
-};
 
-export const isValidUrl = string => {
-	const pattern = new RegExp(
-		'^(https?:\\/\\/)?' + // Optional protocol
-			'((localhost|' + // Allow "localhost"
-			'(\\w+(-\\w+)*\\.)+[a-zA-Z]{2,}))' + // Domain name with at least one dot and valid TLD
-			'(\\:\\d+)?(\\/[-a-zA-Z\\d%@_.~+&:]*)*' + // Port and path
-			'(\\?[;&a-zA-Z\\d%@_.,~+&:=-]*)?' + // Query string (optional)
-			'(\\#[-a-zA-Z\\d_]*)?$', // Fragment (optional)
-		'i'
-	);
-	return pattern.test(string);
+	const lowerUrl = url.toLowerCase();
+	if (!lowerUrl.startsWith('http://') && !lowerUrl.startsWith('https://')) {
+		url = `https://${url}`;
+	}
+
+	if (!url.endsWith('/')) {
+		url += '/'; // Ensure URL ends with a slash
+	}
+
+	return url;
 };

@@ -21,3 +21,14 @@ export const VIEWFILESQUERY = gql`
 		}
 	}
 `;
+
+export const GET_FILE_OCR_TEXT = gql`
+	query getFileOCRText($fileId: ID) {
+		getFileOCRText(fileId: $fileId) {
+			success
+			message
+			error
+			data
+		}
+	}
+`;

@@ -18,7 +18,7 @@ import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/Auto
 import { SUMMARY_FIELDS, featureFlagChanges, contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { NumberFormatComma } from 'components/Shared/Forms/Formatting/NumberFormatComma';
-import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
+import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 import TextSmsIcon from 'components/Shared/svgIcons/textsms';
 import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
 import vf_number from 'components/Shared/valueformatters/vf_number';
@@ -229,20 +229,20 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 									return (
 										<Fragment>
 											{field.type !== 'autocomplete' ? (
-												<TextFieldComponent
+												<CustomTextField
 													fieldConfig={{
 														size: 'small',
 														type: 'text',
 														fullWidth: true,
 														variant: 'outlined',
 														margin: 'dense',
+														disabled: field.disabled,
+														customStyleClass: `${classes.field} ${isValueOveridden ? classes.baseValueChanged : null}`,
 													}}
 													fieldAttributes={{
 														name: field.key,
 														value: field.value ?? params.value,
-														allowEdit: true,
 														inputRef: field.inputRef,
-														disabled: field.disabled,
 														InputLabelProps: { shrink: true },
 														InputProps: {
 															inputComponent:

@@ -4,7 +4,10 @@ import Badge from '@material-ui/core/Badge';
 import HomeIcon from '@material-ui/icons/HomeOutlined';
 import InfoOutlined from '@material-ui/icons/InfoOutlined';
 
+import NotesIcon from '@mui/icons-material/Notes';
+
 import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import Slideout from 'components/MRTTable/Common/Slideout';
 import WellIcon from 'components/Shared/svgIcons/well';
@@ -20,6 +23,7 @@ import { history } from 'store';
 import AssociatedWells from './AssociatedWells';
 import DetailsPanel from './Detail';
 import Information from './Information';
+import OCRText from './OCRText';
 
 function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	const [wellsCount, setWellsCount] = useState(0);
@@ -115,6 +119,28 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 				props: {},
 				onClick: () => {},
 			},
+			...(selectedDocument?.fileName?.includes('.pdf')
+				? [
+						{
+							name: 'OCR Text',
+							Icon: props => (
+								<Badge
+									anchorOrigin={{
+										vertical: 'top',
+										horizontal: 'right',
+									}}
+									color="primary"
+								>
+									<NotesIcon {...props} />
+								</Badge>
+							),
+							Component: () => <OCRText selectedDocument={selectedDocument} />,
+							props: {},
+							onClick: () => {},
+							width: '64vw',
+						},
+					]
+				: []),
 		],
 		[selectedDocument, wellsCount]
 	);
@@ -138,5 +164,10 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 
 	return <Slideout show={true} deleteFunc={deleteFunc} />;
 }
+
+CreateAndViewComponent.propTypes = {
+	selectedDocument: PropTypes.object,
+	tableKey: PropTypes.string,
+};
 
 export default memo(CreateAndViewComponent);
