@@ -86,10 +86,9 @@ const Integrations = () => {
 			return;
 		}
 		const url = getURL();
-		debugger;
 
 		addExternalTool({
-			variables: { toolName: fieldName, apikey: value, webhookUrl: url },
+			variables: { toolName: fieldName, apikey: value, webhookUrl: url.replace(/\/m1graph.*$/, '') },
 			refetchQueries: ['allExternalTools'],
 			awaitRefetchQueries: true,
 		}).then(({ data }) => {
