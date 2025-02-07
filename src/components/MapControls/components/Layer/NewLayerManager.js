@@ -18,10 +18,13 @@ import { Autocomplete } from '@material-ui/lab';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { v4 as uuid } from 'uuid';
 
+import { copy } from 'components/Shared/functions';
+
 import { ADDLAYER } from 'graphQL/useMutationAddLayer';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 
 import { globalStateController } from 'hookstate/globalStateController';
+import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
 import { AppContext } from 'AppContext';
@@ -68,8 +71,7 @@ function NewLayerManager() {
 		const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
 		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
 		const layerShapeName = source.name === 'M1 Platform' ? null : selectCategory.name;
-		const identifier =
-			source.name === 'M1 Platform' ? selectCategory.label.replace('Tracts', 'Parcels') + uuid() : layerName + uuid();
+		const identifier = source.name === 'M1 Platform' ? selectCategory.value + uuid() : layerName + uuid();
 
 		addLayer({
 			variables: {
@@ -95,9 +97,16 @@ function NewLayerManager() {
 					public: true,
 				},
 			},
-			refetchQueries: ['getAllLayerSettingsByUser'],
-			awaitRefetchQueries: true,
-		}).then(() => {
+		}).then(async ({ data }) => {
+			const layerToAdd = copy(data.addLayer.userLayer);
+			if (layerToAdd) {
+				const projectedLayers = layerController.getValue('projectedLayers');
+				layerController.updateState({ projectedLayers: [...projectedLayers, layerToAdd] });
+
+				const layers = globalStateController.getValue('layers');
+				globalStateController.updateState({ layers: [...layers, layerToAdd] });
+			}
+
 			handleClose();
 		});
 	};

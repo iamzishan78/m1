@@ -19,6 +19,7 @@ import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { getLayerKey } from 'hookstate/helpers';
+import { layerStylingController } from 'hookstate/layersStylingController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
@@ -30,7 +31,6 @@ import AttrsFillStyleDropdown from './LayerAttributes/AttrsFillStyleDropdown';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
 import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
 import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
-import { layerStylingController } from 'hookstate/layersStylingController';
 
 function LayerStyling() {
 	const classes = useStyles();
@@ -132,7 +132,9 @@ function LayerStyling() {
 
 	useEffect(() => {
 		const hookStateAppLayers = globalStateController.getValue('layers');
-		if (!layerStylingStateValues?.layerInitialized) return null;
+		if (!layerStylingStateValues?.layerInitialized) {
+			return null;
+		}
 		if (
 			(hookStateAppLayers &&
 				selectedLayer &&
@@ -164,7 +166,7 @@ function LayerStyling() {
 
 			const TWOFIFTY = 250;
 			const debouncedUpdate = _.debounce(() => {
-				globalStateController.updateState({ layers: currentLayers });
+				globalStateController.updateState({ layers: [...currentLayers] });
 				layerController.resetBounds(selectedLayer?.identifier, true);
 				updateLayerSettings({
 					variables: {
@@ -176,8 +178,6 @@ function LayerStyling() {
 							layerSettings: currentLayer.layerSettings,
 						},
 					},
-					refetchQueries: ['getAllLayerSettingsByUser'],
-					awaitRefetchQueries: true,
 				}).then(({ data }) => {
 					if (data?.updateUserLayerSettings?.res && !currentLayer._id) {
 						mapControlsController.updateState({
