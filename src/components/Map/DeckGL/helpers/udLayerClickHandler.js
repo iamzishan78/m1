@@ -52,7 +52,7 @@ const udLayerClickHandler = (feature, stateLayer) => {
 
 		popupStateVal = {
 			expandedCard: true,
-			selectedShape: { ...feature.properties, feature: selectedUserDefinedLayer },
+			selectedShape: { ...feature.properties, feature: selectedUserDefinedLayer, isGenericAssetShape: true },
 		};
 	} else if (isAoi) {
 		let drawStateVal;

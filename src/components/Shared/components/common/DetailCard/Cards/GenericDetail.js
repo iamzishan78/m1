@@ -42,16 +42,16 @@ function GenericDetailCard() {
 	});
 
 	useEffect(() => {
-		let assetName = activeModule?.name ?? type;
+		let assetName = tableName ?? type ?? activeModule?.name;
 		const assetId = id ?? paramId;
 
 		if (assetName && assetId) {
 			getAsset({
-				variables: { name: assetName },
+				variables: { tableName: assetName },
 			});
 
 			getRecordFromAsset({
-				variables: { _id: assetId, tableName },
+				variables: { _id: assetId, tableName: assetName },
 			});
 		}
 	}, [id, tableName, activeModule, paramId, type, getAsset, getRecordFromAsset]);
