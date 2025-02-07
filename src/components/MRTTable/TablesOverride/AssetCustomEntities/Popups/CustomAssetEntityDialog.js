@@ -34,6 +34,7 @@ function CustomAssetEntityDialog() {
 			isControlColumn: false,
 			isGridDisplayed: true,
 			isDialogDisplayed: true,
+			isRequired: false,
 		},
 	];
 	const { control, handleSubmit, watch, reset, setValue } = useForm({

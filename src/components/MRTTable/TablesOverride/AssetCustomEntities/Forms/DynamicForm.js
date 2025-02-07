@@ -213,6 +213,27 @@ const DynamicForm = ({ control, setValue }) => {
 									}}
 								/>
 							</Grid>
+							<Grid item xs={2}>
+								<Controller
+									control={control}
+									name={`fields[${index}].isRequired`}
+									defaultValue={field.isRequired ?? false}
+									render={props => {
+										return (
+											<FormControlLabel
+												control={
+													<Checkbox
+														checked={!!props.value}
+														onChange={e => props.onChange(e.target.checked)}
+														color="primary"
+													/>
+												}
+												label="Required"
+											/>
+										);
+									}}
+								/>
+							</Grid>
 						</Grid>
 					</div>
 				);
@@ -231,6 +252,7 @@ const DynamicForm = ({ control, setValue }) => {
 							isControlColumn: false,
 							isGridDisplayed: true,
 							isDialogDisplayed: true,
+							isRequired: false,
 						})
 					}
 					disabled={!isCreateAssetMode}

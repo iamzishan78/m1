@@ -112,6 +112,23 @@ const customAssetMeta = {
 				return <>{isDialogDisplayed ? 'Yes' : 'No'}</>;
 			},
 		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'isRequired',
+			accessorKey: 'isRequired',
+			header: 'Required Field',
+			isSearchField: false,
+			filterSelectOptions: [
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
+			],
+			type: 'boolean',
+			Cell: ({ row }) => {
+				const isRequired = [true, 'true', 'True'].includes(row.getValue('isRequired'));
+
+				return <>{isRequired ? 'Yes' : 'No'}</>;
+			},
+		},
 	],
 };
 

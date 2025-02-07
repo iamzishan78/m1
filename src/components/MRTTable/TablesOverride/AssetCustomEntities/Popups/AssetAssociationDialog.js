@@ -33,6 +33,7 @@ function AssetAssociationDialog() {
 			isControlColumn: false,
 			isGridDisplayed: true,
 			isDialogDisplayed: true,
+			isRequired: false,
 		},
 	];
 
