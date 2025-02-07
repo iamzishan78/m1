@@ -11,6 +11,7 @@ import getBoundsQuery from 'api/getBoundsQuery';
 import { generateFileFilters, makeGeoJSON, getGeoJsonLayerProps } from 'components/Map/DeckGL/helpers/common';
 import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { copy } from 'components/Shared/functions';
 import {
 	deckGlLayerIdentifiers,
@@ -861,7 +862,7 @@ const layerStateControllerHandler = state => {
 		popupController.reset();
 		drawController.reset();
 		layerFiltersController.reset();
-		const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
+		const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
 		mapViewFilters.forEach(filter => {
 			const dataSource = filter?.dataSourceName;
 
