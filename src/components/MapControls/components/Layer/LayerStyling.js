@@ -57,29 +57,7 @@ function LayerStyling() {
 		strokeColor,
 		layerInitialized,
 		strokeWidth,
-	} = layerStylingController.useState([
-		'width',
-		'fillColor',
-		'fillStyle',
-		'lineStyle',
-		'enablefillColor',
-		'enableStrokeColor',
-		'enableStrokeStyle',
-		'enableColorStyle',
-		'selectedValue',
-		'selectedStrokeValue',
-		'selectedFillStyle',
-		'selectedLineStyle',
-		'attributeBasedColors',
-		'attributeBasedStrokeColors',
-		'attributeBasedStyles',
-		'attributeBasedLineStyles',
-		'layerLabelVisibility',
-		'layerClickability',
-		'strokeColor',
-		'strokeWidth',
-		'layerInitialized',
-	]);
+	} = layerStylingController.useCompleteState();
 
 	const layerType = selectedLayer.layerPaintProps[0]?.paintType;
 
@@ -411,16 +389,16 @@ function LayerStyling() {
 										<AttrsAutocomplete
 											options={options}
 											selectedValue={selectedValue}
-											setSelectedValue={layerStylingController.setSelectedValue}
+											setSelectedValue={value => layerStylingController.setSelectedValue(value)}
 											typography={'Color based on'}
 										/>
 										<AttrsValuesDropdown
 											selectedValue={selectedValue}
 											selectedLayer={selectedLayer}
 											fillColor={fillColor}
-											setFillColor={layerStylingController.setFillColor}
+											setFillColor={value => layerStylingController.setFillColor(value)}
 											attributeBasedColors={attributeBasedColors}
-											setAttributeBasedColors={layerStylingController.setAttributeBasedColors}
+											setAttributeBasedColors={value => layerStylingController.setAttributeBasedColors(value)}
 										/>
 									</>
 								)}
@@ -453,7 +431,7 @@ function LayerStyling() {
 										<AttrsAutocomplete
 											options={options}
 											selectedValue={selectedFillStyle}
-											setSelectedValue={layerStylingController.setSelectedFillStyle}
+											setSelectedValue={value => layerStylingController.setSelectedFillStyle(value)}
 											typography={'Style based on'}
 										/>
 										<AttrsFillStyleDropdown
@@ -461,9 +439,9 @@ function LayerStyling() {
 											selectedValue={selectedFillStyle}
 											selectedLayer={selectedLayer}
 											fillStyle={fillStyle}
-											setFillStyle={layerStylingController.setFillStyle}
+											setFillStyle={value => layerStylingController.setFillStyle(value)}
 											attributeBasedStyles={attributeBasedStyles}
-											setAttributeBasedStyles={layerStylingController.setAttributeBasedStyles}
+											setAttributeBasedStyles={value => layerStylingController.setAttributeBasedStyles(value)}
 										/>
 									</>
 								)}
@@ -498,16 +476,16 @@ function LayerStyling() {
 											<AttrsAutocomplete
 												options={options}
 												selectedValue={selectedStrokeValue}
-												setSelectedValue={layerStylingController.setSelectedStrokeValue}
+												setSelectedValue={value => layerStylingController.setSelectedStrokeValue(value)}
 												typography={'Color based on'}
 											/>
 											<AttrsValuesDropdown
 												selectedValue={selectedStrokeValue}
 												selectedLayer={selectedLayer}
 												fillColor={strokeColor}
-												setFillColor={layerStylingController.setStrokeColor}
+												setFillColor={value => layerStylingController.setStrokeColor(value)}
 												attributeBasedColors={attributeBasedStrokeColors}
-												setAttributeBasedColors={layerStylingController.setAttributeBasedStrokeColors}
+												setAttributeBasedColors={value => layerStylingController.setAttributeBasedStrokeColors(value)}
 											/>
 										</>
 									)}
@@ -539,7 +517,7 @@ function LayerStyling() {
 												<AttrsAutocomplete
 													options={options}
 													selectedValue={selectedLineStyle}
-													setSelectedValue={layerStylingController.setSelectedLineStyle}
+													setSelectedValue={value => layerStylingController.setSelectedLineStyle(value)}
 													typography={'Style based on'}
 												/>
 												<AttrsFillStyleDropdown
@@ -547,9 +525,9 @@ function LayerStyling() {
 													selectedValue={selectedLineStyle}
 													selectedLayer={selectedLayer}
 													fillStyle={lineStyle}
-													setFillStyle={layerStylingController.setLineStyle}
+													setFillStyle={value => layerStylingController.setLineStyle(value)}
 													attributeBasedStyles={attributeBasedLineStyles}
-													setAttributeBasedStyles={layerStylingController.setAttributeBasedLineStyles}
+													setAttributeBasedStyles={value => layerStylingController.setAttributeBasedLineStyles(value)}
 												/>
 											</>
 										)}

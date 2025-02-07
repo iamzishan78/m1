@@ -478,11 +478,11 @@ function Map({
 	useEffect(() => {
 		if (stateApp.user && stateApp.user.mongoId) {
 			setLoading(true);
-			const applyShowableFilter = true;
+			const onlyShowable = true;
 			getAllLayerSettingsByUser({
 				variables: {
 					userId: stateApp.user.mongoId,
-					applyShowableFilter,
+					onlyShowable,
 				},
 			});
 		}

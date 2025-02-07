@@ -28,10 +28,13 @@ export class StateController {
 	useGenericHooks(keys, stateValuesKey) {
 		const keysVal = {};
 		keys.forEach(key => {
-			const [value] = useAtom(this.getFocusItem(key));
-			keysVal[key] = value;
+			if (key !== stateValuesKey) {
+				const [value] = useAtom(this.getFocusItem(key));
+				keysVal[key] = value;
+			}
 		});
-		keysVal[stateValuesKey] = keysVal;
+
+		keysVal[stateValuesKey] = { ...keysVal };
 		return keysVal;
 	}
 

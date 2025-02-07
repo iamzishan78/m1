@@ -8,7 +8,7 @@ import { tableGlobalController } from 'hookstate/tableController';
 function OwnerTypeCell({ contactOwner }) {
 	// Getting users from global table state
 	const globalState = tableGlobalController.useState(['users']);
-	const users = globalState.users;
+	const users = globalState.stateValues.users;
 	if (!contactOwner?.name) {
 		return <p></p>;
 	}

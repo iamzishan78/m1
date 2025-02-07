@@ -6,6 +6,31 @@ import { copy } from 'components/Shared/functions';
 
 import { StateController } from './stateController';
 
+const layerStylingInitialState = {
+	width: null,
+	fillColor: null,
+	fillStyle: null,
+	lineStyle: null,
+	enablefillColor: true,
+	enableStrokeColor: true,
+	enableStrokeStyle: true,
+	enableColorStyle: true,
+	selectedValue: null,
+	selectedStrokeValue: null,
+	selectedFillStyle: null,
+	selectedLineStyle: null,
+	attributeBasedColors: {},
+	attributeBasedStrokeColors: {},
+	attributeBasedStyles: {},
+	attributeBasedLineStyles: {},
+	layerLabelVisibility: true,
+	layerClickability: true,
+	strokeColor: null,
+	strokeWidth: null,
+	layerName: null,
+	layerInitialized: null,
+};
+
 class LayerStylingStateController extends StateController {
 	constructor(initialState) {
 		super(initialState);
@@ -492,7 +517,6 @@ class LayerStylingStateController extends StateController {
 	}
 
 	setEnableColorStyle(isEnabled) {
-		console.log('isEnabled', isEnabled);
 		this.updateState({ enableColorStyle: isEnabled });
 	}
 
@@ -546,4 +570,4 @@ class LayerStylingStateController extends StateController {
 }
 
 // Export instance of LayerStylingStateController
-export const layerStylingController = new LayerStylingStateController({});
+export const layerStylingController = new LayerStylingStateController(layerStylingInitialState);

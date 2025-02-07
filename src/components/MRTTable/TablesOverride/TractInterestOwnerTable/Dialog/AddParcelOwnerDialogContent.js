@@ -82,12 +82,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
+	const formState = sideDialogController('tractInterestDialog').useCompleteState();
+	const formStateValues = formState;
+
 	const dispatch = useDispatch();
 	const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 	const tenantName = UserSession.getStorageItem('tenantName');
-
-	const formState = sideDialogController('tractInterestDialog').useCompleteState();
-	const formStateValues = formState;
 
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user;
@@ -282,13 +282,15 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 			handleUpdateContact(formStateValues);
 		}
 
+		const updatedFormStateValues = sideDialogController('tractInterestDialog').getAllValues();
+
 		// Fixed label value issue
 		if (selectedRow) {
 			const parcelOwner = extractValueRecursively({
 				_id: selectedRow?._id,
-				...formStateValues,
-				deals: formStateValues?.deals || [],
-				relatedObject: formStateValues.relatedObject,
+				...updatedFormStateValues,
+				deals: updatedFormStateValues?.deals || [],
+				relatedObject: updatedFormStateValues.relatedObject,
 				createBy: getUser?._id,
 				lastUpdateBy: getUser?._id,
 			});
@@ -301,9 +303,9 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 			// Fixed label value issue
 			// Update parcel owner object for autocompletes
 			const parcelOwner = extractValueRecursively({
-				...formStateValues,
-				deals: formStateValues?.deals || [],
-				relatedObject: formStateValues.relatedObject,
+				...updatedFormStateValues,
+				deals: updatedFormStateValues?.deals || [],
+				relatedObject: updatedFormStateValues.relatedObject,
 				createBy: getUser?._id,
 				lastUpdateBy: getUser?._id,
 			});

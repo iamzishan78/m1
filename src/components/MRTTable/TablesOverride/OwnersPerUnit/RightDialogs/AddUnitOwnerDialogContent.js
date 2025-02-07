@@ -197,8 +197,6 @@ export default function AddUnitOwnerDialogContent({
 	};
 
 	const handleUpdateContact = ownerToAdd => {
-		console.log(selectedRow);
-		console.log(ownerToAdd);
 		if (
 			((ownerToAdd.contactStatus || selectedRow?.contactStatus) &&
 				selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
@@ -236,7 +234,10 @@ export default function AddUnitOwnerDialogContent({
 			...unitOwnerFormValue,
 		});
 
-		const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
+		let updatedFormStateValues = sideDialogController('unitInterestDialog').getAllValues();
+
+		const ownerType =
+			updatedFormStateValues.ownerType && (updatedFormStateValues.ownerType.value || updatedFormStateValues.ownerType);
 
 		if (formStateValues?.newOwner) {
 			sideDialogController('unitInterestDialog').updateState({
@@ -246,15 +247,18 @@ export default function AddUnitOwnerDialogContent({
 				},
 			});
 		} else {
-			handleUpdateContact(formStateValues);
+			handleUpdateContact(updatedFormStateValues);
 		}
+
+		updatedFormStateValues = sideDialogController('unitInterestDialog').getAllValues();
+
 		if (selectedRow) {
 			// Update shape owner object for autocompletes
 			const shapeOwner = extractValueRecursively({
 				_id: selectedRow?._id,
-				...formStateValues,
-				deals: formStateValues?.deals || [],
-				relatedObject: formStateValues.relatedObject,
+				...updatedFormStateValues,
+				deals: updatedFormStateValues?.deals || [],
+				relatedObject: updatedFormStateValues.relatedObject,
 				createBy: getUser?._id,
 				lastUpdateBy: getUser?._id,
 				shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
@@ -269,12 +273,11 @@ export default function AddUnitOwnerDialogContent({
 				awaitRefetchQueries: true,
 			});
 		} else {
-			console.log(props);
 			// Update shape owner object for autocompletes
 			const shapeOwner = extractValueRecursively({
-				...formStateValues,
-				deals: formStateValues?.deals || [],
-				relatedObject: formStateValues.relatedObject,
+				...updatedFormStateValues,
+				deals: updatedFormStateValues?.deals || [],
+				relatedObject: updatedFormStateValues.relatedObject,
 				createBy: getUser?._id,
 				lastUpdateBy: getUser?._id,
 				shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),

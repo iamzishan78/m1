@@ -155,13 +155,12 @@ const AttrsFillStyleDropdown = ({
 			};
 		});
 
-		setAttributeBasedStyles(prevStyles => ({
-			...prevStyles,
+		setAttributeBasedStyles({
 			[selectedValue.label]: options.reduce((acc, { label, style }) => {
 				acc[label] = style;
 				return acc;
 			}, {}),
-		}));
+		});
 
 		return options;
 	}, [filtersData, fillStyle]);

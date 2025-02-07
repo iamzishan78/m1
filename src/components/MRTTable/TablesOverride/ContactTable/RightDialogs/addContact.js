@@ -96,15 +96,20 @@ export default function AddContactDialogContent(props) {
 			...contactFormValues,
 		});
 
+		const updatedFormStateValues = Controller.getAllValues();
+
 		// got required contact values
 		const contact = extractValueRecursively({
-			...formStateValues,
-			ownerType: formStateValues?.ownerType ?? null,
+			...updatedFormStateValues,
+			ownerType: updatedFormStateValues?.ownerType ?? null,
 			createBy: getUser?._id,
 			lastUpdateBy: getUser?._id,
 		});
+
+		const { DialogKey, ...filteredContact } = contact;
+
 		await addContact({
-			variables: { contact },
+			variables: { contact: filteredContact },
 			refetchQueries: ['getPaginatedContacts', 'getContact', 'getESContacts', 'getDbData'],
 			awaitRefetchQueries: true,
 		});
