@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment, useContext } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { Controller } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -22,15 +22,16 @@ import EditIcon from '@material-ui/icons/Edit';
 import { useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
 import uniqBy from 'lodash/uniqBy';
+import PropTypes from 'prop-types';
 
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
-import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import DateField from 'components/Shared/components/Fields/DateField';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
+import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
@@ -80,6 +81,21 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
+	const onGlobalKeyDown = e => {
+		const id = e?.target?.id;
+
+		if (e.keyCode === KEYBOARD_KEYS.TAB) {
+			if (e.shiftKey) {
+				if (!document.getElementById(`field-${Number(id.split('-')[1]) - 1}`)) {
+					e.preventDefault();
+					return;
+				} else {
+					document.getElementById(`field-${Number(id.split('-')[1])}`).focus();
+				}
+			}
+		}
+	};
+
 	useEffect(() => {
 		document.addEventListener('keydown', onGlobalKeyDown, false);
 		document.addEventListener('blur', () => {});
@@ -127,21 +143,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 		}
 	}, [metaDataRes, agreementDetails, globalStateValues.user?.mongoId]);
 
-	const onGlobalKeyDown = e => {
-		const id = e?.target?.id;
-
-		if (e.keyCode === KEYBOARD_KEYS.TAB) {
-			if (e.shiftKey) {
-				if (!document.getElementById(`field-${Number(id.split('-')[1]) - 1}`)) {
-					e.preventDefault();
-					return;
-				} else {
-					document.getElementById(`field-${Number(id.split('-')[1])}`).focus();
-				}
-			}
-		}
-	};
-
 	const addAgreementCustomData = data => {
 		const customData = copy(agreementDetails.custom_data) ?? {};
 		data.forEach(d => {
@@ -181,7 +182,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 					) : undefined;
 
 				return (
-					<Grid item xs={12} key={index + field.label + field.key}>
+					<Grid item xs={12} key={field.label + field.key + field._id}>
 						<Grid container className={classes.gridStyle} style={{ display: 'flex', justifyContent: 'space-between' }}>
 							<Grid
 								item
@@ -216,9 +217,35 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 									setIsHovered(false);
 								}}
 							>
-								<Fragment key={index}>
-									{(field.type === 'text' ||
-										field.type === 'number' ||
+								<Fragment>
+									{field.type === 'text' && (
+										<CustomTextField
+											id={`field-${field.key}`}
+											control={control}
+											fieldConfig={{
+												disabled: field?.disabled,
+												fullWidth: true,
+												variant: 'outlined',
+												margin: 'dense',
+											}}
+											fieldAttributes={{
+												name: field.key,
+												defaultValue: get(agreementDetails, `${field.key}`, ''),
+												InputProps: {
+													...field.InputProps,
+													endAdornment,
+												},
+											}}
+											fieldEvents={{
+												onBlur: value => {
+													console.log(value, field.key);
+
+													offClickHandler(field.key, value);
+												},
+											}}
+										/>
+									)}
+									{(field.type === 'number' ||
 										field.type === 'date' ||
 										field.type === 'dropdown' ||
 										field.type === 'multiselect' ||
@@ -229,24 +256,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 											render={params => {
 												return (
 													<Fragment>
-														{field.type === 'text' && (
-															<CustomTextField
-																{...params}
-																id={`field-${field.key}`}
-																index={index}
-																field={field}
-																fieldKey={field.key}
-																defaultValue={get(agreementDetails, `${field.key}`, '')}
-																showLinkPopup={true}
-																offClickHandler={(key, value) => {
-																	offClickHandler(key, value);
-																}}
-																InputProps={{
-																	...field.InputProps,
-																	endAdornment,
-																}}
-															/>
-														)}
 														{field.type === 'number' && (
 															<NumberField
 																{...params}
@@ -317,7 +326,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 																value={get(agreementDetails, `${field.key}`, '')}
 															>
 																{field.options.map(option => (
-																	<MenuItem value={option.value ? option.value : option}>
+																	<MenuItem key={option.value ?? option} value={option.value ? option.value : option}>
 																		{option.label ? option.label : option}
 																	</MenuItem>
 																))}
@@ -366,30 +375,30 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 										<Controller
 											control={control}
 											name={field.key}
-											render={props => (
+											render={params => (
 												<TextField
-													{...props}
+													{...params}
 													id={`field-${field.key}`}
-													value={parseFloat(props.value).toFixed(TO_FIXED)}
+													value={parseFloat(params.value).toFixed(TO_FIXED)}
 													className={
 														isAcquisitionCostOverridden ? overrideClasses.valueOveridden : overrideClasses.valueNormal
 													}
 													variant="outlined"
 													margin="dense"
 													fullWidth
-													inputRef={props.ref}
+													inputRef={params.ref}
 													onWheel={e => e.target.blur()}
 													onChange={e => {
 														const toFixedValue = parseFloat(e.target.value).toFixed(TO_FIXED);
 														const calculatedAcquisitionCost = parseFloat(
 															agreementDetails?.calculated?.totalAcquisitionCost || 0
 														).toFixed(TO_FIXED);
-														props.onChange(toFixedValue);
+														params.onChange(toFixedValue);
 														setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
 													}}
 													onBlur={() =>
 														offClickHandler(field.key, {
-															value: Number(props.value),
+															value: Number(params.value),
 															overridden: isAcquisitionCostOverridden,
 														})
 													}
@@ -404,7 +413,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 																			const totalAcquisitionCost = parseFloat(
 																				agreementDetails?.calculated?.totalAcquisitionCost || 0
 																			).toFixed(TO_FIXED);
-																			props.onChange(totalAcquisitionCost);
+																			params.onChange(totalAcquisitionCost);
 																			offClickHandler(field.key, {
 																				value: Number(totalAcquisitionCost),
 																				overridden: isAcquisitionCostOverridden,
@@ -478,3 +487,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 		</Grid>
 	);
 }
+
+FieldsSection.propTypes = {
+	updateAgreement: PropTypes.func.isRequired,
+	control: PropTypes.object.isRequired,
+	agreementDetails: PropTypes.object,
+};
