@@ -6,6 +6,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import RoomIcon from '@material-ui/icons/Room';
 
+import PropTypes from 'prop-types';
+
 import { mapControlsController } from 'hookstate/mapControlsController';
 
 const useStyles = makeStyles(() => ({
@@ -24,7 +26,7 @@ const FlyToMap = ({ id, type, Action, disabled = false }) => {
 
 	const handleClick = () => {
 		if (Action) {
-			Action();
+			Action(history);
 		} else {
 			mapControlsController.updateState({ mapGridCardActivated: false });
 			history.push(`/map/${type}/${id}`);
@@ -50,6 +52,13 @@ const FlyToMap = ({ id, type, Action, disabled = false }) => {
 			</IconButton>
 		</Tooltip>
 	);
+};
+
+FlyToMap.propTypes = {
+	id: PropTypes.string.isRequired,
+	type: PropTypes.string.isRequired,
+	Action: PropTypes.func,
+	disabled: PropTypes.bool,
 };
 
 export default FlyToMap;
