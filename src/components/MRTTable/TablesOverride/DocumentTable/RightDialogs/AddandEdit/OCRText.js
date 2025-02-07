@@ -113,14 +113,14 @@ const OCRText = ({ selectedDocument }) => {
 
 		updatedLines[index] = { ...updatedLines[index], text: newText };
 
-		isChanged.set(!isEqual(updatedLines, data?.getFileOCRText?.data?.data));
+		isChanged.set(!isEqual(updatedLines, data?.getFileOCRText?.data));
 
 		lines.set(updatedLines);
 	};
 
 	useEffect(() => {
 		return () => {
-			if (!data?.getFileOCRText?.data?.data || !lines.get()?.length || !isChanged.get()) {
+			if (!data?.getFileOCRText?.data || !lines.get()?.length || !isChanged.get()) {
 				return;
 			}
 

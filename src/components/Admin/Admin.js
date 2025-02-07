@@ -5,7 +5,8 @@ import { Switch, Route, useLocation } from 'react-router-dom';
 import AdminOperation from 'components/Admin/AdminOperation';
 import AssetManagement from 'components/Admin/components/AssetManagement';
 import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
-import ExternalTools from 'components/ExternalTools';
+
+import Integrations from 'components/Integrations';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 import AdminSettings from 'components/Shared/AdminSettings';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
@@ -27,7 +28,7 @@ const Components = {
 	AdminOperation,
 	BulkDataEditing,
 	BulkDataEditingDetail,
-	ExternalTools,
+	Integrations,
 	AssetManagement,
 };
 
@@ -81,6 +82,7 @@ export default function Admin() {
 		const allPaths = JSON.parse(JSON.stringify(AdminManagementRoutes));
 		if (!isM1neralAddress(stateApp.user.email)) {
 			delete allPaths['ADMINOPERATION'];
+			delete allPaths['INTEGRATION'];
 		}
 
 		if (!isTestEnv()) {
@@ -106,6 +108,12 @@ export default function Admin() {
 
 		Object.keys(allPaths).forEach(path => {
 			if (allPaths[path].featureFlag === 'AlWAYSSHOW') {
+				allAllowedPaths[path] = allPaths[path];
+			}
+		});
+
+		Object.keys(allPaths).forEach(path => {
+			if (allPaths[path].featureFlag === 'DIALPAD_INTEGRATION') {
 				allAllowedPaths[path] = allPaths[path];
 			}
 		});

@@ -567,12 +567,11 @@ export const AdminManagementRoutes = {
 		noCheck: true,
 		showSettingString: false,
 	},
-	EXTERNALTOOLS: {
-		featureFlag: 'AlWAYSSHOW',
-		title: 'External Tools',
-		link: '/admin/externalTools',
-		component: 'ExternalTools',
-		noCheck: true,
+	INTEGRATION: {
+		featureFlag: 'DIALPAD_INTEGRATION',
+		title: 'Integrations',
+		link: '/admin/integrations',
+		component: 'Integrations',
 		showSettingString: false,
 	},
 	// CUSTOMIZATIONS: {

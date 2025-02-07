@@ -10,10 +10,10 @@ const useStyles = makeStyles(theme => ({
 			}
 		},
 		borderRadius: '4px',
-		'& #contPencilIcon, & #mergeTypeIcon, & #copyIcon, & #voiceMailIcon, & #textSmsIcon': {
+		'& #contPencilIcon, & #mergeTypeIcon, & #copyIcon, & #voiceMailIcon, & #textSmsIcon, & #dialpad': {
 			display: 'none', // use display none to remove extra space between icon and title
 		},
-		'&:hover #contPencilIcon, &:hover #mergeTypeIcon, &:hover #copyIcon, &:hover #voiceMailIcon, &:hover #textSmsIcon':
+		'&:hover #contPencilIcon, &:hover #mergeTypeIcon, &:hover #copyIcon, &:hover #voiceMailIcon, &:hover #textSmsIcon, &:hover #dialpad':
 			{
 				display: 'block',
 			},
@@ -82,6 +82,11 @@ const useStyles = makeStyles(theme => ({
 		'& .primary': {
 			color: 'rgba(23, 170, 221, 1)',
 		},
+	},
+	emailAdornment: {
+		cursor: 'pointer',
+		padding: '0px', // Remove extra padding
+		margin: '0 2px', // Adjust spacing between icons
 	},
 }));
 
