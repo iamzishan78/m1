@@ -562,32 +562,34 @@ function ContactDetailCard(props) {
 		if (data) {
 			// Set actions activity data
 			const { phoneNumber, type } = data;
-			const isCall = type === 'call';
+			if (type !== 'dialpad') {
+				const isCall = type === 'call';
 
-			const activityData = {
-				activity_name: isCall ? `Called ${getName(contactData)}` : `Texted ${getName(contactData)}`,
-				activity_type: type,
-				activity_outcome: isCall ? 'Left Message' : 'Sent Text',
-				activity_notes: isCall ? `Left VM at ${phoneNumber}` : `Sent text message to ${phoneNumber}`,
-				activity_status: { key: 'Completed', value: true },
-			};
+				const activityData = {
+					activity_name: isCall ? `Called ${getName(contactData)}` : `Texted ${getName(contactData)}`,
+					activity_type: type,
+					activity_outcome: isCall ? 'Left Message' : 'Sent Text',
+					activity_notes: isCall ? `Left VM at ${phoneNumber}` : `Sent text message to ${phoneNumber}`,
+					activity_status: { key: 'Completed', value: true },
+				};
 
-			setActivityDialog(true);
-			setActionActivityData(activityData);
-		} else {
-			if (dialpadConnect && stateApp?.user?.dialpad) {
-				dispatch(showInfoMessage('Initiating call...'));
-				initiateDialpadCall({
-					variables: { phoneNumber: data.phoneNumber },
-				}).then(({ data }) => {
-					if (data?.initiateDialpadCall?.success) {
-						dispatch(showSuccessMessage('Call initiated successfully'));
-					} else {
-						dispatch(showErrorMessage(data?.initiateDialpadCall?.message));
-					}
-				});
-			} else if (dialpadConnect && !stateApp?.user?.dialpad) {
-				dispatch(showErrorMessage('User not found on Dialpad. Please Contact Admin.'));
+				setActivityDialog(true);
+				setActionActivityData(activityData);
+			} else {
+				if (dialpadConnect && stateApp?.user?.dialpad) {
+					dispatch(showInfoMessage('Initiating call...'));
+					initiateDialpadCall({
+						variables: { phoneNumber: data.phoneNumber },
+					}).then(({ data }) => {
+						if (data?.initiateDialpadCall?.success) {
+							dispatch(showSuccessMessage('Call initiated successfully'));
+						} else {
+							dispatch(showErrorMessage(data?.initiateDialpadCall?.message));
+						}
+					});
+				} else if (dialpadConnect && !stateApp?.user?.dialpad) {
+					dispatch(showErrorMessage('User not found on Dialpad. Please Contact Admin.'));
+				}
 			}
 		}
 	};
