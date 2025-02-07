@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Button, Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles } from '@material-ui/core';
 
-import { TextField } from '@mui/material';
+import { Autocomplete, TextField } from '@mui/material';
 
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 
@@ -19,12 +19,13 @@ import { getURL } from 'utils/helper';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
 
+import DialpadIntegration from './DialpadIntegration';
+
 const useStyles = makeStyles(() => ({
 	root: {
 		marginTop: '65px',
 	},
 	formSection: {
-		padding: '20px',
 		backgroundColor: '#f5f5f5',
 		borderRadius: '8px',
 		marginBottom: '20px',
@@ -41,25 +42,36 @@ const useStyles = makeStyles(() => ({
 	endAdorment: {
 		marginRight: '-20px',
 	},
-	tab: {
-		border: '1px solid green',
-		marginRight: '8px',
-		padding: '3px 20px',
-		color: 'green',
-	},
+	actionBar: ({ isBackground }) => ({
+		padding: '10px 25px',
+		display: 'flex',
+		alignItems: 'center',
+		backgroundColor: isBackground ? '#F2F2F2' : 'transparent',
+		width: '100%',
+		minHeight: '65px',
+
+		'& .MuiSelect-select:focus, & .MuiOutlinedInput-root': {
+			backgroundColor: '#ffff',
+		},
+		'& .MuiButtonGroup-groupedContainedSecondary:not(:last-child)': {
+			borderColor: '#ffff',
+		},
+	}),
 }));
 
 const formFields = [
 	{
 		name: 'dialpad',
-		label: 'Dialpad Api Key',
+		value: 'dialpad',
+		label: 'VOIP - Dialpad',
 		buttonLabel: 'Sync Contacts',
 	},
 ];
 
-const ExternalTools = () => {
+const Integrations = () => {
 	const classes = useStyles();
 	const dispatch = useDispatch();
+	const [selectedOption, setSeletedOption] = useState(formFields[0]);
 
 	const [addExternalTool] = useMutation(ADD_EXTERNAL_TOOL);
 	const [syncDialpad] = useMutation(SYNC_DIALPAD);
@@ -77,7 +89,7 @@ const ExternalTools = () => {
 		const url = getURL();
 
 		addExternalTool({
-			variables: { toolName: fieldName, apikey: value, webhookUrl: url },
+			variables: { toolName: fieldName, apikey: value, webhookUrl: url.replace(/\/m1graph.*$/, '') },
 			refetchQueries: ['allExternalTools'],
 			awaitRefetchQueries: true,
 		}).then(({ data }) => {
@@ -119,39 +131,45 @@ const ExternalTools = () => {
 	return (
 		<div className={classes.root}>
 			<div className={classes.formSection}>
-				{formFields.map(field => (
-					<Grid key={field.name} container spacing={2}>
-						<>
-							<Grid item xs={9}>
-								<TextField
-									className={classes.inputField}
-									variant="outlined"
-									label={field.label}
-									value={apiKeys[field.name]}
-									onChange={e => {
-										adminOperationsController.updateState({ apiKeys: { ...apiKeys, [field.name]: e.target.value } });
-									}}
-									type={'text'}
-									placeholder="************"
-								/>
-							</Grid>
-							<Grid item xs={3} className={classes.buttonBar}>
-								<Button variant="contained" onClick={() => handleSave(apiKeys[field.name], field.name)} color="primary">
-									Save
-								</Button>
-								<Button variant="contained" onClick={() => handleSync(field.name)} color="primary">
-									{field.buttonLabel}
-								</Button>
-							</Grid>
-							{allTools?.allExternalTools?.find(tool => tool.toolName === field.name) && (
-								<span className={`${classes.tab}`}>Api key saved</span>
-							)}
-						</>
-					</Grid>
-				))}
+				<IntegrationsHeader selectedOption={selectedOption} setSeletedOption={setSeletedOption} />
 			</div>
+			{selectedOption?.value === 'dialpad' && (
+				<DialpadIntegration
+					apikey={apiKeys[selectedOption.name]}
+					handleSave={() => handleSave(apiKeys[selectedOption.name], selectedOption.name)}
+					apiKeyExists={allTools?.allExternalTools?.find(tool => tool.toolName === selectedOption.name)}
+					onChange={e => {
+						adminOperationsController.updateState({ apiKeys: { ...apiKeys, [selectedOption.name]: e.target.value } });
+					}}
+					handleSync={() => handleSync(selectedOption.name)}
+				/>
+			)}
 		</div>
 	);
 };
 
-export default ExternalTools;
+const IntegrationsHeader = ({ selectedOption, setSeletedOption, fullWidth = false }) => {
+	const classes = useStyles({ isBackground: true });
+	return (
+		<>
+			<Grid container direction="row" display="flex" justify="space-between" className={classes.actionBar}>
+				<Grid item xs={fullWidth ? 12 : 3} md={fullWidth ? 12 : 3}>
+					<Autocomplete
+						options={formFields}
+						getOptionLabel={option => option.label}
+						style={{ width: 300 }}
+						size="small"
+						defaultValue={selectedOption}
+						value={selectedOption}
+						onChange={(_, value) => {
+							setSeletedOption(value);
+						}}
+						renderInput={params => <TextField {...params} variant="outlined" value={selectedOption?.label} />}
+					/>
+				</Grid>
+			</Grid>
+		</>
+	);
+};
+
+export default Integrations;
