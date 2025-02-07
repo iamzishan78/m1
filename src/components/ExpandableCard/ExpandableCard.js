@@ -737,7 +737,7 @@ function ExpandableCard(props) {
 									<TrackToggleButton
 										target={target}
 										targetLabel={targetLabel}
-										targetSourceId={targetSourceId.toLowerCase()}
+										targetSourceId={targetSourceId?.toLowerCase()}
 										iconZiseSmall={!stateExpandableCard.expanded}
 									/>
 								)}

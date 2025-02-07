@@ -51,6 +51,7 @@ import { SRMode } from './MapBoxDrawRotate/index';
 import { AppContext } from '../../AppContext';
 import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
+import { GET_RECORD_FROM_RUN_TIME_MODEL } from 'graphQL/useQueryRunTimeModel';
 import { copy } from '../Shared/functions';
 import ZoomFault from './components/ZoomFault';
 import { extractUniqueFilters } from './DeckGL/helpers/common';
@@ -397,6 +398,40 @@ function Map({
 				id: paramId,
 			},
 		});
+
+		const { data: assetRecord } = await client.query({
+			query: GET_RECORD_FROM_RUN_TIME_MODEL,
+			variables: {
+				_id: paramId,
+				tableName: type,
+			},
+		});
+
+		if (assetRecord?.getRecordFromRunTimeModel?.asset?.assetShape) {
+			const assetShape = assetRecord?.getRecordFromRunTimeModel?.asset?.assetShape;
+			let feature = copy(assetShape.shapeJson);
+
+			feature.id = assetShape._id;
+			feature.properties.id = assetShape._id;
+			feature.layer = { id: assetShape.layer };
+			const key = 'selectedShape';
+			feature = { ...feature.properties, ...feature };
+
+			const interval = setInterval(() => {
+				if (window.mapRef) {
+					findBoundsMap([feature], window.mapRef);
+					drawBoundary(feature);
+					popupController.updateState({
+						[key]: feature,
+						expandedCard: true,
+						popupOpen: false,
+					});
+					clearInterval(interval);
+				}
+			}, 100);
+			return;
+		}
+
 		if (layer?.customLayer) {
 			let layers = globalStateController.getValue('layers');
 			if (!layers || layers?.length === 0) {

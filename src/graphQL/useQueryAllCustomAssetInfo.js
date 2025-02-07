@@ -7,7 +7,7 @@ export const ALL_CUSTOM_ASSET_INFO = gql`
 `;
 
 export const GET_CUSTOM_ASSET_INFO = gql`
-	query getCustomAssetInfo($_id: String, $name: String) {
-		getCustomAssetInfo(_id: $_id, name: $name)
+	query getCustomAssetInfo($_id: String, $tableName: String) {
+		getCustomAssetInfo(_id: $_id, tableName: $tableName)
 	}
 `;

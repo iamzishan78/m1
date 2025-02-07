@@ -765,14 +765,15 @@ const drawStateControllerHandler = state => {
 		const key = 'selectedShape';
 		feature = { ...feature.properties, ...feature };
 
+		actionClose(dispatch);
 		findBoundsMap([feature], window.mapRef);
 		drawBoundary(feature);
-		actionClose(dispatch);
 		popupController.updateState({
 			[key]: feature,
 			expandedCard: true,
 			popupOpen: false,
 		});
+		layerController.resetBounds(feature?.properties?.assetName); // reset bounds as AOI
 	};
 
 	const saveAndOpenMapAssetShapeDetail = (addRecordInRunTimeModel, dispatch, history, abstractData, currentAsset) => {
