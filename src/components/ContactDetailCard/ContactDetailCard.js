@@ -559,7 +559,10 @@ function ContactDetailCard(props) {
 				...stateApp,
 				currentContatcAtivities: data.contact.activityLog,
 			}));
-			if (data.contact?.dialpadIds?.length && stateApp.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION)) {
+			if (
+				data.contact?.dialpadIds?.length &&
+				stateApp.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION)
+			) {
 				setDialpadConnect(true);
 			}
 		}
@@ -661,6 +664,10 @@ function ContactDetailCard(props) {
 	};
 
 	const handleContactSync = async () => {
+		if (!contactData?.entityDetail?.firstName || !contactData?.entityDetail?.lastName) {
+			dispatch(showErrorMessage('First Name and Last Name are required to sync contact to Dialpad'));
+			return;
+		}
 		dispatch(showInfoMessage('Syncing contact to Dialpad...'));
 		syncContactToDialpad({
 			variables: { contactId: contactData?._id },
@@ -794,32 +801,32 @@ function ContactDetailCard(props) {
 									<Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" publicLeftBottom onlyTags />
 								</div>
 								<div className={classes.metaActions}>
-								<FeatureFlag feature={FEATURES.DIALPAD_INTEGRATION}>
-									<Tooltip
-										title={
-											contactData?.dialpadSyncAt
-												? `Last Synced: ${moment(contactData?.dialpadSyncAt).format('MM/DD/YYYY, h:mm a')}`
-												: `Sync to Dialpad`
-										}
-										placement="top-start"
-									>
-										<Button
-											color={dialpadConnect ? 'primary' : 'transparent'}
-											className={!dialpadConnect ? classes.contactDataButton : {}}
-											variant={dialpadConnect ? 'contained' : ''}
-											startIcon={<DialpadIcon color={dialpadConnect ? 'white' : 'grey'} />}
-											style={{ color: dialpadConnect ? 'white' : 'grey' }}
-											onClick={() => {
-												if (!dialpadConnect) {
-													handleContactSync();
-												} else {
-													window.open('https://dialpad.com/app/contacts/frequent', '_blank');
-												}
-											}}
+									<FeatureFlag feature={FEATURES.DIALPAD_INTEGRATION}>
+										<Tooltip
+											title={
+												contactData?.dialpadSyncAt
+													? `Last Synced: ${moment(contactData?.dialpadSyncAt).format('MM/DD/YYYY, h:mm a')}`
+													: `Sync to Dialpad`
+											}
+											placement="top-start"
 										>
-											{dialpadConnect ? 'Launch Dialpad' : 'Sync to Dialpad'}
-										</Button>
-									</Tooltip>
+											<Button
+												color={dialpadConnect ? 'primary' : 'transparent'}
+												className={!dialpadConnect ? classes.contactDataButton : {}}
+												variant={dialpadConnect ? 'contained' : ''}
+												startIcon={<DialpadIcon color={dialpadConnect ? 'white' : 'grey'} />}
+												style={{ color: dialpadConnect ? 'white' : 'grey' }}
+												onClick={() => {
+													if (!dialpadConnect) {
+														handleContactSync();
+													} else {
+														window.open('https://dialpad.com/app/contacts/frequent', '_blank');
+													}
+												}}
+											>
+												{dialpadConnect ? 'Launch Dialpad' : 'Sync to Dialpad'}
+											</Button>
+										</Tooltip>
 									</FeatureFlag>
 
 									<FeatureFlag feature={FEATURES.IDICORE}>
