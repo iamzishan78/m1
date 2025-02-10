@@ -4,6 +4,10 @@ import { Controller } from 'react-hook-form';
 import { Grid, TextField } from '@mui/material';
 
 import PropTypes from 'prop-types';
+import validator from 'validator';
+
+
+import UrlTooltip from './UrlTooltip';
 
 const classes = {
 	maxWidth: {
@@ -17,29 +21,28 @@ const classes = {
 		},
 	},
 };
-
 function CustomTextField({
 	watch = null,
 	error = null,
 	control = null,
 	fieldEvents: { onBlur = null, onKeyUp = null, onChange = null, onKeyDown = null } = {},
 	fieldConfig: {
-		autoFocus = false,
+		margin = '',
 		type = 'text',
 		size = 'medium',
-		fullWidth = true,
-		multiline = false,
-		variant = 'standard',
 		disabled = false,
 		required = false,
-		margin = '',
+		fullWidth = true,
+		multiline = false,
+		autoFocus = false,
+		variant = 'standard',
 		customStyleClass = '',
 	} = {},
 	fieldAttributes: {
 		name = '',
 		value: _value = '',
-		inputRef = null,
 		label = '',
+		inputRef = null,
 		placeholder = '',
 		InputProps = {},
 		InputLabelProps = {},
@@ -49,8 +52,8 @@ function CustomTextField({
 	...propsRest
 }) {
 	const [value, setValue] = useState(_value);
-
-	const [baseValueChanged, setbaseValueChanged] = useState(false);
+	const [baseValueChanged, setBaseValueChanged] = useState(false);
+	const [showUrlTooltip, setShowUrlTooltip] = useState(false);
 	const watchTextFieldValue = watch ? watch(name) : '';
 
 	useEffect(() => {
@@ -63,61 +66,81 @@ function CustomTextField({
 
 	useEffect(() => {
 		if (watchTextFieldValue && isValueOverridden) {
-			setbaseValueChanged(isValueOverridden(watchTextFieldValue));
+			setBaseValueChanged(isValueOverridden(watchTextFieldValue));
 		}
 	}, [watchTextFieldValue]);
 
-	const renderTextField = props => {
-		return (
-			<TextField
-				type={type}
-				size={size}
-				value={props ? props.value : value}
-				margin={margin}
-				autoFocus={autoFocus}
-				fullWidth={fullWidth}
-				multiline={multiline}
-				placeholder={placeholder}
-				disabled={disabled ?? false}
-				defaultValue={defaultValue}
-				variant={variant || 'filled'}
-				data-testid={`${name}-field`}
-				className={customStyleClass}
-				inputRef={inputRef || props?.ref || null}
-				onKeyUp={onKeyUp ? onKeyUp : () => {}}
-				onKeyDown={onKeyDown ? onKeyDown : () => {}}
-				sx={baseValueChanged ? classes.baseValueChanged : classes.maxWidth}
-				InputProps={InputProps}
-				InputLabelProps={InputLabelProps}
-				error={required && !watchTextFieldValue && error}
-				onChange={e => {
-					onChange?.(e.target.value);
-					props?.onChange?.(e);
-					if (!onChange && !props?.onChange) {
-						setValue(e.target.value);
-					}
-				}}
-				onBlur={e => {
-					onBlur?.(e.target.value || '');
-				}}
-				{...propsRest}
-			/>
-		);
+	const handleTooltipOpen = value => {
+		let isValidUrl = false;
+
+		if (value) {
+			isValidUrl = value?.split(' ')?.some(subString => validator.isURL(subString, { require_protocol: false }));
+		}
+
+		setShowUrlTooltip(isValidUrl);
 	};
 
-	if (control) {
+	const renderTextField = props => {
+		const textFieldValue = props ? props.value : value;
 		return (
-			<Grid item xs={12}>
-				{label && <h3>{label}</h3>}
-				<Controller control={control} name={name} render={props => renderTextField(props)} />
-			</Grid>
+			<div style={{ position: 'relative' }}>
+				<TextField
+					type={type}
+					size={size}
+					value={textFieldValue}
+					margin={margin}
+					autoFocus={autoFocus}
+					onFocus={() => handleTooltipOpen(textFieldValue)}
+					fullWidth={fullWidth}
+					multiline={multiline}
+					placeholder={placeholder}
+					disabled={disabled ?? false}
+					defaultValue={defaultValue}
+					variant={variant || 'filled'}
+					data-testid={`${name}-field`}
+					className={customStyleClass}
+					inputRef={inputRef || props?.ref || null}
+					onKeyUp={onKeyUp ? onKeyUp : () => {}}
+					onKeyDown={onKeyDown ? onKeyDown : () => {}}
+					onMouseEnter={() => handleTooltipOpen(textFieldValue)}
+					onMouseLeave={() => setShowUrlTooltip(false)}
+					sx={baseValueChanged ? classes.baseValueChanged : classes.maxWidth}
+					InputProps={InputProps}
+					InputLabelProps={InputLabelProps}
+					error={required && !watchTextFieldValue && error}
+					onChange={e => {
+						onChange?.(e.target.value);
+						props?.onChange?.(e);
+						if (!onChange && !props?.onChange) {
+							setValue(e.target.value);
+						}
+					}}
+					onBlur={e => {
+						onBlur?.(e.target.value || '');
+					}}
+					{...propsRest}
+				/>
+
+				{showUrlTooltip && (
+					<UrlTooltip
+						value={textFieldValue}
+						handleMouseEnter={() => setShowUrlTooltip(true)}
+						handleMouseLeave={() => setShowUrlTooltip(false)}
+						containerStyles={{ top: margin === 'dense' ? '8px' : margin === 'normal' ? '16px' : '0' }}
+					/>
+				)}
+			</div>
 		);
-	}
+	};
 
 	return (
 		<Grid item xs={12}>
 			{label && <h3>{label}</h3>}
-			{renderTextField()}
+			{control ? (
+				<Controller control={control} name={name} render={props => renderTextField(props)} />
+			) : (
+				renderTextField()
+			)}
 		</Grid>
 	);
 }
@@ -133,24 +156,26 @@ CustomTextField.propTypes = {
 		onKeyDown: PropTypes.func,
 	}),
 	fieldConfig: PropTypes.shape({
-		autoFocus: PropTypes.bool,
+		margin: PropTypes.string,
 		type: PropTypes.string,
 		size: PropTypes.oneOf(['small', 'medium', 'large']),
-		fullWidth: PropTypes.bool,
-		multiline: PropTypes.bool,
-		variant: PropTypes.oneOf(['standard', 'outlined', 'filled']),
 		disabled: PropTypes.bool,
 		required: PropTypes.bool,
-		margin: PropTypes.string,
+		fullWidth: PropTypes.bool,
+		multiline: PropTypes.bool,
+		autoFocus: PropTypes.bool,
+		variant: PropTypes.oneOf(['standard', 'outlined', 'filled']),
+		customStyleClass: PropTypes.string,
 	}),
 	fieldAttributes: PropTypes.shape({
 		name: PropTypes.string,
 		value: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-		inputRef: PropTypes.object,
 		label: PropTypes.string,
+		inputRef: PropTypes.any,
 		placeholder: PropTypes.string,
 		InputProps: PropTypes.object,
 		InputLabelProps: PropTypes.object,
+		defaultValue: PropTypes.any,
 		isValueOverridden: PropTypes.func,
 	}),
 	ref: PropTypes.object,
