@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-use-before-define */
 import React from 'react';
@@ -7,32 +6,33 @@ import { hookstate } from '@hookstate/core';
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
 
 import { extractUniqueFilters, filterValidFilters } from 'components/Map/DeckGL/helpers/common';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
-import CustomFieldText from 'components/MRTTable/Common/MetaData/CustomFieldText';
 import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController';
 import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
 import { formatGridViewToMRT, removeSpaces } from 'components/MRTTable/utils/helper';
+import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomTypography from 'components/Shared/FormsFieldsData/Fields/CustomTypography';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
+import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { hookStateController } from 'hookstate/hookStateController';
+
+import { compareObjects } from 'utils/helper';
+
 import { detailCardController } from './detailCardController';
-
-import { compareObjects, validateUrl } from 'utils/helper';
-
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { tableESState, tableGlobalState, tableInitialState } from './initialStates';
 
 function isDateFormat(inputString) {
@@ -102,20 +102,25 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 				}
 
 				if (item?.type === 'text') {
-					const MAX_TEXT_SIZE = 40;
-
-					if (validateUrl(value)) {
-						return (
-							<a href={value} target="_blank" rel="noreferrer">
-								{value?.length > MAX_TEXT_SIZE ? value?.slice(0, MAX_TEXT_SIZE) + '...' : value}
-							</a>
-						);
-					}
 					return (
-						<CustomFieldText
-							value={value}
-							onCustomKeyChange={value => {
-								onCustomKeyChange(client, row?.original, value, item);
+						<CustomTextField
+							fieldAttributes={{
+								name: key,
+								defaultValue: value,
+								placeholder: 'N/A',
+								InputProps: { disableUnderline: true },
+							}}
+							fieldEvents={{
+								onBlur: updatedValue => {
+									if (value !== updatedValue.trim()) {
+										onCustomKeyChange(client, row?.original, updatedValue.trim(), item);
+									}
+								},
+							}}
+							fieldConfig={{
+								size: 'small',
+								variant: 'standard',
+								fullWidth: true,
 							}}
 						/>
 					);
@@ -125,7 +130,7 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 					return <>{formatDate(value)}</>;
 				}
 
-				return <>{value}</>;
+				return <CustomTypography value={value} />;
 			},
 		};
 	});
@@ -165,7 +170,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 	// Create dynamic grid schema
 	const dynamicTableSchema = columns
 		.filter(column => !!column?.isGridDisplayed)
-		.map((item, index) => {
+		.map(item => {
 			let key, modelName;
 			if (fetchDynamicSchema.isAssociatedModel) {
 				key = `${fetchDynamicSchema?.associationKey || 'relatedObject'}.${item.mappingKey}`;
@@ -191,7 +196,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 				size: 350,
 				isPinned: !!item?.isControlColumn,
 				Cell: ({ renderedCellValue, row }) => {
-					if (!!item?.isControlColumn) {
+					if (item?.isControlColumn) {
 						const id = fetchDynamicSchema.isAssociatedModel
 							? row?.original?.[fetchDynamicSchema?.associationKey]?._id
 							: row.getValue('_id');
@@ -232,7 +237,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 	return _Schema;
 }
 
-async function fetchGridViews(client, module, tableKey, gridViewOverride) {
+async function fetchGridViews(client, module) {
 	// Retrieve the current user's information from a global state controller.
 	const user = globalStateController.getValue('user');
 
@@ -1194,7 +1199,9 @@ const tableGlobalControllerHandler = state => ({
 	initializeGlobalStates: async client => {
 		// Populating users state in tableGlobalController
 		const users = state.users.get({ noproxy: true });
-		if (users && users.length > 0) return;
+		if (users && users.length > 0) {
+			return;
+		}
 		const result = await client.query({
 			variables: {},
 			query: GETMONGOUSERS,

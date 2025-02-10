@@ -37,7 +37,7 @@ function CustomTextField({
 	} = {},
 	fieldAttributes: {
 		name = '',
-		value = '',
+		value: _value = '',
 		inputRef = null,
 		label = '',
 		placeholder = '',
@@ -48,8 +48,18 @@ function CustomTextField({
 	} = {},
 	...propsRest
 }) {
+	const [value, setValue] = useState(_value);
+
 	const [baseValueChanged, setbaseValueChanged] = useState(false);
 	const watchTextFieldValue = watch ? watch(name) : '';
+
+	useEffect(() => {
+		if (value) {
+			return;
+		}
+
+		setValue(defaultValue);
+	}, [name, defaultValue]);
 
 	useEffect(() => {
 		if (watchTextFieldValue && isValueOverridden) {
@@ -57,7 +67,7 @@ function CustomTextField({
 		}
 	}, [watchTextFieldValue]);
 
-	const renderTextField = (props = {}) => {
+	const renderTextField = props => {
 		return (
 			<TextField
 				type={type}
@@ -81,7 +91,11 @@ function CustomTextField({
 				InputLabelProps={InputLabelProps}
 				error={required && !watchTextFieldValue && error}
 				onChange={e => {
-					onChange ? onChange(e.target.value) : props?.onChange(e);
+					onChange?.(e.target.value);
+					props?.onChange?.(e);
+					if (!onChange && !props?.onChange) {
+						setValue(e.target.value);
+					}
 				}}
 				onBlur={e => {
 					onBlur?.(e.target.value || '');
