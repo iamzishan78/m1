@@ -67,30 +67,30 @@ function LayerStyling() {
 
 	const selectedLayer = mapControlsStateValues.selectedLayer;
 
-	const layerType = selectedLayer.layerPaintProps[0]?.paintType;
+	const layerType = selectedLayer.layerPaintProps?.[0]?.paintType;
 
 	const initialFillColor =
 		layerType === 'fill'
-			? ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['fill-color'])
+			? ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['fill-color'])
 			: layerType === 'line'
-				? ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['line-color'])
-				: ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['circle-color']);
+				? ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['line-color'])
+				: ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['circle-color']);
 	const initialStrokeColor =
 		layerType === 'fill'
-			? ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['fill-outline-color'])
+			? ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['fill-outline-color'])
 			: layerType === 'line'
 				? undefined
-				: ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['circle-stroke-color']);
+				: ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['circle-stroke-color']);
 
 	let initialWidth;
 	if (layerType === 'circle') {
-		initialWidth = selectedLayer.layerPaintProps[0]?.paintProps['circle-stroke-width']
-			? selectedLayer.layerPaintProps[0]?.paintProps['circle-stroke-width']
+		initialWidth = selectedLayer.layerPaintProps?.[0]?.paintProps['circle-stroke-width']
+			? selectedLayer.layerPaintProps?.[0]?.paintProps['circle-stroke-width']
 			: 0;
 	}
 	if (layerType === 'line') {
-		initialWidth = selectedLayer.layerPaintProps[0]?.paintProps['line-width']
-			? selectedLayer.layerPaintProps[0]?.paintProps['line-width']
+		initialWidth = selectedLayer.layerPaintProps?.[0]?.paintProps['line-width']
+			? selectedLayer.layerPaintProps?.[0]?.paintProps['line-width']
 			: 1;
 	}
 
@@ -141,8 +141,8 @@ function LayerStyling() {
 				((fillColor && fillColor.rgb && (fillColor.alpha || fillColor.alpha === 0)) ||
 					(strokeColor && strokeColor.rgb && (strokeColor.alpha || strokeColor.alpha === 0)))) ||
 			width ||
-			selectedLayer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
-			parseInt(selectedLayer.layerPaintProps[0]?.paintProps?.strokeWidth) !== parseInt(strokeWidth) ||
+			selectedLayer.layerPaintProps?.[0]?.labelProps?.visibility !== layerLabelVisibility ||
+			parseInt(selectedLayer.layerPaintProps?.[0]?.paintProps?.strokeWidth) !== parseInt(strokeWidth) ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
