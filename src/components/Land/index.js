@@ -96,12 +96,14 @@ export default function Land() {
 
 	useEffect(() => {
 		// Get all custom assets
-		getAllCustomAsset({
-			variables: {
-				type: 'Custom',
-			},
-		});
-	}, [getAllCustomAsset]);
+		if (activeModule.tableName) {
+			getAllCustomAsset({
+				variables: {
+					type: 'Custom',
+				},
+			});
+		}
+	}, [getAllCustomAsset, activeModule.tableName]);
 
 	useEffect(() => {
 		if (allCustomAsset) {
