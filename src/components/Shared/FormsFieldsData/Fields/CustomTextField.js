@@ -72,7 +72,7 @@ function CustomTextField({
 			<TextField
 				type={type}
 				size={size}
-				value={props?.value || value}
+				value={props ? props.value : value}
 				margin={margin}
 				autoFocus={autoFocus}
 				fullWidth={fullWidth}
@@ -121,6 +121,7 @@ function CustomTextField({
 		</Grid>
 	);
 }
+
 CustomTextField.propTypes = {
 	watch: PropTypes.func,
 	error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
