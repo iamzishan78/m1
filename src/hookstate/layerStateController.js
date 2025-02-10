@@ -30,7 +30,7 @@ import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSetti
 import { GET_PROJECTED_LAYERS } from 'graphQL/useQueryAllLayerSettingsByUser';
 import { GETLAYERBYID } from 'graphQL/useQueryLayerById';
 
-import { getLayerKey } from 'hookstate/helpers';
+import { generateDataFunc, getLayerKey, getWellColor } from 'hookstate/helpers';
 import { hookStateController } from 'hookstate/hookStateController';
 
 import { drawController } from './drawStateController';
@@ -40,80 +40,6 @@ import { layerFiltersController } from './layerFiltersController';
 import { mapControlsController } from './mapControlsController';
 import { navController } from './navStateController';
 import { popupController } from './popupStateController';
-
-const getWellColor = w => {
-	// Check if the well status is of Permit type
-	const isWellPermitStatus = ['PERMIT', 'PERMIT - NEW DRILL', 'PERMIT - EXISTING WELL'].includes(
-		w?.properties?.wellStatus
-	);
-
-	// Switch on whether wellStatus or wellType
-	const switchType = isWellPermitStatus ? w.properties.wellStatus : w.properties.wellType;
-	switch (switchType) {
-		// rgb(2, 207, 53)
-		case 'OIL':
-		case 'OIL AND GAS':
-			return [2, 207, 53]; // green
-
-		// rgb(230, 15, 15)
-		case 'GAS':
-			return [230, 15, 15]; // red
-
-		// rgb(74, 211, 242)
-		case 'WATER':
-			return [74, 211, 242]; // blue
-
-		// rgb(251, 152, 40)
-		case 'PERMIT':
-		case 'PERMIT - NEW DRILL':
-		case 'PERMIT - EXISTING WELL':
-			return [251, 152, 40]; // orange
-
-		// rgba(30, 26, 26, 0.55)
-		case 'PERMITTED':
-			return [251, 152, 40]; // orange
-
-		// rgb(192, 0, 0)
-		default:
-			return [58, 58, 58]; // default dark for permitted
-	}
-};
-
-const generateDataFunc = () => {
-	async function* getData(initalData) {
-		let data = initalData;
-		let pausePromise;
-		// Expose a function to externally pause the generator
-
-		while (true) {
-			if (pausePromise) {
-				// Pause until the external promise is resolved
-				// eslint-disable-next-line no-await-in-loop
-				await pausePromise;
-			}
-			if (data) {
-				let dataToReturn = data;
-				data = null;
-				yield dataToReturn;
-			} else {
-				// No new data, pause until the external promise is resolved
-
-				pausePromise = new Promise(resolve => {
-					// Expose a function to externally pause the generator
-					getData.feedData = d => {
-						data = d;
-						pausePromise = null; // Reset the promise after resolving
-						resolve();
-					};
-				});
-				// eslint-disable-next-line no-await-in-loop
-				await pausePromise;
-			}
-		}
-	}
-
-	return getData;
-};
 
 const deckLayers = {};
 
