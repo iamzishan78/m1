@@ -96,6 +96,15 @@ const LandSearch = () => {
 		[]
 	);
 
+	useEffect(() => {
+		handleChange('');
+		setSearch('');
+		setStateApp(stateApp => ({
+			...stateApp,
+			landSearchQuery: '',
+		}));
+	}, [activeModule?.title]);
+
 	return (
 		<div className={classes.search}>
 			<TextField
