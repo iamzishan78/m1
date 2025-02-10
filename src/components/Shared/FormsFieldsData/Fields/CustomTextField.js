@@ -46,6 +46,7 @@ function CustomTextField({
 		defaultValue = null,
 		isValueOverridden = () => false,
 	} = {},
+	...propsRest
 }) {
 	const [baseValueChanged, setbaseValueChanged] = useState(false);
 	const watchTextFieldValue = watch ? watch(name) : '';
@@ -80,15 +81,12 @@ function CustomTextField({
 				InputLabelProps={InputLabelProps}
 				error={required && !watchTextFieldValue && error}
 				onChange={e => {
-					onChange ? onChange(e.target.value) : props?.onChange(e.target.value);
+					onChange ? onChange(e.target.value) : props?.onChange(e);
 				}}
 				onBlur={e => {
-					let value = e.target.value || '';
-					if (onBlur) {
-						value = onBlur(value);
-					}
-					props?.onChange && props?.onChange(value);
+					onBlur?.(e.target.value || '');
 				}}
+				{...propsRest}
 			/>
 		);
 	};
