@@ -259,7 +259,9 @@ function SourceManager(props) {
 	};
 
 	useEffect(() => {
-		layerController.getProjectedLayers();
+		if (layerController.getValue('projectedLayers').length === 0) {
+			layerController.getProjectedLayers();
+		}
 	}, []);
 
 	useEffect(() => {

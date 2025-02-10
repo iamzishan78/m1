@@ -22,7 +22,9 @@ export default function LayerManager({ search }) {
 	const classes = useStyles();
 
 	useEffect(() => {
-		layerController.getProjectedLayers();
+		if (layerController.getValue('projectedLayers').length === 0) {
+			layerController.getProjectedLayers();
+		}
 	}, []);
 
 	return (

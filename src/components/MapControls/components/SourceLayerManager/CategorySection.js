@@ -26,7 +26,6 @@ import PropTypes from 'prop-types';
 import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { truncate } from 'components/Shared/functions';
 import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
 
 import { layerController } from 'hookstate/layerStateController';
@@ -110,8 +109,6 @@ const StyledListItem = withStyles(theme => ({
 	},
 }))(ListItem);
 
-const THIRTY = 30;
-
 const handleGroups = layers => {
 	const groupHandled = [];
 	for (let index = 0; index < layers.length; index++) {
@@ -146,6 +143,8 @@ export default function CategorySection({ title, search, layerCategory }) {
 		layerStateValues: { projectedLayers },
 	} = layerController.useState(['projectedLayers'], 'layerStateValues');
 
+	const allowDelete = layerCategory === 'UD layer';
+
 	const [openUDLayers, setUDLayersStates] = useState([]);
 
 	const SectionLayers = React.useMemo(() => {
@@ -157,13 +156,6 @@ export default function CategorySection({ title, search, layerCategory }) {
 		);
 		return handleGroups(layers);
 	}, [projectedLayers]);
-
-	const checkIfDeleteAllow = layer => {
-		if (layer.name === 'Agreements' || layer.groupName === 'Agreements') {
-			return false;
-		}
-		return true;
-	};
 
 	const handleCheckAllLayers = async (value, layerType) => {
 		const categoryLayers = projectedLayers.filter(layer => layer.layerCategory === layerType);
@@ -307,7 +299,7 @@ export default function CategorySection({ title, search, layerCategory }) {
 													openUd={openUDLayers.includes(index)}
 													openEditField={layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'}
 												/>
-												{checkIfDeleteAllow(layer) && (
+												{allowDelete && (
 													<MoreHorizIcon
 														aria-controls={'source-menu'}
 														className={'moreIcon ' + classes.moreIcon}
@@ -346,7 +338,7 @@ export default function CategorySection({ title, search, layerCategory }) {
 																groupLayer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'
 															}
 														/>
-														{checkIfDeleteAllow(groupLayer) && (
+														{allowDelete && (
 															<MoreHorizIcon
 																aria-controls={'source-menu'}
 																className={'moreSourceIcon ' + classes.moreSourceIcon}
@@ -377,8 +369,14 @@ export default function CategorySection({ title, search, layerCategory }) {
 									}
 									inputProps={{ 'aria-label': 'primary checkbox' }}
 								/>
-								{/* Override layer manager name of Wells */}
-								<ListItemText id={labelId} primary={truncate(layer.layerName, THIRTY)} />
+								{/* Group Layer */}
+								<EditableTextField
+									onChange={(layer, name) => layerController.handleLayerChange(layer, 'layerName', name)}
+									item={layer}
+									name={layer.layerName}
+									isEditable={false}
+									openEditField={layer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'}
+								/>
 
 								{layer.identifier === 'Units' && (
 									<FeatureFlag feature={FEATURES.UNITIMPORT}>
@@ -410,6 +408,18 @@ export default function CategorySection({ title, search, layerCategory }) {
 											</IconButton>
 										</ListItemSecondaryAction>
 									</FeatureFlag>
+								)}
+
+								{allowDelete && (
+									<MoreHorizIcon
+										aria-controls={'source-menu'}
+										className={'moreSourceIcon ' + classes.moreSourceIcon}
+										onClick={e => {
+											e.stopPropagation();
+											handleClick(e);
+											setActionItem({ layer: layer });
+										}}
+									/>
 								)}
 							</StyledListItem>
 						);
