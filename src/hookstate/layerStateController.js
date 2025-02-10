@@ -696,7 +696,7 @@ const layerStateControllerHandler = state => {
 			pickable,
 			visible,
 			showable: dbLayer.layerSettings.showable,
-			opacity: isDrawing ? 0.2 : 1,
+			opacity: isDrawing ? 0.1 : 1,
 		};
 
 		const labelProps =
