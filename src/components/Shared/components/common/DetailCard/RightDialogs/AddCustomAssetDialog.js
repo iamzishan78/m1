@@ -200,17 +200,25 @@ export default function AddCustomAssetDialog({ ...props }) {
 		});
 	};
 
-	const formSchema = currentAsset?.modelKeys?.map(field => ({
-		label: field.label,
-		name: field.mappingKey,
-		type: field.keyType,
-		renderField: field.keyType,
-		required: field.isRequired,
-		onChange: value => {
-			console.log(field.mappingKey, value);
-			setValue(field.mappingKey, value);
-		},
-	}));
+	const formSchema = currentAsset?.modelKeys?.map(field => {
+		const booleanOptions = [
+			{ value: true, label: 'Yes' },
+			{ value: false, label: 'No' },
+		];
+
+		return {
+			label: field.label,
+			name: field.mappingKey,
+			type: field.keyType,
+			renderField: field.keyType,
+			options: field.keyType === 'boolean' ? booleanOptions : [],
+			required: field.isRequired,
+			onChange: value => {
+				console.log(field.mappingKey, value);
+				setValue(field.mappingKey, value);
+			},
+		};
+	});
 
 	return (
 		<div className={classes.move}>

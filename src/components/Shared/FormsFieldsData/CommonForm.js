@@ -111,6 +111,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 						break;
 
 					case 'radioButton':
+					case 'boolean':
 						renderedField = (
 							<RadioGroup key={JSON.stringify(item)} item={item} control={control} dialogKey={dialogKey} />
 						);
