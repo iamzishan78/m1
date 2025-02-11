@@ -1,13 +1,9 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
-import { Grid, InputAdornment, CircularProgress, IconButton } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
-
-import AddIcCallIcon from '@mui/icons-material/AddIcCall';
 
 import { useMutation } from '@apollo/client';
 import { get, set, isEmpty } from 'lodash';
@@ -19,8 +15,6 @@ import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { NumberFormatComma } from 'components/Shared/Forms/Formatting/NumberFormatComma';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
-import TextSmsIcon from 'components/Shared/svgIcons/textsms';
-import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
@@ -200,6 +194,14 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 										defaultValue: field.value,
 										inputRef: field.inputRef,
 										InputLabelProps: { shrink: true },
+										endAdornmentProps: {
+											isEmail: field.type === 'email',
+											isPhoneNumber: field.isPhoneNumber,
+											isLoading: activeLoadingField === field.key,
+											handleAction: handleQuickActionActivity,
+											dialpadFeature,
+											dialpadIds: contactData?.dialpadIds,
+										},
 										InputProps: {
 											inputComponent:
 												field.type === 'currency'
@@ -207,86 +209,6 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 													: field.key.includes('nraSum')
 														? NumberFormatComma
 														: undefined,
-											endAdornment:
-												field.type === 'email' && contactData[field.key] ? (
-													<InputAdornment position="end">
-														{/* Email quick actions icons */}
-														<Tooltip title={'Email'} placement="top">
-															<IconButton
-																id="mail-icon"
-																href={`mailto: ${contactData.primaryEmail}`}
-																className={classes.emailAdornment}
-															>
-																<EmailOutlinedIcon htmlColor="#757575" />
-															</IconButton>
-														</Tooltip>
-													</InputAdornment>
-												) : field.isPhoneNumber && contactData[field.key] ? (
-													<>
-														{/* Phone quick actions icons */}
-														<InputAdornment position="end">
-															<Tooltip title={'Voice Mail'} placement="top">
-																<IconButton
-																	id="voicemail-icon"
-																	className={classes.emailAdornment}
-																	onClick={() =>
-																		handleQuickActionActivity({
-																			phoneNumber: contactData[field.key],
-																			type: 'call',
-																		})
-																	}
-																>
-																	<VoiceMailIcon htmlColor="#757575" />
-																</IconButton>
-															</Tooltip>
-														</InputAdornment>
-
-														<InputAdornment position="end">
-															<Tooltip title={'Text SMS'} placement="top">
-																<IconButton
-																	id="textsms-icon"
-																	className={classes.emailAdornment}
-																	onClick={() =>
-																		handleQuickActionActivity({
-																			phoneNumber: contactData[field.key],
-																			type: 'text_message',
-																		})
-																	}
-																>
-																	<TextSmsIcon htmlColor="#757575" />
-																</IconButton>
-															</Tooltip>
-														</InputAdornment>
-
-														<InputAdornment position="end">
-															<Tooltip title={'Call'} placement="top">
-																<IconButton
-																	id="call-icon"
-																	href={
-																		contactData?.dialpadIds?.length && dialpadFeature
-																			? ''
-																			: `tel: ${contactData[field.key]}`
-																	}
-																	className={classes.emailAdornment}
-																	onClick={() => {
-																		contactData?.dialpadIds?.length &&
-																			dialpadFeature &&
-																			handleQuickActionActivity({
-																				phoneNumber: contactData[field.key],
-																				type: 'dialpad',
-																			});
-																	}}
-																>
-																	<AddIcCallIcon htmlColor="#757575" />
-																</IconButton>
-															</Tooltip>
-														</InputAdornment>
-													</>
-												) : (
-													activeLoadingField === field.key && (
-														<CircularProgress className={classes.loader} size={22} color="secondary" />
-													)
-												),
 										},
 										resetOveriddenValue: () => {
 											const key = `evaluatedContactInterests.${field.key.split('.')[1]}`;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 
-import { Autorenew } from '@mui/icons-material';
-import { Grid, TextField } from '@mui/material';
+import { AddIcCall, Autorenew, EmailOutlined, Textsms, Voicemail } from '@mui/icons-material';
+import { CircularProgress, Grid, IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
 
 import PropTypes from 'prop-types';
 import validator from 'validator';
@@ -57,6 +57,7 @@ function CustomTextField({
 		defaultValue = null,
 		isValueOverridden = () => false,
 		resetOveriddenValue,
+		endAdornmentProps,
 	} = {},
 	...propsRest
 }) {
@@ -134,6 +135,77 @@ function CustomTextField({
 									}
 								}}
 							/>
+						) : endAdornmentProps?.isEmail ? (
+							<InputAdornment position="end">
+								<Tooltip title={'Email'} placement="top">
+									<IconButton id="mail-icon" href={`mailto: ${textFieldValue}`} className={classes.emailAdornment}>
+										<EmailOutlined htmlColor="#757575" />
+									</IconButton>
+								</Tooltip>
+							</InputAdornment>
+						) : endAdornmentProps?.isPhoneNumber ? (
+							<>
+								{/* Phone quick actions icons */}
+								<InputAdornment position="end">
+									<Tooltip title={'Voice Mail'} placement="top">
+										<IconButton
+											id="voicemail-icon"
+											className={classes.emailAdornment}
+											onClick={() =>
+												endAdornmentProps.handleAction({
+													phoneNumber: textFieldValue,
+													type: 'call',
+												})
+											}
+										>
+											<Voicemail htmlColor="#757575" />
+										</IconButton>
+									</Tooltip>
+								</InputAdornment>
+
+								<InputAdornment position="end">
+									<Tooltip title={'Text SMS'} placement="top">
+										<IconButton
+											id="textsms-icon"
+											className={classes.emailAdornment}
+											onClick={() =>
+												endAdornmentProps.handleAction({
+													phoneNumber: textFieldValue,
+													type: 'text_message',
+												})
+											}
+										>
+											<Textsms htmlColor="#757575" />
+										</IconButton>
+									</Tooltip>
+								</InputAdornment>
+
+								<InputAdornment position="end">
+									<Tooltip title={'Call'} placement="top">
+										<IconButton
+											id="call-icon"
+											href={
+												endAdornmentProps?.dialpadIds?.length && endAdornmentProps.dialpadFeature
+													? ''
+													: `tel: ${textFieldValue}`
+											}
+											className={classes.emailAdornment}
+											onClick={() => {
+												endAdornmentProps?.dialpadIds?.length &&
+													endAdornmentProps.dialpadFeature &&
+													endAdornmentProps.handleAction({
+														phoneNumber: textFieldValue,
+														type: 'dialpad',
+													});
+											}}
+										>
+											<AddIcCall htmlColor="#757575" />
+										</IconButton>
+									</Tooltip>
+								</InputAdornment>
+							</>
+						) : endAdornmentProps?.isLoading ? (
+							<CircularProgress size={22} color="secondary" />
 						) : (
 							InputProps.endAdornment
 						),
