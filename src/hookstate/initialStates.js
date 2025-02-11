@@ -5,6 +5,8 @@ import { copy } from 'components/Shared/functions';
 
 import { simpleAuthBypass } from 'utils/data';
 
+import { baseMapLayers, heatLayers } from 'LayerConfig';
+
 /* -------------------------------------------------------------------------- */
 /*                              Global Controller                             */
 /* -------------------------------------------------------------------------- */
@@ -80,6 +82,11 @@ export const layerStateInitialState = {
 	recalculate: false,
 
 	wellListFromSearch: [], // Not Moved
+
+	baseMapLayers: baseMapLayers,
+	checkedBaseLayers: [0, 1, 2, 3, 4],
+	heatLayers: heatLayers,
+	checkedHeats: [],
 };
 
 export const layerState = hookstate(copy(layerStateInitialState));

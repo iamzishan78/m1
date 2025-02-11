@@ -147,7 +147,10 @@ function Map({
 		],
 		'mapStateValues'
 	);
-	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
+	const { wellListFromSearch, baseMapLayers, checkedBaseLayers, layerStateValues } = layerController.useState(
+		['wellListFromSearch', 'baseMapLayers', 'checkedBaseLayers'],
+		'layerStateValues'
+	);
 	const {
 		stateValues: { currentAssetRecord },
 	} = detailCardController.useState(['currentAssetRecord'], 'stateValues');
@@ -569,11 +572,11 @@ function Map({
 	useEffect(() => {
 		// USE EFFECT FOR BASEMAP LAYER HANDLING
 		const mapLayers = copy(globalState.stateValues.layers);
-		if (!stateApp.baseMapLayers?.length || !map) {
+		if (!layerStateValues.baseMapLayers?.length || !map) {
 			return;
 		}
 
-		const getBaseMapIndex = name => stateApp.baseMapLayers.findIndex(layer => layer.name === name);
+		const getBaseMapIndex = name => layerStateValues.baseMapLayers.findIndex(layer => layer.name === name);
 
 		const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
 		const landLayerVisible = landLayer?.layerSettings?.visiable && landLayer?.layerSettings?.showable;
@@ -581,21 +584,20 @@ function Map({
 		const layersToToggle = ['Land Grid', 'Roads', 'Map Labels'];
 		const indicesToToggle = layersToToggle.map(getBaseMapIndex).filter(index => index !== -1);
 
-		setStateApp(state => ({
-			...state,
+		layerController.updateState({
 			checkedBaseLayers: landLayerVisible
-				? [...new Set([...state.checkedBaseLayers, ...indicesToToggle])]
-				: state.checkedBaseLayers.filter(index => !indicesToToggle.includes(index)),
-		}));
-	}, [map, stateApp.baseMapLayers, globalState.layers]);
+				? [...new Set([...layerStateValues.checkedBaseLayers, ...indicesToToggle])]
+				: layerStateValues.checkedBaseLayers.filter(index => !indicesToToggle.includes(index)),
+		});
+	}, [map, baseMapLayers, globalState.layers]);
 
 	useEffect(() => {
 		// USE EFFECT FOR BASEMAP LAYER HANDLING
 		const mapLayers = copy(globalState.stateValues.layers);
-		if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
+		if (layerStateValues.baseMapLayers && layerStateValues.baseMapLayers.length > 0 && map) {
 			const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
-			stateApp.baseMapLayers?.forEach((l, index) => {
-				if (l.name === 'Land Grid' && !stateApp.checkedBaseLayers.includes(index)) {
+			layerStateValues.baseMapLayers?.forEach((l, index) => {
+				if (l.name === 'Land Grid' && !layerStateValues.checkedBaseLayers.includes(index)) {
 					if (landLayer) {
 						landLayer.layerSettings.visiable = false;
 						globalState.layers.set([...mapLayers]);
@@ -609,21 +611,21 @@ function Map({
 				});
 			});
 
-			if (stateApp.checkedBaseLayers.length > 0) {
-				const layers = stateApp.checkedBaseLayers.slice(0);
+			if (layerStateValues.checkedBaseLayers.length > 0) {
+				const layers = layerStateValues.checkedBaseLayers.slice(0);
 				layers.sort((a, b) => b - a);
 				if (layers.length > 0) {
 					let belowlayer = null;
 					for (let k = layers.length - 1; k >= 0; k--) {
 						const i = layers[k];
-						if (stateApp.baseMapLayers[i].name === 'Land Grid') {
+						if (layerStateValues.baseMapLayers[i].name === 'Land Grid') {
 							if (landLayer) {
 								landLayer.layerSettings.visiable = true;
 								globalState.layers.set([...mapLayers]);
 							}
 							continue;
 						}
-						const currentLayerArray = stateApp.baseMapLayers[i].id;
+						const currentLayerArray = layerStateValues.baseMapLayers[i].id;
 
 						currentLayerArray.forEach(j => {
 							const mapLayer = map.getLayer(j);
@@ -641,7 +643,7 @@ function Map({
 				}
 			}
 		}
-	}, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
+	}, [map, checkedBaseLayers, baseMapLayers]);
 
 	function getIndex(value, arr, prop) {
 		for (let i = 0; i < arr.length; i++) {

@@ -13,7 +13,6 @@ import { UserSession } from 'utils/user';
 
 import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConfig';
 import { MSALB2CObj, B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
-import { heatLayers, baseMapLayers } from './LayerConfig';
 
 const AppContext = createContext([{}, () => {}]);
 
@@ -22,8 +21,6 @@ const AppProvider = props => {
 		myMSALObj: null,
 		myMSALB2CObj: null,
 
-		baseMapLayers: baseMapLayers, // move to a map context -- will be changed with mepler anyways
-		heatLayers: heatLayers, // move to a map context -- will be changed with mepler anyways
 		apolloClientEndpoint: '',
 		apolloClientFetchOptions: null,
 		graphqlScope: null, /// potentially login context?
@@ -91,8 +88,6 @@ const AppProvider = props => {
 		tagsLayerIndex: null,
 		checkedLayers: [2, 5],
 		wellsLayerIndex: null,
-		checkedHeats: [],
-		checkedBaseLayers: [0, 1, 2, 3, 4],
 		checkedUserDefinedLayers: [],
 		checkedFileLayers: [],
 		tempCheckedUserDefinedLayer: null,

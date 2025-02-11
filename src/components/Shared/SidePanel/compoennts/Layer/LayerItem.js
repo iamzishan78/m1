@@ -36,10 +36,13 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateApp }) {
+function LayerItem({ layer, index, provided, type, handleToggle, labelId }) {
 	const [hoverItemIndex, setHoverItem] = useState(-1);
 
-	layerController.useState(['wellListFromSearch']);
+	const { layerStateValues } = layerController.useState(
+		['wellListFromSearch', 'checkedBaseLayers', 'checkedHeats'],
+		'layerStateValues'
+	);
 
 	const classes = useStyles();
 
@@ -61,7 +64,6 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
 			},
 		};
 
-		//// saving to stateApp
 		currentLayers[index] = updatedLayer;
 		globalStateController.updateState({ layers: [...currentLayers] });
 
@@ -170,10 +172,10 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
 	const getLayerChecked = ({ layer, index }) => {
 		if (type === 'layer' && layer) {
 			return layer.layerSettings.visiable !== false;
-		} else if (type === 'base' && typeof index === 'number' && stateApp.checkedBaseLayers) {
-			return stateApp.checkedBaseLayers.indexOf(index) !== -1;
-		} else if (type === 'heatMaps' && typeof index === 'number' && stateApp.checkedHeats) {
-			return stateApp.checkedHeats.indexOf(index) !== -1;
+		} else if (type === 'base' && typeof index === 'number' && layerStateValues.checkedBaseLayers) {
+			return layerStateValues.checkedBaseLayers.indexOf(index) !== -1;
+		} else if (type === 'heatMaps' && typeof index === 'number' && layerStateValues.checkedHeats) {
+			return layerStateValues.checkedHeats.indexOf(index) !== -1;
 		} else {
 			return false;
 		}

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
 import { TransitionGroup } from 'react-transition-group';
@@ -44,6 +44,7 @@ import { navController } from 'hookstate/navStateController';
 import { setActiveModule } from 'store/actions/commonActions';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 import AddGroup from './AddGroup';
 import Layer from './Layer';
@@ -58,7 +59,6 @@ import {
 	StyledMenuHActionHeader,
 	StyledMenuSecondaryHeaderItem,
 } from './style';
-import { AppContext } from '../../../../AppContext';
 import { deepEqualObjects } from '../../functions';
 import { customLayersFieldAccessors } from './Filters/consts';
 
@@ -235,12 +235,18 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars'], 'mapStateValues');
 	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
 	const { globalStateValues } = globalStateController.useState(
-		['filters', 'layerSettingsLoading', 'datasets'],
+		['filters', 'layerSettingsLoading', 'datasets', 'user'],
 		'globalStateValues'
 	);
 	const layers = globalStateController.getValue('layers');
 
+	const { checkedBaseLayers, checkedHeats, layerStateValues } = layerController.useState(
+		['checkedBaseLayers', 'checkedHeats'],
+		'layerStateValues'
+	);
+
 	const [stateApp] = useContext(AppContext);
+
 	const [totalHitMapCount, setTotalHitMapCount] = useState(null);
 	const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
 
@@ -266,8 +272,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		})?.length || 0);
 
 	useEffect(() => {
-		setTotalHitMapCount(stateApp.checkedHeats.length);
-	}, [stateApp]);
+		setTotalHitMapCount(layerStateValues.checkedHeats.length);
+	}, [checkedHeats]);
 
 	useEffect(() => {
 		if (stateApp.mapStyles && stateApp.mapStyles.length > 0) {
@@ -329,7 +335,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		} else if (type === 'base' && filteredItems) {
 			setLayerMap(filteredItems.filter(item => item.name !== 'Water' && item.name !== 'Land'));
 		}
-	}, [selectedControl, filteredItems, stateApp.checkedBaseLayers, stateApp.checkedHeatLayers, type]);
+	}, [selectedControl, filteredItems, checkedBaseLayers, checkedHeats, type]);
 
 	useEffect(() => {
 		dispatch(toggleLayersFiltersPanel(!!mapControlsStateValues.expandedPanel));
@@ -389,7 +395,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		updateUserMapSettings({
 			variables: {
 				settings: {
-					user: stateApp.user.mongoId,
+					user: globalStateValues.user.mongoId,
 					type,
 					settings: {
 						activeBaseMap: style.name,
@@ -403,7 +409,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		updateUserMapSettings({
 			variables: {
 				settings: {
-					user: stateApp.user.mongoId,
+					user: globalStateValues.user.mongoId,
 					type: 'baseMap',
 					settings: {
 						mapDefaultPosition: {
@@ -554,7 +560,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 								</div>
 
 								{type === 'layer' && (
-									<AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
+									<AddGroup userId={globalStateValues.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
 								)}
 							</div>
 							{headerButton && (
@@ -602,7 +608,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 						)}
 
 						{type === 'layer' && mapControlsStateValues.expandedPanel && (
-							<SortableLayer search={search} mongoId={stateApp.user.mongoId} />
+							<SortableLayer search={search} mongoId={globalStateValues.user.mongoId} />
 						)}
 						{type === 'heatMaps' && (
 							<DisplayList
