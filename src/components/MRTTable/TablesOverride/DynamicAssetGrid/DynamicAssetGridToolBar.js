@@ -1,40 +1,37 @@
 import React, { memo } from 'react';
-import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 
-import { useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 
-import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
-
-import { tableController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+import AddCustomAssetDialog from 'components/Shared/components/common/DetailCard/RightDialogs/AddCustomAssetDialog';
 
 function DynamicAssetGridToolBar({ tableKey }) {
-	const history = useHistory();
-
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState(['fetchDynamicSchema']);
 	const tableStateValues = tableState.stateValues;
 
 	const { name, tableName } = tableStateValues.fetchDynamicSchema || {};
 
-	const [addAndUpdateInRunTimeModel] = useMutation(ADD_RECORD_IN_RUN_TIME_MODEL, {
-		onCompleted: data => {
-			const addedRecord = data?.addRecordInRunTimeModel?.asset || {};
-			if (addedRecord && addedRecord?._id) {
-				history.push(`/land/customAsset/${tableName}/details/${addedRecord?._id}`);
-			}
-		},
-		fetchPolicy: 'no-cache',
-		awaitRefetchQueries: true,
-	});
+	const { stateValues } = tableGlobalController.useState(['dialog']);
+	const { type, isOpen } = stateValues.dialog || {};
 
 	const handleClick = () => {
-		addAndUpdateInRunTimeModel({
-			variables: {
+		tableGlobalController.updateState({
+			dialog: {
+				type: 'addCustomAsset',
 				tableName,
-				record: {},
+				isOpen: true,
+			},
+		});
+	};
+
+	const onClose = () => {
+		tableGlobalController.updateState({
+			dialog: {
+				type: 'addCustomAsset',
+				isOpen: false,
 			},
 		});
 	};
@@ -43,6 +40,8 @@ function DynamicAssetGridToolBar({ tableKey }) {
 			<Button variant="contained" color="primary" onClick={handleClick}>
 				{`+ ADD ${name}`}
 			</Button>
+
+			{type === 'addCustomAsset' && isOpen && <AddCustomAssetDialog onClose={onClose} />}
 		</>
 	);
 }

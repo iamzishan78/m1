@@ -107,6 +107,7 @@ function CustomTextField({
 					InputProps={InputProps}
 					InputLabelProps={InputLabelProps}
 					error={required && !watchTextFieldValue && error}
+					helperText={error?.message}
 					onChange={e => {
 						onChange?.(e.target.value);
 						props?.onChange?.(e);
@@ -115,6 +116,7 @@ function CustomTextField({
 						}
 					}}
 					onBlur={e => {
+						props?.onBlur?.(e);
 						let value = e.target.value || '';
 						onBlur ? (value = onBlur(value)) : null;
 						onChange?.(value);

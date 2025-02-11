@@ -17,7 +17,7 @@ import AutoCompleteNewOption from './Fields/AutoCompleteNewOption';
 import DatePicker from './Fields/DatePicker';
 import StartEndDate from './Fields/StartEndDate';
 
-function CommonForm({ formSchema, control, watch, dialogKey, error }) {
+function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 	const getFormattedFieldProps = ({ item, watch, error, key }) => {
 		const fieldProps = {
 			key,
@@ -55,7 +55,9 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 				let renderedField;
 				switch (item.renderField) {
 					case 'autoComplete':
-						renderedField = <AutoCompleteComponent item={item} control={control} watch={watch} error={error} />;
+						renderedField = (
+							<AutoCompleteComponent item={item} control={control} watch={watch} error={error || errors?.[item.name]} />
+						);
 						break;
 
 					case 'campaigns':
@@ -123,11 +125,18 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 						break;
 
 					case 'startEndDate':
-						renderedField = <StartEndDate item={item} control={control} watch={watch} error={error} />;
+						renderedField = (
+							<StartEndDate item={item} control={control} watch={watch} error={error || errors?.[item.name]} />
+						);
 						break;
 
 					default: {
-						const formattedFieldProps = getFormattedFieldProps({ item, watch, error, key: index });
+						const formattedFieldProps = getFormattedFieldProps({
+							item,
+							watch,
+							error: error || errors?.[item.name],
+							key: index,
+						});
 						renderedField = <CustomTextField {...formattedFieldProps} />;
 						break;
 					}
