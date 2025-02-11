@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import {
-	Grid,
-	Typography,
-	Box,
-	Accordion,
-	AccordionSummary,
-	AccordionDetails,
-	IconButton,
-	TextField,
-} from '@material-ui/core';
+
+import { Grid, Typography, Box, Accordion, AccordionSummary, AccordionDetails, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
+import PropTypes from 'prop-types';
+
+import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField.js';
 import AgreementIcon from 'components/Shared/svgIcons/agreements';
 import TractIcon from 'components/Shared/svgIcons/tract';
 import WellIcon from 'components/Shared/svgIcons/well';
@@ -35,7 +30,6 @@ export default function Summary({
 	updateAgreement,
 	shapeSummaryDetails,
 }) {
-	const [description, setDescription] = useState('');
 	const [onFocusDescription, setFocusSate] = useState(false);
 	const classes = summaryStyles();
 	const { control, reset } = useForm();
@@ -45,12 +39,6 @@ export default function Summary({
 			reset(agreementDetails);
 		}
 	}, [reset, agreementDetails]);
-
-	useEffect(() => {
-		const description = agreementDetails?.metaDescription || '';
-
-		setDescription(description);
-	}, [agreementDetails]);
 
 	const hasCustomProvision = agreementProvisions.find(provision => !provision.templateRef);
 
@@ -64,7 +52,6 @@ export default function Summary({
 								<ExpandMoreIcon fontSize="large" />
 							</IconButton>
 						}
-						onClick={e => {}}
 					>
 						<Grid container direction="row" justify="space-between" alignItems="center">
 							<Grid item className={classes.summaryHeader}>
@@ -125,7 +112,7 @@ export default function Summary({
 										{standardProvisions.map(provision => {
 											const found = agreementProvisions.find(p => p.type === provision.type);
 											return (
-												<Grid item md={6} className="provisionRow">
+												<Grid item md={6} className="provisionRow" key={provision._id}>
 													<Box display="inline-flex" className={found ? '' : 'uncheck'}>
 														{found ? <CheckIcon fontSize="medium" style={{ color: '#00b050' }} /> : <CloseIcon />}
 														<Typography className="text">{provision.type}</Typography>
@@ -152,32 +139,37 @@ export default function Summary({
 									<RecodingInformation properties={agreementDetails} updateAgreement={updateAgreement} />
 								</div>
 								<Grid item className={classes.descriptionInput}>
-									<TextField
-										id="outlined-multiline-static"
-										label="Description"
-										value={description}
-										multiline
-										fullWidth
-										rows={5}
-										variant="outlined"
-										onChange={e => {
-											setDescription(e.target.value);
+									<CustomTextField
+										fieldEvents={{
+											onFocus: () => setFocusSate(true),
+											onBlur: () => setFocusSate(false),
+											onKeyDown: event => {
+												if (event.key === 'Enter') {
+													console.log('Enter pressed', { val: event.target.value });
+													document.activeElement.blur();
+													updateAgreement('metaDescription', event.target.value);
+												}
+											},
 										}}
-										onKeyPress={event => {
-											if (event.key === 'Enter') {
-												document.activeElement.blur();
-												updateAgreement('metaDescription', event.target.value);
-											}
+										fieldConfig={{
+											type: 'text',
+											multiline: true,
+											variant: 'outlined',
+											labelAsHeading: false,
 										}}
-										onFocus={() => setFocusSate(true)}
-										onBlur={() => setFocusSate(false)}
-										InputProps={{
-											endAdornment: onFocusDescription === true && (
-												<p className={classes.foodText}>
-													<span>Return</span> to save
-												</p>
-											),
+										fieldAttributes={{
+											defaultValue: agreementDetails?.metaDescription || '',
+											label: 'Description',
+											InputProps: {
+												endAdornment: onFocusDescription === true && (
+													<p className={classes.foodText}>
+														<span>Return</span> to save
+													</p>
+												),
+											},
 										}}
+										rows={10}
+										id={'outlined-multiline-static'}
 									/>
 								</Grid>
 							</Grid>
@@ -188,3 +180,30 @@ export default function Summary({
 		</>
 	);
 }
+
+Summary.propTypes = {
+	flexDirection: PropTypes.oneOf(['row', 'column']),
+	agreementDetails: PropTypes.object,
+	activeAgreement: PropTypes.shape({
+		_id: PropTypes.string,
+	}),
+	agreementProvisions: PropTypes.arrayOf(
+		PropTypes.shape({
+			templateRef: PropTypes.string,
+			type: PropTypes.string,
+		})
+	),
+	standardProvisions: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string,
+			type: PropTypes.string,
+		})
+	),
+	updateAgreement: PropTypes.func,
+	shapeSummaryDetails: PropTypes.shape({
+		relatedParties: PropTypes.number,
+		shapeWells: PropTypes.number,
+		shapeOwners: PropTypes.number,
+		documents: PropTypes.number,
+	}),
+};

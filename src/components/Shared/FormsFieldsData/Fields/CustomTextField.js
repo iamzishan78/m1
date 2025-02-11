@@ -11,6 +11,9 @@ import UrlTooltip from './UrlTooltip';
 const classes = {
 	maxWidth: {
 		width: '100%',
+		'& .MuiInputLabel-root.Mui-focused': {
+			color: 'grey',
+		},
 	},
 	baseValueChanged: {
 		width: '100%',
@@ -18,13 +21,16 @@ const classes = {
 			color: 'dodgerblue',
 			fontWeight: 'bold',
 		},
+		'& .MuiInputLabel-root.Mui-focused': {
+			color: 'grey',
+		},
 	},
 };
 function CustomTextField({
 	watch = null,
 	error = null,
 	control = null,
-	fieldEvents: { onBlur = null, onKeyUp = null, onChange = null, onKeyDown = null } = {},
+	fieldEvents: { onBlur = null, onKeyUp = null, onChange = null, onKeyDown = null, onFocus = null } = {},
 	fieldConfig: {
 		margin = '',
 		type = 'text',
@@ -36,6 +42,7 @@ function CustomTextField({
 		autoFocus = false,
 		variant = 'standard',
 		customStyleClass = '',
+		labelAsHeading = true,
 	} = {},
 	fieldAttributes: {
 		name = '',
@@ -61,7 +68,7 @@ function CustomTextField({
 		}
 
 		setValue(defaultValue);
-	}, [name, defaultValue]);
+	}, [defaultValue]);
 
 	useEffect(() => {
 		if (watchTextFieldValue && isValueOverridden) {
@@ -86,10 +93,14 @@ function CustomTextField({
 				<TextField
 					type={type}
 					size={size}
+					label={label}
 					value={textFieldValue}
 					margin={margin}
 					autoFocus={autoFocus}
-					onFocus={() => handleTooltipOpen(textFieldValue)}
+					onFocus={() => {
+						onFocus?.();
+						handleTooltipOpen(textFieldValue);
+					}}
 					fullWidth={fullWidth}
 					multiline={multiline}
 					placeholder={placeholder}
@@ -108,10 +119,12 @@ function CustomTextField({
 					InputLabelProps={InputLabelProps}
 					error={required && !watchTextFieldValue && error}
 					onChange={e => {
-						onChange?.(e.target.value);
+						const value = e.target.value;
+						handleTooltipOpen(value);
+						onChange?.(value);
 						props?.onChange?.(e);
 						if (!onChange && !props?.onChange) {
-							setValue(e.target.value);
+							setValue(value);
 						}
 					}}
 					onBlur={e => {
@@ -136,7 +149,7 @@ function CustomTextField({
 
 	return (
 		<Grid item xs={12}>
-			{label && <h3>{label}</h3>}
+			{label && labelAsHeading && <h3>{label}</h3>}
 			{control ? (
 				<Controller control={control} name={name} render={props => renderTextField(props)} />
 			) : (
