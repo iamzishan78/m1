@@ -10,6 +10,7 @@ import { useMutation } from '@apollo/client';
 
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 
+import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 
 import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
@@ -71,29 +72,39 @@ export default function DeleteConfirmationDialog(props) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layersDeleted]);
 
-	const handleAccept = () => {
+	const handleAccept = async () => {
 		setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
-
+		// Determine the appropriate mutation to call
+		let layersToRemove = [];
 		if (props.layer.type === 'group') {
 			updateManyLayer({
 				variables: {
 					layers: props.layer.layers.map(layer => ({ _id: layer.layerId, IsDeleted: true })),
 					layerGroupId: props.layer.id,
 				},
-				refetchQueries: ['getAllLayerSettingsByUser', 'getLayerGroups'],
 			});
+			layersToRemove = props.layer.layers.map(layer => layer.layerId);
 		} else {
-			updateLayer({
+			await updateLayer({
 				variables: {
 					layer: {
 						_id: props.layer.layerId,
 						IsDeleted: true,
 					},
 				},
-				refetchQueries: ['getAllLayerSettingsByUser'],
-				// awaitRefetchQueries: true,
 			});
+			layersToRemove = [props.layer.layerId];
 		}
+
+		const projectedLayers = layerController.getValue('projectedLayers');
+		layerController.updateState({
+			projectedLayers: projectedLayers.filter(layer => !layersToRemove.includes(layer.layerId)),
+		});
+
+		const layers = globalStateController.getValue('layers');
+		globalStateController.updateState({ layers: layers.filter(layer => !layersToRemove.includes(layer.layerId)) });
+
+		setStateApp(state => ({ ...state, universalCircularLoaderAct: false }));
 	};
 
 	return (

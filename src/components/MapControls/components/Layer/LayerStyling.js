@@ -19,6 +19,7 @@ import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { getLayerKey } from 'hookstate/helpers';
+import { layerStylingController } from 'hookstate/layersStylingController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
@@ -30,7 +31,6 @@ import AttrsFillStyleDropdown from './LayerAttributes/AttrsFillStyleDropdown';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
 import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
 import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
-import { layerStylingController } from 'hookstate/layersStylingController';
 
 function LayerStyling() {
 	const classes = useStyles();
@@ -67,30 +67,30 @@ function LayerStyling() {
 
 	const selectedLayer = mapControlsStateValues.selectedLayer;
 
-	const layerType = selectedLayer.layerPaintProps[0]?.paintType;
+	const layerType = selectedLayer.layerPaintProps?.[0]?.paintType;
 
 	const initialFillColor =
 		layerType === 'fill'
-			? ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['fill-color'])
+			? ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['fill-color'])
 			: layerType === 'line'
-				? ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['line-color'])
-				: ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['circle-color']);
+				? ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['line-color'])
+				: ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['circle-color']);
 	const initialStrokeColor =
 		layerType === 'fill'
-			? ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['fill-outline-color'])
+			? ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['fill-outline-color'])
 			: layerType === 'line'
 				? undefined
-				: ifRgbaConvt(selectedLayer.layerPaintProps[0]?.paintProps['circle-stroke-color']);
+				: ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['circle-stroke-color']);
 
 	let initialWidth;
 	if (layerType === 'circle') {
-		initialWidth = selectedLayer.layerPaintProps[0]?.paintProps['circle-stroke-width']
-			? selectedLayer.layerPaintProps[0]?.paintProps['circle-stroke-width']
+		initialWidth = selectedLayer.layerPaintProps?.[0]?.paintProps['circle-stroke-width']
+			? selectedLayer.layerPaintProps?.[0]?.paintProps['circle-stroke-width']
 			: 0;
 	}
 	if (layerType === 'line') {
-		initialWidth = selectedLayer.layerPaintProps[0]?.paintProps['line-width']
-			? selectedLayer.layerPaintProps[0]?.paintProps['line-width']
+		initialWidth = selectedLayer.layerPaintProps?.[0]?.paintProps['line-width']
+			? selectedLayer.layerPaintProps?.[0]?.paintProps['line-width']
 			: 1;
 	}
 
@@ -132,15 +132,17 @@ function LayerStyling() {
 
 	useEffect(() => {
 		const hookStateAppLayers = globalStateController.getValue('layers');
-		if (!layerStylingStateValues?.layerInitialized) return null;
+		if (!layerStylingStateValues?.layerInitialized) {
+			return null;
+		}
 		if (
 			(hookStateAppLayers &&
 				selectedLayer &&
 				((fillColor && fillColor.rgb && (fillColor.alpha || fillColor.alpha === 0)) ||
 					(strokeColor && strokeColor.rgb && (strokeColor.alpha || strokeColor.alpha === 0)))) ||
 			width ||
-			selectedLayer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
-			parseInt(selectedLayer.layerPaintProps[0]?.paintProps?.strokeWidth) !== parseInt(strokeWidth) ||
+			selectedLayer.layerPaintProps?.[0]?.labelProps?.visibility !== layerLabelVisibility ||
+			parseInt(selectedLayer.layerPaintProps?.[0]?.paintProps?.strokeWidth) !== parseInt(strokeWidth) ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
@@ -164,7 +166,7 @@ function LayerStyling() {
 
 			const TWOFIFTY = 250;
 			const debouncedUpdate = _.debounce(() => {
-				globalStateController.updateState({ layers: currentLayers });
+				globalStateController.updateState({ layers: [...currentLayers] });
 				layerController.resetBounds(selectedLayer?.identifier, true);
 				updateLayerSettings({
 					variables: {
@@ -176,8 +178,6 @@ function LayerStyling() {
 							layerSettings: currentLayer.layerSettings,
 						},
 					},
-					refetchQueries: ['getAllLayerSettingsByUser'],
-					awaitRefetchQueries: true,
 				}).then(({ data }) => {
 					if (data?.updateUserLayerSettings?.res && !currentLayer._id) {
 						mapControlsController.updateState({
@@ -267,11 +267,7 @@ function LayerStyling() {
 					<Grid item md={11}>
 						{/* Override layer styling names of Parcel and Wells */}
 						<Typography variant="h5" noWrap>
-							{selectedLayer.layerName === 'Parcels'
-								? 'Tracts'
-								: selectedLayer.layerName === 'Wells'
-									? 'Platform Wells'
-									: selectedLayer.layerName}
+							{selectedLayer.layerName}
 						</Typography>
 					</Grid>
 					<Grid item>

@@ -567,12 +567,11 @@ export const AdminManagementRoutes = {
 		noCheck: true,
 		showSettingString: false,
 	},
-	EXTERNALTOOLS: {
-		featureFlag: 'AlWAYSSHOW',
-		title: 'External Tools',
-		link: '/admin/externalTools',
-		component: 'ExternalTools',
-		noCheck: true,
+	INTEGRATION: {
+		featureFlag: 'DIALPAD_INTEGRATION',
+		title: 'Integrations',
+		link: '/admin/integrations',
+		component: 'Integrations',
 		showSettingString: false,
 	},
 	// CUSTOMIZATIONS: {
@@ -742,6 +741,7 @@ export const bypassTenants = [
 	'm1dev',
 	'm1cypress',
 	'm1staging',
+	'm1Staging',
 	'wildbasin',
 	// "m1Production",
 	// "m1Development",

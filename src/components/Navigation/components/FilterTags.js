@@ -46,7 +46,6 @@ export default function FilterTags() {
 				stateApp.toggleLayersActivity('Wells', true);
 			}
 
-			stateApp.toggleLayersActivity('User Tags', false);
 			setStateNav(stateNav => ({
 				...stateNav,
 				selectedTags: [],

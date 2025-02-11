@@ -24,7 +24,7 @@ const docSearchColumn = {
 	id: 'docSearch',
 	header: 'Doc Search',
 	accessorFn: row => {
-		const data = row?.docSearch?.data;
+		const data = row?.docContent;
 
 		if (!data) {
 			return '';

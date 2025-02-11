@@ -3,7 +3,7 @@ import { NotificationManager } from 'react-notifications';
 
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
 import update from 'immutability-helper';
-import { debounce } from 'lodash';
+import { debounce, sortBy, set } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import getBoundsQuery from 'api/getBoundsQuery';
@@ -11,6 +11,7 @@ import getBoundsQuery from 'api/getBoundsQuery';
 import { generateFileFilters, makeGeoJSON, getGeoJsonLayerProps } from 'components/Map/DeckGL/helpers/common';
 import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { copy } from 'components/Shared/functions';
 import {
 	deckGlLayerIdentifiers,
@@ -23,6 +24,11 @@ import {
 	isCustomLayerCopy,
 } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+
+import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
+import { GET_PROJECTED_LAYERS } from 'graphQL/useQueryAllLayerSettingsByUser';
+import { GETLAYERBYID } from 'graphQL/useQueryLayerById';
 
 import { getLayerKey } from 'hookstate/helpers';
 import { hookStateController } from 'hookstate/hookStateController';
@@ -227,9 +233,6 @@ const LayerMeta = {
 	},
 	Basins: {
 		id: 'basinLayer',
-	},
-	Pipelines: {
-		id: 'pipelineLayer',
 	},
 	'file layer': {
 		defaultZoom: 10,
@@ -536,10 +539,7 @@ const layerStateControllerHandler = state => {
 		// Layer data and converting it to geojson
 		let layerData = null;
 		if (dbLayer.identifier === 'Search') {
-			layerData = baseLayerController.getValue('wellListFromSearch');
-		}
-		if (dbLayer.identifier === 'Rig Activity') {
-			layerData = baseLayerController.getValue('rigsData');
+			layerData = layerController.getValue('wellListFromSearch');
 		}
 
 		// Return if we not get any data
@@ -738,11 +738,13 @@ const layerStateControllerHandler = state => {
 		}
 
 		const visible = dbLayer.layerSettings.showable && dbLayer.layerSettings.visiable !== false;
+		const isDrawing = drawController.getValue('isDrawing');
 
 		let updatedProps = {
 			pickable,
 			visible,
 			showable: dbLayer.layerSettings.showable,
+			opacity: isDrawing ? 0.1 : 1,
 		};
 
 		const labelProps =
@@ -769,6 +771,7 @@ const layerStateControllerHandler = state => {
 				fillPatternEnabled: newId,
 				getDashArray: newId,
 				getFillPattern: newId,
+				opacity: newId,
 			};
 		}
 		if (!boundingState.show?.current) {
@@ -916,13 +919,12 @@ const layerStateControllerHandler = state => {
 	};
 
 	const resetMapStates = (mapReady = false) => {
-		const rigsData = baseLayerController.getValue('rigsData');
 		const client = baseLayerController.getValue('client');
 		removeLayers(false);
 		popupController.reset();
 		drawController.reset();
 		layerFiltersController.reset();
-		const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
+		const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
 		mapViewFilters.forEach(filter => {
 			const dataSource = filter?.dataSourceName;
 
@@ -936,7 +938,7 @@ const layerStateControllerHandler = state => {
 			});
 		});
 
-		baseLayerController.setState({ rigsData, client });
+		baseLayerController.setState({ client });
 		navController.reset();
 		mapControlsController.setState({
 			selectedControl: mapControlsController.getValue('selectedControl'),
@@ -995,9 +997,11 @@ const layerStateControllerHandler = state => {
 						const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
 						if (layerIndex !== -1) {
 							if (field === 'showable') {
-								updatefn[layerIndex] = { layerSettings: { [field]: { $set: value } } };
+								updatefn[layerIndex] = {
+									layerSettings: { [field]: { $set: value === 'clear' ? false : !l?.layerSettings?.showable } },
+								};
 							} else {
-								updatefn[layerIndex] = { [field]: { $set: value } };
+								updatefn[layerIndex] = { [field]: { $set: value === 'clear' ? false : value } };
 							}
 						}
 					});
@@ -1005,9 +1009,9 @@ const layerStateControllerHandler = state => {
 					const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === layer.identifier);
 					if (layerIndex !== -1) {
 						if (field === 'showable') {
-							updatefn[layerIndex] = { layerSettings: { [field]: { $set: value } } };
+							updatefn[layerIndex] = { layerSettings: { [field]: { $set: value === 'clear' ? false : value } } };
 						} else {
-							updatefn[layerIndex] = { [field]: { $set: value } };
+							updatefn[layerIndex] = { [field]: { $set: value === 'clear' ? false : value } };
 						}
 					}
 				}
@@ -1015,11 +1019,118 @@ const layerStateControllerHandler = state => {
 			return updatefn;
 		},
 
+		getProjectedLayers: async () => {
+			const client = baseLayerController.getValue('client');
+			const user = globalStateController.getValue('user');
+			const resp = await client.query({
+				query: GET_PROJECTED_LAYERS,
+				variables: {
+					userId: user._id,
+					project: {
+						file: 1,
+						layerId: 1,
+						layerType: 1,
+						layerName: 1,
+						groupName: 1,
+						groupId: 1,
+						position: 1,
+						layerSettings: 1,
+						identifier: 1,
+						layerCategory: 1,
+					},
+				},
+			});
+			layerController.updateState({ projectedLayers: copy(resp.data.allLayerSettingsByUser) });
+		},
+
 		updateProjectedLayers: ({ layer, value, field }) => {
 			const projectedLayers = layerState.projectedLayers.get({ noproxy: true });
-			const updatefn = layerController.generateUpdateFn([layer], value, projectedLayers, field);
-
+			const updatefn = layerController.generateUpdateFn(layer, value, projectedLayers, field);
 			layerController.updateState({ projectedLayers: update(projectedLayers, updatefn) });
+		},
+
+		handleLayerChange: async (layer, field, value) => {
+			const client = baseLayerController.getValue('client');
+
+			const layersToChange = Array.isArray(layer.layers) ? layer.layers : [layer];
+			const fetchUserLayers = [];
+			const layersSettingsToUpdate = [];
+			const layersToUpdate = [];
+			const user = globalStateController.getValue('user');
+			const layers = globalStateController.getValue('layers');
+			const projectedLayers = layerController.getValue('projectedLayers');
+
+			projectedLayers.forEach(layer => {
+				const layerToUpdate = layersToChange.find(l => l._id === layer._id);
+				if (layerToUpdate) {
+					set(layer, field, value);
+					if (field !== 'layerSettings.showable') {
+						layersToUpdate.push({
+							_id: layer.layerId,
+							[field]: value,
+							oldGroupName: field === 'groupName' ? layer.groupName : null,
+						});
+					}
+
+					const layerFound = layers.find(l => l._id === layer._id);
+					if (layerFound) {
+						set(layerFound, field, value);
+						if (field == 'layerSettings.showable') {
+							layerController.handleDeckLayer({ ...layerFound });
+							layersSettingsToUpdate.push({
+								_id: layerFound._id,
+								layerSettings: layerFound.layerSettings,
+							});
+						}
+					} else {
+						if (field === 'layerSettings.showable') {
+							fetchUserLayers.push(layerToUpdate.layerId);
+						}
+					}
+				}
+			});
+			layerController.updateState({ projectedLayers: [...projectedLayers] });
+
+			if (fetchUserLayers.length > 0) {
+				const userLayers = await client.query({
+					query: GETLAYERBYID,
+					variables: {
+						layerIds: fetchUserLayers,
+						userId: user._id,
+					},
+				});
+				const layersToAdd = copy(userLayers.data.layerById);
+				layersToAdd.forEach(layer => {
+					set(layer, field, value);
+
+					layersSettingsToUpdate.push({
+						_id: layer._id,
+						layerSettings: layer.layerSettings,
+					});
+				});
+
+				globalStateController.updateState({ layers: sortBy([...layers, ...layersToAdd], 'position') });
+			} else {
+				globalStateController.updateState({ layers: [...layers] });
+			}
+
+			if (layersSettingsToUpdate.length > 0) {
+				await client.mutate({
+					mutation: UPDATEMANYLAYERSETTINGS,
+					variables: {
+						manySettings: layersSettingsToUpdate,
+					},
+				});
+			}
+
+			if (layersToUpdate.length > 0) {
+				await client.mutate({
+					mutation: UPDATE_MANY_LAYER,
+					variables: {
+						layers: layersToUpdate,
+					},
+				});
+			}
 		},
 	};
 };

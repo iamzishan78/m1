@@ -8,7 +8,6 @@ import _, { get, isEqual, isEmpty, pull } from 'lodash';
 import { extractUniqueFilters, filterValidFilters } from 'components/Map/DeckGL/helpers/common';
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
-import CustomFieldText from 'components/MRTTable/Common/MetaData/CustomFieldText';
 import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController';
 import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
@@ -16,6 +15,8 @@ import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOp
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
 import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
+import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomTypography from 'components/Shared/FormsFieldsData/Fields/CustomTypography';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
@@ -28,7 +29,7 @@ import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { globalStateController } from 'hookstate/globalStateController';
 import { hookStateController } from 'hookstate/hookStateController';
 
-import { compareObjects, validateUrl } from 'utils/helper';
+import { compareObjects } from 'utils/helper';
 
 import { detailCardController } from './detailCardController';
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
@@ -101,20 +102,25 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 				}
 
 				if (item?.type === 'text') {
-					const MAX_TEXT_SIZE = 40;
-
-					if (validateUrl(value)) {
-						return (
-							<a href={value} target="_blank" rel="noreferrer">
-								{value?.length > MAX_TEXT_SIZE ? value?.slice(0, MAX_TEXT_SIZE) + '...' : value}
-							</a>
-						);
-					}
 					return (
-						<CustomFieldText
-							value={value}
-							onCustomKeyChange={value => {
-								onCustomKeyChange(client, row?.original, value, item);
+						<CustomTextField
+							fieldAttributes={{
+								name: key,
+								defaultValue: value,
+								placeholder: 'N/A',
+								InputProps: { disableUnderline: true },
+							}}
+							fieldEvents={{
+								onBlur: updatedValue => {
+									if (value !== updatedValue.trim()) {
+										onCustomKeyChange(client, row?.original, updatedValue.trim(), item);
+									}
+								},
+							}}
+							fieldConfig={{
+								size: 'small',
+								variant: 'standard',
+								fullWidth: true,
 							}}
 						/>
 					);
@@ -124,7 +130,7 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 					return <>{formatDate(value)}</>;
 				}
 
-				return <>{value}</>;
+				return <CustomTypography value={value} />;
 			},
 		};
 	});

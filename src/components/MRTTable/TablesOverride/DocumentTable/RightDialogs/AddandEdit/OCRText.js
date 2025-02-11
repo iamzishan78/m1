@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 
 import { Box, Button, CircularProgress, Skeleton, TextField, Typography } from '@mui/material';
 
-import { useMutation, useQuery } from '@apollo/client';
+import { useApolloClient, useMutation, useQuery } from '@apollo/client';
 import { useHookstate } from '@hookstate/core';
 import { isEqual } from 'lodash';
 import PropTypes from 'prop-types';
 
-import { PARSE_PDF_TEXTS, UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
-import { GET_FILE_OCR_TEXT } from 'graphQL/useQueryViewFile';
+import { UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
+import { GET_FILE_OCR_TEXT, VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
+
+import { convertFile } from 'utils/tesseractHelper';
 
 const EditableLine = ({ text, onUpdate }) => {
 	const [isEditing, setIsEditing] = useState(false);
@@ -61,17 +63,46 @@ const EditableLine = ({ text, onUpdate }) => {
 };
 
 const OCRText = ({ selectedDocument }) => {
+	const [generatingOCR, setGeneratingOCR] = useState(false);
+
+	const client = useApolloClient();
+
 	const { data, loading } = useQuery(GET_FILE_OCR_TEXT, {
 		variables: { fileId: selectedDocument?._id },
 	});
 
-	const [updatePDFText] = useMutation(UPDATE_PDF_TEXTS, { refetchQueries: ['getFileOCRText'] });
-	const [parsePDFText, { loading: generatingOCR }] = useMutation(PARSE_PDF_TEXTS, {
+	const [updatePDFText] = useMutation(UPDATE_PDF_TEXTS, {
 		refetchQueries: ['getFileOCRText'],
+		onCompleted: () => setGeneratingOCR(false),
+		onError: () => setGeneratingOCR(false),
 	});
 
 	const isChanged = useHookstate(false);
 	const lines = useHookstate([]);
+
+	const parsePDFText = async () => {
+		setGeneratingOCR(true);
+
+		const res = await client.mutate({
+			mutation: VIEWFILEQUERY,
+			variables: {
+				fileId: selectedDocument?._id,
+			},
+		});
+
+		convertFile(res.data.viewFile.uri, (texts, error) => {
+			if (error) {
+				setGeneratingOCR(false);
+			}
+
+			updatePDFText({
+				variables: {
+					fileId: selectedDocument?._id,
+					pageTexts: texts.map((text, index) => ({ text, page: index + 1 })),
+				},
+			});
+		});
+	};
 
 	const updateLine = (index, newText) => {
 		const updatedLines = [...lines.get({ noproxy: true })];
@@ -82,14 +113,14 @@ const OCRText = ({ selectedDocument }) => {
 
 		updatedLines[index] = { ...updatedLines[index], text: newText };
 
-		isChanged.set(!isEqual(updatedLines, data?.getFileOCRText?.data?.data));
+		isChanged.set(!isEqual(updatedLines, data?.getFileOCRText?.data));
 
 		lines.set(updatedLines);
 	};
 
 	useEffect(() => {
 		return () => {
-			if (!data?.getFileOCRText?.data?.data || !lines.get()?.length || !isChanged.get()) {
+			if (!data?.getFileOCRText?.data || !lines.get()?.length || !isChanged.get()) {
 				return;
 			}
 
@@ -98,7 +129,7 @@ const OCRText = ({ selectedDocument }) => {
 	}, []);
 
 	useEffect(() => {
-		lines.set(data?.getFileOCRText?.data?.data || []);
+		lines.set(data?.getFileOCRText?.data || []);
 	}, [data]);
 
 	if (loading) {

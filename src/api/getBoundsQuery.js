@@ -8,7 +8,6 @@ import { agreementLayerIdentifiers } from 'components/Shared/functions/shapeLaye
 import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { PLSSSECONDDIVISIONGEO } from 'graphQL/useQueryPLSSSecondDivisionGeo';
-import { RECENT_SUBMITTED_PERMITS_QUERY } from 'graphQL/useQueryRecentSubmittedPermits';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
@@ -22,12 +21,6 @@ const queries = {
 	search: {
 		queryString: GET_DB_DATA,
 		getterKey: 'data.getDbData',
-	},
-	'Recent Submitted Permits': {
-		queryString: RECENT_SUBMITTED_PERMITS_QUERY,
-		getterKey: 'data.recent_submitted_permits',
-		isOneTimeQuery: true,
-		variables: {},
 	},
 	AbstractGeo: {
 		queryString: ABSTRACTGEOQUERY,

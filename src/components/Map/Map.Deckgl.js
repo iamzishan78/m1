@@ -515,11 +515,10 @@ function Map({
 	useEffect(() => {
 		if (stateApp.user && stateApp.user.mongoId) {
 			setLoading(true);
-			const applyShowableFilter = true;
 			getAllLayerSettingsByUser({
 				variables: {
 					userId: stateApp.user.mongoId,
-					applyShowableFilter,
+					onlyShowable: true,
 				},
 			});
 		}
@@ -610,25 +609,24 @@ function Map({
 	useEffect(() => {
 		// USE EFFECT FOR BASEMAP LAYER HANDLING
 		const mapLayers = copy(globalState.stateValues.layers);
-		if (!stateApp.baseMapLayers || stateApp.baseMapLayers.length === 0 || !map) {
+		if (!stateApp.baseMapLayers?.length || !map) {
 			return;
 		}
+
+		const getBaseMapIndex = name => stateApp.baseMapLayers.findIndex(layer => layer.name === name);
+
 		const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
-		const baseMapLandIndex = stateApp.baseMapLayers.findIndex(layer => layer.name === 'Land Grid');
 		const landLayerVisible = landLayer?.layerSettings?.visiable && landLayer?.layerSettings?.showable;
 
-		if (!landLayerVisible && stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
-			setStateApp(state => ({
-				...state,
-				checkedBaseLayers: stateApp.checkedBaseLayers.filter(l => l !== baseMapLandIndex),
-			}));
-		}
-		if (landLayerVisible && !stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
-			setStateApp(state => ({
-				...state,
-				checkedBaseLayers: [...stateApp.checkedBaseLayers, baseMapLandIndex],
-			}));
-		}
+		const layersToToggle = ['Land Grid', 'Roads', 'Map Labels'];
+		const indicesToToggle = layersToToggle.map(getBaseMapIndex).filter(index => index !== -1);
+
+		setStateApp(state => ({
+			...state,
+			checkedBaseLayers: landLayerVisible
+				? [...new Set([...state.checkedBaseLayers, ...indicesToToggle])]
+				: state.checkedBaseLayers.filter(index => !indicesToToggle.includes(index)),
+		}));
 	}, [map, stateApp.baseMapLayers, globalState.layers]);
 
 	useEffect(() => {

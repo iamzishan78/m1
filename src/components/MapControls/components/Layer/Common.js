@@ -68,6 +68,19 @@ export const ColorPickerStyledBox = withStyles(() => ({
 	},
 }))(ColorBox);
 
+export const project = {
+	file: 1,
+	layerId: 1,
+	layerType: 1,
+	layerName: 1,
+	groupName: 1,
+	groupId: 1,
+	position: 1,
+	layerSettings: 1,
+	identifier: 1,
+	layerCategory: 1,
+};
+
 export const useStyles = makeStyles(() => ({
 	gridOnIcon: {
 		color: '#7f7f80',
@@ -318,12 +331,6 @@ export const useLayerStyle = layer => {
 				const layerPaintProps = copy(currentLayer.layerPaintProps);
 
 				for (let i = 0; i < layerPaintProps.length; i++) {
-					// if layers have identifier use that
-					if (currentLayer.identifier) {
-						layerPaintProps[i].sourceProps = currentLayer.identifier.toLowerCase() + '_source';
-					} else {
-						layerPaintProps[i].sourceProps = layerName || '' + uuid() + '_source';
-					}
 					if (layerPaintProps[i]?.labelProps?.symbolProps?.visibility) {
 						delete layerPaintProps[i].labelProps.symbolProps.visibility;
 					}

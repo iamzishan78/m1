@@ -24,6 +24,7 @@ export const FEATURES = {
 	TRACKEDWELLSLAYER: 'showTrackedWellsLayer',
 	USERTAGSLAYER: 'showUserTagsLayer',
 	SEARCHLAYER: 'showSearchLayer',
+	DIALPAD_INTEGRATION: 'DialPadIntegration',
 	DATA: 'dataModule',
 };
 

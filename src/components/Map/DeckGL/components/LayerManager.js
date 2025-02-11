@@ -7,6 +7,7 @@ import { debounce } from 'lodash';
 import { deepEqual } from 'components/Shared/functions';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
 
+import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { layerController } from 'hookstate/layerStateController';
@@ -47,12 +48,17 @@ function LayerManager() {
 	);
 	const { polygonFilter, polygonsFilter } = layerFiltersController.useState(['polygonFilter', 'polygonsFilter']);
 
+	const {
+		stateValues: { isDrawing },
+	} = drawController.useState(['isDrawing'], 'stateValues');
+
 	useEffect(() => {
 		if (!window.mapRef) {
 			return;
 		}
 		move(moveRef);
 		window.mapRef?.on?.('move', () => move(moveRef));
+		// eslint-disable-next-line consistent-return
 		return () => {
 			window.mapRef?.off('move', () => move(moveRef));
 		};
@@ -66,22 +72,19 @@ function LayerManager() {
 		if (globalStateValues?.layers?.length > 0 && !isReady) {
 			setIsReady(true);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layers]);
 
 	useEffect(() => {
 		if (globalStateValues?.deckLayer && globalStateValues?.layers?.length === 0) {
 			layerController.handleDeckLayer(globalStateValues?.deckLayer);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [deckLayer]);
 
 	useEffect(() => {
 		if (isReady) {
 			layerController.handleChange();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [bbox, recalculate, isReady, polygonFilter, polygonsFilter, layers]);
+	}, [bbox, recalculate, isReady, polygonFilter, polygonsFilter, layers, isDrawing]);
 
 	return null;
 }

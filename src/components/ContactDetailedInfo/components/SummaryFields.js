@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 
 import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import { SUMMARY_FIELDS, featureFlagChanges, contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { NumberFormatComma } from 'components/Shared/Forms/Formatting/NumberFormatComma';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
@@ -94,6 +95,9 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 
 	const showGenericPhones = React.useMemo(() => {
 		return user.features?.find(f => f.name === 'showGenericPhones');
+	}, [user]);
+	const dialpadFeature = React.useMemo(() => {
+		return user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION);
 	}, [user]);
 
 	const [contactInterest, setContactInterest] = useState();
@@ -236,12 +240,13 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 														fullWidth: true,
 														variant: 'outlined',
 														margin: 'dense',
+														disabled: field.disabled,
+														customStyleClass: `${classes.field} ${isValueOveridden ? classes.baseValueChanged : null}`,
 													}}
 													fieldAttributes={{
 														name: field.key,
 														value: field.value ?? params.value,
 														inputRef: field.inputRef,
-														disabled: field.disabled,
 														InputLabelProps: { shrink: true },
 														InputProps: {
 															inputComponent:
@@ -305,8 +310,20 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 																			<Tooltip title={'Call'} placement="top">
 																				<IconButton
 																					id="call-icon"
-																					href={`tel: ${contactData[field.key]}`}
+																					href={
+																						contactData?.dialpadIds?.length && dialpadFeature
+																							? ''
+																							: `tel: ${contactData[field.key]}`
+																					}
 																					className={classes.emailAdornment}
+																					onClick={() => {
+																						contactData?.dialpadIds?.length &&
+																							dialpadFeature &&
+																							handleQuickActionActivity({
+																								phoneNumber: contactData[field.key],
+																								type: 'dialpad',
+																							});
+																					}}
 																				>
 																					<AddIcCallIcon htmlColor="#757575" />
 																				</IconButton>

@@ -244,8 +244,18 @@ export const mergeArrays = (arr1, arr2, uniqueField) => {
 };
 
 export const normalizeUrl = url => {
-	if (!/^https?:\/\//i.test(url)) {
-		return `https://${url}`;
+	if (typeof url !== 'string' || !url.trim()) {
+		return ''; // Handle invalid input
 	}
+
+	const lowerUrl = url.toLowerCase();
+	if (!lowerUrl.startsWith('http://') && !lowerUrl.startsWith('https://')) {
+		url = `https://${url}`;
+	}
+
+	if (!url.endsWith('/')) {
+		url += '/'; // Ensure URL ends with a slash
+	}
+
 	return url;
 };

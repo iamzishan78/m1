@@ -237,7 +237,7 @@ export default function AgreementDetailCard(props) {
 				customLayerId: uniObj._id,
 				customLayer,
 			},
-			refetchQueries: ['getMetaData', 'getAllLayerSettingsByUser'],
+			refetchQueries: ['getMetaData'],
 			awaitRefetchQueries: true,
 		}).then(res => {
 			jobController.toggleBulkUpload();

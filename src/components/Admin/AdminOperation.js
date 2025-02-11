@@ -76,14 +76,14 @@ const operations = {
 export default function Flatten() {
 	const classes = useStyles();
 	const tenants = useGetDBOperations(operations.tenants);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+
 	const models = {
 		databaseFlatenning: useGetDBOperations(operations.databaseFlatenning),
 	};
 	const operationTypes = useGetDBOperations(operations.getOperationTypes);
 	const commonSingleOperations = useGetDBOperations(operations.commonSingleOperation);
 
-	const { getOperationsLogs, getOperationsLogsData } = useGetDBOperations(operations.getOperationsLogs);
+	const { getOperationsLogs } = useGetDBOperations(operations.getOperationsLogs);
 	const stateKeys = [
 		'version',
 		'description',
@@ -105,6 +105,14 @@ export default function Flatten() {
 	const [operation, setOperation] = useState(false);
 	const [intervalValue, setIntervalValue] = useState();
 	const [TriggerAdminOperation] = useMutation(TRIGGER_ADMIN_OPERATIONS);
+
+	const getVersion = () => {
+		let version = adminOperationsState.version;
+		if (adminOperationsState.adminOperationType === 'commonSingleOperation') {
+			version = `${version}-${adminOperationsState.singleOperation}`;
+		}
+		return version;
+	};
 
 	// Function to build the curl command
 	const generateCurlCommand = (url, options) => {
@@ -136,7 +144,7 @@ export default function Flatten() {
 				variables: {
 					options: {
 						operationType: 'getOperationsLogs',
-						version: adminOperationsState.version,
+						version: getVersion(),
 						adminOperationType: adminOperationsState.adminOperationType,
 					},
 				},
@@ -157,6 +165,8 @@ export default function Flatten() {
 		stateKeys.forEach(stateKey => {
 			options[stateKey] = adminOperationsState[stateKey];
 		});
+
+		options.version = getVersion();
 
 		console.log(generateCurlCommand('http://localhost:7071/api/m1graph', options));
 		TriggerAdminOperation({

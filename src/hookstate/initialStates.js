@@ -80,7 +80,6 @@ export const layerStateInitialState = {
 	recalculate: false,
 
 	wellListFromSearch: [], // Not Moved
-	rigsData: [], // Not Moved
 };
 
 export const layerState = hookstate(copy(layerStateInitialState));
@@ -342,7 +341,6 @@ export const mapControlsInitialState = {
 	anchorEl: null,
 	layers: [
 		{ name: 'Basins', value: 'basinLayer' },
-		{ name: 'Pipelines', value: 'pipelineLayer' },
 		{ name: 'Surveys', value: 'surveyLayer' },
 	],
 	userData: null,

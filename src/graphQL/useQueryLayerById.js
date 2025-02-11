@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 export const GETLAYERBYID = gql`
-	query layerById($layerId: ID, $userId: ID) {
-		layerById(layerId: $layerId, userId: $userId)
+	query layerById($layerIds: [ID!]!, $userId: ID) {
+		layerById(layerIds: $layerIds, userId: $userId)
 	}
 `;

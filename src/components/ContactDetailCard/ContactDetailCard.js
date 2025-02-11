@@ -3,7 +3,7 @@ import Avatar from 'react-avatar';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Grid, IconButton, Menu, MenuItem, Badge, CircularProgress } from '@material-ui/core';
+import { Grid, IconButton, Menu, MenuItem, Badge, CircularProgress, Tooltip } from '@material-ui/core';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -22,6 +22,7 @@ import TwitterIcon from '@material-ui/icons/Twitter';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { get } from 'lodash';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import { toggleRightColumn } from 'actions/ContactDetailCard';
@@ -36,6 +37,7 @@ import RequestPageIcon from 'components/Shared/svgIcons/request_page';
 import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFetchHoc';
 import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
 
+import { INITIATE_DIALPAD_CALL } from 'graphQL/useMutationInitiateCall';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
 import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
@@ -47,6 +49,7 @@ import { OWNERTYPE } from 'utils/data';
 import { getOpenCorporatesUrl } from 'utils/helper';
 import MetaField from 'utils/MetaField';
 
+import { showErrorMessage, showInfoMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
 import ConfirmationDialog from './components/ConfirmationDialog';
@@ -54,11 +57,13 @@ import ContactDataMissingDialog from './components/ContactDataMissingDialog';
 import ContactDetailedSelector from './components/ContactDetailSelector';
 import FieldContent from './components/FieldContent';
 import RightDialog from './components/RightDialog';
+import { SYNC_CONTACT_TO_DIALPAD } from '../../graphQL/useMutationSyncContactToDialpad';
 import { CONTACT } from '../../graphQL/useQueryContact';
 import AddActivityDialog from '../ContactDetailCard/components/AddActivityDialog';
 import SummaryFields from '../ContactDetailedInfo/components/SummaryFields';
 import { NavigationContext } from '../Navigation/NavigationContext';
 import Comments from '../Shared/Comments';
+import DialpadIcon from '../Shared/svgIcons/dialpad-icon';
 import Tags from '../Shared/Tagger';
 
 const useStyles = makeStyles(theme => ({
@@ -415,6 +420,8 @@ function ContactDetailCard(props) {
 	const [showActivityDialog, setActivityDialog] = useState(null);
 	const [purchaseData, setPurchaseData] = useState([]);
 	const [actionActivityData, setActionActivityData] = useState(null); // State for actions activity data
+	const [dialpadConnect, setDialpadConnect] = useState(false);
+
 	// Fetching global stateValues
 	const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
 
@@ -425,6 +432,8 @@ function ContactDetailCard(props) {
 		fetchPolicy: 'network-only',
 	});
 	const [updateContact] = useMutation(UPDATECONTACT);
+	const [syncContactToDialpad] = useMutation(SYNC_CONTACT_TO_DIALPAD);
+	const [initiateDialpadCall] = useMutation(INITIATE_DIALPAD_CALL);
 
 	const handleClick = event => setAnchorEl(event.currentTarget);
 
@@ -499,10 +508,17 @@ function ContactDetailCard(props) {
 	useEffect(() => {
 		if (data && data.contact) {
 			setContactData({ ...data.contact, metaOwner: { _id: data.contact.contactOwnerId } });
+			globalStateController.updateState({ contactData: data.contact });
 			setStateApp(stateApp => ({
 				...stateApp,
 				currentContatcAtivities: data.contact.activityLog,
 			}));
+			if (
+				data.contact?.dialpadIds?.length &&
+				stateApp.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION)
+			) {
+				setDialpadConnect(true);
+			}
 		}
 	}, [data, stateApp.contactUpdated]);
 
@@ -546,19 +562,55 @@ function ContactDetailCard(props) {
 		if (data) {
 			// Set actions activity data
 			const { phoneNumber, type } = data;
-			const isCall = type === 'call';
+			if (type !== 'dialpad') {
+				const isCall = type === 'call';
 
-			const activityData = {
-				activity_name: isCall ? `Called ${getName(contactData)}` : `Texted ${getName(contactData)}`,
-				activity_type: type,
-				activity_outcome: isCall ? 'Left Message' : 'Sent Text',
-				activity_notes: isCall ? `Left VM at ${phoneNumber}` : `Sent text message to ${phoneNumber}`,
-				activity_status: { key: 'Completed', value: true },
-			};
+				const activityData = {
+					activity_name: isCall ? `Called ${getName(contactData)}` : `Texted ${getName(contactData)}`,
+					activity_type: type,
+					activity_outcome: isCall ? 'Left Message' : 'Sent Text',
+					activity_notes: isCall ? `Left VM at ${phoneNumber}` : `Sent text message to ${phoneNumber}`,
+					activity_status: { key: 'Completed', value: true },
+				};
 
-			setActivityDialog(true);
-			setActionActivityData(activityData);
+				setActivityDialog(true);
+				setActionActivityData(activityData);
+			} else {
+				if (dialpadConnect && stateApp?.user?.dialpad) {
+					dispatch(showInfoMessage('Initiating call...'));
+					initiateDialpadCall({
+						variables: { phoneNumber: data.phoneNumber },
+					}).then(({ data }) => {
+						if (data?.initiateDialpadCall?.success) {
+							dispatch(showSuccessMessage('Call initiated successfully'));
+						} else {
+							dispatch(showErrorMessage(data?.initiateDialpadCall?.message));
+						}
+					});
+				} else if (dialpadConnect && !stateApp?.user?.dialpad) {
+					dispatch(showErrorMessage('User not found on Dialpad. Please Contact Admin.'));
+				}
+			}
 		}
+	};
+
+	const handleContactSync = async () => {
+		if (!contactData?.entityDetail?.firstName || !contactData?.entityDetail?.lastName) {
+			dispatch(showErrorMessage('First Name and Last Name are required to sync contact to Dialpad'));
+			return;
+		}
+		dispatch(showInfoMessage('Syncing contact to Dialpad...'));
+		syncContactToDialpad({
+			variables: { contactId: contactData?._id },
+			refetchQueries: ['getContact'],
+			awaitRefetchQueries: true,
+		}).then(({ data }) => {
+			if (data?.syncContactToDialpad && !data.syncContactToDialpad?.success) {
+				dispatch(showErrorMessage(data?.syncContactToDialpad?.message));
+			} else {
+				dispatch(showSuccessMessage('Contact synced successfully'));
+			}
+		});
 	};
 
 	return contactData ? (
@@ -680,6 +732,33 @@ function ContactDetailCard(props) {
 									<Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" publicLeftBottom onlyTags />
 								</div>
 								<div className={classes.metaActions}>
+									<FeatureFlag feature={FEATURES.DIALPAD_INTEGRATION}>
+										<Tooltip
+											title={
+												contactData?.dialpadSyncAt
+													? `Last Synced: ${moment(contactData?.dialpadSyncAt).format('MM/DD/YYYY, h:mm a')}`
+													: 'Sync to Dialpad'
+											}
+											placement="top-start"
+										>
+											<Button
+												color={dialpadConnect ? 'primary' : 'transparent'}
+												className={!dialpadConnect ? classes.contactDataButton : {}}
+												variant={dialpadConnect ? 'contained' : ''}
+												startIcon={<DialpadIcon color={dialpadConnect ? 'white' : 'grey'} />}
+												style={{ color: dialpadConnect ? 'white' : 'grey' }}
+												onClick={() => {
+													if (!dialpadConnect) {
+														handleContactSync();
+													} else {
+														window.open('https://dialpad.com/app/contacts/frequent', '_blank');
+													}
+												}}
+											>
+												{dialpadConnect ? 'Launch Dialpad' : 'Sync to Dialpad'}
+											</Button>
+										</Tooltip>
+									</FeatureFlag>
 									<FeatureFlag feature={FEATURES.IDICORE}>
 										<Button
 											className={classes.contactDataButton}
