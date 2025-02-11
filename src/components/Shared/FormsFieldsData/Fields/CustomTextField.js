@@ -6,7 +6,6 @@ import { Grid, TextField } from '@mui/material';
 import PropTypes from 'prop-types';
 import validator from 'validator';
 
-
 import UrlTooltip from './UrlTooltip';
 
 const classes = {
@@ -116,7 +115,9 @@ function CustomTextField({
 						}
 					}}
 					onBlur={e => {
-						onBlur?.(e.target.value || '');
+						let value = e.target.value || '';
+						onBlur ? (value = onBlur(value)) : null;
+						onChange?.(value);
 					}}
 					{...propsRest}
 				/>
