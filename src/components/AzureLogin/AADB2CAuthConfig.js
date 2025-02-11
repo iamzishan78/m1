@@ -1,5 +1,3 @@
-import * as msal2 from 'msal';
-
 const B2CTenants = JSON.parse(process.env.REACT_APP_TENANS_B2C_CREDENTIALS);
 
 export const B2CTenantCredentials = B2CTenantName => {
@@ -45,21 +43,19 @@ export const msalB2CConfig = (tenantId, clientId) => {
 	};
 };
 
-export const MSALB2CObj = (tenantId, clientId) => new msal2.UserAgentApplication(msalB2CConfig(tenantId, clientId));
-
 export const loginRequestB2C = {
 	authority: B2CPolicies.authorities.signIn.authority,
 	scopes: ['openid', 'profile', 'email', 'offline_access'],
 };
 
-const apiConfig = {
-	b2cScopes: ['https://mineralb2c.onmicrosoft.com/api/account.read'],
-	webApi: 'http://localhost:5000/hello',
-};
+// const apiConfig = {
+// 	b2cScopes: ['https://mineralb2c.onmicrosoft.com/api/account.read'],
+// 	webApi: 'http://localhost:5000/hello',
+// };
 
-const tokenRequest = {
-	scopes: apiConfig.b2cScopes, // e.g. ["https://fabrikamb2c.onmicrosoft.com/helloapi/demo.read"]
-};
+// const tokenRequest = {
+// 	scopes: apiConfig.b2cScopes, // e.g. ["https://fabrikamb2c.onmicrosoft.com/helloapi/demo.read"]
+// };
 
 export const readProfileRequestB2C = {
 	scopes: ['https://graph.microsoft.com/User.Read'],
