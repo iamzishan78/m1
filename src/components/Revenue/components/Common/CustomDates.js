@@ -5,11 +5,12 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
 
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import { CUSTOM_DATES } from 'utils/data';
 import { handleCustomDateTypeChange } from 'utils/helper';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	actionBar: {
 		backgroundColor: '#f7f7f7',
 		width: '100%',
@@ -65,11 +66,25 @@ export default function Portfolio({
 	lastCheckMinDate,
 	onChange,
 	defaultRange,
+	setNull,
 	datesInputWidth = 1,
 	setAllDateToNull = true,
 }) {
 	const classes = useStyles();
 	const [value, setValue] = useState(defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES);
+
+	const handleDateTypeChange = date => {
+		handleCustomDateTypeChange(
+			date,
+			onChange,
+			CUSTOM_DATES,
+			setFromDate,
+			setToDate,
+			lastCheckMinDate,
+			setAllDateToNull
+		);
+	};
+
 	useEffect(() => {
 		if (!defaultRange) {
 			handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
@@ -77,14 +92,12 @@ export default function Portfolio({
 
 		delete CUSTOM_DATES.THIS_WEEK;
 		delete CUSTOM_DATES.LAST_WEEK;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
 		if (onChangeDates) {
 			onChangeDates(fromDate, toDate);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fromDate, toDate]);
 
 	const getFlaggedMoment = moment => {
@@ -101,21 +114,9 @@ export default function Portfolio({
 	useEffect(() => {
 		if (lastCheckMinDate && !defaultRange) {
 			handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+			setNull && setNull(false);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [lastCheckMinDate]);
-
-	const handleDateTypeChange = date => {
-		handleCustomDateTypeChange(
-			date,
-			onChange,
-			CUSTOM_DATES,
-			setFromDate,
-			setToDate,
-			lastCheckMinDate,
-			setAllDateToNull
-		);
-	};
 
 	return (
 		<>
@@ -230,3 +231,19 @@ export default function Portfolio({
 		</>
 	);
 }
+
+Portfolio.propTypes = {
+	onChangeDates: PropTypes.func,
+	fromDate: PropTypes.string.isRequired,
+	setFromDate: PropTypes.func.isRequired,
+	toDate: PropTypes.string.isRequired,
+	setToDate: PropTypes.func.isRequired,
+	label: PropTypes.string,
+	isProperties: PropTypes.bool,
+	lastCheckMinDate: PropTypes.string,
+	onChange: PropTypes.func,
+	defaultRange: PropTypes.string,
+	setNull: PropTypes.func,
+	datesInputWidth: PropTypes.number,
+	setAllDateToNull: PropTypes.bool,
+};

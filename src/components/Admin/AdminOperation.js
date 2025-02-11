@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import ReactJsonPrint from 'react-json-print'
+import ReactJsonPrint from 'react-json-print';
 
 import { makeStyles } from '@material-ui/styles';
 
@@ -59,9 +59,9 @@ const useGetDBOperations = options => {
 		return options.callApi !== false
 			? operationModels?.getDBOperations || []
 			: {
-				[options.operationType]: getDBOperations,
-				[options.operationType + 'Data']: operationModels?.getDBOperations || [],
-			};
+					[options.operationType]: getDBOperations,
+					[options.operationType + 'Data']: operationModels?.getDBOperations || [],
+				};
 	}, [operationModels, options.callApi, options.operationType, getDBOperations]);
 };
 
@@ -76,14 +76,14 @@ const operations = {
 export default function Flatten() {
 	const classes = useStyles();
 	const tenants = useGetDBOperations(operations.tenants);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+
 	const models = {
 		databaseFlatenning: useGetDBOperations(operations.databaseFlatenning),
 	};
 	const operationTypes = useGetDBOperations(operations.getOperationTypes);
 	const commonSingleOperations = useGetDBOperations(operations.commonSingleOperation);
 
-	const { getOperationsLogs, getOperationsLogsData } = useGetDBOperations(operations.getOperationsLogs);
+	const { getOperationsLogs } = useGetDBOperations(operations.getOperationsLogs);
 	const stateKeys = [
 		'version',
 		'description',
@@ -105,6 +105,14 @@ export default function Flatten() {
 	const [operation, setOperation] = useState(false);
 	const [intervalValue, setIntervalValue] = useState();
 	const [TriggerAdminOperation] = useMutation(TRIGGER_ADMIN_OPERATIONS);
+
+	const getVersion = () => {
+		let version = adminOperationsState.version;
+		if (adminOperationsState.adminOperationType === 'commonSingleOperation') {
+			version = `${version}-${adminOperationsState.singleOperation}`;
+		}
+		return version;
+	};
 
 	// Function to build the curl command
 	const generateCurlCommand = (url, options) => {
@@ -129,34 +137,36 @@ export default function Flatten() {
 	};
 
 	const handleOperationsLogs = () => {
-		clearInterval(intervalValue)
+		clearInterval(intervalValue);
 
 		const callOperation = () => {
 			getOperationsLogs({
 				variables: {
 					options: {
 						operationType: 'getOperationsLogs',
-						version: adminOperationsState.version,
+						version: getVersion(),
 						adminOperationType: adminOperationsState.adminOperationType,
 					},
 				},
 			}).then(({ data }) => {
-				setOperation(copy(data.getDBOperations))
-			})
-		}
-		callOperation()
+				setOperation(copy(data.getDBOperations));
+			});
+		};
+		callOperation();
 		setIntervalValue(
 			setInterval(() => {
-				callOperation()
+				callOperation();
 			}, 5000)
-		)
-	}
+		);
+	};
 
 	const handleClick = () => {
 		const options = {};
 		stateKeys.forEach(stateKey => {
 			options[stateKey] = adminOperationsState[stateKey];
 		});
+
+		options.version = getVersion();
 
 		console.log(generateCurlCommand('http://localhost:7071/api/m1graph', options));
 		TriggerAdminOperation({
@@ -165,12 +175,10 @@ export default function Flatten() {
 			},
 		});
 		setShowMessage(true);
-		handleOperationsLogs()
+		handleOperationsLogs();
 	};
 
-
-
-	useEffect(() => { });
+	useEffect(() => {});
 
 	const tenantOptions = useMemo(() => {
 		let _tenants = tenants?.map(tenant => tenant.name) || [];
@@ -355,22 +363,10 @@ export default function Flatten() {
 			<div className={classes.buttonBar}>
 				{adminOperationsState.version && adminOperationsState.adminOperationType && (
 					<>
-						<Button
-							variant="contained"
-							onClick={() =>
-								handleOperationsLogs()
-							}
-							color="primary"
-						>
+						<Button variant="contained" onClick={() => handleOperationsLogs()} color="primary">
 							Fetch AdminOperation Logs
 						</Button>
-						<Button
-							variant="contained"
-							onClick={() =>
-								clearInterval(intervalValue)
-							}
-							color="primary"
-						>
+						<Button variant="contained" onClick={() => clearInterval(intervalValue)} color="primary">
 							Stop Fetching
 						</Button>
 					</>

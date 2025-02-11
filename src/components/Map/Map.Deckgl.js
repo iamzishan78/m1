@@ -1,4 +1,3 @@
-
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -401,7 +400,7 @@ function Map({
 				}
 			}
 
-			const { jsonLayer, feature } = formatLayerForMap(layer)
+			const { jsonLayer, feature } = formatLayerForMap(layer);
 
 			const interval = setInterval(() => {
 				if (window.mapRef) {
@@ -559,7 +558,9 @@ function Map({
 	useEffect(() => {
 		// USE EFFECT FOR BASEMAP LAYER HANDLING
 		const mapLayers = copy(globalState.stateValues.layers);
-		if (!stateApp.baseMapLayers?.length || !map) { return; }
+		if (!stateApp.baseMapLayers?.length || !map) {
+			return;
+		}
 
 		const getBaseMapIndex = name => stateApp.baseMapLayers.findIndex(layer => layer.name === name);
 
@@ -750,6 +751,14 @@ function Map({
 		if (mapStyles.length <= 0) {
 			return;
 		}
+
+		const onLoad = () => {
+			const { onMapLoad } = globalStateController.getAllValues();
+			if (onMapLoad) {
+				onMapLoad();
+				globalStateController.updateState({ onMapLoad: null });
+			}
+		};
 
 		const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
 			const { id } = mapEl.current;
@@ -963,11 +972,15 @@ function Map({
 				setMap(newMap);
 				setLoading(false);
 				mapStateController.updateState({ reintializeMap: false });
+
+				onLoad();
 			});
 		};
 
 		if (!map || mapStateValues.reintializeMap) {
 			initializeMap({ setMap, mapEl, setStateApp, setDraw });
+		} else {
+			onLoad();
 		}
 	}, [map, mapStyles, mapStateValues.mapVars.styleId]);
 
