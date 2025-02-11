@@ -238,8 +238,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 											}}
 											fieldEvents={{
 												onBlur: value => {
-													console.log(value, field.key);
-
 													offClickHandler(field.key, value);
 												},
 											}}
