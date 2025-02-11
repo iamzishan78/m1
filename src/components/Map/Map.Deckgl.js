@@ -129,7 +129,7 @@ function Map({
 	layerPadding = null,
 }) {
 	// context states
-	const globalState = globalStateController.useState(['layers', 'mapReady']);
+	const globalState = globalStateController.useState(['mapReady']);
 	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues');
 	const { selectedShapeFile, selectedPlaces, popupStateValues } = popupController.useState(
 		['selectedShapeFile', 'selectedPlaces'],
@@ -147,8 +147,14 @@ function Map({
 		],
 		'mapStateValues'
 	);
-	const { wellListFromSearch, baseMapLayers, checkedBaseLayers, layerStateValues } = layerController.useState(
-		['wellListFromSearch', 'baseMapLayers', 'checkedBaseLayers'],
+	const {
+		layers: layersState,
+		wellListFromSearch,
+		baseMapLayers,
+		checkedBaseLayers,
+		layerStateValues,
+	} = layerController.useState(
+		['wellListFromSearch', 'baseMapLayers', 'checkedBaseLayers', 'layers'],
 		'layerStateValues'
 	);
 	const {
@@ -398,7 +404,7 @@ function Map({
 			},
 		});
 		if (layer?.customLayer) {
-			let layers = globalStateController.getValue('layers');
+			let layers = layerStateValues.layers;
 			if (!layers || layers?.length === 0) {
 				const { data } = await client.query({
 					query: LAYERSETTINGSBYUSER,
@@ -407,9 +413,9 @@ function Map({
 						identifier: convertToTitleCase(layer.customLayer.layer + 's'),
 					},
 				});
-				layers = globalStateController.getValue('layers');
+				layers = layerStateValues.layers;
 				if ((!layers || layers?.length === 0) && data?.layerSettingsByUser) {
-					globalStateController.updateState({
+					layerController.updateState({
 						deckLayer: data.layerSettingsByUser,
 					});
 				}
@@ -454,9 +460,9 @@ function Map({
 			{ padding: { top: 100, bottom: 200, left: 10, right: 100 }, easing: () => 1 }
 		);
 
-		const layers = globalStateController.getValue('layers');
-
-		const layer = layers.find(l => popupStateValues.selectedShapeFile.properties?.layerShapeName === l.layerShapeName);
+		const layer = layerStateValues.layers.find(
+			l => popupStateValues.selectedShapeFile.properties?.layerShapeName === l.layerShapeName
+		);
 
 		udLayerClickHandler(popupStateValues.selectedShapeFile, layer);
 	}, [selectedShapeFile]);
@@ -490,13 +496,13 @@ function Map({
 	}, [stateApp.user]);
 
 	useEffect(() => {
-		globalStateController.updateState({ layerSettingsLoading });
+		layerController.updateState({ layerSettingsLoading });
 	}, [layerSettingsLoading]);
 
 	useEffect(() => {
 		if (layerStates && layerStates.allLayerSettingsByUser) {
 			const layers = copy(layerStates.allLayerSettingsByUser);
-			globalState.layers.set(layers);
+			layersState.set(layers);
 
 			const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
 			// for of loop on mapViewFilters
@@ -568,7 +574,7 @@ function Map({
 
 	useEffect(() => {
 		// USE EFFECT FOR BASEMAP LAYER HANDLING
-		const mapLayers = copy(globalState.stateValues.layers);
+		const mapLayers = copy(layerStateValues.layers);
 		if (!layerStateValues.baseMapLayers?.length || !map) {
 			return;
 		}
@@ -586,18 +592,18 @@ function Map({
 				? [...new Set([...layerStateValues.checkedBaseLayers, ...indicesToToggle])]
 				: layerStateValues.checkedBaseLayers.filter(index => !indicesToToggle.includes(index)),
 		});
-	}, [map, baseMapLayers, globalState.layers]);
+	}, [map, baseMapLayers, layersState]);
 
 	useEffect(() => {
 		// USE EFFECT FOR BASEMAP LAYER HANDLING
-		const mapLayers = copy(globalState.stateValues.layers);
+		const mapLayers = copy(layerStateValues.layers);
 		if (layerStateValues.baseMapLayers && layerStateValues.baseMapLayers.length > 0 && map) {
 			const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
 			layerStateValues.baseMapLayers?.forEach((l, index) => {
 				if (l.name === 'Land Grid' && !layerStateValues.checkedBaseLayers.includes(index)) {
 					if (landLayer) {
 						landLayer.layerSettings.visiable = false;
-						globalState.layers.set([...mapLayers]);
+						layersState.set([...mapLayers]);
 					}
 				}
 
@@ -618,7 +624,7 @@ function Map({
 						if (layerStateValues.baseMapLayers[i].name === 'Land Grid') {
 							if (landLayer) {
 								landLayer.layerSettings.visiable = true;
-								globalState.layers.set([...mapLayers]);
+								layersState.set([...mapLayers]);
 							}
 							continue;
 						}

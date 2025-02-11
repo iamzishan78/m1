@@ -233,16 +233,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	);
 	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars'], 'mapStateValues');
 	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
-	const { globalStateValues } = globalStateController.useState(
-		['filters', 'layerSettingsLoading', 'datasets', 'user'],
-		'globalStateValues'
-	);
-	const layers = globalStateController.getValue('layers');
-
+	const { globalStateValues } = globalStateController.useState(['filters', 'datasets', 'user'], 'globalStateValues');
 	const { checkedBaseLayers, checkedHeats, layerStateValues } = layerController.useState(
-		['checkedBaseLayers', 'checkedHeats'],
+		['layers', 'checkedBaseLayers', 'checkedHeats', 'layerSettingsLoading'],
 		'layerStateValues'
 	);
+	const layers = layerController.getValue('layers');
 
 	const [totalHitMapCount, setTotalHitMapCount] = useState(null);
 	const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
@@ -546,7 +542,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 							<div>
 								<div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
 									<ListItemText primary={title} />
-									{globalStateValues.layerSettingsLoading && <CircularProgress size={20} color="secondary" />}
+									{layerStateValues.layerSettingsLoading && <CircularProgress size={20} color="secondary" />}
 								</div>
 
 								{type === 'layer' && (

@@ -11,7 +11,6 @@ import { baseMapLayers, heatLayers } from 'LayerConfig';
 /*                              Global Controller                             */
 /* -------------------------------------------------------------------------- */
 export const globalInitialState = {
-	layers: [],
 	panelItems: [],
 	emptyGroups: [],
 	globalSearch: '',
@@ -28,7 +27,6 @@ export const globalInitialState = {
 	bypassLogin: simpleAuthBypass || false,
 	bypassType: '',
 	tenant: null,
-	layerSettingsLoading: false,
 	selectedIconTpe: 'Chip',
 };
 
@@ -73,6 +71,9 @@ export const tableGlobalState = hookstate({
 /* -------------------------------------------------------------------------- */
 
 export const layerStateInitialState = {
+	layers: [],
+	deckLayer: null,
+	layerSettingsLoading: false,
 	projectedLayers: [],
 	client: null,
 	history: null,

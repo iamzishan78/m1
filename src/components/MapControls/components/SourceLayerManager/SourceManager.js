@@ -226,10 +226,8 @@ function SourceManager(props) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 
-	const { globalStateValues } = globalStateController.useState(['layers', 'datasets', 'user'], 'globalStateValues');
-	const {
-		layerStateValues: { projectedLayers },
-	} = layerController.useState(['projectedLayers'], 'layerStateValues');
+	const { globalStateValues } = globalStateController.useState(['datasets', 'user'], 'globalStateValues');
+	const { layers, layerStateValues } = layerController.useState(['projectedLayers', 'layers'], 'layerStateValues');
 	const [isOpenUserSources, setIsOpenUserSources] = React.useState(true);
 	const [openDataSets, setOpenDataSets] = React.useState({});
 	const [currentLayers, setCurrentLayers] = React.useState([]);
@@ -252,7 +250,7 @@ function SourceManager(props) {
 	const layer_limit = 50;
 
 	const updateStateLayers = currentLayers => {
-		globalStateController.updateState({ layers: currentLayers });
+		layerController.updateState({ layers: currentLayers });
 	};
 
 	useEffect(() => {
@@ -262,10 +260,10 @@ function SourceManager(props) {
 	}, []);
 
 	useEffect(() => {
-		if (!deepEqual(currentLayers, globalStateValues.layers)) {
-			setCurrentLayers(copy(globalStateValues.layers));
+		if (!deepEqual(currentLayers, layerStateValues.layers)) {
+			setCurrentLayers(copy(layerStateValues.layers));
 		}
-	}, [currentLayers, globalStateValues.layers]);
+	}, [currentLayers, layers]);
 
 	const handleApplyChange = (currentLayers, allLayers) => {
 		// Initialize arrays to hold layers and settings
@@ -385,7 +383,7 @@ function SourceManager(props) {
 			})
 			.filter(fileId => fileId);
 		const layers = currentLayers.filter(layer => fileIds.includes(layer.file));
-		const pLayers = projectedLayers.filter(layer => fileIds.includes(layer.file));
+		const pLayers = layerStateValues.projectedLayers.filter(layer => fileIds.includes(layer.file));
 		layerController.updateProjectedLayers({ layer: pLayers, field: 'showable', value });
 
 		if (value && layers.length == 0) {

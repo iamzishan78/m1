@@ -7,8 +7,8 @@ import { colorBasedAttributes } from 'components/MapControls/components/Layer/La
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { deckGlLandGridIdentifiers, ifDefaultLayers } from 'components/Shared/functions/shapeLayer';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { getLayerKey } from 'hookstate/helpers';
+import { layerController } from 'hookstate/layerStateController';
 import { popupController } from 'hookstate/popupStateController';
 
 const MAX_COLOR_VALUE_HEX = 0xfffff;
@@ -824,7 +824,7 @@ export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true }
 	let clickedFeature = null;
 	let layer = null;
 
-	const layers = globalStateController.getValue('layers');
+	const layers = layerController.getValue('layers');
 
 	layers
 		.filter(l => l.layerSettings?.showable && l.layerSettings?.visiable)

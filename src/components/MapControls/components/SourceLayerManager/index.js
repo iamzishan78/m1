@@ -14,7 +14,7 @@ import { copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
 import LayerManager from './LayerManager';
@@ -120,7 +120,7 @@ export default function SourceLayerManager() {
 	const classes = useStyles();
 	const [selectedType, setSelectedType] = useState('source');
 
-	const { layers, stateValues } = globalStateController.useState(['layers']);
+	const { layers, stateValues } = layerController.useState(['layers']);
 	const [currentLayers, setCurrentLayers] = React.useState([]);
 
 	const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
@@ -154,7 +154,7 @@ export default function SourceLayerManager() {
 	};
 
 	const updateStateLayers = currentLayers => {
-		globalStateController.updateState({ layers: currentLayers });
+		layerController.updateState({ layers: currentLayers });
 	};
 
 	const handleApplyChange = () => {

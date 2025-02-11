@@ -100,11 +100,11 @@ function NewLayerManager() {
 		}).then(async ({ data }) => {
 			const layerToAdd = copy(data.addLayer.userLayer);
 			if (layerToAdd) {
-				const projectedLayers = layerController.getValue('projectedLayers');
-				layerController.updateState({ projectedLayers: [...projectedLayers, layerToAdd] });
-
-				const layers = globalStateController.getValue('layers');
-				globalStateController.updateState({ layers: [...layers, layerToAdd] });
+				const { projectedLayers, layers } = layerController.getValues(['projectedLayers', 'layers']);
+				layerController.updateState({
+					projectedLayers: [...projectedLayers, layerToAdd],
+					layers: [...layers, layerToAdd],
+				});
 			}
 
 			handleClose();

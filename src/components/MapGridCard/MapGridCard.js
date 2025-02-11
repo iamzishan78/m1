@@ -10,8 +10,8 @@ import MRTTable from 'components/MRTTable';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -240,7 +240,7 @@ function MapGridCard() {
 			const fileId = mapControlsStateValues.selectedLayer?.file;
 			const layerShapeName = mapControlsStateValues?.selectedLayer?.layerShapeName;
 
-			const globalLayer = globalStateController
+			const globalLayer = layerController
 				.getValue('layers')
 				?.find(layer => layer?.layerShapeName === layerShapeName && layer?.file === fileId);
 

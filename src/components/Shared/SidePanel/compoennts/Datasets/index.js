@@ -24,7 +24,7 @@ import { GET_DATASETS } from 'graphQL/useQueryDataset';
 import { USER_MAP_SETTINGS_QUERY } from 'graphQL/useQueryUserMapSettings';
 
 import { globalStateController } from 'hookstate/globalStateController';
-import { globalState } from 'hookstate/initialStates';
+import { layerState } from 'hookstate/initialStates';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
@@ -180,7 +180,7 @@ function Datasets({ headerButton, search }) {
 			stateToUpdate.layerGridCard = false;
 			stateToUpdate.mapGridCardActivated = true;
 		} else {
-			const layers = globalStateController.getValue('layers');
+			const layers = layerController.getValue('layers');
 			const layer = layers.find(
 				l => l.file === dataset.categories[0]?.file && l.layerShapeName === dataset.categories[0]?.layerShapeName
 			);
@@ -196,14 +196,14 @@ function Datasets({ headerButton, search }) {
 		globalStateController.updateState({ datasets });
 		const layersSettingsToUpdate = [];
 
-		globalStateController.getValue('layers').forEach((clayer, layerIndex) => {
+		layerController.getValue('layers').forEach((clayer, layerIndex) => {
 			if (clayer.file === dataset.file) {
 				layersSettingsToUpdate.push({
 					_id: clayer._id,
 					layerSettings: { ...clayer.layerSettings, showable: value },
 				});
 				layerController.handleDeckLayer({ ...clayer, layerSettings: { ...clayer.layerSettings, showable: value } });
-				globalState.layers[layerIndex].merge({
+				layerState.layers[layerIndex].merge({
 					layerSettings: {
 						...clayer.layerSettings,
 						showable: value,

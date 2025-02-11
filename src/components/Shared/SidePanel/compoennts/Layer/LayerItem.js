@@ -15,7 +15,6 @@ import { useMutation } from '@apollo/client';
 
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController.js';
 import { mapControlsController } from 'hookstate/mapControlsController.js';
 
@@ -49,7 +48,7 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId }) {
 	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
 	const handleToggleInteraction = (layer, index) => () => {
-		const currentLayers = copy(globalStateController.getValue('layers'));
+		const currentLayers = copy(layerController.getValue('layers'));
 		const updatedLayer = {
 			...layer,
 			layerSettings: {
@@ -65,7 +64,7 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId }) {
 		};
 
 		currentLayers[index] = updatedLayer;
-		globalStateController.updateState({ layers: [...currentLayers] });
+		layerController.updateState({ layers: [...currentLayers] });
 
 		//// saving to mongo
 		updateLayerSettings({

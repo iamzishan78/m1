@@ -19,6 +19,7 @@ import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableESState } from 'hookstate/initialStates';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { layerController } from 'hookstate/layerStateController';
 import { tableController } from 'hookstate/tableController';
 
 import { customLayersFieldAccessors } from './consts';
@@ -158,7 +159,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 	const mapViews = watch('mapViews');
 
-	const layers = globalStateController.getValue('layers');
+	const layers = layerController.getValue('layers');
 
 	const [debouncedFilterValues, setDebouncedFilterValues] = useState(filterValues); // New state for debounced filter values
 
@@ -235,7 +236,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			esIndex = 'shapefile_flat';
 			const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
 			const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
-			const selectedLayer = globalStateController
+			const selectedLayer = layerController
 				.getValue('layers')
 				?.find(layer => layer?.layerShapeName === layerShapeName && layer?.file === fileId);
 			filters = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.filters : [];

@@ -4,7 +4,6 @@ import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compo
 
 import { hookStateController } from 'hookstate/hookStateController';
 
-import { globalStateController } from './globalStateController';
 import { layerFilterInitialState, layerFilters } from './initialStates';
 import { layerController } from './layerStateController';
 
@@ -50,7 +49,7 @@ const layerFiltersControllerHandler = state => ({
 		}
 	},
 	getBeforeLayer: index => {
-		const layers = globalStateController.getValue('layers');
+		const layers = layerController.getValue('layers');
 
 		let id;
 

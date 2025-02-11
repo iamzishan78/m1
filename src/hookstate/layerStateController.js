@@ -183,9 +183,9 @@ const layerStateControllerHandler = state => {
 	}, 1000);
 
 	const getShowableLayers = () => {
-		let layers = globalStateController.getValue('layers');
+		let layers = state.layers.get({ noproxy: true });
 		if (layers?.length === 0) {
-			const deckLayer = globalStateController.getValue('deckLayer');
+			const deckLayer = state.deckLayer.get({ noproxy: true });
 			if (deckLayer) {
 				layers = [deckLayer];
 			}
@@ -399,7 +399,7 @@ const layerStateControllerHandler = state => {
 		// Layer data and converting it to geojson
 		let layerData = null;
 		if (dbLayer.identifier === 'Search') {
-			layerData = layerController.getValue('wellListFromSearch');
+			layerData = state.wellListFromSearch.get({ noproxy: true });
 		}
 
 		// Return if we not get any data
@@ -687,7 +687,7 @@ const layerStateControllerHandler = state => {
 	};
 
 	const toggleLayersActivity = (identifier, value) => {
-		let layers = globalStateController.getValue('layers');
+		let layers = state.layers.get({ noproxy: true });
 		const layer = layers.find(layer => layer.identifier.startsWith(identifier));
 
 		handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } });
@@ -714,8 +714,8 @@ const layerStateControllerHandler = state => {
 		// If layerId is not found, then find layerId by layerShapeName
 		if (!layerId && identifier != 'all') {
 			// Find layer by layerShapeName
-			const requiredLayers = globalStateController
-				.getValue('layers')
+			const requiredLayers = state.layers
+				.get({ noproxy: true })
 				.filter(layer => `${layer.file}_${layer.layerShapeName}` === identifier);
 
 			requiredLayers.forEach(requiredLayer => {
@@ -749,13 +749,13 @@ const layerStateControllerHandler = state => {
 		// Refresh all layers when the map is synchronized
 		if (identifier === 'all') {
 			// Retrieve all layers from the global state
-			globalStateController.getValue('layers').forEach(layer => {
+			state.layers.get({ noproxy: true }).forEach(layer => {
 				// Handle each layer using the layer controller
 				layerController.handleDeckLayer(layer);
 			});
 		}
 
-		const layer = globalStateController.getValue('layers').find(l => l.identifier === identifier);
+		const layer = state.layers.get({ noproxy: true }).find(l => l.identifier === identifier);
 		if (updateTriggers) {
 			layerController.handleDeckLayer(layer, true);
 		}
@@ -883,13 +883,13 @@ const layerStateControllerHandler = state => {
 					},
 				},
 			});
-			layerController.updateState({ projectedLayers: copy(resp.data.allLayerSettingsByUser) });
+			state.projectedLayers.set(copy(resp.data.allLayerSettingsByUser));
 		},
 
 		updateProjectedLayers: ({ layer, value, field }) => {
 			const projectedLayers = layerState.projectedLayers.get({ noproxy: true });
 			const updatefn = layerController.generateUpdateFn(layer, value, projectedLayers, field);
-			layerController.updateState({ projectedLayers: update(projectedLayers, updatefn) });
+			state.projectedLayers.set(update(projectedLayers, updatefn));
 		},
 
 		handleLayerChange: async (layer, field, value) => {
@@ -900,8 +900,8 @@ const layerStateControllerHandler = state => {
 			const layersSettingsToUpdate = [];
 			const layersToUpdate = [];
 			const user = globalStateController.getValue('user');
-			const layers = globalStateController.getValue('layers');
-			const projectedLayers = layerController.getValue('projectedLayers');
+			const layers = state.layers.get({ noproxy: true });
+			const projectedLayers = state.projectedLayers.get({ noproxy: true });
 
 			projectedLayers.forEach(layer => {
 				const layerToUpdate = layersToChange.find(l => l._id === layer._id);
@@ -932,7 +932,7 @@ const layerStateControllerHandler = state => {
 					}
 				}
 			});
-			layerController.updateState({ projectedLayers: [...projectedLayers] });
+			state.projectedLayers.set([...projectedLayers]);
 
 			if (fetchUserLayers.length > 0) {
 				const userLayers = await client.query({
@@ -952,9 +952,9 @@ const layerStateControllerHandler = state => {
 					});
 				});
 
-				globalStateController.updateState({ layers: sortBy([...layers, ...layersToAdd], 'position') });
+				state.layers.set(sortBy([...layers, ...layersToAdd], 'position'));
 			} else {
-				globalStateController.updateState({ layers: [...layers] });
+				state.layers.set([...layers]);
 			}
 
 			if (layersSettingsToUpdate.length > 0) {

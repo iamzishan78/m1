@@ -6,7 +6,6 @@ import { useMutation } from '@apollo/client';
 
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
@@ -109,7 +108,7 @@ export default function SidePanel() {
 
 			setToggleFunction(() => ({ index }) => {
 				if (layerStateValues.baseMapLayers[index]?.name === 'Land Grid') {
-					const currentLayers = globalStateController.getValue('layers');
+					const currentLayers = layerController.getValue('layers');
 					const layer = copy(currentLayers.find(layer => layer.identifier === 'Land Grid'));
 					if (layer) {
 						const visible = layer.layerSettings.visiable || layer.layerSettings.showable;
@@ -125,7 +124,7 @@ export default function SidePanel() {
 									}
 								: layer;
 						});
-						globalStateController.updateState({ layers: mappedLayers });
+						layerController.updateState({ layers: mappedLayers });
 						// Handle DeckGL layers
 						['AbstractGeo', 'Pls'].forEach(identifier =>
 							layerController.handleDeckLayer({

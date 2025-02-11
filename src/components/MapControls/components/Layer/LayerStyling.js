@@ -17,7 +17,6 @@ import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { getLayerKey } from 'hookstate/helpers';
 import { layerStylingController } from 'hookstate/layersStylingController';
 import { layerController } from 'hookstate/layerStateController';
@@ -131,7 +130,7 @@ function LayerStyling() {
 	}, [layerDataCount]);
 
 	useEffect(() => {
-		const hookStateAppLayers = globalStateController.getValue('layers');
+		const hookStateAppLayers = layerController.getValue('layers');
 		if (!layerStylingStateValues?.layerInitialized) {
 			return null;
 		}
@@ -166,7 +165,7 @@ function LayerStyling() {
 
 			const TWOFIFTY = 250;
 			const debouncedUpdate = _.debounce(() => {
-				globalStateController.updateState({ layers: [...currentLayers] });
+				layerController.updateState({ layers: [...currentLayers] });
 				layerController.resetBounds(selectedLayer?.identifier, true);
 				updateLayerSettings({
 					variables: {

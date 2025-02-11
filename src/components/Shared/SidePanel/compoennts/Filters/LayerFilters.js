@@ -22,8 +22,8 @@ import { NavigationContext } from 'components/Navigation/NavigationContext';
 //Components
 import * as LayerFiltersComponents from 'components/Shared/SidePanel/compoennts/Filters';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { layerController } from 'hookstate/layerStateController';
 import { navController } from 'hookstate/navStateController';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
@@ -175,7 +175,7 @@ const LayerFilters = () => {
 		stateValues: { selectedView, shouldSyncView },
 	} = viewStateController('MapView').useState(['selectedView', 'shouldSyncView']);
 	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
-	const layers = globalStateController.getValue('layers');
+	const layers = layerController.getValue('layers');
 
 	const formMethods = useForm({
 		defaultValues: {

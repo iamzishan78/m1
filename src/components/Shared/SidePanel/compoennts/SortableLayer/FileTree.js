@@ -1,4 +1,5 @@
-import React, { memo, useCallback, useEffect, useMemo, useContext } from 'react';
+/* eslint-disable react/prop-types */
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { Flipper } from 'react-flip-toolkit';
 import Sortly, { findDescendants, findParent } from 'react-sortly';
 
@@ -36,7 +37,7 @@ const FileTree = ({ layerMap, panelItems }) => {
 	const classes = useStyles();
 
 	const updateStateLayers = currentLayers => {
-		globalStateController.updateState({ layers: currentLayers, previousLayers: currentLayers });
+		layerController.updateState({ layers: currentLayers, previousLayers: currentLayers });
 	};
 	const checkforUpdate = (updateFn, previous, current, key) => {
 		if (previous[key] !== current[key]) {
@@ -332,6 +333,8 @@ const FileTree = ({ layerMap, panelItems }) => {
 				});
 				return null;
 			}
+
+			return null;
 		},
 		[items]
 	);
