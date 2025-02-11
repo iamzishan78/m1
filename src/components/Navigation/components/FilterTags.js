@@ -6,14 +6,20 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery } from '@apollo/client';
 
-import { AppContext } from '../../../AppContext';
-import { USERAVAILABLEFILTERTAGSQUERY } from '../../../graphQL/useQueryUserAvailableFilterTags';
+import { USERAVAILABLEFILTERTAGSQUERY } from 'graphQL/useQueryUserAvailableFilterTags';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { layerController } from 'hookstate/layerStateController';
+
 import { NavigationContext } from '../NavigationContext';
 
 export default function FilterTags() {
-	const [stateApp, setStateApp] = useContext(AppContext);
 	const [stateNav, setStateNav] = useContext(NavigationContext);
 	const [filterLoading, setFilterLoading] = useState(false);
+
+	const {
+		stateValues: { user },
+	} = globalStateController.useState(['user']);
 
 	const [getUserAvailableFilterTags, { loading, data: dataUserAvailableTags }] = useLazyQuery(
 		USERAVAILABLEFILTERTAGSQUERY,
@@ -24,14 +30,14 @@ export default function FilterTags() {
 
 	////All User Available Tags For The DropDown
 	useEffect(() => {
-		if (stateApp.user && stateApp.user.mongoId) {
+		if (user && user.mongoId) {
 			getUserAvailableFilterTags({
 				variables: {
-					userId: stateApp.user.mongoId,
+					userId: user.mongoId,
 				},
 			});
 		}
-	}, [stateApp.user]);
+	}, [user]);
 
 	const handleChange = value => {
 		if (value && value.length) {
@@ -43,7 +49,7 @@ export default function FilterTags() {
 			}));
 		} else {
 			if (!stateNav.filterTrackedOwners) {
-				stateApp.toggleLayersActivity('Wells', true);
+				layerController.toggleLayersActivity('Wells', true);
 			}
 
 			setStateNav(stateNav => ({
@@ -53,7 +59,7 @@ export default function FilterTags() {
 				filterTags: null,
 				filterTagsLoading: () => {},
 			}));
-			setStateApp(stateApp => ({
+			window.setStateApp(stateApp => ({
 				...stateApp,
 				wellListFromTagsFilter: [],
 			}));

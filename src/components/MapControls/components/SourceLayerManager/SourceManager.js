@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, Fragment, useCallback, useMemo, memo } from 'react';
+import React, { useState, useEffect, Fragment, memo } from 'react';
 import { useDispatch } from 'react-redux';
 
 import {
@@ -46,7 +46,6 @@ import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
 import { showInfoMessage } from 'actions';
-import { AppContext } from 'AppContext';
 
 import CategorySection from './CategorySection';
 import DeleteSourceAndCategoryConfirmationDialog from './DeleteSourceAndCategoryConfirmationDialog';
@@ -227,8 +226,7 @@ function SourceManager(props) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 
-	const { stateApp } = props;
-	const { globalStateValues } = globalStateController.useState(['layers', 'datasets'], 'globalStateValues');
+	const { globalStateValues } = globalStateController.useState(['layers', 'datasets', 'user'], 'globalStateValues');
 	const {
 		layerStateValues: { projectedLayers },
 	} = layerController.useState(['projectedLayers'], 'layerStateValues');
@@ -254,7 +252,6 @@ function SourceManager(props) {
 	const layer_limit = 50;
 
 	const updateStateLayers = currentLayers => {
-		stateApp.layers = currentLayers;
 		globalStateController.updateState({ layers: currentLayers });
 	};
 
@@ -287,7 +284,7 @@ function SourceManager(props) {
 			// Add layer settings data to layersSettingsToUpdate
 			layersSettingsToUpdate.push({
 				_id: currentLayer._id,
-				user: stateApp.user._id,
+				user: globalStateValues.user._id,
 				layer: currentLayer.layerId,
 				layerSettings: currentLayer.layerSettings,
 				layerPaintProps: currentLayer.layerPaintProps,
@@ -396,7 +393,7 @@ function SourceManager(props) {
 			let updatedLayers = await getLayerByFileId({
 				variables: {
 					fileIds,
-					userId: stateApp.user._id,
+					userId: globalStateValues.user._id,
 				},
 			});
 
@@ -412,7 +409,7 @@ function SourceManager(props) {
 		updateUserMapSettings({
 			variables: {
 				settings: {
-					user: stateApp.user.mongoId,
+					user: globalStateValues.user.mongoId,
 					type: 'DatasetVisibility',
 					settings,
 				},
@@ -712,16 +709,4 @@ SourceManager.propTypes = {
 	search: PropTypes.string,
 };
 
-const SourceManagerMemo = memo(SourceManager);
-
-export default function SourceManagerContainer(props) {
-	const [stateApp, setStateApp] = useContext(AppContext);
-
-	const setStateAppCallback = useCallback(setStateApp, [setStateApp]);
-	const stateAppMemo = useMemo(
-		() => ({ layers: stateApp.layers, user: stateApp.user }),
-		[stateApp.user, stateApp.layers]
-	);
-
-	return <SourceManagerMemo {...props} stateApp={stateAppMemo} setStateApp={setStateAppCallback} />;
-}
+export default memo(SourceManager);

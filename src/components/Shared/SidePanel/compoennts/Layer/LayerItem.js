@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 
 import { Tooltip, FormControlLabel, Switch } from '@material-ui/core';
@@ -14,8 +15,11 @@ import { useMutation } from '@apollo/client';
 
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 
+import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController.js';
 import { mapControlsController } from 'hookstate/mapControlsController.js';
+
+import { copy } from 'utils/helper';
 
 import { deepEqualObjects } from '../../../functions';
 import ColorControl from '../../../svgIcons/color-control.js';
@@ -23,7 +27,7 @@ import ClickIcon from '../../../svgIcons/cursor-click.js';
 import UserDefined from '../../../svgIcons/user-defined.js';
 import { ifLayerHaveData } from '../common.js';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	list: {
 		padding: 0,
 	},
@@ -32,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateApp, setStateApp }) {
+function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateApp }) {
 	const [hoverItemIndex, setHoverItem] = useState(-1);
 
 	layerController.useState(['wellListFromSearch']);
@@ -42,7 +46,7 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
 	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
 	const handleToggleInteraction = (layer, index) => () => {
-		const currentLayers = [];
+		const currentLayers = copy(globalStateController.getValue('layers'));
 		const updatedLayer = {
 			...layer,
 			layerSettings: {
@@ -59,7 +63,7 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
 
 		//// saving to stateApp
 		currentLayers[index] = updatedLayer;
-		setStateApp(stateApp => ({ ...stateApp, layers: [...currentLayers] }));
+		globalStateController.updateState({ layers: [...currentLayers] });
 
 		//// saving to mongo
 		updateLayerSettings({

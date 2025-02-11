@@ -1,7 +1,6 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { Grid, Typography, Divider, Tooltip, Input } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
+import { Grid, Typography, Divider, Tooltip, Input, IconButton } from '@material-ui/core';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -17,8 +16,6 @@ import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSetti
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
-
-import { AppContext } from 'AppContext';
 
 import LayerManager from './LayerManager';
 import SourceManager from './SourceManager';
@@ -119,11 +116,10 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function SourceLayerManager(props) {
+export default function SourceLayerManager() {
 	const classes = useStyles();
 	const [selectedType, setSelectedType] = useState('source');
 
-	const [stateApp] = useContext(AppContext);
 	const { layers, stateValues } = globalStateController.useState(['layers']);
 	const [currentLayers, setCurrentLayers] = React.useState([]);
 
@@ -158,7 +154,6 @@ export default function SourceLayerManager(props) {
 	};
 
 	const updateStateLayers = currentLayers => {
-		stateApp.layers = currentLayers;
 		globalStateController.updateState({ layers: currentLayers });
 	};
 

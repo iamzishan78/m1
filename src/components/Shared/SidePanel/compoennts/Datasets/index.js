@@ -1,4 +1,5 @@
-import React, { memo, useCallback, useContext, useEffect, useMemo } from 'react';
+/* eslint-disable react/prop-types */
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Typography } from '@material-ui/core';
@@ -30,14 +31,13 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 import { scrollbarStyle } from 'styles/common';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
-import { AppContext } from 'AppContext';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import DatasetMenu from './Menu';
 import NameWithTooltip from '../Common/NameWithTooltip';
 
 const useStyles = makeStyles(theme => ({
-	root: props => ({
+	root: () => ({
 		background: '#0e111a',
 		overflow: 'auto',
 		maxHeight: '274px',
@@ -107,19 +107,13 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const DatasetsMemo = memo(Datasets);
-export default function DatasetsContainer(props) {
-	const [stateApp] = useContext(AppContext);
-	const stateAppMemo = useMemo(
-		() => ({ layers: stateApp.layers, user: stateApp.user }),
-		[stateApp.layers, stateApp.user]
-	);
-	return <DatasetsMemo stateApp={stateAppMemo} headerButton={props.headerButton} search={props.search} />;
-}
-
-function Datasets({ headerButton, search, stateApp }) {
+function Datasets({ headerButton, search }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
+
+	const {
+		stateValues: { user },
+	} = globalStateController.useState(['user']);
 
 	const [getDatasets, { data: _datasets }] = useLazyQuery(GET_DATASETS);
 	const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
@@ -130,9 +124,9 @@ function Datasets({ headerButton, search, stateApp }) {
 	const [userMapSettings, { data: mapSettings }] = useLazyQuery(USER_MAP_SETTINGS_QUERY);
 
 	useEffect(() => {
-		userMapSettings({ variables: { user: stateApp.user._id, type: 'DatasetVisibility' } });
-		getDatasets({ variables: { userId: stateApp.user._id } });
-	}, [getDatasets, stateApp.user._id, userMapSettings]);
+		userMapSettings({ variables: { user: user._id, type: 'DatasetVisibility' } });
+		getDatasets({ variables: { userId: user._id } });
+	}, [getDatasets, user._id, userMapSettings]);
 
 	const datasets = useMemo(() => {
 		if (_datasets?.getDatasets?.length && mapSettings?.userMapSettings?.message) {
@@ -220,7 +214,7 @@ function Datasets({ headerButton, search, stateApp }) {
 		updateUserMapSettings({
 			variables: {
 				settings: {
-					user: stateApp.user.mongoId,
+					user: user.mongoId,
 					type: 'DatasetVisibility',
 					settings: { [dataset._id]: value },
 				},
@@ -280,7 +274,7 @@ function Datasets({ headerButton, search, stateApp }) {
 				{datasets?.map(({ sourceName, Icon, categories, ...rest }, index) => (
 					<Grid
 						className="item"
-						key={sourceName + index}
+						key={rest._id}
 						data-testid={`dataset-${sourceName === 'M1 Platform' ? 'platform' : 'custom'}`}
 						onClick={() => onItemClick({ sourceName, Icon, categories, ...rest })}
 					>
@@ -336,3 +330,5 @@ function Datasets({ headerButton, search, stateApp }) {
 		</>
 	);
 }
+
+export default memo(Datasets);

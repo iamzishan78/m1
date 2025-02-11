@@ -128,7 +128,6 @@ export default function SidePanel() {
 								: layer;
 						});
 						globalStateController.updateState({ layers: mappedLayers });
-						stateApp.layers = [...mappedLayers];
 						// Handle DeckGL layers
 						['AbstractGeo', 'Pls'].forEach(identifier =>
 							layerController.handleDeckLayer({
@@ -249,7 +248,6 @@ export default function SidePanel() {
 		if (panelType === 'marketplace') {
 			setDragFunction(() => {});
 			setToggleFunction(() => {});
-			// setPanelItems(stateApp.layers);
 			setPanelTitle('Marketplace');
 			setPanelButton(null);
 			setHeaderFilters(null);

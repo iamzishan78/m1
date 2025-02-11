@@ -471,7 +471,7 @@ function Map({
 				} else if (!isGenericAsset) {
 					getCustomLayer(paramId);
 				}
-			} catch (e) {
+			} catch {
 				history.push('/');
 			}
 		}
@@ -496,12 +496,7 @@ function Map({
 	useEffect(() => {
 		if (layerStates && layerStates.allLayerSettingsByUser) {
 			const layers = copy(layerStates.allLayerSettingsByUser);
-			setStateApp(state => ({
-				...state,
-				layers,
-			}));
 			globalState.layers.set(layers);
-			stateApp.layers = layers;
 
 			const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
 			// for of loop on mapViewFilters
@@ -596,14 +591,14 @@ function Map({
 
 	useEffect(() => {
 		// USE EFFECT FOR BASEMAP LAYER HANDLING
-		const mapLayers = copy(stateApp.layers);
+		const mapLayers = copy(globalState.stateValues.layers);
 		if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
 			const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
 			stateApp.baseMapLayers?.forEach((l, index) => {
 				if (l.name === 'Land Grid' && !stateApp.checkedBaseLayers.includes(index)) {
 					if (landLayer) {
 						landLayer.layerSettings.visiable = false;
-						setStateApp(state => ({ ...state, layers: [...mapLayers] }));
+						globalState.layers.set([...mapLayers]);
 					}
 				}
 
@@ -624,7 +619,7 @@ function Map({
 						if (stateApp.baseMapLayers[i].name === 'Land Grid') {
 							if (landLayer) {
 								landLayer.layerSettings.visiable = true;
-								setStateApp(state => ({ ...state, layers: [...mapLayers] }));
+								globalState.layers.set([...mapLayers]);
 							}
 							continue;
 						}
@@ -647,44 +642,6 @@ function Map({
 			}
 		}
 	}, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
-
-	// useEffect(() => {
-	// 	// USE EFFECT FOR HEATMAP LAYER HANDLES
-	// 	if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
-	// 		stateApp.heatLayers.forEach(l => {
-	// 			l.id.forEach(k => {
-	// 				if (map?.getLayer(k)) {
-	// 					map?.setLayoutProperty(k, 'visibility', 'none');
-	// 				}
-	// 			});
-	// 		});
-
-	// 		if (stateApp.checkedHeats.length > 0) {
-	// 			const layers = stateApp.checkedHeats.slice(0);
-	// 			layers.sort((a, b) => b - a);
-	// 			if (layers.length > 0) {
-	// 				let belowlayer = null;
-	// 				for (let k = layers.length - 1; k >= 0; k--) {
-	// 					const i = layers[k];
-	// 					const currentLayerArray = stateApp.heatLayers[i].id;
-
-	// 					currentLayerArray.forEach(j => {
-	// 						const mapLayer = map.getLayer(j);
-	// 						if (typeof mapLayer !== 'undefined') {
-	// 							if (map.getLayer(j)) {
-	// 								map.setLayoutProperty(j, 'visibility', 'visible');
-	// 								if (belowlayer != null) {
-	// 									map.moveLayer(j, belowlayer);
-	// 								}
-	// 								belowlayer = j;
-	// 							}
-	// 						}
-	// 					});
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
 	function getIndex(value, arr, prop) {
 		for (let i = 0; i < arr.length; i++) {

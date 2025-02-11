@@ -85,7 +85,6 @@ const AppProvider = props => {
 		mapCircularLoaderAct: false,
 		mapboxglAccessToken: 'pk.eyJ1IjoibTFuZXJhbCIsImEiOiJja2V6MHd2bnQwYzRqMnlwaTV6ejU2cTMyIn0.ghyrh-G8uQtyg4N4VcfTOw',
 		selectedWellApi: null,
-		layers: null,
 		searchLayerIndex: null,
 		trackedOwnersLayerIndex: null,
 		trackedWellsLayerIndex: null,
@@ -143,44 +142,6 @@ const AppProvider = props => {
 			relatedWells: [],
 			relatedAgreements: [],
 			relatedDocuments: [],
-		},
-
-		toggleLayersActivity: (identifier, activityValue) => {
-			if (identifier) {
-				let res;
-				setStateApp(stateApp => {
-					if (stateApp.layers && Array.isArray(stateApp.layers)) {
-						const currentLayers = [...stateApp.layers];
-						const index = currentLayers.findIndex(l => l.identifier === identifier);
-
-						if (index === -1) {
-							return stateApp;
-						}
-
-						const updatedLayer = {
-							...currentLayers[index],
-							layerSettings: {
-								...currentLayers[index].layerSettings,
-								visiable: activityValue !== undefined ? activityValue : !currentLayers[index].layerSettings.visiable,
-							},
-						};
-						res = updatedLayer.layerSettings.visiable;
-
-						//// saving to stateApp
-						currentLayers[index] = updatedLayer;
-
-						return {
-							...stateApp,
-							layers: [...currentLayers],
-							toggleLayerActivityValue: activityValue,
-							mapCircularLoaderAct: false,
-						};
-					}
-					return stateApp;
-				});
-				return res;
-			}
-			return null;
 		},
 
 		selectedShape: popupController.getValue('selectedShape'),
