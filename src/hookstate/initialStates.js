@@ -389,7 +389,7 @@ const defaultMapVars = {
 };
 
 export const mapStateInitialState = {
-	// mapStyles: [],
+	mapStyles: [],
 	mapVars: defaultMapVars,
 	defaultMapVars,
 	isDefaultViewAllowed: true,

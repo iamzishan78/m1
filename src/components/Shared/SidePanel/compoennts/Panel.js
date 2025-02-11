@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
 import { TransitionGroup } from 'react-transition-group';
@@ -44,7 +44,6 @@ import { navController } from 'hookstate/navStateController';
 import { setActiveModule } from 'store/actions/commonActions';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
-import { AppContext } from 'AppContext';
 
 import AddGroup from './AddGroup';
 import Layer from './Layer';
@@ -84,8 +83,8 @@ const layerIcons = [
 const SEARCH_DELAY = 200;
 const Z_INDEX_DIALOG = 1300;
 
-const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle }) => {
-	const { mapStateValues } = mapStateController.useState(['reintializeMap'], 'mapStateValues');
+const BasemapImageBox = React.memo(({ setBaseMap, title, currentStyle }) => {
+	const { mapStateValues } = mapStateController.useState(['reintializeMap', 'mapStyles'], 'mapStateValues');
 	return (
 		<Grid container direction="column" spacing={3}>
 			<Grid item>
@@ -104,7 +103,7 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 							overflow: 'scroll',
 						}}
 					>
-						{mapStyles.map(style => (
+						{mapStateValues.mapStyles.map(style => (
 							<StyledMenuItem
 								disableRipple
 								key={style.id}
@@ -245,8 +244,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		'layerStateValues'
 	);
 
-	const [stateApp] = useContext(AppContext);
-
 	const [totalHitMapCount, setTotalHitMapCount] = useState(null);
 	const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
 
@@ -255,7 +252,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 
 	const [filteredItems, setFilteredItems] = useState([]);
 	const [layerMap, setLayerMap] = useState([]);
-	const [mapStyles, setMapStyles] = useState([]);
 	const [search, setSearch] = useState('');
 	const [searchState, setSearchState] = useState(false);
 	const [tab, setTab] = useState(0);
@@ -274,12 +270,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	useEffect(() => {
 		setTotalHitMapCount(layerStateValues.checkedHeats.length);
 	}, [checkedHeats]);
-
-	useEffect(() => {
-		if (stateApp.mapStyles && stateApp.mapStyles.length > 0) {
-			setMapStyles([...stateApp.mapStyles]);
-		}
-	}, [stateApp.mapStyles]);
 
 	useEffect(() => {
 		const TAB_LAYER = 0;
@@ -582,12 +572,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 						{/* base Stuff */}
 						{type === 'base' && (
 							<>
-								<BasemapImageBox
-									mapStyles={mapStyles}
-									setBaseMap={setBaseMap}
-									currentStyle={mapStateValues.mapVars.styleId}
-									title={title}
-								/>
+								<BasemapImageBox setBaseMap={setBaseMap} currentStyle={mapStateValues.mapVars.styleId} title={title} />
 								<Box overflow="hidden scroll">
 									<Collapse in={true} timeout="auto" unmountOnExit>
 										<DisplayList
@@ -636,7 +621,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 }
 
 BasemapImageBox.propTypes = {
-	mapStyles: PropTypes.array.isRequired,
 	setBaseMap: PropTypes.func.isRequired,
 	title: PropTypes.string.isRequired,
 	currentStyle: PropTypes.string.isRequired,

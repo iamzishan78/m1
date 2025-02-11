@@ -74,7 +74,6 @@ const AppProvider = props => {
 		// userSnap: false,
 
 		// MAP CONTEXT vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-		mapStyles: [],
 		wellSelectedCoordinates: [],
 		universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
 

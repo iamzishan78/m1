@@ -320,10 +320,7 @@ function Map({
 		fetchStyles(abortController)
 			.then(styles => {
 				setMapStyles(styles);
-				setStateApp(state => ({
-					...state,
-					mapStyles: styles,
-				}));
+				mapStateController.updateState({ mapStyles: styles });
 			})
 			.catch(error => {
 				// Handle any errors from fetchStyles
