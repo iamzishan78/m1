@@ -62,18 +62,6 @@ const useStyles = makeStyles(() => ({
 			},
 		},
 	},
-	emailAdornment: {
-		cursor: 'pointer',
-		padding: '0px', // Remove extra padding
-		margin: '0 2px', // Adjust spacing between icons
-	},
-	baseValueChanged: {
-		width: '100%',
-		'& .MuiInputBase-input': {
-			color: 'dodgerblue',
-			fontWeight: 'bold',
-		},
-	},
 }));
 
 export default function SummaryFields({ contactData, handleQuickActionActivity }) {
@@ -195,9 +183,14 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 										inputRef: field.inputRef,
 										InputLabelProps: { shrink: true },
 										endAdornmentProps: {
-											isEmail: field.type === 'email',
-											isPhoneNumber: field.isPhoneNumber,
-											isLoading: activeLoadingField === field.key,
+											type:
+												activeLoadingField === field.key
+													? 'loading'
+													: field.isPhoneNumber
+														? 'phoneNumber'
+														: field.type === 'email'
+															? 'email'
+															: null,
 											handleAction: handleQuickActionActivity,
 											dialpadFeature,
 											dialpadIds: contactData?.dialpadIds,

@@ -26,7 +26,91 @@ const classes = {
 			color: 'grey',
 		},
 	},
+	emailAdornment: {
+		cursor: 'pointer',
+		padding: '0px', // Remove extra padding
+		margin: '0 2px', // Adjust spacing between icons
+	},
 };
+
+// Define a configuration object for adornments
+const adornmentConfig = {
+	email: {
+		icon: <EmailOutlined htmlColor="#757575" />,
+		tooltip: 'Email',
+		action: value => `mailto: ${value}`,
+	},
+	phoneNumber: {
+		icons: [
+			{
+				icon: <Voicemail htmlColor="#757575" />,
+				tooltip: 'Voice Mail',
+				action: (value, handleAction) => handleAction({ phoneNumber: value, type: 'call' }),
+			},
+			{
+				icon: <Textsms htmlColor="#757575" />,
+				tooltip: 'Text SMS',
+				action: (value, handleAction) => handleAction({ phoneNumber: value, type: 'text_message' }),
+			},
+			{
+				icon: <AddIcCall htmlColor="#757575" />,
+				tooltip: 'Call',
+				action: (value, handleAction, dialpadFeature, dialpadIds) => {
+					if (dialpadIds?.length && dialpadFeature) {
+						handleAction({ phoneNumber: value, type: 'dialpad' });
+					}
+				},
+				href: (value, dialpadFeature, dialpadIds) => {
+					if (dialpadIds?.length && dialpadFeature) {
+						return '';
+					}
+					return `tel: ${value}`;
+				},
+			},
+		],
+	},
+	loading: {
+		component: <CircularProgress size={22} color="secondary" />,
+	},
+};
+
+// Function to render adornments
+function renderAdornment(type, value, handleAction, dialpadFeature, dialpadIds) {
+	const config = adornmentConfig[type];
+	if (!config) {
+		return null;
+	}
+
+	if (config.component) {
+		return config.component;
+	}
+
+	if (config.icons) {
+		return config.icons.map(iconConfig => (
+			<InputAdornment position="end" key={iconConfig.tooltip}>
+				<Tooltip title={iconConfig.tooltip} placement="top">
+					<IconButton
+						className={classes.emailAdornment}
+						href={iconConfig.href?.(value, dialpadFeature, dialpadIds)}
+						onClick={() => iconConfig.action(value, handleAction, dialpadFeature, dialpadIds)}
+					>
+						{iconConfig.icon}
+					</IconButton>
+				</Tooltip>
+			</InputAdornment>
+		));
+	}
+
+	return (
+		<InputAdornment position="end">
+			<Tooltip title={config.tooltip} placement="top">
+				<IconButton className={classes.emailAdornment} href={config.action(value)}>
+					{config.icon}
+				</IconButton>
+			</Tooltip>
+		</InputAdornment>
+	);
+}
 
 function CustomTextField({
 	watch = null,
@@ -135,77 +219,8 @@ function CustomTextField({
 									}
 								}}
 							/>
-						) : endAdornmentProps?.isEmail ? (
-							<InputAdornment position="end">
-								<Tooltip title={'Email'} placement="top">
-									<IconButton id="mail-icon" href={`mailto: ${textFieldValue}`} className={classes.emailAdornment}>
-										<EmailOutlined htmlColor="#757575" />
-									</IconButton>
-								</Tooltip>
-							</InputAdornment>
-						) : endAdornmentProps?.isPhoneNumber ? (
-							<>
-								{/* Phone quick actions icons */}
-								<InputAdornment position="end">
-									<Tooltip title={'Voice Mail'} placement="top">
-										<IconButton
-											id="voicemail-icon"
-											className={classes.emailAdornment}
-											onClick={() =>
-												endAdornmentProps.handleAction({
-													phoneNumber: textFieldValue,
-													type: 'call',
-												})
-											}
-										>
-											<Voicemail htmlColor="#757575" />
-										</IconButton>
-									</Tooltip>
-								</InputAdornment>
-
-								<InputAdornment position="end">
-									<Tooltip title={'Text SMS'} placement="top">
-										<IconButton
-											id="textsms-icon"
-											className={classes.emailAdornment}
-											onClick={() =>
-												endAdornmentProps.handleAction({
-													phoneNumber: textFieldValue,
-													type: 'text_message',
-												})
-											}
-										>
-											<Textsms htmlColor="#757575" />
-										</IconButton>
-									</Tooltip>
-								</InputAdornment>
-
-								<InputAdornment position="end">
-									<Tooltip title={'Call'} placement="top">
-										<IconButton
-											id="call-icon"
-											href={
-												endAdornmentProps?.dialpadIds?.length && endAdornmentProps.dialpadFeature
-													? ''
-													: `tel: ${textFieldValue}`
-											}
-											className={classes.emailAdornment}
-											onClick={() => {
-												endAdornmentProps?.dialpadIds?.length &&
-													endAdornmentProps.dialpadFeature &&
-													endAdornmentProps.handleAction({
-														phoneNumber: textFieldValue,
-														type: 'dialpad',
-													});
-											}}
-										>
-											<AddIcCall htmlColor="#757575" />
-										</IconButton>
-									</Tooltip>
-								</InputAdornment>
-							</>
-						) : endAdornmentProps?.isLoading ? (
-							<CircularProgress size={22} color="secondary" />
+						) : endAdornmentProps?.type ? (
+							<InputAdornment position="end">{renderAdornment(textFieldValue, endAdornmentProps)}</InputAdornment>
 						) : (
 							InputProps.endAdornment
 						),
