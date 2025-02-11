@@ -25,6 +25,7 @@ const mapControlsInitialState = {
 	Draw: null,
 	mapStyleList: [],
 	expandedPanel: true,
+	manageTransferData: false,
 	// TODO: Remove conflicting selectedLayer states
 	selectedLayerControl: null,
 	selectedLayer: null,

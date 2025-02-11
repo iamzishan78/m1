@@ -351,7 +351,10 @@ const Activities = () => {
 		});
 
 		return () => {
-			slidoutStateController.updateState({ selectedActivityId: 'id', selectedActivity: null });
+			slidoutStateController.updateState({
+				selectedActivityId: '',
+				selectedActivity: null,
+			});
 			slidoutStateController.hideSlideout();
 		};
 	}, []);

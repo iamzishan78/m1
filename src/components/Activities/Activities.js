@@ -152,7 +152,7 @@ const Activities = () => {
 	const [getContactsForActivity, { data: getContactsForActivityResult }] = useLazyQuery(GET_CONTACTS_FOR_ACTIVITY, {
 		fetchPolicy: 'no-cache',
 		onCompleted: () => {
-			slidoutStateController.updateState({ loader: false })
+			slidoutStateController.updateState({ loader: false });
 		},
 	});
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
@@ -185,10 +185,10 @@ const Activities = () => {
 		getAllMongoUsers();
 
 		return () => {
-			slidoutStateController({
+			slidoutStateController.updateState({
 				selectedActivityId: '',
-				selectedActivity: null
-			})
+				selectedActivity: null,
+			});
 			slidoutStateController.hideSlideout();
 		};
 	}, []);
@@ -235,10 +235,9 @@ const Activities = () => {
 
 	useEffect(() => {
 		if (selectedActivityId) {
-			slidoutStateController.updateState({ selectedActivity: events.find(act => act._id === selectedActivityId) })
-			slidoutStateController.showSlideout();
+			slidoutStateController.updateState({ selectedActivity: events.find(act => act._id === selectedActivityId) });
 		} else {
-			slidoutStateController.updateState({ selectedActivity: null })
+			slidoutStateController.updateState({ selectedActivity: null });
 		}
 	}, [selectedActivityId]);
 
@@ -308,14 +307,16 @@ const Activities = () => {
 	};
 
 	const onModalOpen = () => {
-		slidoutStateController.updateState({ loader: true })
+		slidoutStateController.updateState({ loader: true });
 		getContactsForActivity({
 			variables: { activityId: slidoutStateController.getValue('selectedActivityId') },
+		}).then(() => {
+			slidoutStateController.showSlideout();
 		});
 	};
 
 	const setSelectedActivityId = id => {
-		slidoutStateController.updateState({ selectedActivityId: id })
+		slidoutStateController.updateState({ selectedActivityId: id });
 	};
 
 	const overrideMeta = {

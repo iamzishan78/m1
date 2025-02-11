@@ -1,4 +1,3 @@
-
 import { StateController } from './stateController';
 
 export const detailCardInitialState = {
@@ -6,6 +5,16 @@ export const detailCardInitialState = {
 	baseTabKey: 0,
 	bottomTabKey: 0,
 	props: null,
+	page: null,
+	currentAssetRecord: null,
+	loadingField: false,
+	loading: false,
+	tabs: [],
+	selectedAssoicatedModel: null,
+	isStandardProvisionsRefetch: false,
+	summaryData: {},
+	drawer: '',
+	customLayer: null,
 };
 
 class DetailCardController extends StateController {
