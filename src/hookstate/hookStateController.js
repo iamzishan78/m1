@@ -1,5 +1,5 @@
-/* eslint-disable no-magic-numbers */
 import { useHookstate } from '@hookstate/core';
+import { isEqual } from 'lodash';
 
 const statesHelper = (keys, keysVal, stateValuesKey = 'stateValues') => {
 	const retObj = { [stateValuesKey]: {} };
@@ -220,4 +220,13 @@ export const hookStateController = (state, initialState) => ({
 		return keysValue;
 	},
 	getAllValues: () => state.get({ noproxy: true }), // used by functions or any thing that don't require a re render to get a value from state
+	memoizedStateUpdate: (key, value) => {
+		const oldValue = state[key].get({ noproxy: true });
+
+		if (isEqual(oldValue && value)) {
+			return;
+		}
+
+		state[key].set(value);
+	},
 });

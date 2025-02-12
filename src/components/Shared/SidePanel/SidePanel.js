@@ -103,7 +103,8 @@ export default function SidePanel() {
 					checkedBaseLayers[sourceIndex] = result.destination.index;
 				}
 
-				layerController.updateState({ baseMapLayers: items, checkedBaseLayers });
+				layerController.memoizedStateUpdate('baseMapLayers', items);
+				layerController.memoizedStateUpdate('checkedBaseLayers', checkedBaseLayers);
 			});
 
 			setToggleFunction(() => ({ index }) => {
@@ -155,7 +156,7 @@ export default function SidePanel() {
 					} else {
 						newChecked.splice(currentIndex, 1);
 					}
-					layerController.updateState({ checkedBaseLayers: newChecked });
+					layerController.memoizedStateUpdate('checkedBaseLayers', newChecked);
 				}
 			});
 		}
@@ -213,7 +214,8 @@ export default function SidePanel() {
 					checkedHeats[sourceIndex] = result.destination.index;
 				}
 
-				layerController.updateState({ heatLayers: items, checkedHeats });
+				layerController.memoizedStateUpdate('heatLayers', items);
+				layerController.memoizedStateUpdate('checkedHeats', checkedHeats);
 			});
 			setToggleFunction(() => ({ index }) => {
 				const currentIndex = layerStateValues.checkedHeats.indexOf(index);
@@ -224,7 +226,7 @@ export default function SidePanel() {
 				} else {
 					newChecked.splice(currentIndex, 1);
 				}
-				layerController.updateState({ checkedHeats: newChecked });
+				layerController.memoizedStateUpdate('checkedHeats', newChecked);
 			});
 			setPanelItems(layerStateValues.heatLayers);
 			setPanelTitle('Heatmaps');

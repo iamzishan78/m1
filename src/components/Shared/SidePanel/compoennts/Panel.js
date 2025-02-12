@@ -265,7 +265,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 
 	useEffect(() => {
 		setTotalHitMapCount(layerStateValues.checkedHeats.length);
-	}, [checkedHeats]);
+	}, [layerStateValues.checkedHeats.length]);
 
 	useEffect(() => {
 		const TAB_LAYER = 0;

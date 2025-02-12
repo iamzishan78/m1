@@ -502,7 +502,7 @@ function Map({
 	useEffect(() => {
 		if (layerStates && layerStates.allLayerSettingsByUser) {
 			const layers = copy(layerStates.allLayerSettingsByUser);
-			layersState.set(layers);
+			layerController.updateState({ layers });
 
 			const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
 			// for of loop on mapViewFilters
@@ -587,11 +587,12 @@ function Map({
 		const layersToToggle = ['Land Grid', 'Roads', 'Map Labels'];
 		const indicesToToggle = layersToToggle.map(getBaseMapIndex).filter(index => index !== -1);
 
-		layerController.updateState({
-			checkedBaseLayers: landLayerVisible
+		layerController.memoizedStateUpdate(
+			'checkedBaseLayers',
+			landLayerVisible
 				? [...new Set([...layerStateValues.checkedBaseLayers, ...indicesToToggle])]
-				: layerStateValues.checkedBaseLayers.filter(index => !indicesToToggle.includes(index)),
-		});
+				: layerStateValues.checkedBaseLayers.filter(index => !indicesToToggle.includes(index))
+		);
 	}, [map, baseMapLayers, layersState]);
 
 	useEffect(() => {
@@ -602,8 +603,10 @@ function Map({
 			layerStateValues.baseMapLayers?.forEach((l, index) => {
 				if (l.name === 'Land Grid' && !layerStateValues.checkedBaseLayers.includes(index)) {
 					if (landLayer) {
-						landLayer.layerSettings.visiable = false;
-						layersState.set([...mapLayers]);
+						if (landLayer.layerSettings.visiable) {
+							landLayer.layerSettings.visiable = false;
+							layerController.updateState({ layers: [...mapLayers] });
+						}
 					}
 				}
 
@@ -623,8 +626,10 @@ function Map({
 						const i = layers[k];
 						if (layerStateValues.baseMapLayers[i].name === 'Land Grid') {
 							if (landLayer) {
-								landLayer.layerSettings.visiable = true;
-								layersState.set([...mapLayers]);
+								if (!landLayer.layerSettings.visiable) {
+									landLayer.layerSettings.visiable = true;
+									layerController.updateState({ layers: [...mapLayers] });
+								}
 							}
 							continue;
 						}
