@@ -18,7 +18,7 @@ import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogFooter: {
 		display: 'flex',
 		justifyContent: 'flex-end',
@@ -59,6 +59,12 @@ function AddTractUnitDialog(props) {
 	const [loading, setLoading] = useState(false);
 	const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
 
+	const handleClose = () => {
+		setSelectedShapeLayer(null);
+		reset({});
+		props.onClose();
+	};
+
 	const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {
 		onCompleted: () => {
 			setLoading(false);
@@ -80,12 +86,6 @@ function AddTractUnitDialog(props) {
 		}
 	}, [reset, selectedShapeLayer]);
 
-	const handleClose = () => {
-		setSelectedShapeLayer(null);
-		reset({});
-		props.onClose();
-	};
-
 	const handleSave = () => {
 		setLoading(true);
 		addShapeTract({
@@ -105,7 +105,7 @@ function AddTractUnitDialog(props) {
 		return dialogFieldsKeys.map(({ name, label }) => (
 			<Controller
 				key={name}
-				as={TextField}
+				render={({ field }) => <TextField {...field} />}
 				control={control}
 				variant="outlined"
 				margin="dense"

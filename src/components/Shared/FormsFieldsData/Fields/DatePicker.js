@@ -33,7 +33,7 @@ function DatePicker({ control, item }) {
 			<Controller
 				control={control}
 				name={name}
-				render={props => (
+				render={({ field }) => (
 					<KeyboardDatePicker
 						className={classes.marginNormal}
 						disableToolbar
@@ -45,10 +45,10 @@ function DatePicker({ control, item }) {
 						format="MM/DD/YYYY"
 						margin="normal"
 						id={name}
-						ref={props.ref}
-						value={props.value || null}
+						ref={field.ref}
+						value={field.value || null}
 						onChange={date => {
-							onChange ? onChange(date) : props.onChange(date);
+							onChange ? onChange(date) : field.onChange(date);
 						}}
 						onBlur={onBlur}
 						KeyboardButtonProps={{ 'aria-label': 'change date' }}

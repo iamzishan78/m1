@@ -22,7 +22,7 @@ import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 
 import { Modals } from 'styles/Modal';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		width: '557px',
 		padding: '10px 30px',
@@ -169,12 +169,12 @@ const ExportContactsAndPurchase = ({
 									control={control}
 									name="exportInterestOwners"
 									defaultValue={false}
-									render={props => (
+									render={({ field }) => (
 										<Checkbox
-											{...props}
+											{...field}
 											disabled={total === 0}
 											onChange={e => {
-												props.onChange(e.target.checked);
+												field.onChange(e.target.checked);
 											}}
 										/>
 									)}
@@ -193,12 +193,12 @@ const ExportContactsAndPurchase = ({
 								control={control}
 								name="exportContacts"
 								defaultValue={false}
-								render={props => (
+								render={({ field }) => (
 									<Checkbox
-										{...props}
+										{...field}
 										disabled={total === 0}
 										onChange={e => {
-											props.onChange(e.target.checked);
+											field.onChange(e.target.checked);
 										}}
 										data-testid="export-contact-and-purchse-icon-checkbox"
 									/>

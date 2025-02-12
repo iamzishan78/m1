@@ -92,7 +92,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 				<AutoCompleteShapeLayer value={tractValue} shapeType="parcel" setSelectedShapeLayer={setSelectedShapeLayer} />
 			)}
 			<Controller
-				as={TextField}
+				render={({ field }) => <TextField {...field} />}
 				id="tractName"
 				// style={{ display: isNewTract ? "inherit" : "none" }}
 				control={control}
@@ -108,18 +108,18 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 				control={control}
 				name={`${prefix}state`}
 				defaultValue={tract?.state || ''}
-				render={props => (
+				render={({ field }) => (
 					<AutoCompleteLandgrid
-						{...props}
+						{...field}
 						// Disabled will be false in case of new tract
 						{...(!isNewTract && { disabled: true })}
-						value={props.value}
+						value={field.value}
 						filterKey={filterConsts.state.filterKey}
 						filters={{ field: filterConsts.state.filterField, value: 'State' }}
 						label="State"
 						variant="outlined"
 						onChange={(e, value) => {
-							props.onChange(value.key);
+							field.onChange(value.key);
 							setStateName(value.key);
 						}}
 						autoFocus={false}
@@ -132,12 +132,12 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 				name={`${prefix}county`}
 				id="tractCounty"
 				defaultValue={tract?.county || ''}
-				render={props => (
+				render={({ field }) => (
 					<AutoCompleteLandgrid
-						{...props}
+						{...field}
 						// Disabled will be false in case of new tract
 						{...(!isNewTract && { disabled: true })}
-						value={props.value}
+						value={field.value}
 						filterKey={filterConsts.county.filterKey}
 						filters={[
 							{ field: filterConsts.county.filterField, value: 'County' },
@@ -146,7 +146,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 						label="County"
 						variant="outlined"
 						onChange={(e, value) => {
-							props.onChange(value.key);
+							field.onChange(value.key);
 						}}
 						autoFocus={false}
 					/>
@@ -157,7 +157,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 				control={control}
 				name={`${prefix}basin`}
 				defaultValue={tract?.basin || ''}
-				render={({ onChange, value, ref }) => (
+				render={({ field: { onChange, value } }) => (
 					<AutoCompleteWithNewOption
 						// Disabled will be false in case of new tract
 						{...(!isNewTract && { disabled: true })}
@@ -178,7 +178,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 				control={control}
 				name={`${prefix}field`}
 				defaultValue={tract?.field || ''}
-				render={({ onChange, value, ref }) => (
+				render={({ field: { onChange, value } }) => (
 					<AutoCompleteWithNewOption
 						// Disabled will be false in case of new tract
 						{...(!isNewTract && { disabled: true })}
@@ -201,11 +201,11 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 						control={control}
 						name={`${prefix}meridian`}
 						defaultValue={tract?.meridian || ''}
-						render={props => (
+						render={({ field }) => (
 							<AutoCompleteLandgrid
 								// Disabled will be false in case of new tract
 								{...(!isNewTract && { disabled: true })}
-								value={props.value}
+								value={field.value}
 								filterKey={filterConsts.meridian.filterKey}
 								filters={[
 									{ field: filterConsts.meridian.filterField, value: 'Meridian' },
@@ -214,7 +214,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 								label="Meridian"
 								variant="outlined"
 								onChange={(e, value) => {
-									props.onChange(value.key);
+									field.onChange(value.key);
 								}}
 								autoFocus={false}
 								newOptions
@@ -227,11 +227,11 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 						control={control}
 						name={`${prefix}township`}
 						defaultValue={tract?.township || ''}
-						render={props => (
+						render={({ field }) => (
 							<AutoCompleteLandgrid
 								// Disabled will be false in case of new tract
 								{...(!isNewTract && { disabled: true })}
-								value={props.value}
+								value={field.value}
 								filterKey={filterConsts.township.filterKey}
 								filters={[
 									{ field: filterConsts.township.filterField, value: 'TownshipRange' },
@@ -240,7 +240,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 								label="Township"
 								variant="outlined"
 								onChange={(e, value) => {
-									props.onChange(value.key);
+									field.onChange(value.key);
 								}}
 								autoFocus={false}
 								newOptions
@@ -253,11 +253,11 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 						control={control}
 						name={`${prefix}range`}
 						defaultValue={tract?.range || ''}
-						render={props => (
+						render={({ field }) => (
 							<AutoCompleteLandgrid
 								// Disabled will be false in case of new tract
 								{...(!isNewTract && { disabled: true })}
-								value={props.value}
+								value={field.value}
 								filterKey={filterConsts.range.filterKey}
 								compoundValue={tract.township}
 								filters={[
@@ -267,7 +267,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 								label="Range"
 								variant="outlined"
 								onChange={(e, value) => {
-									props.onChange(value.key);
+									field.onChange(value.key);
 								}}
 								autoFocus={false}
 								newOptions
@@ -284,11 +284,11 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 						control={control}
 						name={`${prefix}survey`}
 						defaultValue={tract?.survey || ''}
-						render={props => (
+						render={({ field }) => (
 							<AutoCompleteLandgrid
 								// Disabled will be false in case of new tract
 								{...(!isNewTract && { disabled: true })}
-								value={props.value}
+								value={field.value}
 								filterKey={filterConsts.survey.filterKey}
 								filters={[
 									{ field: filterConsts.survey.filterField, value: 'Survey' },
@@ -297,7 +297,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 								label="Survey"
 								variant="outlined"
 								onChange={(e, value) => {
-									props.onChange(value.key);
+									field.onChange(value.key);
 								}}
 								autoFocus={false}
 								newOptions
@@ -310,11 +310,11 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 						control={control}
 						name={`${prefix}block`}
 						defaultValue={tract?.block || ''}
-						render={props => (
+						render={({ field }) => (
 							<AutoCompleteLandgrid
 								// Disabled will be false in case of new tract
 								{...(!isNewTract && { disabled: true })}
-								value={props.value}
+								value={field.value}
 								filterKey={filterConsts.block.filterKey}
 								filters={[
 									{ field: filterConsts.block.filterField, value: 'Block' },
@@ -323,7 +323,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 								label="Block"
 								variant="outlined"
 								onChange={(e, value) => {
-									props.onChange(value.key);
+									field.onChange(value.key);
 								}}
 								autoFocus={false}
 								newOptions
@@ -338,11 +338,11 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 				control={control}
 				name={`${prefix}section`}
 				defaultValue={tract?.section || ''}
-				render={props => (
+				render={({ field }) => (
 					<AutoCompleteLandgrid
 						// Disabled will be false in case of new tract
 						{...(!isNewTract && { disabled: true })}
-						value={props.value}
+						value={field.value}
 						filterKey={['TX', 'Texas'].includes(stateName) ? 'level5Name.keyword' : 'level6Name.keyword'}
 						filters={
 							['TX', 'Texas'].includes(stateName)
@@ -358,7 +358,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 						label="Section"
 						variant="outlined"
 						onChange={(e, value) => {
-							props.onChange(value.key);
+							field.onChange(value.key);
 						}}
 						autoFocus={false}
 						newOptions
@@ -375,11 +375,11 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 					id="tractAbstract"
 					name={`${prefix}abstract`}
 					defaultValue={tract?.abstract || ''}
-					render={props => (
+					render={({ field }) => (
 						<AutoCompleteLandgrid
 							// Disabled will be false in case of new tract
 							{...(!isNewTract && { disabled: true })}
-							value={props.value}
+							value={field.value}
 							filterKey="level6Name.keyword"
 							filters={[
 								{ field: 'level6Type.keyword', value: 'Abstract' },
@@ -388,7 +388,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 							label="Abstract"
 							variant="outlined"
 							onChange={(e, value) => {
-								props.onChange(value.key);
+								field.onChange(value.key);
 							}}
 							autoFocus={false}
 							newOptions
@@ -405,7 +405,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 			</div>
 
 			<Controller
-				as={TextField}
+				render={({ field }) => <TextField {...field} />}
 				// Disabled will be false in case of new tract
 				{...(!isNewTract && { disabled: true })}
 				id="tractDescription"

@@ -17,7 +17,7 @@ import { ADD_RELATED_SHAPE } from 'graphQL/useMutationAddUnitToAgreement';
 import { tableGlobalController } from 'hookstate/tableController';
 
 // Styles
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogFooter: {
 		display: 'flex',
 		justifyContent: 'flex-end',
@@ -149,7 +149,7 @@ function AgreementUnitDialog(props) {
 				</Grid>
 				<AutoCompleteShapeLayer value={unitValue} shapeType="unit" setSelectedShapeLayer={setSelectedShapeLayer} />
 				<Controller
-					as={TextField}
+					render={({ field }) => <TextField {...field} />}
 					id="unitName"
 					disabled
 					control={control}
@@ -162,7 +162,7 @@ function AgreementUnitDialog(props) {
 					defaultValue={''}
 				/>
 				<Controller
-					as={TextField}
+					render={({ field }) => <TextField {...field} />}
 					id="unitNumber"
 					disabled
 					control={control}
@@ -176,7 +176,7 @@ function AgreementUnitDialog(props) {
 				/>
 
 				<Controller
-					as={TextField}
+					render={({ field }) => <TextField {...field} />}
 					id="unitAcres"
 					disabled
 					control={control}
@@ -190,7 +190,7 @@ function AgreementUnitDialog(props) {
 				/>
 
 				<Controller
-					as={TextField}
+					render={({ field }) => <TextField {...field} />}
 					id="state"
 					disabled
 					control={control}
@@ -204,7 +204,7 @@ function AgreementUnitDialog(props) {
 				/>
 
 				<Controller
-					as={TextField}
+					render={({ field }) => <TextField {...field} />}
 					id="unitStatus"
 					disabled
 					control={control}

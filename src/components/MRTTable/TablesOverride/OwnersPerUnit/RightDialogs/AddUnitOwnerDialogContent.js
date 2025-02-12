@@ -100,7 +100,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function AddUnitOwnerDialogContent({
 	selectedRow,
-	setSelectedRow,
 	uAcres,
 	uUnitPricing,
 	uMaxUnitPricing,
@@ -119,8 +118,6 @@ export default function AddUnitOwnerDialogContent({
 	const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 	const { control, reset, setValue, getValues, watch } = useForm();
 
-	// CONTACT
-
 	const [addOwnerToAShape, { data: mutationData }] = useMutation(ADD_OWNER_TOA_SHAPE);
 
 	const [updateShapeOwners, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNERS);
@@ -128,6 +125,12 @@ export default function AddUnitOwnerDialogContent({
 	const [updateContact] = useMutation(UPDATECONTACT);
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+
+	const handleClickDialogClose = () => {
+		props.onClose();
+		sideDialogController('unitInterestDialog').reset();
+		reset();
+	};
 
 	useEffect(() => {
 		sideDialogController('unitInterestDialog').updateState({
@@ -189,12 +192,6 @@ export default function AddUnitOwnerDialogContent({
 			tableGlobalController.refetch();
 		}
 	}, [mutationData, updateData]);
-
-	const handleClickDialogClose = () => {
-		props.onClose();
-		sideDialogController('unitInterestDialog').reset();
-		reset();
-	};
 
 	const handleUpdateContact = ownerToAdd => {
 		console.log(selectedRow);

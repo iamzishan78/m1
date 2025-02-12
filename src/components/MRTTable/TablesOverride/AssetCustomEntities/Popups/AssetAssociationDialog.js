@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import CloseIcon from '@material-ui/icons/Close';
-import { Grid, Dialog, IconButton, Button, TextField, MenuItem, Chip } from '@material-ui/core';
-import Loader from 'components/Loaders';
-import { useLazyQuery, useMutation } from '@apollo/client';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-import { tableGlobalController } from 'hookstate/tableController';
+import { useDispatch } from 'react-redux';
+
+import { Grid, Dialog, IconButton, Button, TextField, MenuItem, Chip } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+
+import Loader from 'components/Loaders';
+
 import { UPSERT_ASSOCIATED_MODELS } from 'graphQL/useMutationUpsertCustomAssetInfo';
 import { GET_ALL_MODELS } from 'graphQL/useQueryModels';
-import DynamicForm from '../Forms/DynamicForm';
-import { useStyles } from './styles';
-import { useDispatch } from 'react-redux';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
 import { showInfoMessage } from 'actions';
+
+import { useStyles } from './styles';
+import DynamicForm from '../Forms/DynamicForm';
 
 function AssetAssociationDialog() {
 	const classes = useStyles();
@@ -127,8 +134,12 @@ function AssetAssociationDialog() {
 				const { success, message } = res.data.upsertAssociatedModels;
 				if (success) {
 					Loader.successToast(toastType, message);
-				} else Loader.errorToast(toastType, message);
-			} else Loader.errorToast(toastType, `Failed to ${capitalizedToastType} Entity Association`);
+				} else {
+					Loader.errorToast(toastType, message);
+				}
+			} else {
+				Loader.errorToast(toastType, `Failed to ${capitalizedToastType} Entity Association`);
+			}
 		});
 	};
 
@@ -193,18 +204,18 @@ function AssetAssociationDialog() {
 									<Controller
 										control={control}
 										name="associatedModels"
-										render={props => (
+										render={({ field }) => (
 											<TextField
 												select
 												size="small"
 												type="text"
 												variant="outlined"
-												value={props.value || []}
-												inputRef={props.ref}
+												value={field.value || []}
+												inputRef={field.ref}
 												onWheel={e => e.target.blur()}
 												onChange={e => {
 													const selectedModel = e.target.value;
-													props.onChange(selectedModel);
+													field.onChange(selectedModel);
 													reset({
 														...watch(), // Retain other form fields
 														fields: selectedModel?.modelKeys || [], // Reset based on selected model's keys
@@ -217,7 +228,9 @@ function AssetAssociationDialog() {
 												SelectProps={{
 													renderValue: selected => {
 														// If there's no selection, show a placeholder
-														if (!selected || !selected.modelName) return '';
+														if (!selected || !selected.modelName) {
+															return '';
+														}
 														return (
 															<div style={{ display: 'flex', flexWrap: 'wrap' }}>
 																<Chip key={selected._id} label={selected.modelName} style={{ margin: 2 }} />

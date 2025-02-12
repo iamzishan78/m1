@@ -21,8 +21,6 @@ import payeeForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/Paye
 import paymentForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PaymentGrid/payment_form_schema';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-// functions
-
 import { detailCardController } from 'hookstate/detailCardController';
 import { sideDialogController } from 'hookstate/sideDialogController';
 import { tableGlobalController } from 'hookstate/tableController';
@@ -207,8 +205,6 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 				return null;
 			}
 		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [formState?.rerenderJson]);
 
 	const handleDeleteCancel = () => {
@@ -254,7 +250,6 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 			Controller.updateState(rowData);
 			reset(rowData);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [paymentMultiGrid?.paymentData]);
 
 	const DocumentDetail = anchor => (

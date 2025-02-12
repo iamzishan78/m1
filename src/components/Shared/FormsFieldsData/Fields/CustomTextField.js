@@ -179,8 +179,8 @@ function CustomTextField({
 	};
 
 	// Render function for TextField
-	const renderTextField = props => {
-		const textFieldValue = props ? props.value : value;
+	const renderTextField = ({ field } = {}) => {
+		const textFieldValue = field ? field.value : value;
 		return (
 			<div style={{ position: 'relative' }}>
 				<TextField
@@ -202,7 +202,7 @@ function CustomTextField({
 					variant={variant || 'filled'}
 					data-testid={`${name}-field`}
 					className={customStyleClass}
-					inputRef={inputRef || props?.ref || null}
+					inputRef={inputRef || field?.ref || null}
 					onKeyUp={onKeyUp || (() => {})}
 					onKeyDown={onKeyDown || (() => {})}
 					onMouseEnter={() => handleTooltipOpen(textFieldValue)}
@@ -218,8 +218,8 @@ function CustomTextField({
 
 									handleTooltipOpen(newValue);
 									onChange?.(newValue);
-									props?.onChange?.(newValue);
-									if (!onChange && !props?.onChange) {
+									field?.onChange?.(newValue);
+									if (!onChange && !field?.onChange) {
 										setValue(newValue);
 									}
 								}}
@@ -236,8 +236,8 @@ function CustomTextField({
 						const newValue = e.target.value;
 						handleTooltipOpen(newValue);
 						onChange?.(newValue);
-						props?.onChange?.(e);
-						if (!onChange && !props?.onChange) {
+						field?.onChange?.(e);
+						if (!onChange && !field?.onChange) {
 							setValue(newValue);
 						}
 					}}
@@ -247,7 +247,7 @@ function CustomTextField({
 							newValue = onBlur(newValue);
 							if (newValue != null) {
 								onChange?.(newValue);
-								props?.onChange?.(newValue);
+								field?.onChange?.(newValue);
 							}
 						}
 					}}

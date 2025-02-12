@@ -279,7 +279,7 @@ function AddUnitTractDialog(props) {
 						/>
 
 						<Controller
-							as={TextField}
+							render={({ field }) => <TextField {...field} />}
 							control={control}
 							variant="outlined"
 							margin="dense"
@@ -292,7 +292,7 @@ function AddUnitTractDialog(props) {
 						/>
 
 						<Controller
-							as={TextField}
+							render={({ field }) => <TextField {...field} />}
 							control={control}
 							variant="outlined"
 							margin="dense"
@@ -305,7 +305,7 @@ function AddUnitTractDialog(props) {
 						/>
 
 						<Controller
-							as={TextField}
+							render={({ field }) => <TextField {...field} />}
 							control={control}
 							variant="outlined"
 							margin="dense"
@@ -317,7 +317,7 @@ function AddUnitTractDialog(props) {
 						/>
 
 						<Controller
-							as={TextField}
+							render={({ field }) => <TextField {...field} />}
 							control={control}
 							variant="outlined"
 							margin="dense"

@@ -85,7 +85,7 @@ export default function FilterDatePickerFirstProd({ labelDates }) {
 					control={control}
 					name="prodDateFrom"
 					defaultValue=""
-					render={({ value, onChange }) => (
+					render={({ field: { value, onChange } }) => (
 						<TextField
 							type="date"
 							label={`${labelDates} From`}
@@ -124,7 +124,7 @@ export default function FilterDatePickerFirstProd({ labelDates }) {
 					control={control}
 					name="prodDateTo"
 					defaultValue=""
-					render={({ value, onChange }) => (
+					render={({ field: { value, onChange } }) => (
 						<TextField
 							type="date"
 							label={`${labelDates} To`}

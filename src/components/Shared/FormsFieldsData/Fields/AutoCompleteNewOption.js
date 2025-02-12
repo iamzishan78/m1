@@ -67,7 +67,6 @@ function AutoCompleteNewOption({ control, item }) {
 
 	useEffect(() => {
 		callQuery('');
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (
@@ -77,7 +76,7 @@ function AutoCompleteNewOption({ control, item }) {
 			<Controller
 				control={control}
 				name={name}
-				render={({ onChange: onInputChange, value, onBlur, ref }) => (
+				render={({ field: { onChange: onInputChange, value, onBlur, ref } }) => (
 					<Autocomplete
 						options={options}
 						getOptionLabel={option => option.label}
@@ -127,7 +126,7 @@ function AutoCompleteNewOption({ control, item }) {
 						}}
 						renderOption={option => {
 							if (option?._id === 'newEntity') {
-								return <Typography style={{ color: 'midnightblue' }}>Add '{option.label}'</Typography>;
+								return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.label}&apos;</Typography>;
 							}
 
 							return (

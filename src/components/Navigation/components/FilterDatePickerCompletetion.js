@@ -5,7 +5,6 @@ import { IconButton, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Clear } from '@material-ui/icons';
 
-import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { navController } from 'hookstate/navStateController';
 
 import { NavigationContext } from '../NavigationContext';
@@ -86,7 +85,7 @@ export default function FilterDatePickerCompletetion({ labelDates }) {
 					control={control}
 					name="completetionDateFrom"
 					defaultValue=""
-					render={({ value, onChange }) => (
+					render={({ field: { value, onChange } }) => (
 						<TextField
 							type="date"
 							label={`${labelDates} From`}
@@ -125,7 +124,7 @@ export default function FilterDatePickerCompletetion({ labelDates }) {
 					control={control}
 					name="completetionDateTo"
 					defaultValue=""
-					render={({ value, onChange }) => (
+					render={({ field: { value, onChange } }) => (
 						<TextField
 							type="date"
 							label={`${labelDates} To`}

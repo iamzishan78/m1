@@ -61,6 +61,18 @@ function RelatedWellsDialog(props) {
 	const [valid, setValid] = useState({});
 	const [anchorEl, setAnchorEl] = useState();
 
+	const handleClose = () => {
+		setSelectedWell(null);
+		window.setStateApp(stateApp => ({
+			...stateApp,
+			wellInterestDialog: false,
+			activeWellInterest: null,
+		}));
+		setValid({});
+		reset({});
+		props.onClose();
+	};
+
 	const [getWellInterestsSelectOptions, { data: dataWellInterestsSelectOptions }] = useLazyQuery(
 		WELL_INTEREST_SELECT_OPTIONS,
 		{
@@ -119,18 +131,6 @@ function RelatedWellsDialog(props) {
 	useEffect(() => {
 		// if launched from grid row set initializing based on selectedWell state
 	}, [selectedWell]);
-
-	const handleClose = () => {
-		setSelectedWell(null);
-		window.setStateApp(stateApp => ({
-			...stateApp,
-			wellInterestDialog: false,
-			activeWellInterest: null,
-		}));
-		setValid({});
-		reset({});
-		props.onClose();
-	};
 
 	const handleValidate = () => {
 		const tempValid = {
@@ -289,34 +289,8 @@ function RelatedWellsDialog(props) {
 			<div>
 				<WellSearchApiField setTenantWell={setTenantWell} setSelectedWell={setSelectedWell} />
 
-				{/* <Controller
-          as={TextField}
-          control={control}
-          variant="outlined"
-          margin="dense"
-          name="wellName"
-          label={"Well Name"}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          disabled
-          defaultValue=""
-        />
-
-        <Controller
-          as={TextField}
-          control={control}
-          variant="outlined"
-          margin="dense"
-          name="api"
-          label="API Number"
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          disabled
-          defaultValue=""
-        /> */}
-
 				<Controller
-					as={TextField}
+					render={({ field }) => <TextField {...field} />}
 					control={control}
 					variant="outlined"
 					margin="dense"
@@ -327,7 +301,7 @@ function RelatedWellsDialog(props) {
 					defaultValue=""
 				/>
 				<Controller
-					as={TextField}
+					render={({ field }) => <TextField {...field} />}
 					control={control}
 					variant="outlined"
 					margin="dense"
@@ -344,7 +318,7 @@ function RelatedWellsDialog(props) {
 					label="Operator"
 					defaultValue={''}
 					options={getOptions('Operator') || []}
-					as={<AutoCompleteFieldComponent />}
+					render={({ field }) => <AutoCompleteFieldComponent {...field} />}
 				/>
 			</div>
 
@@ -356,7 +330,7 @@ function RelatedWellsDialog(props) {
 						label="Well Type"
 						defaultValue={''}
 						options={getOptions('WellType') || []}
-						as={<AutoCompleteFieldComponent />}
+						render={({ field }) => <AutoCompleteFieldComponent {...field} />}
 					/>
 
 					<Controller
@@ -365,7 +339,7 @@ function RelatedWellsDialog(props) {
 						label="Wellbore Profile"
 						defaultValue={''}
 						options={getOptions('WellBoreProfile') || []}
-						as={<AutoCompleteFieldComponent />}
+						render={({ field }) => <AutoCompleteFieldComponent {...field} />}
 					/>
 
 					<Controller
@@ -374,13 +348,13 @@ function RelatedWellsDialog(props) {
 						label="Well Status"
 						defaultValue={''}
 						options={getOptions('WellStatus') || []}
-						as={<AutoCompleteFieldComponent />}
+						render={({ field }) => <AutoCompleteFieldComponent {...field} />}
 					/>
 					<Controller
 						control={control}
 						name="lastTwelveMonthBOE"
 						label="Last 12 (BOE)"
-						as={TextField}
+						render={({ field }) => <TextField {...field} />}
 						variant="outlined"
 						margin="dense"
 						disabled
@@ -391,7 +365,7 @@ function RelatedWellsDialog(props) {
 						control={control}
 						name="measuredDepth"
 						label="MD (ft)"
-						as={TextField}
+						render={({ field }) => <TextField {...field} />}
 						variant="outlined"
 						margin="dense"
 						disabled
@@ -403,7 +377,7 @@ function RelatedWellsDialog(props) {
 						name="lateralLength"
 						label="Lateral Length (ft)"
 						defaultValue={''}
-						as={TextField}
+						render={({ field }) => <TextField {...field} />}
 						variant="outlined"
 						margin="dense"
 						disabled

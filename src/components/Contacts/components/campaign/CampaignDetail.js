@@ -260,10 +260,10 @@ const CampaignDetail = ({ viewDoc }) => {
 								<Controller
 									control={control}
 									name="name"
-									render={params => (
+									render={({ field }) => (
 										<FormControl variant="outlined" className={classes.inputFieldDealName} fullWidth size="small">
 											<TextField
-												{...params}
+												{...field}
 												margin="dense"
 												variant="outlined"
 												placeholder="Click to enter campaign name"
