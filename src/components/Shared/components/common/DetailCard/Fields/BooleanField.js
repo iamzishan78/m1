@@ -18,7 +18,7 @@ const BooleanField = ({ fieldData, field }) => {
 
 	const handleChange = event => {
 		setChecked(event.target.checked);
-		callApi(field.key, event.target.checked);
+		callApi({ key: field.key, value: event.target.checked });
 	};
 
 	useEffect(() => {

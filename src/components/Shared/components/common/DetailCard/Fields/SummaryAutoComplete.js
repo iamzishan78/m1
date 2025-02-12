@@ -144,13 +144,13 @@ const SummaryAutoComplete = ({ fieldData, fieldKey, defaultOptions = [], payload
 			onChange={(event, newValue) => {
 				const splitKeys = payload?.filterKey?.replaceAll('.keyword', '')?.split('.');
 				if (newValue) {
-					callApi(
-						fieldKey,
-						splitKeys.length === 1 ? newValue.name : { [splitKeys[splitKeys.length - 1]]: newValue.name }
-					);
+					callApi({
+						key: fieldKey,
+						value: splitKeys.length === 1 ? newValue.name : { [splitKeys[splitKeys.length - 1]]: newValue.name },
+					});
 				} else {
 					setSearch('');
-					callApi(fieldKey, splitKeys.length === 1 ? '' : { [splitKeys[splitKeys.length - 1]]: '' });
+					callApi({ key: fieldKey, value: splitKeys.length === 1 ? '' : { [splitKeys[splitKeys.length - 1]]: '' } });
 				}
 			}}
 			renderInput={params => (

@@ -133,7 +133,7 @@ export default function FieldContent({
 
 		if (differences) {
 			setIsCurEdited(true);
-			callApi(name, val);
+			callApi({ key: name, value: val });
 			let entries = Object.entries(editContent);
 			entries.forEach(entry => {
 				content = { ...content, [entry[0]]: entry[1] };

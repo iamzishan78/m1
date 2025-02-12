@@ -16,9 +16,9 @@ const SummaryUsersList = ({ fieldData, field }) => {
 		let updatedvalue = user?.value || '';
 
 		if (!user) {
-			callApi(field.key, null);
+			callApi({ key: field.key, value: null });
 		} else if (user?.value !== fieldData?._id) {
-			callApi(field.key, user?.value);
+			callApi({ key: field.key, value: user?.value });
 		}
 		setValue(updatedvalue);
 	};

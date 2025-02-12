@@ -66,7 +66,7 @@ const MainGridRightContainer = () => {
 				}
 				data={currentAssetRecord}
 				onUpdate={({ owner }) => {
-					callApi('owner', owner);
+					callApi({ key: 'owner', value: owner });
 				}}
 				activityLog={currentAssetRecord?.activityLog || {}}
 				isSource={false}

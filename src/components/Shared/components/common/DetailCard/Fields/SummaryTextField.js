@@ -63,14 +63,14 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 	const upDateField = currValue => {
 		if (currValue === fieldData) return;
 
-		if (!isMetaField) return callApi(field.key, currValue);
+		if (!isMetaField) return callApi({ key: field.key, value: currValue });
 
 		const oldCustomData = summaryData.custom_data || {};
 		const customData = {
 			...oldCustomData,
 			[field.key.replaceAll('custom_data.', '')]: value,
 		};
-		if (!isEqual(customData, oldCustomData)) callApi('custom_data', customData, field.key);
+		if (!isEqual(customData, oldCustomData)) callApi({ key: 'custom_data', value: customData, originalKey: field.key });
 	};
 
 	const handleBlur = event => {

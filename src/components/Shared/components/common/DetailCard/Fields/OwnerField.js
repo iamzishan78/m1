@@ -63,7 +63,7 @@ function OwnerField({ fieldData, field }) {
 	useEffect(() => {
 		const entity = get(contactEntityData, 'contactEntity.entity');
 		if (entity?._id) {
-			callApi(field.key, entity?._id);
+			callApi({ key: field.key, value: entity?._id });
 		}
 	}, [contactEntityData, callApi, field.key]);
 
@@ -73,7 +73,7 @@ function OwnerField({ fieldData, field }) {
 			className={classes.field}
 			setNameAutValue={value => {
 				if (value) contactEntity(value?._id);
-				else callApi(field.key, null);
+				else callApi({ key: field.key, value: null });
 			}}
 			renderInput={params => (
 				<TextField
