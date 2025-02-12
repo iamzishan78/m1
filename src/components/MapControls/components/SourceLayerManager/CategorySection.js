@@ -22,33 +22,10 @@ import DeleteConfirmationDialog from '../DeleteConfirmationDialog';
 import CategorySectionList from './CategorySectionList';
 
 const useStyles = makeStyles(() => ({
-	accordion: {
-		'& .MuiAccordionSummary-content': {
-			margin: '0px !important',
-		},
-	},
-	list: {
-		border: '2px solid #A9A9A9',
-		padding: '0px',
-		margin: '8px 0px',
-		borderRadius: '8px',
-	},
 	multiSelectionTopBarButtons: {
 		margin: '0px 5px',
 		padding: '0px 5px',
 		border: '1px solid #B3B3B3',
-	},
-
-	moreIcon: {
-		color: '#0000008a',
-		marginRight: '15px',
-		visibility: 'hidden',
-	},
-	moreSourceIcon: {
-		color: '#0000008a',
-		marginRight: '15px',
-		visibility: 'hidden',
-		cursor: 'pointer',
 	},
 }));
 
@@ -100,10 +77,6 @@ export default function CategorySection({ title, search, layerCategory }) {
 	const {
 		layerStateValues: { projectedLayers },
 	} = layerController.useState(['projectedLayers'], 'layerStateValues');
-
-	const allowDelete = layerCategory === 'UD layer';
-
-	const [openUDLayers, setUDLayersStates] = useState([]);
 
 	const SectionLayers = React.useMemo(() => {
 		// Filter layers
@@ -207,13 +180,10 @@ export default function CategorySection({ title, search, layerCategory }) {
 			</StyledListHeader>
 			<Collapse in={openM1} timeout="auto" unmountOnExit>
 				<CategorySectionList
-					classes={classes}
 					search={search}
 					SectionLayers={SectionLayers}
-					openUDLayers={openUDLayers}
-					setUDLayersStates={setUDLayersStates}
 					actionItem={actionItem}
-					allowDelete={allowDelete}
+					layerCategory={layerCategory}
 					handleClick={handleClick}
 					setActionItem={setActionItem}
 				/>
@@ -221,7 +191,6 @@ export default function CategorySection({ title, search, layerCategory }) {
 
 			{openDeleteDialog && (
 				<Dialog
-					className={classes.dialog}
 					open={openDeleteDialog}
 					onClose={() => {
 						setOpenDeleteDialog(false);

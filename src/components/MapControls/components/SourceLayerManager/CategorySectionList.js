@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { IconButton, Divider, withStyles, ListItem } from '@material-ui/core';
+import { IconButton, Divider, withStyles, ListItem, makeStyles } from '@material-ui/core';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Box from '@material-ui/core/Box';
@@ -50,19 +50,38 @@ const StyledListItem = withStyles(theme => ({
 	},
 }))(ListItem);
 
-const CategorySectionList = ({
-	classes,
-	search,
-	SectionLayers,
-	openUDLayers,
-	setUDLayersStates,
-	actionItem,
-	allowDelete,
-	handleClick,
-	setActionItem,
-}) => {
+const useStyles = makeStyles(() => ({
+	accordion: {
+		'& .MuiAccordionSummary-content': {
+			margin: '0px !important',
+		},
+	},
+	list: {
+		border: '2px solid #A9A9A9',
+		padding: '0px',
+		margin: '8px 0px',
+		borderRadius: '8px',
+	},
+	moreIcon: {
+		color: '#0000008a',
+		marginRight: '15px',
+		visibility: 'hidden',
+	},
+	moreSourceIcon: {
+		color: '#0000008a',
+		marginRight: '15px',
+		visibility: 'hidden',
+		cursor: 'pointer',
+	},
+}));
+const CategorySectionList = ({ search, SectionLayers, actionItem, layerCategory, handleClick, setActionItem }) => {
+	const classes = useStyles();
 	let history = useHistory();
 	const parentRef = useRef();
+
+	const allowDelete = layerCategory === 'UD layer';
+
+	const [openUDLayers, setUDLayersStates] = useState([]);
 
 	const filteredLayers = SectionLayers?.filter(
 		layer =>
