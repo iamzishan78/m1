@@ -1,11 +1,16 @@
 import React from 'react';
 import { useFieldArray, Controller, useWatch } from 'react-hook-form';
+
 import { TextField, MenuItem, Button, Grid, IconButton, Checkbox, FormControlLabel } from '@material-ui/core';
+
 import DeleteIcon from '@mui/icons-material/Delete';
+
+import PropTypes from 'prop-types';
+
 import { entityKeyTypes } from 'components/MRTTable/utils/data';
 import { removeSpaces } from 'components/MRTTable/utils/helper';
+
 import { tableGlobalController } from 'hookstate/tableController';
-import PropTypes from 'prop-types';
 
 const DynamicForm = ({ control, setValue }) => {
 	const { fields, append, remove } = useFieldArray({
@@ -45,16 +50,16 @@ const DynamicForm = ({ control, setValue }) => {
 								<Controller
 									control={control}
 									name={`fields[${index}].label`}
-									render={props => (
+									render={({ field }) => (
 										<TextField
 											size="small"
 											type="text"
 											variant="outlined"
-											value={props.value}
-											inputRef={props.ref}
+											value={field.value}
+											inputRef={field.ref}
 											onWheel={e => e.target.blur()}
 											onChange={e => {
-												props.onChange(e.target.value);
+												field.onChange(e.target.value);
 												const mappedKey = removeSpaces(e.target.value);
 												setValue(`fields[${index}].mappingKey`, mappedKey);
 											}}
@@ -71,18 +76,18 @@ const DynamicForm = ({ control, setValue }) => {
 								<Controller
 									control={control}
 									name={`fields[${index}].mappingKey`}
-									render={props => (
+									render={({ field }) => (
 										<TextField
 											size="small"
 											type="text"
 											variant="outlined"
-											value={props.value}
-											inputRef={props.ref}
+											value={field.value}
+											inputRef={field.ref}
 											onWheel={e => e.target.blur()}
-											InputLabelProps={{ shrink: !!props.value }} // Ensure the label shrinks when there's a value
+											InputLabelProps={{ shrink: !!field.value }} // Ensure the label shrinks when there's a value
 											onChange={e => {
 												const mappedKey = removeSpaces(e.target.value);
-												props.onChange(mappedKey);
+												field.onChange(mappedKey);
 											}}
 											label="Key"
 											placeholder="Key"
@@ -97,17 +102,17 @@ const DynamicForm = ({ control, setValue }) => {
 								<Controller
 									control={control}
 									name={`fields[${index}].keyType`}
-									render={props => (
+									render={({ field }) => (
 										<TextField
 											select
 											size="small"
 											type="text"
 											variant="outlined"
-											value={props.value}
-											inputRef={props.ref}
+											value={field.value}
+											inputRef={field.ref}
 											onWheel={e => e.target.blur()}
 											onChange={e => {
-												props.onChange(e.target.value);
+												field.onChange(e.target.value);
 											}}
 											label="Key type"
 											placeholder="Key type"
@@ -138,12 +143,12 @@ const DynamicForm = ({ control, setValue }) => {
 									<Controller
 										control={control}
 										name={`fields[${index}].isSummaryField`}
-										render={props => (
+										render={({ field }) => (
 											<FormControlLabel
 												control={
 													<Checkbox
-														checked={!!props.value}
-														onChange={e => props.onChange(e.target.checked)}
+														checked={!!field.value}
+														onChange={e => field.onChange(e.target.checked)}
 														color="primary"
 													/>
 												}
@@ -158,14 +163,14 @@ const DynamicForm = ({ control, setValue }) => {
 								<Controller
 									control={control}
 									name={`fields[${index}].isControlColumn`}
-									render={props => (
+									render={({ field }) => (
 										<FormControlLabel
 											control={
 												<Checkbox
-													checked={!!props.value}
-													onChange={e => props.onChange(e.target.checked)}
+													checked={!!field.value}
+													onChange={e => field.onChange(e.target.checked)}
 													color="primary"
-													disabled={hasControlColumnSelected && !props.value} // Disable if another control column is selected
+													disabled={hasControlColumnSelected && !field.value} // Disable if another control column is selected
 												/>
 											}
 											label="Control Column"
@@ -178,12 +183,12 @@ const DynamicForm = ({ control, setValue }) => {
 									control={control}
 									name={`fields[${index}].isGridDisplayed`}
 									defaultValue={field.isGridDisplayed ?? true}
-									render={props => (
+									render={({ field }) => (
 										<FormControlLabel
 											control={
 												<Checkbox
-													checked={!!props.value}
-													onChange={e => props.onChange(e.target.checked)}
+													checked={!!field.value}
+													onChange={e => field.onChange(e.target.checked)}
 													color="primary"
 												/>
 											}
@@ -197,13 +202,13 @@ const DynamicForm = ({ control, setValue }) => {
 									control={control}
 									name={`fields[${index}].isDialogDisplayed`}
 									defaultValue={field.isDialogDisplayed ?? true}
-									render={props => {
+									render={({ field }) => {
 										return (
 											<FormControlLabel
 												control={
 													<Checkbox
-														checked={!!props.value}
-														onChange={e => props.onChange(e.target.checked)}
+														checked={!!field.value}
+														onChange={e => field.onChange(e.target.checked)}
 														color="primary"
 													/>
 												}

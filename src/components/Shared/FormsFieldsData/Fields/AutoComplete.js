@@ -76,7 +76,6 @@ function AutoCompleteComponent({ control, item, watch, error }) {
 
 	useEffect(() => {
 		callQuery('');
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (
@@ -86,7 +85,7 @@ function AutoCompleteComponent({ control, item, watch, error }) {
 			<Controller
 				control={control}
 				name={name}
-				render={({ onChange: onInputChange, value, onBlur, ref }) => (
+				render={({ field: { onChange: onInputChange, value, onBlur, ref } }) => (
 					<Autocomplete
 						options={options}
 						getOptionLabel={option => option.label}
