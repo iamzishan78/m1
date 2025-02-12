@@ -111,14 +111,7 @@ function AutoCompleteComponent({ control, item, watch, error }) {
 								'No Record Found'
 							)
 						}
-						value={
-							options.find(option => {
-								if (typeof option.value === 'string' || typeof value === 'string') {
-									return option.value === value; // Direct string comparison
-								}
-								return JSON.stringify(option.value) === JSON.stringify(value); // Object comparison
-							}) || null
-						}
+						value={options.find(option => option.value === value?.toString()) || null}
 						onChange={(e, option) => {
 							onChange?.(option?.value);
 							onInputChange(option ? option.value : null);

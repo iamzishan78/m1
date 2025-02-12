@@ -52,7 +52,7 @@ function DateField({ fieldData, field }) {
 		let currValue = event.target.value;
 
 		if (currValue !== fieldData) {
-			callApi({ key: field.key, value: currValue });
+			callApi({ key: field.key, value: currValue, field, previousValue: fieldData, resetFn: setValue });
 		}
 	};
 

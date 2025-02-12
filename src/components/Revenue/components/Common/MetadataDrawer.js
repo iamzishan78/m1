@@ -251,7 +251,7 @@ export default function MetadataDrawer(props) {
 	}, [files, uploadedFiles, viewFiles]);
 
 	useEffect(() => {
-		const owner = props.data?.metaOwner?._id ?? props.data?.owner; // null checks to avoid crashing
+		const owner = props.data?.metaOwner?._id ?? props.data?.owner?._id ?? props.data?.owner; // null checks to avoid crashing
 		if (owner) {
 			setOwnerId(owner);
 		}

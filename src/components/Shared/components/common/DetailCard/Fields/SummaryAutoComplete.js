@@ -147,10 +147,19 @@ const SummaryAutoComplete = ({ fieldData, fieldKey, defaultOptions = [], payload
 					callApi({
 						key: fieldKey,
 						value: splitKeys.length === 1 ? newValue.name : { [splitKeys[splitKeys.length - 1]]: newValue.name },
+						field,
+						previousValue: fieldData,
+						resetFn: setSearch,
 					});
 				} else {
 					setSearch('');
-					callApi({ key: fieldKey, value: splitKeys.length === 1 ? '' : { [splitKeys[splitKeys.length - 1]]: '' } });
+					callApi({
+						key: fieldKey,
+						value: splitKeys.length === 1 ? '' : { [splitKeys[splitKeys.length - 1]]: '' },
+						field,
+						previousValue: fieldData,
+						resetFn: setSearch,
+					});
 				}
 			}}
 			renderInput={params => (

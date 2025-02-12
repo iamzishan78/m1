@@ -6,8 +6,11 @@ import { UPDATE_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel
 
 import { detailCardController } from 'hookstate/detailCardController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { useDispatch } from 'react-redux';
+import { showInfoMessage } from 'actions';
 
 const useUpdate = () => {
+	const dispatch = useDispatch();
 	const {
 		globalStateValues: { currentAsset },
 	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
@@ -24,8 +27,27 @@ const useUpdate = () => {
 		}
 	}, [data]);
 
+	const validateField = (field, value) => {
+		if (!field) return;
+		const isEmpty = value === undefined || value === null || value === '' || value === 0;
+
+		if (field.isRequired && isEmpty) {
+			dispatch(showInfoMessage(`${field.label} is required`));
+			return false;
+		}
+		return true;
+	};
+
 	return {
-		callApi: (key, value, originalKey) => {
+		callApi: ({ key, value, originalKey, field, previousValue, resetFn }) => {
+			if (field && resetFn) {
+				const isValid = validateField(field, value);
+				if (!isValid) {
+					resetFn?.(previousValue);
+					return;
+				}
+			}
+
 			detailCardController.updateState({ loadingField: originalKey || key });
 
 			updateRecordInRunTimeModel({

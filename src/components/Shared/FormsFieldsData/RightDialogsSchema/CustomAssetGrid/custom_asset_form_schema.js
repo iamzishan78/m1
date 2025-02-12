@@ -7,12 +7,7 @@ export const customAssetForm = ({ fields = [] }) => {
 		getOptions: apiRes => {
 			const filterData = apiRes?.data?.allMongoUsers?.map(hit => ({
 				label: hit.name || hit.displayName,
-				value: {
-					_id: hit._id,
-					email: hit.email,
-					name: hit.name || hit.displayName,
-					displayName: hit.name || hit.displayName,
-				},
+				value: hit._id,
 			}));
 			return filterData;
 		},

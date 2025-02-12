@@ -57,7 +57,7 @@ function SimpleSelectField({ fieldData, field }) {
 			fullWidth
 			onChange={e => {
 				setValue(e.target.value);
-				callApi({ key: field.key, value: e.target.value });
+				callApi({ key: field.key, value: e.target.value, field, previousValue: fieldData, resetFn: setValue });
 			}}
 		>
 			{field.options.map(opt => (
