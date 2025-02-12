@@ -169,10 +169,13 @@ function CustomTextField({
 	}, [watchTextFieldValue, isValueOverridden]);
 
 	// URL Tooltip handling
-	const handleTooltipOpen = value => {
-		if (value && typeof value === 'string')
-			{setShowUrlTooltip(value?.split(' ')?.some(subString => validator.isURL(subString, { require_protocol: false })));}
-		else {setShowUrlTooltip(false);}
+	const handleTooltipOpen = textFieldValue => {
+		const value = textFieldValue ?? defaultValue;
+		if (value && typeof value === 'string') {
+			setShowUrlTooltip(value?.split(' ')?.some(subString => validator.isURL(subString, { require_protocol: false })));
+		} else {
+			setShowUrlTooltip(false);
+		}
 	};
 
 	// Render function for TextField
@@ -253,7 +256,7 @@ function CustomTextField({
 
 				{showUrlTooltip && (
 					<UrlTooltip
-						value={textFieldValue}
+						value={textFieldValue || defaultValue}
 						handleMouseEnter={() => setShowUrlTooltip(true)}
 						handleMouseLeave={() => setShowUrlTooltip(false)}
 						containerStyles={{ top: margin === 'dense' ? '8px' : margin === 'normal' ? '16px' : '0' }}
