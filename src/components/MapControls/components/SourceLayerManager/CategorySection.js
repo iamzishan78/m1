@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 
-import { Collapse, IconButton, Divider, Popper, Grow, Paper, MenuList, MenuItem } from '@material-ui/core';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Box from '@material-ui/core/Box';
+import { Collapse, Popper, Grow, Paper, MenuList, MenuItem } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Dialog from '@material-ui/core/Dialog';
-import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { Close as ClearButton } from '@material-ui/icons';
@@ -19,18 +13,13 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import PropTypes from 'prop-types';
-
-import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
 
 import { layerController } from 'hookstate/layerStateController';
 
 import DeleteConfirmationDialog from '../DeleteConfirmationDialog';
+import CategorySectionList from './CategorySectionList';
 
 const useStyles = makeStyles(() => ({
 	accordion: {
@@ -79,36 +68,6 @@ const StyledListHeader = withStyles(theme => ({
 	},
 }))(ListItem);
 
-const StyledListItem = withStyles(theme => ({
-	root: {
-		fontFamily: 'Poppins',
-		backgroundColor: theme.palette.common.white,
-		borderBottom: '2px solid #ccc',
-		padding: '0px',
-		'& .MuiListItemIcon-root, & .MuiListItemText-primary': {
-			color: 'dark gray',
-		},
-		'&:first-child': {
-			borderTopLeftRadius: '5px',
-			borderTopRightRadius: '5px',
-		},
-		'&:last-child': {
-			borderBottomLeftRadius: '5px',
-			borderBottomRightRadius: '5px',
-			borderBottom: '0px',
-		},
-
-		'&:hover': {
-			'& .moreSourceIcon': {
-				visibility: 'visible',
-			},
-			'& .moreIcon': {
-				visibility: 'visible',
-			},
-		},
-	},
-}))(ListItem);
-
 const handleGroups = layers => {
 	const groupHandled = [];
 	for (let index = 0; index < layers.length; index++) {
@@ -131,7 +90,6 @@ const handleGroups = layers => {
 
 export default function CategorySection({ title, search, layerCategory }) {
 	const classes = useStyles();
-	let history = useHistory();
 	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 	const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -248,183 +206,17 @@ export default function CategorySection({ title, search, layerCategory }) {
 				{openM1 ? <ExpandLess /> : <ExpandMore />}
 			</StyledListHeader>
 			<Collapse in={openM1} timeout="auto" unmountOnExit>
-				<List className={classes.list}>
-					{SectionLayers?.filter(
-						layer =>
-							!search ||
-							layer.name?.toLowerCase().includes(search?.toLowerCase()) ||
-							layer.layerName?.toLowerCase().includes(search?.toLowerCase())
-					)?.map((layer, index) => {
-						const labelId = `m1layer-list-label-${index}`;
-
-						if (layer.type === 'group') {
-							return (
-								<>
-									<Accordion key={labelId} className={classes.accordion}>
-										<AccordionSummary
-											// expandIcon={<ExpandMoreIcon />}
-											aria-controls="panel1a-content"
-											id="panel1a-header"
-											style={{ padding: 0, margin: 0, marginBottom: 0 }}
-											onClick={() => {
-												const _index = openUDLayers.findIndex(l => l === index);
-												if (_index === -1) {
-													setUDLayersStates([...openUDLayers, index]);
-												} else {
-													setUDLayersStates(openUDLayers.filter(l => l !== index));
-												}
-											}}
-										>
-											<StyledListItem>
-												<Checkbox
-													checked={!!layer.layers.find(l => l.layerSettings.showable)}
-													color="dark gray"
-													onClick={event => event.stopPropagation()}
-													onChange={() =>
-														layerController.handleLayerChange(
-															layer,
-															'layerSettings.showable',
-															!layer.layers.find(l => l.layerSettings.showable)
-														)
-													}
-													inputProps={{ 'aria-label': 'primary checkbox' }}
-												/>
-												{/* Group */}
-												<EditableTextField
-													onChange={(layer, name) => layerController.handleLayerChange(layer, 'groupName', name)}
-													item={layer}
-													name={layer.name}
-													isEditable={false}
-													showExpandIcon
-													openUd={openUDLayers.includes(index)}
-													openEditField={layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'}
-												/>
-												{allowDelete && (
-													<MoreHorizIcon
-														aria-controls={'source-menu'}
-														className={'moreIcon ' + classes.moreIcon}
-														onClick={e => {
-															e.stopPropagation();
-															handleClick(e);
-															setActionItem({ group: layer });
-														}}
-													/>
-												)}
-											</StyledListItem>
-										</AccordionSummary>
-										<Box paddingLeft={2} paddingRight={2}>
-											<List className={classes.list}>
-												{layer.layers.map((groupLayer, index) => (
-													<StyledListItem key={`${groupLayer.layerName - index}`} ContainerComponent="li">
-														<Checkbox
-															checked={groupLayer.layerSettings.showable}
-															color="dark gray"
-															onChange={() =>
-																layerController.handleLayerChange(
-																	groupLayer,
-																	'layerSettings.showable',
-																	!groupLayer.layerSettings.showable
-																)
-															}
-															inputProps={{ 'aria-label': 'primary checkbox' }}
-														/>
-														{/* Group Layer */}
-														<EditableTextField
-															onChange={(layer, name) => layerController.handleLayerChange(layer, 'layerName', name)}
-															item={groupLayer}
-															name={groupLayer.layerName}
-															isEditable={false}
-															openEditField={
-																groupLayer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'
-															}
-														/>
-														{allowDelete && (
-															<MoreHorizIcon
-																aria-controls={'source-menu'}
-																className={'moreSourceIcon ' + classes.moreSourceIcon}
-																onClick={e => {
-																	e.stopPropagation();
-																	handleClick(e);
-																	setActionItem({ layer: groupLayer });
-																}}
-															/>
-														)}
-													</StyledListItem>
-												))}
-											</List>
-										</Box>
-									</Accordion>
-									<Divider style={{ height: '2px' }} />
-								</>
-							);
-						}
-
-						return (
-							<StyledListItem ContainerComponent="li" key={labelId}>
-								<Checkbox
-									checked={layer.layerSettings.showable}
-									color="dark gray"
-									onChange={() =>
-										layerController.handleLayerChange(layer, 'layerSettings.showable', !layer.layerSettings.showable)
-									}
-									inputProps={{ 'aria-label': 'primary checkbox' }}
-								/>
-								{/* Group Layer */}
-								<EditableTextField
-									onChange={(layer, name) => layerController.handleLayerChange(layer, 'layerName', name)}
-									item={layer}
-									name={layer.layerName}
-									isEditable={false}
-									openEditField={layer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'}
-								/>
-
-								{layer.identifier === 'Units' && (
-									<FeatureFlag feature={FEATURES.UNITIMPORT}>
-										<ListItemSecondaryAction>
-											<IconButton
-												edge="end"
-												size="small"
-												onClick={() => {
-													history.push('/bulkupload/units');
-												}}
-											>
-												<UploadIcon opacity="1.0" small />
-											</IconButton>
-										</ListItemSecondaryAction>
-									</FeatureFlag>
-								)}
-
-								{layer.identifier === 'Parcels' && (
-									<FeatureFlag feature={FEATURES.TRACTIMPORT}>
-										<ListItemSecondaryAction>
-											<IconButton
-												edge="end"
-												size="small"
-												onClick={() => {
-													history.push('/bulkupload/tracts');
-												}}
-											>
-												<UploadIcon opacity="1.0" small />
-											</IconButton>
-										</ListItemSecondaryAction>
-									</FeatureFlag>
-								)}
-
-								{allowDelete && (
-									<MoreHorizIcon
-										aria-controls={'source-menu'}
-										className={'moreSourceIcon ' + classes.moreSourceIcon}
-										onClick={e => {
-											e.stopPropagation();
-											handleClick(e);
-											setActionItem({ layer: layer });
-										}}
-									/>
-								)}
-							</StyledListItem>
-						);
-					})}
-				</List>
+				<CategorySectionList
+					classes={classes}
+					search={search}
+					SectionLayers={SectionLayers}
+					openUDLayers={openUDLayers}
+					setUDLayersStates={setUDLayersStates}
+					actionItem={actionItem}
+					allowDelete={allowDelete}
+					handleClick={handleClick}
+					setActionItem={setActionItem}
+				/>
 			</Collapse>
 
 			{openDeleteDialog && (
