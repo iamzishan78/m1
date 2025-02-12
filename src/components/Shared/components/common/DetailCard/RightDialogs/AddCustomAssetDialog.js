@@ -1,18 +1,21 @@
 import React, { useEffect, useMemo } from 'react';
 import { DialogTitle, DialogActions, DialogContent, Grid, makeStyles, Button, IconButton } from '@material-ui/core';
-import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
-import { globalStateController } from 'hookstate/globalStateController';
-import { sideDialogController } from 'hookstate/sideDialogController';
+
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 
-import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import { globalStateController } from 'hookstate/globalStateController';
+import { sideDialogController } from 'hookstate/sideDialogController';
 
 import { useMutation } from '@apollo/client';
+import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import { customAssetForm } from 'components/Shared/FormsFieldsData/RightDialogsSchema/CustomAssetGrid/custom_asset_form_schema';
+import { customAssetFormValidationSchema } from 'components/Shared/FormsFieldsData/RightDialogsSchema/CustomAssetGrid/custom_asset_form_validation_schema';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {
@@ -79,94 +82,20 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const createZodValidationSchema = (fields = []) => {
-	if (!Array.isArray(fields) || fields.length === 0) return z.object({});
-
-	const schema = fields.reduce((acc, field) => {
-		let validator;
-		const { keyType, label, isRequired, mappingKey } = field;
-
-		switch (keyType) {
-			case 'string':
-				validator = z
-					.string({
-						required_error: `${label} is required`,
-					})
-					.trim();
-
-				if (isRequired) {
-					validator = validator.min(1, `${label} is required`);
-				} else {
-					validator = validator.optional();
-				}
-				break;
-
-			case 'number':
-				validator = z.coerce
-					.number({
-						required_error: `${label} is required`,
-						invalid_type_error: `${label} must be a valid number`,
-					})
-					.refine(val => (isRequired ? val !== 0 && val !== '' : true), {
-						message: `${label} is required`,
-					});
-
-				if (!isRequired) validator = validator.optional();
-				break;
-
-			case 'date':
-				validator = z.preprocess(
-					val => (val === '' || val === null || val === undefined ? undefined : new Date(val)),
-					z.date({
-						required_error: `${label} is required`,
-						invalid_type_error: `${label} must be a valid date`,
-					})
-				);
-
-				if (isRequired) {
-					validator = validator.refine(value => value instanceof Date && !isNaN(value), {
-						message: `${label} is required`,
-					});
-				} else {
-					validator = validator.optional();
-				}
-				break;
-
-			case 'boolean':
-				validator = z.coerce.boolean();
-				if (!isRequired) validator = validator.optional();
-				break;
-
-			default:
-				validator = z.any();
-				if (!isRequired) {
-					validator = validator.optional();
-				} else {
-					validator = validator.refine(value => value !== undefined && value !== null && value !== '' && value !== 0, {
-						message: `${label} is required`,
-					});
-				}
-		}
-
-		acc[mappingKey] = validator;
-		return acc;
-	}, {});
-
-	return z.object(schema);
-};
-
 export default function AddCustomAssetDialog({ ...props }) {
 	const classes = useStyles();
 	const {
 		globalStateValues: { currentAsset },
 	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
 
-	const validationSchema = useMemo(() => createZodValidationSchema(currentAsset?.modelKeys), [currentAsset?.modelKeys]);
+	const validationSchema = useMemo(
+		() => customAssetFormValidationSchema({ fields: currentAsset?.modelKeys }),
+		[currentAsset?.modelKeys]
+	);
 
 	const {
 		control,
 		reset,
-		setValue,
 		watch,
 		formState: { errors },
 		handleSubmit,
@@ -178,6 +107,15 @@ export default function AddCustomAssetDialog({ ...props }) {
 		fetchPolicy: 'no-cache',
 		awaitRefetchQueries: true,
 		refetchQueries: ['getDbData', 'getDbDataTotal'],
+		onCompleted: () => {
+			tableGlobalController.updateState({
+				dialog: {
+					type: 'addCustomAsset',
+					isOpen: false,
+				},
+			});
+			tableGlobalController.refetch();
+		},
 	});
 
 	useEffect(() => {
@@ -200,25 +138,11 @@ export default function AddCustomAssetDialog({ ...props }) {
 		});
 	};
 
-	const formSchema = currentAsset?.modelKeys?.map(field => {
-		const booleanOptions = [
-			{ value: true, label: 'Yes' },
-			{ value: false, label: 'No' },
-		];
-
-		return {
-			label: field.label,
-			name: field.mappingKey,
-			type: field.keyType,
-			renderField: field.keyType,
-			options: field.keyType === 'boolean' ? booleanOptions : [],
-			required: field.isRequired,
-			onChange: value => {
-				console.log(field.mappingKey, value);
-				setValue(field.mappingKey, value);
-			},
-		};
-	});
+	const formSchema = useMemo(() => {
+		return customAssetForm({
+			fields: currentAsset?.modelKeys,
+		});
+	}, [currentAsset?.modelKeys]);
 
 	return (
 		<div className={classes.move}>
