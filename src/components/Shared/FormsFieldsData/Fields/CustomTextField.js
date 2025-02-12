@@ -150,16 +150,16 @@ function CustomTextField({
 	const [showUrlTooltip, setShowUrlTooltip] = useState(false);
 	const watchTextFieldValue = watch ? watch(name) : '';
 
+	// Sync internal value with external props
+	useEffect(() => {
+		setValue(_value);
+	}, [_value]);
+
 	useEffect(() => {
 		if (!value) {
 			setValue(defaultValue);
 		}
 	}, [defaultValue]);
-
-	// Sync internal value with external props
-	useEffect(() => {
-		setValue(_value);
-	}, [_value]);
 
 	// Unified logic to check if value is overridden
 	useEffect(() => {

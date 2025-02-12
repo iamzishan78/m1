@@ -88,8 +88,8 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 									control={control}
 									name="sourceId"
 									defaultValue={''}
-									render={params => (
-										<TextField id="sourceId" {...params} fullWidth margin="dense" type="text" variant="outlined" />
+									render={({ field }) => (
+										<TextField id="sourceId" {...field} fullWidth margin="dense" type="text" variant="outlined" />
 									)}
 								/>
 							</Grid>
