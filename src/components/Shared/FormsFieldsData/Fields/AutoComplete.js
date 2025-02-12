@@ -111,9 +111,17 @@ function AutoCompleteComponent({ control, item, watch, error }) {
 								'No Record Found'
 							)
 						}
-						value={options.find(option => option.value === value?.toString()) || null}
+						value={
+							options.find(option => {
+								if (typeof option.value === 'string' || typeof value === 'string') {
+									return option.value === value; // Direct string comparison
+								}
+								return JSON.stringify(option.value) === JSON.stringify(value); // Object comparison
+							}) || null
+						}
 						onChange={(e, option) => {
-							onChange ? onChange(option?.value) : onInputChange(option ? option.value : null);
+							onChange?.(option?.value);
+							onInputChange(option ? option.value : null);
 						}}
 						renderInput={params => (
 							<TextField
@@ -129,6 +137,7 @@ function AutoCompleteComponent({ control, item, watch, error }) {
 								onBlur={onBlur}
 								inputRef={ref}
 								error={required && !watchAutoComplete && error}
+								helperText={error?.message}
 							/>
 						)}
 					/>
