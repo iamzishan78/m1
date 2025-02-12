@@ -170,7 +170,9 @@ function CustomTextField({
 
 	// URL Tooltip handling
 	const handleTooltipOpen = value => {
-		setShowUrlTooltip(value?.split(' ')?.some(subString => validator.isURL(subString, { require_protocol: false })));
+		if (value && typeof value === 'string')
+			{setShowUrlTooltip(value?.split(' ')?.some(subString => validator.isURL(subString, { require_protocol: false })));}
+		else {setShowUrlTooltip(false);}
 	};
 
 	// Render function for TextField
