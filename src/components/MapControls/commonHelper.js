@@ -149,6 +149,24 @@ export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
 };
 
 export const drawShapeStyles = [
+	// ACTIVE (being drawn)
+	// line stroke
+	{
+		id: 'gl-draw-line',
+		type: 'line',
+		filter: ['all', ['==', '$type', 'LineString'], ['!=', 'mode', 'static']],
+		layout: {
+			'line-cap': 'round',
+			'line-join': 'round',
+		},
+		paint: {
+			'line-color': '#ffff00',
+			'line-dasharray': [0.3, 3],
+			'line-width': 4,
+		},
+	},
+
+	// polygon fill
 	{
 		id: 'gl-draw-polygon-fill-inactive',
 		type: 'fill',
@@ -517,6 +535,26 @@ export const drawShapeStyles = [
 				delay: 0,
 				duration: 0,
 			},
+		},
+	},
+
+	// radius label
+	{
+		id: 'gl-draw-radius-label',
+		type: 'symbol',
+		filter: ['==', 'user_meta', 'label'], // only features with meta property 'label'
+		layout: {
+			'text-field': ['get', 'user_labelText'], // use the labelText property
+			'text-anchor': 'center',
+			'text-offset': [0, -2],
+			'text-size': 15,
+		},
+		paint: {
+			'text-color': 'rgba(0, 0, 0, 1)',
+			'text-halo-color': '#ffff00',
+			'text-halo-width': 12, // Adjust width to create background effect
+			'text-halo-height': 25, // Adjust width to create background effect
+			'text-halo-blur': 3, // Soften the edges to mimic border-radius
 		},
 	},
 ];

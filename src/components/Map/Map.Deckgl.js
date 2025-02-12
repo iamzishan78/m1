@@ -66,6 +66,7 @@ import MapGridCardProvider from '../MapGridCard/MapGridProvider';
 
 import './Map.css';
 import './popup.css';
+import DragRadiusCircleMode from 'utils/radius-mode';
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -812,6 +813,7 @@ function Map({
 					static: StaticMode,
 					draw_circle: CircleMode,
 					drag_circle: DragCircleMode,
+					radius_circle: DragRadiusCircleMode,
 					direct_select: DirectMode,
 					simple_select: SimpleSelectMode,
 					draw_rectangle: CostumDrawRectangle,

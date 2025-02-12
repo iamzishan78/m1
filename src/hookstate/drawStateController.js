@@ -19,6 +19,7 @@ import {
 	drawBoundary,
 	getDrawAdustedShape,
 } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { removeSpaces } from 'components/MRTTable/utils/helper';
 import { DRAWING_MODES } from 'components/Navigation/NavigationContext';
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { calculateLandArea, shapeTypeLayers } from 'components/Shared/functions/shapeLayer';
@@ -28,6 +29,7 @@ import { hookStateController } from 'hookstate/hookStateController';
 import { showErrorMessage } from 'actions';
 import { layerRefs } from 'hookstate';
 
+import { detailCardController } from './detailCardController';
 import { globalStateController } from './globalStateController';
 import { drawInitialState, drawState } from './initialStates';
 import { jobController } from './jobStateController';
@@ -36,8 +38,6 @@ import { layerController } from './layerStateController';
 import { mapControlsController } from './mapControlsController';
 import { navController } from './navStateController';
 import { popupController } from './popupStateController';
-import { removeSpaces } from 'components/MRTTable/utils/helper';
-import { detailCardController } from './detailCardController';
 
 const drawStateControllerHandler = state => {
 	/* --------------------------- DrawShapes Actions --------------------------- */
@@ -435,7 +435,7 @@ const drawStateControllerHandler = state => {
 
 		if (!shapeEdit && currentFeature?.geometry?.type) {
 			window.drawRef?.changeMode('direct_select', {
-				featureId: selectedFeature.id,
+				featureId: selectedFeature?.id,
 			});
 		} else {
 			window.drawRef?.changeMode('static');
@@ -443,7 +443,7 @@ const drawStateControllerHandler = state => {
 
 		navController.updateState({ drawingMode: DRAWING_MODES.DRAW_CIRCLE });
 
-		setFeatureProperty(window.drawRef, selectedFeature.id, 'shapeEdit', !shapeEdit);
+		setFeatureProperty(window.drawRef, selectedFeature?.id, 'shapeEdit', !shapeEdit);
 		drawShapeLayerToggle(!shapeEdit ? 'visible' : 'none');
 
 		drawController.updateState({
@@ -778,7 +778,9 @@ const drawStateControllerHandler = state => {
 		const user = globalStateController.getValue('user');
 		const { currentFeature } = drawController.getValues(['currentFeature']);
 
-		if (!user?._id) return;
+		if (!user?._id) {
+			return;
+		}
 
 		const abstractShape = getAbstractGeoSource(abstractData, currentFeature);
 		let shapeSubtitle = '';
