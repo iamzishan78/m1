@@ -781,7 +781,17 @@ const layerStateControllerHandler = state => {
 			});
 		});
 
-		baseLayerController.setState({ client });
+		baseLayerController.setState({
+			...baseLayerController.getValues([
+				'layers',
+				'projectedLayers',
+				'baseMapLayers',
+				'checkedBaseLayers',
+				'heatLayers',
+				'checkedHeats',
+			]),
+			client,
+		});
 		navController.reset();
 		mapControlsController.setState({
 			selectedControl: mapControlsController.getValue('selectedControl'),
