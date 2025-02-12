@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, Fragment } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Controller } from 'react-hook-form';
 import { useSelector } from 'react-redux';
@@ -22,8 +22,6 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { DragIndicator } from '@material-ui/icons';
-
-// import { TransactContext } from "components/Transact/TransactContext";
 
 const useStyles = makeStyles(theme => ({
 	basicInfoRoot: {
@@ -109,6 +107,12 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
 	const fieldsOnCardToShow = watch('fieldsOnCardToShow');
 	const [cardDataOptions, setCardOptions] = useState([]);
 
+	const setSelectedField = newCardOp => {
+		const fields = newCardOp.filter(field => field.isSelected).map(field => field.key);
+
+		setValue('fieldsOnCardToShow', fields);
+	};
+
 	useEffect(() => {
 		if (name && flowErrors.name) {
 			setFlowErrors(flowErrors => ({ ...flowErrors, name: false }));
@@ -139,12 +143,6 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
 			callCount.current++;
 		}
 	}, [flowLineType]);
-
-	const setSelectedField = newCardOp => {
-		const fields = newCardOp.filter(field => field.isSelected).map(field => field.key);
-
-		setValue('fieldsOnCardToShow', fields);
-	};
 
 	const onDragEnd = result => {
 		// dropped outside the list || same position
@@ -178,7 +176,7 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
 						<Controller
 							control={control}
 							name="IsDefault"
-							render={field => (
+							render={({ field }) => (
 								<FormControlLabel
 									control={
 										<Switch
@@ -198,7 +196,7 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
 					<Controller
 						control={control}
 						name="name"
-						render={field => (
+						render={({ field }) => (
 							<TextField
 								{...field}
 								margin="dense"
@@ -213,80 +211,11 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
 					/>
 				</Grid>
 
-				{/* temporarily commenting out until we get further along on flow custom settings and custom detail Card -KC 20210918 */}
-				{/* <Grid item xs={12}>
-          <h4 className={classes.label}>Project Tie</h4>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <Controller
-              control={control}
-              name="projectId"
-              render={(field) => (
-                <Select {...field} native>
-                  <>
-                    <option value=""></option>
-                    {stateTransact.projects?.map((project, index) => (
-                      <Fragment key={index}>
-                        <option value={project.projectId}>{project.projectName}</option>
-                      </Fragment>
-                    ))}
-                  </>
-                </Select>
-              )}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <h4 className={classes.label}>Flow Milestone Date</h4>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <Controller
-              control={control}
-              name="milestoneDate"
-              render={(field) => (
-                <Select {...field} native>
-                  <option value=""></option>
-                  <option value="expectedClose">Expected Close</option>
-                </Select>
-              )}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <h4 className={classes.label}>Detail Card Section</h4>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <Controller
-              control={control}
-              name="detailCardSection"
-              render={(field) => (
-                <Select {...field} native>
-                  <option value=""></option>
-                  <option value="description">Description</option>
-                </Select>
-              )}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <h4 className={classes.label}>Flow Status</h4>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <Controller
-              control={control}
-              name="status"
-              render={(field) => (
-                <Select {...field} native defaultValue="">
-                  <option value=""></option>
-                  <option value="won">Won</option>
-                  <option value="lost">Lost</option>
-                  <option value="passed">Passed</option>
-                </Select>
-              )}
-            />
-          </FormControl>
-        </Grid> */}
 				<Grid item xs={12} mt={2}>
 					<Controller
 						control={control}
 						name="flowLineType"
-						render={field => (
+						render={({ field }) => (
 							<FormControl variant="outlined" fullWidth size="small">
 								<InputLabel id="flowLineTypeLabel">Flowline Type</InputLabel>
 								<Select
@@ -314,7 +243,7 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
 								<Controller
 									control={control}
 									name="showDescription"
-									render={field => (
+									render={({ field }) => (
 										<FormControlLabel
 											control={
 												<Switch
@@ -341,7 +270,7 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
 								<Controller
 									control={control}
 									name="rottenness"
-									render={field => (
+									render={({ field }) => (
 										<FormControlLabel
 											control={
 												<Switch
@@ -372,19 +301,19 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
 					<div className={classes.cardFieldController}>
 						<DragDropContext onDragEnd={onDragEnd}>
 							<Droppable droppableId="droppableM1">
-								{(provided, snapshot) => (
+								{provided => (
 									<RootRef rootRef={provided.innerRef}>
 										<Controller
 											control={control}
 											name="fieldsOnCardToShow"
-											render={field => (
+											render={() => (
 												<Table size="small">
 													<TableBody>
 														{cardDataOptions.map((fieldObj, index) => {
 															const labelId = `checkbox-list-label-${index}`;
 															return (
 																<Draggable key={labelId} draggableId={labelId} index={index}>
-																	{(provided, snapshot) => (
+																	{provided => (
 																		<TableRow key={index} ref={provided.innerRef} {...provided.draggableProps}>
 																			<TableCell className={classes.tableCell} {...provided.dragHandleProps}>
 																				<DragIndicator />

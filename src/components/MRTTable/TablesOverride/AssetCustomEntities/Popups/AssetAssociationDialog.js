@@ -205,7 +205,7 @@ function AssetAssociationDialog() {
 									<Controller
 										control={control}
 										name="associatedModels"
-										render={field => (
+										render={({ field }) => (
 											<TextField
 												select
 												size="small"

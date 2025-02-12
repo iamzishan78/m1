@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/styles';
 import { get } from 'lodash';
 
 // Components
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	numberField: {
 		'& .MuiOutlinedInput-root': {
 			opacity: '0.7',
@@ -56,22 +56,22 @@ const ChangeDetectionNumberField = ({
 			control={control}
 			name={name}
 			defaultValue={0}
-			render={params => {
+			render={({ field }) => {
 				const isChanged =
-					(calculatedValues[name] && params.value && parseFloat(params.value) !== parseFloat(calculatedValues[name])) ||
+					(calculatedValues[name] && field.value && parseFloat(field.value) !== parseFloat(calculatedValues[name])) ||
 					isOverridden;
 				return (
 					<TextField
 						type="number"
 						label={label}
 						variant="outlined"
-						defaultValue={get(params, 'value', 0) || 0}
-						value={get(params, 'value', 0)}
+						defaultValue={get(field, 'value', 0) || 0}
+						value={get(field, 'value', 0)}
 						onWheel={e => e.target.blur()}
 						onBlur={event => offClickHandler(name, event.target.value)}
 						onKeyDown={handleKeyDown}
 						onChange={e => {
-							params.onChange(e.target.value);
+							field.onChange(e.target.value);
 						}}
 						className={isChanged ? classes.baseValueChanged : classes.numberField}
 						InputProps={{
@@ -81,7 +81,7 @@ const ChangeDetectionNumberField = ({
 										<IconButton
 											aria-label={`toggle ${name}`}
 											onClick={() => {
-												params.onChange(calculatedValues[name]);
+												field.onChange(calculatedValues[name]);
 												offClickHandler(name, calculatedValues[name]);
 											}}
 										>
@@ -110,7 +110,6 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
 
 	useEffect(() => {
 		reset(agreementDetails);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [agreementDetails]);
 
 	const offClickHandler = (key, value) => {
@@ -141,9 +140,9 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
 					control={control}
 					name="legalDesctiption"
 					defaultValue={agreementDetails?.legalDescription ?? ''}
-					render={params => (
+					render={({ field }) => (
 						<TextField
-							{...params}
+							{...field}
 							label="Full Legal Description"
 							variant="outlined"
 							multiline

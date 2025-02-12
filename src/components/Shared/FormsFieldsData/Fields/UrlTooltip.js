@@ -6,6 +6,10 @@ import validator from 'validator';
 import { normalizeUrl } from 'components/Shared/functions';
 
 const UrlTooltip = ({ value, handleMouseEnter, handleMouseLeave, containerStyles, linkStyles }) => {
+	if (!value) {
+		return null;
+	}
+
 	return (
 		<div
 			style={{

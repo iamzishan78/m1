@@ -61,6 +61,18 @@ function RelatedWellsDialog(props) {
 	const [valid, setValid] = useState({});
 	const [anchorEl, setAnchorEl] = useState();
 
+	const handleClose = () => {
+		setSelectedWell(null);
+		window.setStateApp(stateApp => ({
+			...stateApp,
+			wellInterestDialog: false,
+			activeWellInterest: null,
+		}));
+		setValid({});
+		reset({});
+		props.onClose();
+	};
+
 	const [getWellInterestsSelectOptions, { data: dataWellInterestsSelectOptions }] = useLazyQuery(
 		WELL_INTEREST_SELECT_OPTIONS,
 		{
@@ -119,18 +131,6 @@ function RelatedWellsDialog(props) {
 	useEffect(() => {
 		// if launched from grid row set initializing based on selectedWell state
 	}, [selectedWell]);
-
-	const handleClose = () => {
-		setSelectedWell(null);
-		window.setStateApp(stateApp => ({
-			...stateApp,
-			wellInterestDialog: false,
-			activeWellInterest: null,
-		}));
-		setValid({});
-		reset({});
-		props.onClose();
-	};
 
 	const handleValidate = () => {
 		const tempValid = {
@@ -289,62 +289,32 @@ function RelatedWellsDialog(props) {
 			<div>
 				<WellSearchApiField setTenantWell={setTenantWell} setSelectedWell={setSelectedWell} />
 
-				{/* <Controller
-          as={TextField}
-          control={control}
-          variant="outlined"
-          margin="dense"
-          name="wellName"
-          label={"Well Name"}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          disabled
-          defaultValue=""
-        />
-
-        <Controller
-          as={TextField}
-          control={control}
-          variant="outlined"
-          margin="dense"
-          name="api"
-          label="API Number"
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          disabled
-          defaultValue=""
-        /> */}
-
 				<Controller
-					as={TextField}
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name="leaseId"
 					disabled
-					label={'Lease Number'}
-					fullWidth
 					defaultValue=""
+					render={({ field }) => (
+						<TextField {...field} variant="outlined" margin="dense" label={'Lease Number'} fullWidth />
+					)}
 				/>
 				<Controller
-					as={TextField}
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name="lease"
 					disabled
-					label={'Lease Name'}
-					fullWidth
 					defaultValue=""
+					render={({ field }) => (
+						<TextField {...field} variant="outlined" margin="dense" label={'Lease Name'} fullWidth />
+					)}
 				/>
 
 				<Controller
 					control={control}
 					name="operator"
-					label="Operator"
 					defaultValue={''}
-					options={getOptions('Operator') || []}
-					as={<AutoCompleteFieldComponent />}
+					render={({ field }) => (
+						<AutoCompleteFieldComponent {...field} label="Operator" options={getOptions('Operator') || []} />
+					)}
 				/>
 			</div>
 
@@ -353,61 +323,57 @@ function RelatedWellsDialog(props) {
 					<Controller
 						control={control}
 						name="wellType"
-						label="Well Type"
 						defaultValue={''}
-						options={getOptions('WellType') || []}
-						as={<AutoCompleteFieldComponent />}
+						render={({ field }) => (
+							<AutoCompleteFieldComponent {...field} label="Well Type" options={getOptions('WellType') || []} />
+						)}
 					/>
 
 					<Controller
 						control={control}
 						name="wellBoreProfile"
-						label="Wellbore Profile"
 						defaultValue={''}
-						options={getOptions('WellBoreProfile') || []}
-						as={<AutoCompleteFieldComponent />}
+						render={({ field }) => (
+							<AutoCompleteFieldComponent
+								{...field}
+								label="Wellbore Profile"
+								options={getOptions('WellBoreProfile') || []}
+							/>
+						)}
 					/>
 
 					<Controller
 						control={control}
 						name="wellStatus"
-						label="Well Status"
 						defaultValue={''}
-						options={getOptions('WellStatus') || []}
-						as={<AutoCompleteFieldComponent />}
+						render={({ field }) => (
+							<AutoCompleteFieldComponent {...field} label="Well Status" options={getOptions('WellStatus') || []} />
+						)}
 					/>
 					<Controller
 						control={control}
 						name="lastTwelveMonthBOE"
-						label="Last 12 (BOE)"
-						as={TextField}
-						variant="outlined"
-						margin="dense"
 						disabled
-						fullWidth
 						defaultValue=""
+						render={({ field }) => (
+							<TextField {...field} label="Last 12 (BOE)" variant="outlined" margin="dense" fullWidth />
+						)}
 					/>
 					<Controller
 						control={control}
 						name="measuredDepth"
-						label="MD (ft)"
-						as={TextField}
-						variant="outlined"
-						margin="dense"
 						disabled
-						fullWidth
 						defaultValue=""
+						render={({ field }) => <TextField {...field} label="MD (ft)" variant="outlined" margin="dense" fullWidth />}
 					/>
 					<Controller
 						control={control}
 						name="lateralLength"
-						label="Lateral Length (ft)"
 						defaultValue={''}
-						as={TextField}
-						variant="outlined"
-						margin="dense"
 						disabled
-						fullWidth
+						render={({ field }) => (
+							<TextField {...field} label="Lateral Length (ft)" variant="outlined" margin="dense" fullWidth />
+						)}
 					/>
 				</FormControl>
 			</div>

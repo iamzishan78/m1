@@ -141,7 +141,7 @@ function CustomAssetEntityDialog() {
 										<Controller
 											control={control}
 											name="asset_name"
-											render={field => (
+											render={({ field }) => (
 												<TextField
 													size="small"
 													type="text"
@@ -165,7 +165,7 @@ function CustomAssetEntityDialog() {
 										<Controller
 											control={control}
 											name={'creation_place'}
-											render={field => (
+											render={({ field }) => (
 												<TextField
 													select
 													size="small"

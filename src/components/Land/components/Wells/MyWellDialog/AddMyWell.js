@@ -22,7 +22,7 @@ import { wellParams } from './helpers';
 import { addMyWellStyles as useStyles } from './styles';
 
 function CurrencyFormatCustom(props) {
-	const { inputRef, onChange, name, ...other } = props;
+	const { inputRef, onChange, ...other } = props;
 
 	return (
 		<NumberFormat
@@ -82,7 +82,6 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 				handleWellDetail({ Id: globalWellId });
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [myWellData]);
 
 	// Function to check if saving is allowed based on the 'wellName' value
@@ -125,7 +124,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 							}}
 							disabled={!!upsertWellLoading}
 							value={platformWell}
-							getOptionLabel={(option, value) => option.WellName}
+							getOptionLabel={option => option.WellName}
 							filterOptions={x => x}
 							renderOption={option => {
 								const parts = parse(option.WellName, []);
@@ -215,10 +214,10 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 						<Controller
 							control={control}
 							name={param.esKey ?? param.key}
-							render={params => (
+							render={({ field }) => (
 								<TextField
 									className={classes.textField}
-									{...params}
+									{...field}
 									label={param.label}
 									variant="outlined"
 									margin="dense"
@@ -227,22 +226,22 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 									fullWidth
 									placeholder={param.key === 'wellName' ? 'Click to enter Well Name' : ''}
 									defaultValue=""
-									error={param.key === 'wellName' ? !params.value : false} // Mark field as error if validation fails
-									helperText={!params.value ? (param.key === 'wellName' ? 'Enter a Well name to get started' : '') : ''}
+									error={param.key === 'wellName' ? !field.value : false} // Mark field as error if validation fails
+									helperText={!field.value ? (param.key === 'wellName' ? 'Enter a Well name to get started' : '') : ''}
 									value={
 										param.type === 'text'
-											? params.value
-											: params.value
-												? moment(new Date(params.value)).format('MM/DD/YYYY') === 'Invalid date'
+											? field.value
+											: field.value
+												? moment(new Date(field.value)).format('MM/DD/YYYY') === 'Invalid date'
 													? ''
-													: moment(new Date(params.value)).format('MM/DD/YYYY')
+													: moment(new Date(field.value)).format('MM/DD/YYYY')
 												: ''
 									}
 									onChange={event => {
 										const value = event.target.value.replace(/^\s+/, ''); // Remove only the leading whitespace
-										params.onChange(value);
+										field.onChange(value);
 									}}
-									onBlur={event => {
+									onBlur={() => {
 										const values = getValues();
 										handleSave(values);
 									}}

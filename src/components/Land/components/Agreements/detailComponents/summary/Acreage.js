@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import { StyledTextField } from '../style';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	fieldContainer: { opacity: 0.7 },
 	fieldText: {
 		fontSize: '15px',
@@ -79,18 +79,30 @@ const Acreage = ({ properties }) => {
 							</Typography>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="reportGrossAcres" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="reportGrossAcres"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="devReportGrossAcres" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="devReportGrossAcres"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 						<Grid item xs={3}>
 							<Controller
 								control={control}
 								name="undevReportGrossAcres"
 								defaultValue=""
-								as={StyledTextField}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 					</Grid>
@@ -104,13 +116,31 @@ const Acreage = ({ properties }) => {
 							</Typography>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="grossAcres" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="grossAcres"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="devGrossAcres" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="devGrossAcres"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="undevGrossAcres" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="undevGrossAcres"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 					</Grid>
 				</Grid>
@@ -123,13 +153,31 @@ const Acreage = ({ properties }) => {
 							</Typography>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="reportNet" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="reportNet"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="devReportNet" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="devReportNet"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="undevReportNet" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="undevReportNet"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 					</Grid>
 				</Grid>
@@ -142,13 +190,31 @@ const Acreage = ({ properties }) => {
 							</Typography>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="netAcres" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="netAcres"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="devNetAcres" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="devNetAcres"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="undevNetAcres" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="undevNetAcres"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 					</Grid>
 				</Grid>
@@ -161,13 +227,31 @@ const Acreage = ({ properties }) => {
 							</Typography>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="companyNetAcres" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="companyNetAcres"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="devCompanyNetAcres" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="devCompanyNetAcres"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="undevCompanyNetAcres" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="undevCompanyNetAcres"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 					</Grid>
 				</Grid>
@@ -180,13 +264,31 @@ const Acreage = ({ properties }) => {
 							</Typography>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="netRoyalty" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="netRoyalty"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="devNetRoyalty" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="devNetRoyalty"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 						<Grid item xs={3}>
-							<Controller control={control} name="undevNetRoyalty" defaultValue="" as={StyledTextField} disabled />
+							<Controller
+								control={control}
+								name="undevNetRoyalty"
+								defaultValue=""
+								disabled
+								render={({ field }) => <StyledTextField {...field} />}
+							/>
 						</Grid>
 					</Grid>
 				</Grid>

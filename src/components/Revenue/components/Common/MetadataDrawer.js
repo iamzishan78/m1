@@ -327,9 +327,9 @@ export default function MetadataDrawer(props) {
 											<Controller
 												control={control}
 												name="status"
-												render={params => (
+												render={({ field }) => (
 													<Select
-														{...params}
+														{...field}
 														id="status-simple-select-outlined-label"
 														variant="outlined"
 														value={data?.approvalStatus ? data.approvalStatus : data?.status ? data.status : ''}
@@ -355,9 +355,9 @@ export default function MetadataDrawer(props) {
 											<Controller
 												control={control}
 												name="status"
-												render={params => (
+												render={({ field }) => (
 													<Select
-														{...params}
+														{...field}
 														id="source-simple-select-outlined-label"
 														variant="outlined"
 														value={data.source || ''}
@@ -392,10 +392,11 @@ export default function MetadataDrawer(props) {
 									setDescription(e.target.value);
 								}}
 								onBlur={({ target }) => {
-									if (props.onUpdate)
+									if (props.onUpdate) {
 										props.onUpdate({
 											[props.descriptionKey]: target.value,
 										});
+									}
 								}}
 							/>
 						</Grid>

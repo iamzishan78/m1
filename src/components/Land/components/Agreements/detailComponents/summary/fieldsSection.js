@@ -238,8 +238,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 											}}
 											fieldEvents={{
 												onBlur: value => {
-													console.log(value, field.key);
-
 													offClickHandler(field.key, value);
 												},
 											}}
@@ -253,12 +251,12 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 										<Controller
 											control={control}
 											name={field.key}
-											render={params => {
+											render={({ field: fieldProps }) => {
 												return (
 													<Fragment>
 														{field.type === 'number' && (
 															<NumberField
-																{...params}
+																{...fieldProps}
 																id={`field-${field.key}`}
 																index={index}
 																field={field}
@@ -275,7 +273,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 														)}
 														{field.type === 'date' && (
 															<DateField
-																{...params}
+																{...fieldProps}
 																id={`field-${field.key}`}
 																index={index}
 																field={field}
@@ -313,7 +311,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 														)}
 														{field.type === 'select' && (
 															<Select
-																{...params}
+																{...fieldProps}
 																id={`field-${field.key}`}
 																variant="outlined"
 																fullWidth
@@ -375,30 +373,30 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 										<Controller
 											control={control}
 											name={field.key}
-											render={params => (
+											render={({ field: fieldProps }) => (
 												<TextField
-													{...params}
+													{...fieldProps}
 													id={`field-${field.key}`}
-													value={parseFloat(params.value).toFixed(TO_FIXED)}
+													value={parseFloat(fieldProps.value).toFixed(TO_FIXED)}
 													className={
 														isAcquisitionCostOverridden ? overrideClasses.valueOveridden : overrideClasses.valueNormal
 													}
 													variant="outlined"
 													margin="dense"
 													fullWidth
-													inputRef={params.ref}
+													inputRef={fieldProps.ref}
 													onWheel={e => e.target.blur()}
 													onChange={e => {
 														const toFixedValue = parseFloat(e.target.value).toFixed(TO_FIXED);
 														const calculatedAcquisitionCost = parseFloat(
 															agreementDetails?.calculated?.totalAcquisitionCost || 0
 														).toFixed(TO_FIXED);
-														params.onChange(toFixedValue);
+														fieldProps.onChange(toFixedValue);
 														setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
 													}}
 													onBlur={() =>
 														offClickHandler(field.key, {
-															value: Number(params.value),
+															value: Number(fieldProps.value),
 															overridden: isAcquisitionCostOverridden,
 														})
 													}
@@ -413,7 +411,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 																			const totalAcquisitionCost = parseFloat(
 																				agreementDetails?.calculated?.totalAcquisitionCost || 0
 																			).toFixed(TO_FIXED);
-																			params.onChange(totalAcquisitionCost);
+																			fieldProps.onChange(totalAcquisitionCost);
 																			offClickHandler(field.key, {
 																				value: Number(totalAcquisitionCost),
 																				overridden: isAcquisitionCostOverridden,

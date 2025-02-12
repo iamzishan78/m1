@@ -18,13 +18,13 @@ function RadioComponent({ control, item, dialogKey }) {
 				control={control}
 				name={name}
 				defaultValue={options.length && options[0]?.value}
-				render={props => (
+				render={({ field }) => (
 					<RadioGroup
 						row
-						value={props.value}
+						value={field.value}
 						onChange={event => {
 							const value = item.type === 'boolean' ? event.target.value === 'true' : event.target.value;
-							props.onChange(value);
+							field.onChange(value);
 							sideDialogController(dialogKey).updateState({ [item.name]: value });
 						}}
 					>
@@ -42,15 +42,15 @@ function RadioComponent({ control, item, dialogKey }) {
 						<Controller
 							control={control}
 							name={'depthFrom'}
-							render={props => (
+							render={({ field }) => (
 								<TextField
 									size="small"
 									multiline
-									value={props.value}
+									value={field.value}
 									fullWidth
 									variant="standard"
 									onChange={e => {
-										props.onChange(e.target.value);
+										field.onChange(e.target.value);
 										sideDialogController(dialogKey).updateState({ depthFrom: e.target.value });
 									}}
 								/>
@@ -62,15 +62,15 @@ function RadioComponent({ control, item, dialogKey }) {
 						<Controller
 							control={control}
 							name={'depthTo'}
-							render={props => (
+							render={({ field }) => (
 								<TextField
 									size="small"
 									multiline
-									value={props.value}
+									value={field.value}
 									fullWidth
 									variant="standard"
 									onChange={e => {
-										props.onChange(e.target.value);
+										field.onChange(e.target.value);
 										sideDialogController(dialogKey).updateState({ depthTo: e.target.value });
 									}}
 								/>
