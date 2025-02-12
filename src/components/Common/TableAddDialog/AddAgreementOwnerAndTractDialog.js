@@ -709,27 +709,35 @@ function AddAgreementOwnerAndTractDialog(props) {
 					</Grid>
 				</Grid>
 				<Controller
-					render={({ field }) => <TextField {...field} />}
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name="tract.sdGrossAcres"
-					label={'Gross. Acres'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
 					defaultValue={tract?.sdGrossAcres || ''}
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							margin="dense"
+							label={'Gross. Acres'}
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+						/>
+					)}
 				/>
 				<Controller
-					render={({ field }) => <TextField {...field} />}
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name="tract.shapeArea"
-					label={'Calc. Acres'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
-					disabled
 					defaultValue={tract?.shapeArea || ''}
+					disabled
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							label={'Calc. Acres'}
+							margin="dense"
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+						/>
+					)}
 				/>
 				<Controller
 					control={control}
@@ -943,17 +951,21 @@ function AddAgreementOwnerAndTractDialog(props) {
 
 			{interestMapping?.['Working Interest']?.includes(layerType) && (
 				<Controller
-					render={({ field }) => <TextField {...field} />}
-					control={control}
-					variant="outlined"
-					margin="dense"
-					name="working_interest"
 					{...register()}
-					label={'Working Interest'}
-					InputLabelProps={{ shrink: true }}
-					type="number"
-					fullWidth
-					onWheel={e => e.target.blur()}
+					control={control}
+					name="working_interest"
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							margin="dense"
+							label={'Working Interest'}
+							InputLabelProps={{ shrink: true }}
+							type="number"
+							fullWidth
+							onWheel={e => e.target.blur()}
+						/>
+					)}
 				/>
 			)}
 
@@ -1001,17 +1013,21 @@ function AddAgreementOwnerAndTractDialog(props) {
 			/>
 
 			<Controller
-				render={({ field }) => <TextField {...field} />}
-				control={control}
-				variant="outlined"
-				margin="dense"
-				name="company_net_acres"
 				{...register()}
-				label={'Company Net Acres'}
-				InputLabelProps={{ shrink: true }}
-				type="number"
-				fullWidth
-				onWheel={e => e.target.blur()}
+				control={control}
+				name="company_net_acres"
+				render={({ field }) => (
+					<TextField
+						{...field}
+						variant="outlined"
+						margin="dense"
+						label={'Company Net Acres'}
+						InputLabelProps={{ shrink: true }}
+						type="number"
+						fullWidth
+						onWheel={e => e.target.blur()}
+					/>
+				)}
 			/>
 
 			<Controller
@@ -1161,29 +1177,37 @@ function AddAgreementOwnerAndTractDialog(props) {
 
 			<Grid item xs={12} style={{ display: parcelOwnersRadioBValue !== 'false' ? 'none' : 'block' }}>
 				<Controller
-					render={({ field }) => <TextField {...field} />}
-					control={control}
-					variant="outlined"
-					margin="dense"
-					name="depthFrom"
 					{...register()}
-					label={'Depth From'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
-					onWheel={e => e.target.blur()}
+					control={control}
+					name="depthFrom"
+					render={({ field }) => (
+						<TextField
+							{...field}
+							margin="dense"
+							variant="outlined"
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+							onWheel={e => e.target.blur()}
+							label={'Depth From'}
+						/>
+					)}
 				/>
 
 				<Controller
-					render={({ field }) => <TextField {...field} />}
-					control={control}
-					variant="outlined"
-					margin="dense"
-					name="depthTo"
 					{...register()}
-					label={'Depth To'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
-					onWheel={e => e.target.blur()}
+					control={control}
+					name="depthTo"
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							margin="dense"
+							label={'Depth To'}
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+							onWheel={e => e.target.blur()}
+						/>
+					)}
 				/>
 			</Grid>
 

@@ -131,6 +131,7 @@ function AddUnitTractDialog(props) {
 					'legalDescription',
 					'basin',
 					'field',
+					'unitTractId',
 				])
 			);
 		}
@@ -279,54 +280,70 @@ function AddUnitTractDialog(props) {
 						/>
 
 						<Controller
-							render={({ field }) => <TextField {...field} />}
 							control={control}
-							variant="outlined"
-							margin="dense"
 							name="shapeArea"
-							label={'Tract Calc. Acres'}
-							InputLabelProps={{ shrink: true }}
-							fullWidth
 							disabled
 							defaultValue={tract?.shapeArea || ''}
+							render={({ field }) => (
+								<TextField
+									{...field}
+									variant="outlined"
+									margin="dense"
+									label={'Tract Calc. Acres'}
+									InputLabelProps={{ shrink: true }}
+									fullWidth
+								/>
+							)}
 						/>
 
 						<Controller
-							render={({ field }) => <TextField {...field} />}
 							control={control}
-							variant="outlined"
-							margin="dense"
 							name="sdGrossAcres"
-							label={'Tract Gross Acres'}
-							InputLabelProps={{ shrink: true }}
-							fullWidth
-							disabled
 							defaultValue={tract?.sdGrossAcres || ''}
+							disabled
+							render={({ field }) => (
+								<TextField
+									{...field}
+									variant="outlined"
+									margin="dense"
+									label={'Tract Gross Acres'}
+									InputLabelProps={{ shrink: true }}
+									fullWidth
+								/>
+							)}
 						/>
 
 						<Controller
-							render={({ field }) => <TextField {...field} />}
 							control={control}
-							variant="outlined"
-							margin="dense"
 							name="unitTractId"
-							label={'Unit Tract ID'}
-							InputLabelProps={{ shrink: true }}
-							fullWidth
-							onWheel={e => e.target.blur()}
+							render={({ field }) => (
+								<TextField
+									{...field}
+									variant="outlined"
+									margin="dense"
+									label={'Unit Tract ID'}
+									InputLabelProps={{ shrink: true }}
+									fullWidth
+									onWheel={e => e.target.blur()}
+								/>
+							)}
 						/>
 
 						<Controller
-							render={({ field }) => <TextField {...field} />}
 							control={control}
-							variant="outlined"
-							margin="dense"
 							name="uAcres"
-							label={'Unit Tract Acres'}
-							InputLabelProps={{ shrink: true }}
-							type="number"
-							fullWidth
-							onWheel={e => e.target.blur()}
+							render={({ field }) => (
+								<TextField
+									{...field}
+									variant="outlined"
+									margin="dense"
+									label={'Unit Tract Acres'}
+									InputLabelProps={{ shrink: true }}
+									type="number"
+									fullWidth
+									onWheel={e => e.target.blur()}
+								/>
+							)}
 						/>
 					</div>
 

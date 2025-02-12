@@ -152,35 +152,36 @@ export default function MapPositions(props) {
 					<Controller
 						control={control}
 						name="zoom"
-						label="Zoom"
-						render={({ field }) => <StyledTextField {...field} />}
+						render={({ field }) => <StyledTextField {...field} label="Zoom" />}
 					/>
 				</Grid>
 				<Grid item xs={4}>
 					<Controller
 						control={control}
 						name="bearing"
-						label="Bearing"
-						render={({ field }) => <StyledTextField {...field} />}
+						render={({ field }) => <StyledTextField {...field} label="Bearing" />}
 					/>
 				</Grid>
 				<Grid item xs={4}>
 					<Controller
 						control={control}
 						name="pitch"
-						label="Pitch"
-						render={({ field }) => <StyledTextField {...field} />}
+						render={({ field }) => <StyledTextField {...field} label="Pitch" />}
 					/>
 				</Grid>
 				<Grid item xs={12}>
 					<Controller
 						control={control}
 						name="center"
-						label="Center"
-						type="text"
-						error={centerError}
-						helperText={centerError ? 'Invalid Value' : ''} // helper text for errors
-						render={({ field }) => <StyledTextField {...field} />}
+						render={({ field }) => (
+							<StyledTextField
+								{...field}
+								label="Center"
+								type="text"
+								error={centerError}
+								helperText={centerError ? 'Invalid Value' : ''} // helper text for errors
+							/>
+						)}
 					/>
 				</Grid>
 			</Grid>

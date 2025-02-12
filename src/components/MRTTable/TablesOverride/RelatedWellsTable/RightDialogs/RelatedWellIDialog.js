@@ -290,35 +290,31 @@ function RelatedWellsDialog(props) {
 				<WellSearchApiField setTenantWell={setTenantWell} setSelectedWell={setSelectedWell} />
 
 				<Controller
-					render={({ field }) => <TextField {...field} />}
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name="leaseId"
 					disabled
-					label={'Lease Number'}
-					fullWidth
 					defaultValue=""
+					render={({ field }) => (
+						<TextField {...field} variant="outlined" margin="dense" label={'Lease Number'} fullWidth />
+					)}
 				/>
 				<Controller
-					render={({ field }) => <TextField {...field} />}
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name="lease"
 					disabled
-					label={'Lease Name'}
-					fullWidth
 					defaultValue=""
+					render={({ field }) => (
+						<TextField {...field} variant="outlined" margin="dense" label={'Lease Name'} fullWidth />
+					)}
 				/>
 
 				<Controller
 					control={control}
 					name="operator"
-					label="Operator"
 					defaultValue={''}
-					options={getOptions('Operator') || []}
-					render={({ field }) => <AutoCompleteFieldComponent {...field} />}
+					render={({ field }) => (
+						<AutoCompleteFieldComponent {...field} label="Operator" options={getOptions('Operator') || []} />
+					)}
 				/>
 			</div>
 
@@ -327,61 +323,57 @@ function RelatedWellsDialog(props) {
 					<Controller
 						control={control}
 						name="wellType"
-						label="Well Type"
 						defaultValue={''}
-						options={getOptions('WellType') || []}
-						render={({ field }) => <AutoCompleteFieldComponent {...field} />}
+						render={({ field }) => (
+							<AutoCompleteFieldComponent {...field} label="Well Type" options={getOptions('WellType') || []} />
+						)}
 					/>
 
 					<Controller
 						control={control}
 						name="wellBoreProfile"
-						label="Wellbore Profile"
 						defaultValue={''}
-						options={getOptions('WellBoreProfile') || []}
-						render={({ field }) => <AutoCompleteFieldComponent {...field} />}
+						render={({ field }) => (
+							<AutoCompleteFieldComponent
+								{...field}
+								label="Wellbore Profile"
+								options={getOptions('WellBoreProfile') || []}
+							/>
+						)}
 					/>
 
 					<Controller
 						control={control}
 						name="wellStatus"
-						label="Well Status"
 						defaultValue={''}
-						options={getOptions('WellStatus') || []}
-						render={({ field }) => <AutoCompleteFieldComponent {...field} />}
+						render={({ field }) => (
+							<AutoCompleteFieldComponent {...field} label="Well Status" options={getOptions('WellStatus') || []} />
+						)}
 					/>
 					<Controller
 						control={control}
 						name="lastTwelveMonthBOE"
-						label="Last 12 (BOE)"
-						render={({ field }) => <TextField {...field} />}
-						variant="outlined"
-						margin="dense"
 						disabled
-						fullWidth
 						defaultValue=""
+						render={({ field }) => (
+							<TextField {...field} label="Last 12 (BOE)" variant="outlined" margin="dense" fullWidth />
+						)}
 					/>
 					<Controller
 						control={control}
 						name="measuredDepth"
-						label="MD (ft)"
-						render={({ field }) => <TextField {...field} />}
-						variant="outlined"
-						margin="dense"
 						disabled
-						fullWidth
 						defaultValue=""
+						render={({ field }) => <TextField {...field} label="MD (ft)" variant="outlined" margin="dense" fullWidth />}
 					/>
 					<Controller
 						control={control}
 						name="lateralLength"
-						label="Lateral Length (ft)"
 						defaultValue={''}
-						render={({ field }) => <TextField {...field} />}
-						variant="outlined"
-						margin="dense"
 						disabled
-						fullWidth
+						render={({ field }) => (
+							<TextField {...field} label="Lateral Length (ft)" variant="outlined" margin="dense" fullWidth />
+						)}
 					/>
 				</FormControl>
 			</div>

@@ -149,72 +149,92 @@ function AgreementUnitDialog(props) {
 				</Grid>
 				<AutoCompleteShapeLayer value={unitValue} shapeType="unit" setSelectedShapeLayer={setSelectedShapeLayer} />
 				<Controller
-					render={({ field }) => <TextField {...field} />}
 					id="unitName"
 					disabled
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name={`${'unit.'}name`}
-					label={'Unit Name'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
 					defaultValue={''}
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							margin="dense"
+							label={'Unit Name'}
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+						/>
+					)}
 				/>
 				<Controller
-					render={({ field }) => <TextField {...field} />}
 					id="unitNumber"
 					disabled
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name={`${'unit.'}number`}
-					label={'Unit Number'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
 					defaultValue={''}
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							margin="dense"
+							label={'Unit Number'}
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+						/>
+					)}
 				/>
 
 				<Controller
-					render={({ field }) => <TextField {...field} />}
 					id="unitAcres"
 					disabled
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name={`${'unit.'}acres`}
-					label={'Unit Acres'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
 					defaultValue={''}
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							margin="dense"
+							label={'Unit Acres'}
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+						/>
+					)}
 				/>
 
 				<Controller
-					render={({ field }) => <TextField {...field} />}
 					id="state"
 					disabled
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name={`${'unit.'}state`}
-					label={'State'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
 					defaultValue={''}
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							margin="dense"
+							label={'State'}
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+						/>
+					)}
 				/>
 
 				<Controller
-					render={({ field }) => <TextField {...field} />}
 					id="unitStatus"
 					disabled
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name={'unit.status'}
-					label={'Unit Status'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
 					defaultValue={''}
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							margin="dense"
+							label={'Unit Status'}
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+						/>
+					)}
 				/>
 				<div className={classes.dialogFooter}>
 					<Button

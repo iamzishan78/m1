@@ -105,16 +105,20 @@ function AddTractUnitDialog(props) {
 		return dialogFieldsKeys.map(({ name, label }) => (
 			<Controller
 				key={name}
-				render={({ field }) => <TextField {...field} />}
 				control={control}
-				variant="outlined"
-				margin="dense"
 				name={name}
-				label={label}
-				InputLabelProps={{ shrink: true }}
-				fullWidth
-				disabled
 				defaultValue={''}
+				render={({ field }) => (
+					<TextField
+						{...field}
+						variant="outlined"
+						margin="dense"
+						label={label}
+						InputLabelProps={{ shrink: true }}
+						fullWidth
+						disabled
+					/>
+				)}
 			/>
 		));
 	};

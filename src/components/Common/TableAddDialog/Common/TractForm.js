@@ -92,17 +92,20 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 				<AutoCompleteShapeLayer value={tractValue} shapeType="parcel" setSelectedShapeLayer={setSelectedShapeLayer} />
 			)}
 			<Controller
-				render={({ field }) => <TextField {...field} />}
 				id="tractName"
-				// style={{ display: isNewTract ? "inherit" : "none" }}
 				control={control}
-				variant="outlined"
-				margin="dense"
 				name={`${prefix}name`}
-				label={'Tract Name'}
-				InputLabelProps={{ shrink: true }}
-				fullWidth
 				defaultValue={tract?.name || ''}
+				render={({ field }) => (
+					<TextField
+						{...field}
+						variant="outlined"
+						margin="dense"
+						label={'Tract Name'}
+						InputLabelProps={{ shrink: true }}
+						fullWidth
+					/>
+				)}
 			/>
 			<Controller
 				control={control}
@@ -405,20 +408,25 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 			</div>
 
 			<Controller
-				render={({ field }) => <TextField {...field} />}
 				// Disabled will be false in case of new tract
 				{...(!isNewTract && { disabled: true })}
 				id="tractDescription"
 				control={control}
-				variant="outlined"
-				margin="dense"
 				name={`${prefix}legalDescription`}
-				label={'Tract Legal Description'}
-				InputLabelProps={{ shrink: true }}
-				multiline
-				rows={4}
-				fullWidth
 				defaultValue={tract?.legalDescription || ''}
+				render={({ field }) => (
+					<TextField
+						{...field}
+						variant="outlined"
+						margin="dense"
+						name={`${prefix}legalDescription`}
+						label={'Tract Legal Description'}
+						InputLabelProps={{ shrink: true }}
+						multiline
+						minRows={4}
+						fullWidth
+					/>
+				)}
 			/>
 		</>
 	);

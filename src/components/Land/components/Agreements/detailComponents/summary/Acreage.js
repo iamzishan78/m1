@@ -83,8 +83,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="reportGrossAcres"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 						<Grid item xs={3}>
@@ -92,8 +92,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="devReportGrossAcres"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 						<Grid item xs={3}>
@@ -101,8 +101,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="undevReportGrossAcres"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 					</Grid>
@@ -120,8 +120,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="grossAcres"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 						<Grid item xs={3}>
@@ -129,8 +129,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="devGrossAcres"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 						<Grid item xs={3}>
@@ -138,8 +138,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="undevGrossAcres"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 					</Grid>
@@ -157,8 +157,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="reportNet"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 						<Grid item xs={3}>
@@ -166,8 +166,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="devReportNet"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 						<Grid item xs={3}>
@@ -175,8 +175,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="undevReportNet"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 					</Grid>
@@ -194,8 +194,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="netAcres"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 						<Grid item xs={3}>
@@ -203,8 +203,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="devNetAcres"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 						<Grid item xs={3}>
@@ -212,8 +212,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="undevNetAcres"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 					</Grid>
@@ -231,8 +231,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="companyNetAcres"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 						<Grid item xs={3}>
@@ -240,8 +240,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="devCompanyNetAcres"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 						<Grid item xs={3}>
@@ -249,8 +249,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="undevCompanyNetAcres"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 					</Grid>
@@ -268,8 +268,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="netRoyalty"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 						<Grid item xs={3}>
@@ -277,8 +277,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="devNetRoyalty"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 						<Grid item xs={3}>
@@ -286,8 +286,8 @@ const Acreage = ({ properties }) => {
 								control={control}
 								name="undevNetRoyalty"
 								defaultValue=""
-								render={({ field }) => <StyledTextField {...field} />}
 								disabled
+								render={({ field }) => <StyledTextField {...field} />}
 							/>
 						</Grid>
 					</Grid>
