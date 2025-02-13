@@ -38,10 +38,10 @@ const createSupplementaryPointsForCircle = (geojson) => {
     }
 
     // Calculate center point
-    const center = calculateCircleCenter(vertices);
-    if (center) {
-        supplementaryPoints.push(createVertex(properties.id, center, "center", false));
-    }
+    // const center = calculateCircleCenter(vertices);
+    // if (center) {
+    //     supplementaryPoints.push(createVertex(properties.id, center, "center", false));
+    // }
 
     return supplementaryPoints;
 }
