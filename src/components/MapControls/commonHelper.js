@@ -170,7 +170,7 @@ export const drawShapeStyles = [
 	{
 		id: 'gl-draw-polygon-fill-inactive',
 		type: 'fill',
-		filter: ['all', ['==', 'active', 'false'], ['==', '$type', 'Polygon'], ['!=', 'mode', 'static']],
+		filter: ['all', ['==', 'active', 'false'], ['==', '$type', 'Polygon'], ['!=', 'mode', 'static'], ['!=', 'user_isdragMode', true],],
 		paint: {
 			'fill-color': '#3bb2d0',
 			'fill-outline-color': '#3bb2d0',
@@ -442,10 +442,25 @@ export const drawShapeStyles = [
 	{
 		id: 'gl-draw-polygon-shape-edit',
 		type: 'fill',
-		filter: ['all', ['==', '$type', 'Polygon'], ['==', 'user_shapeEdit', false]],
+		filter: ['all', ['==', '$type', 'Polygon'], ['==', 'user_shapeEdit', false], ['!=', 'user_isdragMode', true]],
 		paint: {
 			'fill-color': '#3bb2d0',
 			'fill-outline-color': '#3bb2d0',
+			'fill-opacity': 0.1,
+		},
+	},
+	{
+		id: 'gl-draw-polygon-circle-edit-fill',
+		type: 'fill',
+		filter: [
+			'all', 
+			['==', '$type', 'Polygon'], 
+			['==', 'user_shapeEdit', false],
+			['==', 'user_isdragMode', true],
+		],
+		paint: {
+			'fill-color': '#ffff00',
+			'fill-outline-color': '#ffff00',
 			'fill-opacity': 0.1,
 		},
 	},
@@ -457,6 +472,7 @@ export const drawShapeStyles = [
 			['==', '$type', 'Polygon'],
 			// ['!=', 'mode', 'static'],
 			['==', 'user_shapeEdit', false],
+			['!=', 'user_isdragMode', true] // Exclude dragging mode
 		],
 		layout: {
 			'line-cap': 'round',
@@ -465,6 +481,26 @@ export const drawShapeStyles = [
 		paint: {
 			'line-color': '#3bb2d0',
 			'line-width': 2,
+		},
+	},
+	{
+		id: 'gl-draw-polygon-circle-edit-border',
+		type: 'line',
+		filter: [
+			'all',
+			['==', '$type', 'Polygon'],
+			['==', 'user_shapeEdit', false],
+			['==', 'user_isCircle', true],
+			['==', 'user_isdragMode', true],
+		],
+		layout: {
+			'line-cap': 'round',
+			'line-join': 'round',
+		},
+		paint: {
+			'line-color': '#ffff00',
+			'line-dasharray': [0.3, 3],
+			'line-width': 4,
 		},
 	},
 
