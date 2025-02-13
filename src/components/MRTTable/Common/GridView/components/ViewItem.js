@@ -145,26 +145,6 @@ function ViewItem({ moduleName, view }) {
 				anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
 				transformOrigin={{ vertical: 'top', horizontal: 'center' }}
 			>
-				<MenuItem
-					className={classes.menuItem}
-					onClick={() => {
-						setAnchorEl(null);
-						ViewController.updateViewPreference(view, 'favourite');
-					}}
-				>
-					{isFavourite ? 'Remove as favorite' : 'Set as favorite'}
-				</MenuItem>
-
-				<MenuItem
-					className={classes.menuItem}
-					onClick={() => {
-						setAnchorEl(null);
-						ViewController.updateViewPreference(view, 'default');
-					}}
-				>
-					{isDefault ? 'Remove as default view' : 'Set as default view'}
-				</MenuItem>
-
 				{view.type !== 'Default' && (
 					<>
 						<MenuItem
@@ -190,8 +170,28 @@ function ViewItem({ moduleName, view }) {
 						>
 							Delete view
 						</MenuItem>
+
+						<MenuItem
+							className={classes.menuItem}
+							onClick={() => {
+								setAnchorEl(null);
+								ViewController.updateViewPreference(view, 'default');
+							}}
+						>
+							{isDefault ? 'Remove as default view' : 'Set as default view'}
+						</MenuItem>
 					</>
 				)}
+
+				<MenuItem
+					className={classes.menuItem}
+					onClick={() => {
+						setAnchorEl(null);
+						ViewController.updateViewPreference(view, 'favourite');
+					}}
+				>
+					{isFavourite ? 'Remove as favorite' : 'Set as favorite'}
+				</MenuItem>
 			</Menu>
 		</div>
 	);
