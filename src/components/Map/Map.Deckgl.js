@@ -13,7 +13,7 @@ import * as turf from '@turf/turf';
 import gjv from 'geojson-validation';
 import _, { debounce } from 'lodash';
 import mapboxgl from 'mapbox-gl';
-import { CircleMode,  SimpleSelectMode } from 'mapbox-gl-draw-circle';
+import { CircleMode } from 'mapbox-gl-draw-circle';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import parseLinkHeader from 'parse-link-header';
 import PropTypes from 'prop-types';
@@ -69,6 +69,7 @@ import './popup.css';
 import DragRadiusCircleMode from 'utils/radius-mode';
 import DragCircleMode from 'utils/drag-circle-mode';
 import DirectMode from 'utils/direct-mode';
+import SimpleSelectMode from 'utils/simple-select-mode';
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
