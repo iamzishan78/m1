@@ -48,6 +48,8 @@ import ShapeTypeMenu from './ShapeTypeMenu';
 import CheckCircle from '../../../Shared/svgIcons/check-circle';
 import FilterAltIcon from '../../../Shared/svgIcons/FilterAltIcon';
 import { drawBoundary, clearSelectedAbstracts } from '../DrawShapes/drawShapesHelpers';
+import { tableGlobalController } from 'hookstate/tableController';
+import AddCustomAssetDialog from 'components/Shared/components/common/DetailCard/RightDialogs/AddCustomAssetDialog';
 
 const ShapeActionsPopup = props => {
 	const dispatch = useDispatch();
@@ -55,6 +57,8 @@ const ShapeActionsPopup = props => {
 	const { classes, children, onlyAddShape } = props;
 
 	const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
+	const { stateValues } = tableGlobalController.useState(['dialog']);
+	const { type, isOpen } = stateValues.dialog || {};
 
 	const drawState = drawController.useState([
 		'currentFeature',
@@ -265,8 +269,16 @@ const ShapeActionsPopup = props => {
 	);
 
 	const saveAndOpenMapAssetShapeDetail = useCallback(
-		(...props) =>
-			drawController.saveAndOpenMapAssetShapeDetail(addRecordInRunTimeModel, dispatch, history, abstractData, ...props),
+		({ currentAsset, customAssetData }) => {
+			drawController.saveAndOpenMapAssetShapeDetail({
+				addRecordInRunTimeModel,
+				dispatch,
+				history,
+				abstractData,
+				currentAsset,
+				customAssetData,
+			});
+		},
 		[addRecordInRunTimeModel, dispatch, history, abstractData]
 	);
 
@@ -371,9 +383,17 @@ const ShapeActionsPopup = props => {
 						value={option.name}
 						onClick={e => {
 							e.stopPropagation();
-							globalStateController.updateState({ currentAsset: option });
-							clearSelectedAbstracts();
-							saveAndOpenMapAssetShapeDetail(option);
+							globalStateController.updateState({
+								currentAsset: option,
+							});
+							setAnchorEl(null);
+							tableGlobalController.updateState({
+								dialog: {
+									type: 'addCustomAsset',
+									tableName: option?.tableName,
+									isOpen: true,
+								},
+							});
 						}}
 					>
 						{option.name}
@@ -676,6 +696,20 @@ const ShapeActionsPopup = props => {
 						setExportCSVModal(false);
 						dispatch(resetShapeOwnerAction());
 					}}
+				/>
+			)}
+
+			{type === 'addCustomAsset' && isOpen && (
+				<AddCustomAssetDialog
+					onClose={() => {
+						tableGlobalController.updateState({
+							dialog: {
+								type: 'addCustomAsset',
+								isOpen: false,
+							},
+						});
+					}}
+					onClickAddHandler={saveAndOpenMapAssetShapeDetail}
 				/>
 			)}
 		</>

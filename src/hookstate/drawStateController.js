@@ -776,7 +776,14 @@ const drawStateControllerHandler = state => {
 		layerController.resetBounds(feature?.properties?.assetName); // reset bounds as AOI
 	};
 
-	const saveAndOpenMapAssetShapeDetail = (addRecordInRunTimeModel, dispatch, history, abstractData, currentAsset) => {
+	const saveAndOpenMapAssetShapeDetail = ({
+		addRecordInRunTimeModel,
+		dispatch,
+		history,
+		abstractData,
+		currentAsset,
+		customAssetData,
+	}) => {
 		const user = globalStateController.getValue('user');
 		const { currentFeature } = drawController.getValues(['currentFeature']);
 
@@ -831,7 +838,7 @@ const drawStateControllerHandler = state => {
 		};
 
 		addRecordInRunTimeModel({
-			variables: { tableName: currentAsset?.tableName, record: mapAssetShapeData },
+			variables: { tableName: currentAsset?.tableName, record: { ...mapAssetShapeData, ...customAssetData } },
 		}).then(result => {
 			if (!result?.data?.addRecordInRunTimeModel?.success) {
 				dispatch(showErrorMessage(result?.data?.addRecordInRunTimeModel?.message));

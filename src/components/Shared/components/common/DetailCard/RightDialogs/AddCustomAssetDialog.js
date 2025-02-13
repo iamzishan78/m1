@@ -82,7 +82,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function AddCustomAssetDialog({ ...props }) {
+export default function AddCustomAssetDialog(props) {
 	const classes = useStyles();
 	const {
 		globalStateValues: { currentAsset },
@@ -108,12 +108,7 @@ export default function AddCustomAssetDialog({ ...props }) {
 		awaitRefetchQueries: true,
 		refetchQueries: ['getDbData', 'getDbDataTotal'],
 		onCompleted: () => {
-			tableGlobalController.updateState({
-				dialog: {
-					type: 'addCustomAsset',
-					isOpen: false,
-				},
-			});
+			handleClickDialogClose();
 			tableGlobalController.refetch();
 		},
 	});
@@ -123,12 +118,18 @@ export default function AddCustomAssetDialog({ ...props }) {
 	}, [loading]);
 
 	const handleClickDialogClose = () => {
-		props.onClose();
+		props?.onClose();
 		sideDialogController('customAssetDialog').reset();
 		reset();
 	};
 
 	const handleClickAdd = customAssetData => {
+		if (props?.onClickAddHandler) {
+			props?.onClickAddHandler({ currentAsset, customAssetData });
+			handleClickDialogClose();
+			return;
+		}
+
 		sideDialogController('customAssetDialog').updateState({
 			...customAssetData,
 		});
