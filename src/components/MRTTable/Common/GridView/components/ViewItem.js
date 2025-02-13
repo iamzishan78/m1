@@ -54,9 +54,9 @@ const useStyles = makeStyles(() => ({
 function ViewItem({ moduleName, view }) {
 	const classes = useStyles();
 	const [showActions, setShowActions] = useState(false);
-	const [anchorEl, setAnchorEl] = useState(null);
+	const [subMenuAchorEl, setSubMenuAchorEl] = useState(null);
 	const [allowEdit, setAllowEdit] = useState(false);
-	const [viewName, setViewName] = useState('View Name');
+	const [viewName, setViewName] = useState(view?.name ? view.name : 'Standard View - Copy');
 
 	const userId = globalStateController.getValue('user').mongoId;
 	const ViewController = viewStateController(moduleName);
@@ -131,16 +131,16 @@ function ViewItem({ moduleName, view }) {
 			</span>
 			{showActions && (
 				<span className={classes.actionIcons}>
-					<MoreVertIcon onClick={event => setAnchorEl(event.currentTarget)} />
+					<MoreVertIcon onClick={event => setSubMenuAchorEl(event.currentTarget)} />
 				</span>
 			)}
 			<Menu
 				className={classes.menu}
 				id="menu"
-				anchorEl={anchorEl}
+				anchorEl={subMenuAchorEl}
 				keepMounted
-				open={Boolean(anchorEl)}
-				onClose={() => setAnchorEl(null)}
+				open={Boolean(subMenuAchorEl)}
+				onClose={() => setSubMenuAchorEl(null)}
 				getContentAnchorEl={null}
 				anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
 				transformOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -150,7 +150,7 @@ function ViewItem({ moduleName, view }) {
 						<MenuItem
 							className={classes.menuItem}
 							onClick={() => {
-								setAnchorEl(null);
+								setSubMenuAchorEl(null);
 								setAllowEdit(true);
 								setViewName(view.name);
 							}}
@@ -161,7 +161,7 @@ function ViewItem({ moduleName, view }) {
 						<MenuItem
 							className={classes.menuItem}
 							onClick={() => {
-								setAnchorEl(null);
+								setSubMenuAchorEl(null);
 								ViewController.updateView({
 									id: view?._id,
 									fieldsToUpdate: { isDeleted: true },
@@ -174,8 +174,9 @@ function ViewItem({ moduleName, view }) {
 						<MenuItem
 							className={classes.menuItem}
 							onClick={() => {
-								setAnchorEl(null);
+								setSubMenuAchorEl(null);
 								ViewController.updateViewPreference(view, 'default');
+								!isDefault && ViewController.applyView(view, true);
 							}}
 						>
 							{isDefault ? 'Remove as default view' : 'Set as default view'}
@@ -186,7 +187,7 @@ function ViewItem({ moduleName, view }) {
 				<MenuItem
 					className={classes.menuItem}
 					onClick={() => {
-						setAnchorEl(null);
+						setSubMenuAchorEl(null);
 						ViewController.updateViewPreference(view, 'favourite');
 					}}
 				>
