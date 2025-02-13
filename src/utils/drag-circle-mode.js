@@ -1,7 +1,5 @@
 const MapboxDraw = require('@mapbox/mapbox-gl-draw');
 const Constants = require('@mapbox/mapbox-gl-draw/src/constants');
-const doubleClickZoom = require('@mapbox/mapbox-gl-draw/src/lib/double_click_zoom');
-
 const dragPan = require('../utils/drag-pan');
 
 const circle = require('@turf/circle').default;
@@ -9,6 +7,7 @@ const distance = require('@turf/distance').default;
 const turfHelpers = require('@turf/helpers');
 
 const DragCircleMode = { ...MapboxDraw.modes.draw_polygon };
+import doubleClickZoom from '@mapbox/mapbox-gl-draw/src/lib/double_click_zoom';
 
 DragCircleMode.onSetup = function (opts) {
     debugger
