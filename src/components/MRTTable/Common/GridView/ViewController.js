@@ -43,7 +43,7 @@ const viewStatesControllerHandler = state => ({
 		});
 	},
 
-	applyView: selectedView => {
+	applyView: (selectedView, keepViewMenuOpen = false) => {
 		if (!selectedView) {
 			return;
 		}
@@ -59,8 +59,8 @@ const viewStatesControllerHandler = state => ({
 
 		ViewController.updateState({
 			isLoading: false,
-			isViewOpen: false,
 			shouldSyncView: true,
+			...(!keepViewMenuOpen ? { isViewOpen: false } : {}),
 		});
 	},
 
