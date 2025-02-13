@@ -186,7 +186,7 @@ function CustomTextField({
 				<TextField
 					type={type}
 					size={size}
-					label={label}
+					{...(!labelAsHeading && { label })}
 					value={textFieldValue}
 					margin={margin}
 					autoFocus={autoFocus}
