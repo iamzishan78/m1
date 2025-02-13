@@ -1,11 +1,11 @@
 const MapboxDraw = require('@mapbox/mapbox-gl-draw');
 const Constants = require('@mapbox/mapbox-gl-draw/src/constants');
-const constrainFeatureMovement = require('@mapbox/mapbox-gl-draw/src/lib/constrain_feature_movement');
 const distance = require('@turf/distance').default;
 const turfHelpers = require('@turf/helpers');
 const circle = require('@turf/circle').default;
 const turfCircle = require('@turf/circle').default;
 
+import constrainFeatureMovement from '@mapbox/mapbox-gl-draw/src/lib/constrain_feature_movement' 
 import createSupplementaryPoints from '@mapbox/mapbox-gl-draw/src/lib/create_supplementary_points'
 import doubleClickZoom from '@mapbox/mapbox-gl-draw/src/lib/double_click_zoom';
 import moveFeatures from '@mapbox/mapbox-gl-draw/src/lib/move_features';
