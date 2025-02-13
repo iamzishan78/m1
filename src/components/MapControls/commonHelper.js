@@ -236,7 +236,7 @@ export const drawShapeStyles = [
 	{
 		id: 'gl-draw-line-inactive',
 		type: 'line',
-		filter: ['all', ['==', 'active', 'false'], ['==', '$type', 'LineString'], ['!=', 'mode', 'static']],
+		filter: ['all', ['==', 'active', 'false'], ['==', '$type', 'LineString'], ['!=', 'mode', 'static'], ['!=', 'user_meta', 'radiusLine']],
 		layout: {
 			'line-cap': 'round',
 			'line-join': 'round',
@@ -244,6 +244,20 @@ export const drawShapeStyles = [
 		paint: {
 			'line-color': '#3bb2d0',
 			'line-width': 2,
+		},
+	},
+	{
+		id: 'gl-draw-line-inactive',
+		type: 'line',
+		filter: ['all', ['==', 'active', 'false'], ['==', '$type', 'LineString'], ['!=', 'mode', 'static'], ['==', 'user_meta', 'radiusLine']],
+		layout: {
+			'line-cap': 'round',
+			'line-join': 'round',
+		},
+		paint: {
+			'line-color': '#ffff00',
+			'line-dasharray': [0.3, 3],
+			'line-width': 4,
 		},
 	},
 	{

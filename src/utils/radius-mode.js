@@ -7,7 +7,6 @@ const turfHelpers = require('@turf/helpers');
 const DragRadiusCircleMode = { ...MapboxDraw.modes.draw_polygon };
 
 DragRadiusCircleMode.onSetup = function (opts) {
-  debugger
 	// Create the main polygon feature (which will become the circle)
 	const polygon = this.newFeature({
 		type: Constants.geojsonTypes.FEATURE,
@@ -57,7 +56,6 @@ DragRadiusCircleMode.onSetup = function (opts) {
 };
 
 DragRadiusCircleMode.onDrag = DragRadiusCircleMode.onMouseMove = function (state, e) {
-  // debugger
 	// if (state.polygon.properties.center.length === 0) {
 	// 	state.polygon.properties.center = [e.lngLat.lng, e.lngLat.lat];
 	// }
@@ -83,7 +81,6 @@ DragRadiusCircleMode.onDrag = DragRadiusCircleMode.onMouseMove = function (state
 };
 
 DragRadiusCircleMode.onStop = function (state) {
-  debugger
 	this.updateUIClasses({ mouse: Constants.cursors.NONE });
 	// doubleClickZoom.enable(this);
 	this.activateUIButton();
@@ -108,7 +105,6 @@ DragRadiusCircleMode.onStop = function (state) {
 DragRadiusCircleMode.onMouseUp = DragRadiusCircleMode.onTouchEnd = function (state, e) {};
 
 DragRadiusCircleMode.onClick = DragRadiusCircleMode.onTap = function (state, e) {
-  debugger
 	if (state.polygon.properties.center.length === 0) {
 		state.polygon.properties.center = [e.lngLat.lng, e.lngLat.lat];
 	} else {

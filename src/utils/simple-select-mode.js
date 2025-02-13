@@ -1,9 +1,9 @@
 const MapboxDraw = require('@mapbox/mapbox-gl-draw');
 const createSupplementaryPoints = require('@mapbox/mapbox-gl-draw/src/lib/create_supplementary_points');
-const moveFeatures = require('@mapbox/mapbox-gl-draw/src/lib/move_features');
 const Constants = require('@mapbox/mapbox-gl-draw/src/constants');
 
 import createSupplementaryPointsForCircle from './create_supplementary_points_circle';
+import moveFeatures from '@mapbox/mapbox-gl-draw/src/lib/move_features';
 
 const SimpleSelectModeOverride = MapboxDraw.modes.simple_select;
 
