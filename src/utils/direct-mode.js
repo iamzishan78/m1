@@ -86,7 +86,7 @@ DirectModeOverride.onSetup = function (opts) {
     // Create a label feature to hold the radius value.
     const labelFeature = this.newFeature({
         type: Constants.geojsonTypes.FEATURE,
-        properties: { meta: 'label', labelText: '', parent: featureId },
+        properties: { meta: 'labelPoint', labelText: '', parent: featureId },
         geometry: {
             type: Constants.geojsonTypes.POINT,
             coordinates: [],
