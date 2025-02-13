@@ -609,17 +609,22 @@ export const drawShapeStyles = [
 		type: 'symbol',
 		filter: ['==', 'user_meta', 'labelPoint'], // only features with meta property 'label'
 		layout: {
-			'text-field': ['get', 'user_labelText'], // use the labelText property
-			'text-anchor': 'center',
-			'text-offset': [0, -2],
-			'text-size': 15,
+            'icon-text-fit': 'both',
+            'icon-allow-overlap': true,
+            'text-allow-overlap': true,
+			'icon-image': 'rounded', // Use the loaded icon
+			'icon-anchor': 'center', // Center the icon on the label point
+			'icon-offset': [0, 1.5], // Fine-tune positioning
+			'icon-allow-overlap': true, // Prevent the icon from disappearing when overlapping
+			'text-field': ['get', 'user_labelText'], // Display text from the feature property
+			'text-offset': [0, 1.5],
 		},
 		paint: {
-			'text-color': 'rgba(0, 0, 0, 1)',
-			'text-halo-color': '#ffff00',
-			'text-halo-width': 12, // Adjust width to create background effect
-			'text-halo-height': 25, // Adjust width to create background effect
-			'text-halo-blur': 3, // Soften the edges to mimic border-radius
+			// 'text-color': '#ffff00',
+			// 'text-halo-color': '#ffff00',
+			// 'text-halo-width': 12, // Adjust width to create background effect
+			// 'text-halo-height': 25, // Adjust width to create background effect
+			// 'text-halo-blur': 3, // Soften the edges to mimic border-radius
 		},
 	},
 ];

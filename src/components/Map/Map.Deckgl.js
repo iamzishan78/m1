@@ -57,6 +57,7 @@ import { extractUniqueFilters } from './DeckGL/helpers/common';
 import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import MarkerIcon from './sprites/marker-icon.png';
+import backgroundIcon from './sprites/bg2.png';
 import {
 	drawBoundary,
 	drawWellBoundary,
@@ -845,6 +846,17 @@ function Map({
 					}
 					// add image to the active style and make it SDF-enabled
 					newMap.addImage('marker-icon', image, { sdf: true });
+				});
+
+				newMap.loadImage(backgroundIcon, (error, image) => {
+					if (error) throw error;
+					newMap.addImage('rounded', image,
+						{
+							content: [3, 3, 13, 13],
+							stretchX: [[7, 9]],
+							stretchY: [[7, 9]]
+						}
+					);
 				});
 
 				// FOR aoi_labels
