@@ -46,6 +46,11 @@ DragRadiusCircleMode.onSetup = function (opts) {
 	this.addFeature(radiusLine);
 	this.addFeature(labelFeature);
 
+	this.updateUIClasses({ mouse: "add" });
+    this.setActionableState({
+      trash: true
+    });
+
 	// Return state including both features.
 	return {
 		polygon,
