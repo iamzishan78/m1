@@ -9,7 +9,7 @@ const calculateCircleCenter = (vertices) => {
     return [sumX / vertices.length, sumY / vertices.length];
 };
 
-function createSupplementaryPointsForCircle(geojson) {
+function createSupplementaryPointsForCircle(geojson, display) {
     const { properties, geometry } = geojson;
 
     if (!properties.user_isCircle) return null;
@@ -24,6 +24,24 @@ function createSupplementaryPointsForCircle(geojson) {
     const center = calculateCircleCenter(vertices);
     if (center) {
         supplementaryPoints.push(createVertex(properties.id, center, "center", false));
+
+        // Draw a line from center to last drawn point of the circle
+        const lastPoint = vertices[vertices.length - 1];
+        const centerLine = {
+            type: "Feature",
+            geometry: {
+                type: "LineString",
+                coordinates: [center, lastPoint]
+            },
+            properties: {
+                id: `${properties.id}_centerLine`,
+                parent: properties.id,
+                active: false
+            }
+        };
+
+        // Push line feature to be displayed on the map
+        display(centerLine);
     }
     return supplementaryPoints;
 }

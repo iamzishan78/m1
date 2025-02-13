@@ -8,6 +8,7 @@ const circle = require('@turf/circle').default;
 const turfCircle = require('@turf/circle').default;
 
 import createSupplementaryPoints from '@mapbox/mapbox-gl-draw/src/lib/create_supplementary_points'
+import doubleClickZoom from '@mapbox/mapbox-gl-draw/src/lib/double_click_zoom';
 
 function createVertex(parentId, coordinates, path, selected) {
     return {
@@ -36,12 +37,12 @@ const createSupplementaryPointsForCircle = (geojson) => {
         supplementaryPoints.push(createVertex(properties.id, vertices[index], `0.${index}`, false));
     }
 
-      // Calculate center point
-      const center = calculateCircleCenter(vertices);
-      if (center) {
-          supplementaryPoints.push(createVertex(properties.id, center, "center", false));
-      }
-  
+    // Calculate center point
+    const center = calculateCircleCenter(vertices);
+    if (center) {
+        supplementaryPoints.push(createVertex(properties.id, center, "center", false));
+    }
+
     return supplementaryPoints;
 }
 
@@ -56,6 +57,69 @@ const calculateCircleCenter = (vertices) => {
 };
 
 const DirectModeOverride = MapboxDraw.modes.direct_select;
+
+DirectModeOverride.onSetup = function (opts) {
+    console.log('DirectModeOverride.onSetup', opts);
+    const featureId = opts.featureId;
+    const feature = this.getFeature(featureId);
+
+    if (!feature) {
+        throw new Error('You must provide a featureId to enter direct_select mode');
+    }
+
+    if (feature.type === Constants.geojsonTypes.POINT) {
+        throw new TypeError('direct_select mode doesn\'t handle point features');
+    }
+
+    // Create a helper feature to show the radius line.
+    const radiusLine = this.newFeature({
+        type: Constants.geojsonTypes.FEATURE,
+        properties: { meta: 'radiusLine', parent: featureId },
+        geometry: {
+            type: Constants.geojsonTypes.LINE_STRING,
+            coordinates: [],
+        },
+    });
+
+    // Create a label feature to hold the radius value.
+    const labelFeature = this.newFeature({
+        type: Constants.geojsonTypes.FEATURE,
+        properties: { meta: 'label', labelText: '', parent: featureId },
+        geometry: {
+            type: Constants.geojsonTypes.POINT,
+            coordinates: [],
+        },
+    });
+
+    const state = {
+        featureId,
+        feature,
+        dragMoveLocation: opts.startPos || null,
+        dragMoving: false,
+        canDragMove: false,
+        selectedCoordPaths: opts.coordPath ? [opts.coordPath] : [],
+    };
+
+    this.setSelectedCoordinates(this.pathsToCoordinates(featureId, state.selectedCoordPaths));
+    this.setSelected(featureId);
+    doubleClickZoom.disable(this);
+
+    this.setActionableState({
+        trash: true
+    });
+
+    this.addFeature(radiusLine);
+    this.addFeature(labelFeature);
+
+    const newState = {
+        ...state,
+        radiusLine,
+        labelFeature,
+        currentVertexPosition: 0,
+    };
+    console.log("newState", newState)
+    return newState;
+}
 
 DirectModeOverride.dragFeature = function (state, e, delta) {
     console.log('DirectModeOverride.dragFeature');
@@ -80,6 +144,14 @@ DirectModeOverride.dragVertex = function (state, e, delta) {
         const circleFeature = circle(center, radius);
         state.feature.incomingCoords(circleFeature.geometry.coordinates);
         state.feature.properties.radiusInKm = radius;
+        state.radiusLine.incomingCoords([center, [e.lngLat.lng, e.lngLat.lat]]);
+        const labelOffset = 0.0005; // adjust as needed
+        state.labelFeature.incomingCoords([center[0], center[1] + labelOffset]);
+        // Set the label text property to display the distance in miles.
+        const distanceInMiles = distance(turfHelpers.point(center), turfHelpers.point([e.lngLat.lng, e.lngLat.lat]), {
+            units: 'miles',
+        });
+        state.labelFeature.properties.labelText = distanceInMiles.toFixed(2) + ' mi';
     } else {
         const selectedCoords = state.selectedCoordPaths.map(coord_path => state.feature.getCoordinate(coord_path));
         const selectedCoordPoints = selectedCoords.map(coords => ({
@@ -103,14 +175,14 @@ DirectModeOverride.toDisplayFeatures = function (state, geojson, push) {
     if (state.featureId === geojson.properties.id) {
         geojson.properties.active = Constants.activeStates.ACTIVE;
         push(geojson);
-        const supplementaryPoints = 
-        geojson.properties.user_isCircle ? createSupplementaryPointsForCircle(geojson)
-            : 
-            createSupplementaryPoints(geojson, {
-                map: this.map,
-                midpoints: true,
-                selectedPaths: state.selectedCoordPaths
-            });
+        const supplementaryPoints =
+            geojson.properties.user_isCircle ? createSupplementaryPointsForCircle(geojson)
+                :
+                createSupplementaryPoints(geojson, {
+                    map: this.map,
+                    midpoints: true,
+                    selectedPaths: state.selectedCoordPaths
+                });
         supplementaryPoints.forEach(push);
     } else {
         geojson.properties.active = Constants.activeStates.INACTIVE;
@@ -120,4 +192,11 @@ DirectModeOverride.toDisplayFeatures = function (state, geojson, push) {
 
 }
 
-export default  DirectModeOverride;
+
+DirectModeOverride.onStop = function (state) {
+    doubleClickZoom.enable(this);
+    this.clearSelectedCoordinates();
+    this.deleteFeature([state.radiusLine.id, state.labelFeature.id], { silent: true });
+};
+
+export default DirectModeOverride;
