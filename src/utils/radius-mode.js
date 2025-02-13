@@ -25,7 +25,7 @@ DragRadiusCircleMode.onSetup = function (opts) {
 	// Create a helper feature to show the radius line.
 	const radiusLine = this.newFeature({
 		type: Constants.geojsonTypes.FEATURE,
-		properties: { meta: 'radiusLine', parent: polygon.id },
+		properties: { meta: 'radiusLine', parent: polygon.id,  type: 'line',},
 		geometry: {
 			type: Constants.geojsonTypes.LINE_STRING,
 			coordinates: [],
@@ -34,7 +34,7 @@ DragRadiusCircleMode.onSetup = function (opts) {
 	// Create a label feature to hold the radius value.
 	const labelFeature = this.newFeature({
 		type: Constants.geojsonTypes.FEATURE,
-		properties: { meta: 'label', labelText: '', parent: polygon.id },
+		properties: { meta: 'labelPoint', labelText: '', parent: polygon.id },
 		geometry: {
 			type: Constants.geojsonTypes.POINT,
 			coordinates: [],
@@ -118,6 +118,7 @@ DragRadiusCircleMode.onClick = DragRadiusCircleMode.onTap = function (state, e) 
 };
 
 DragRadiusCircleMode.toDisplayFeatures = function (state, geojson, display) {
+	console.log("Feature properties:", geojson.properties); // Debug properties
 	// Display all helper features (center dot and label) as well as the main polygon.
 	if (geojson.properties.user_meta === 'radiusLine') {
 		return display(geojson);

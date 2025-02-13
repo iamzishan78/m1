@@ -322,10 +322,25 @@ export const drawShapeStyles = [
 			['==', '$type', 'Point'],
 			['==', 'meta', 'feature'],
 			['!=', 'mode', 'static'],
+			['!=', 'user_meta', 'labelPoint'],
 		],
 		paint: {
 			'circle-radius': 3,
 			'circle-color': '#3bb2d0',
+		},
+	},
+	{
+		id: 'gl-draw-active-cirle-center-point',
+		type: 'circle',
+		filter: [
+			'all',
+			['==', '$type', 'Point'],
+			['==', 'meta', 'feature'],
+			['==', 'user_meta', 'labelPoint'],
+		],
+		paint: {
+			'circle-radius': 5,
+			'circle-color': '#FFFF00',
 		},
 	},
 	{
@@ -556,7 +571,7 @@ export const drawShapeStyles = [
 	{
 		id: 'gl-draw-radius-label',
 		type: 'symbol',
-		filter: ['==', 'user_meta', 'label'], // only features with meta property 'label'
+		filter: ['==', 'user_meta', 'labelPoint'], // only features with meta property 'label'
 		layout: {
 			'text-field': ['get', 'user_labelText'], // use the labelText property
 			'text-anchor': 'center',

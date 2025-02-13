@@ -1,5 +1,4 @@
 const MapboxDraw = require('@mapbox/mapbox-gl-draw');
-const moveFeatures = require('@mapbox/mapbox-gl-draw/src/lib/move_features');
 const Constants = require('@mapbox/mapbox-gl-draw/src/constants');
 const constrainFeatureMovement = require('@mapbox/mapbox-gl-draw/src/lib/constrain_feature_movement');
 const distance = require('@turf/distance').default;
@@ -9,6 +8,7 @@ const turfCircle = require('@turf/circle').default;
 
 import createSupplementaryPoints from '@mapbox/mapbox-gl-draw/src/lib/create_supplementary_points'
 import doubleClickZoom from '@mapbox/mapbox-gl-draw/src/lib/double_click_zoom';
+import moveFeatures from '@mapbox/mapbox-gl-draw/src/lib/move_features';
 
 function createVertex(parentId, coordinates, path, selected) {
     return {
