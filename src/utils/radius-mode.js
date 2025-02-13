@@ -25,7 +25,7 @@ DragRadiusCircleMode.onSetup = function (opts) {
 	// Create a helper feature to show the radius line.
 	const radiusLine = this.newFeature({
 		type: Constants.geojsonTypes.FEATURE,
-		properties: { meta: 'radiusLine', parent: polygon.id,  type: 'line',},
+		properties: { meta: 'radiusLine', parent: polygon.id, type: 'line', },
 		geometry: {
 			type: Constants.geojsonTypes.LINE_STRING,
 			coordinates: [],
@@ -87,6 +87,9 @@ DragRadiusCircleMode.onStop = function (state) {
 
 	// check to see if we've deleted this feature
 	if (this.getFeature(state.polygon.id) === undefined) {
+		if (state.radiusLine.id && state.labelFeature.id) {
+			this.deleteFeature([state.radiusLine.id, state.labelFeature.id], { silent: true });
+		}
 		return;
 	}
 
@@ -102,7 +105,7 @@ DragRadiusCircleMode.onStop = function (state) {
 	}
 };
 
-DragRadiusCircleMode.onMouseUp = DragRadiusCircleMode.onTouchEnd = function (state, e) {};
+DragRadiusCircleMode.onMouseUp = DragRadiusCircleMode.onTouchEnd = function (state, e) { };
 
 DragRadiusCircleMode.onClick = DragRadiusCircleMode.onTap = function (state, e) {
 	if (state.polygon.properties.center.length === 0) {
@@ -134,6 +137,11 @@ DragRadiusCircleMode.toDisplayFeatures = function (state, geojson, display) {
 	const isActivePolygon = geojson.properties.id === state.polygon.id;
 	geojson.properties.active = isActivePolygon ? Constants.activeStates.ACTIVE : Constants.activeStates.INACTIVE;
 	return display(geojson);
+};
+
+DragRadiusCircleMode.onTrash = function (state) {
+	this.deleteFeature([state.polygon.id, state.radiusLine.id, state.labelFeature.id], { silent: true });
+	this.changeMode(Constants.modes.SIMPLE_SELECT);
 };
 
 module.exports = DragRadiusCircleMode;
