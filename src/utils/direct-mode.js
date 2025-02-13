@@ -154,7 +154,7 @@ DirectModeOverride.dragVertex = function (state, e, delta) {
         const distanceInMiles = distance(turfHelpers.point(center), turfHelpers.point([e.lngLat.lng, e.lngLat.lat]), {
             units: 'miles',
         });
-        state.labelFeature.properties.labelText = distanceInMiles.toFixed(2) + ' mi';
+        state.labelFeature.properties.labelText = distanceInMiles.toFixed(2) + ' miles';
     } else {
         const selectedCoords = state.selectedCoordPaths.map(coord_path => state.feature.getCoordinate(coord_path));
         const selectedCoordPoints = selectedCoords.map(coords => ({
