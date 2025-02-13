@@ -82,5 +82,4 @@ DragCircleMode.toDisplayFeatures = function (state, geojson, display) {
     geojson.properties.active = (isActivePolygon) ? Constants.activeStates.ACTIVE : Constants.activeStates.INACTIVE;
     return display(geojson);
 };
-
-module.exports = DragCircleMode;
+export default = DragCircleMode;
