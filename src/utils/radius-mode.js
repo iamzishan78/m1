@@ -75,7 +75,7 @@ DragRadiusCircleMode.onDrag = DragRadiusCircleMode.onMouseMove = function (state
 			const labelOffset = 0.0005; // adjust as needed
 			state.labelFeature.incomingCoords([center[0], center[1] + labelOffset]);
 			// Set the label text property to display the distance in miles.
-			state.labelFeature.properties.labelText = distanceInMiles.toFixed(2) + ' mi';
+			state.labelFeature.properties.labelText = distanceInMiles.toFixed(2) + ' miles';
 		}
 	}
 };
@@ -118,7 +118,7 @@ DragRadiusCircleMode.onClick = DragRadiusCircleMode.onTap = function (state, e) 
 };
 
 DragRadiusCircleMode.toDisplayFeatures = function (state, geojson, display) {
-	console.log("Feature properties:", geojson.properties); // Debug properties
+	// console.log("Feature properties:", geojson.properties); // Debug properties
 	// Display all helper features (center dot and label) as well as the main polygon.
 	if (geojson.properties.user_meta === 'radiusLine') {
 		return display(geojson);

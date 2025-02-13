@@ -22,7 +22,7 @@ function createSupplementaryPointsForCircle(geojson, display) {
 
     // Calculate center point
     const center = calculateCircleCenter(vertices);
-    if (center) {
+    if (center && display) {
         supplementaryPoints.push(createVertex(properties.id, center, "center", false));
 
         // Draw a line from center to last drawn point of the circle

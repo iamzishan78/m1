@@ -39,7 +39,7 @@ SimpleSelectModeOverride.toDisplayFeatures = function(state, geojson, display) {
     if (geojson.properties.active !== Constants.activeStates.ACTIVE ||
       geojson.geometry.type === Constants.geojsonTypes.POINT) return;
     const supplementaryPoints = geojson.properties.user_isCircle ?
-      createSupplementaryPointsForCircle(geojson, display) : createSupplementaryPoints(geojson);
+      createSupplementaryPointsForCircle(geojson) : createSupplementaryPoints(geojson);
     supplementaryPoints.forEach(display);
 };
   
