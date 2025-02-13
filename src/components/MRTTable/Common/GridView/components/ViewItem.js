@@ -56,7 +56,7 @@ function ViewItem({ moduleName, view }) {
 	const [showActions, setShowActions] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [allowEdit, setAllowEdit] = useState(false);
-	const [viewName, setViewName] = useState('View Name');
+	const [viewName, setViewName] = useState(view?.name ? view.name : 'Standard View - Copy');
 
 	const userId = globalStateController.getValue('user').mongoId;
 	const ViewController = viewStateController(moduleName);
