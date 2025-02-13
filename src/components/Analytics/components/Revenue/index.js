@@ -316,12 +316,6 @@ export default function RevenueAnalytics(props) {
 	const setESFilters = useCallback(
 		newFilter => {
 			let filterToAdd = [];
-			// Check if `isMisMatchedInterest` exists in newFilter
-			const isMisMatchedInterestPresent = newFilter.some(filter => filter.field === 'isMisMatchedInterest');
-			// Always add the `isMisMatchedInterest` filter if not present in newFilter
-			if (!isMisMatchedInterestPresent) {
-				filterToAdd.push({ field: 'isMisMatchedInterest', value: true, type: 'term' });
-			}
 			if (newFilter.length === 0) {
 				tableController(TableKey).clearFilters(); // clear filter from the table state
 				tableController(TableKey).setFilters(filterToAdd);
@@ -347,7 +341,7 @@ export default function RevenueAnalytics(props) {
 				setEsFilters(filterToAdd);
 			}
 		},
-		[TableKey]
+		[TableKey, salesVolumeComparisonTableState?.filters, comparisonTableState?.filters]
 	);
 
 	return (

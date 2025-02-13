@@ -7,15 +7,17 @@ import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
-import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
-import { dateFilterToDate, getFirstDayOfMonth } from 'utils/helper';
 import { copy, deepEqual } from 'components/Shared/functions';
+import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
+
 import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
+
 import { tableController } from 'hookstate/tableController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	actionBar: {
 		backgroundColor: '#f7f7f7',
 		width: '100%',
@@ -55,13 +57,13 @@ const LastCheckDateFilter = ({
 }) => {
 	const classes = useStyles();
 
-	const [selectedFilter, setSelectedFilter] = useState('');
 	const [fromDate, setFromDate] = React.useState(null);
 	const [toDate, setToDate] = React.useState(null);
 	const [lastCheckMinDate, setLastCheckMinDate] = useState('');
 	const [propertyFilter, setPropertyFilter] = useState([]);
 	const [checkNumberFilter, setCheckNumberFilter] = useState();
 	const [propertyNumberFilter, setPropertyNumberFilter] = useState();
+	const [allDateToNull, setAllDateToNull] = useState(true);
 	const [oldFilter, setOldFilter] = useState();
 
 	const reportGroupFilters = useRef([]);
@@ -160,7 +162,6 @@ const LastCheckDateFilter = ({
 		}
 		setFilterToggle(!filterToggle);
 		// disabling this because a dependency causes infinite loop in useEffect
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [toDate, fromDate, propertyFilter, checkNumberFilter, propertyNumberFilter]);
 
 	useEffect(() => {
@@ -177,9 +178,10 @@ const LastCheckDateFilter = ({
 					setToDate={setToDate}
 					isProperties
 					lastCheckMinDate={lastCheckMinDate}
-					onChange={setSelectedFilter}
+					onChange={() => {}}
 					datesInputWidth={2}
-					setAllDateToNull={false}
+					setAllDateToNull={allDateToNull}
+					setNull={setAllDateToNull}
 				/>
 				{extraFitlers.includes('propertyGroup') && (
 					<Grid item xs md={2}>
@@ -273,6 +275,21 @@ const LastCheckDateFilter = ({
 			</Grid>
 		</div>
 	);
+};
+
+LastCheckDateFilter.propTypes = {
+	field: PropTypes.string.isRequired,
+	esIndex: PropTypes.string.isRequired,
+	esFilters: PropTypes.array.isRequired,
+	setESFilters: PropTypes.func.isRequired,
+	filterToggle: PropTypes.bool.isRequired,
+	propertyNumbers: PropTypes.array.isRequired,
+	checkNumbers: PropTypes.array.isRequired,
+	setFilterToggle: PropTypes.func.isRequired,
+	extraFitlers: PropTypes.array,
+	stateESKey: PropTypes.string,
+	isComparisonReport: PropTypes.bool,
+	tableKey: PropTypes.string,
 };
 
 export default React.memo(LastCheckDateFilter);
