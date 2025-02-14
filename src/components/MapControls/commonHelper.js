@@ -618,7 +618,7 @@ export const drawShapeStyles = [
 			'text-anchor': 'center', // Center the text within icon
 			'text-field': ['get', 'user_labelText'],
 			'text-offset': [0, -2], // Center the text
-			"text-font": ["Open Sans Bold"], 
+			'text-font': ['Open Sans Bold'], 
 			'icon-size': 1.32
 		},
 	},

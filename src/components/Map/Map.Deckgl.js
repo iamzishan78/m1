@@ -58,6 +58,7 @@ import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import MarkerIcon from './sprites/marker-icon.png';
 import backgroundIcon from './sprites/draw-radius-label-background.png';
+import lightBackgroundIcon from './sprites/draw-radius-label-light-background-.png';
 import {
 	drawBoundary,
 	drawWellBoundary,
@@ -856,7 +857,11 @@ function Map({
 					newMap.addImage('marker-icon', image, { sdf: true });
 				});
 
-				newMap.loadImage(backgroundIcon, (error, image) => {
+				let labelIcon = backgroundIcon;
+				if (mapStateValues.mapVars.styleId === 'Dark') {
+					labelIcon = lightBackgroundIcon
+				}
+				newMap.loadImage(labelIcon, (error, image) => {
 					if (error) throw error;
 					newMap.addImage('rounded', image,
 						{
