@@ -92,7 +92,6 @@ function ViewItem({ moduleName, view }) {
 				size="small"
 				autoComplete="nope"
 				fullWidth
-				label={null}
 				value={viewName}
 				placeholder={'View Name'}
 				helperText="Return to save"
