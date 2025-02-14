@@ -42,6 +42,13 @@ const AssetCustomEntitiesMeta = {
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
+			name: 'shapeType.keyword',
+			accessorFn: row => row?.shapeType,
+			id: 'shapeType',
+			header: 'Shape Type',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
 			name: 'numberOfKeys',
 			accessorFn: row => row?.numberOfKeys,
 			id: 'numberOfKeys',
