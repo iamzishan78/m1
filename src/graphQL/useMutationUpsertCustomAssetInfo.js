@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const UPSERT_CUSTOM_ASSET_INFO = gql`
-	mutation upsertCustomAssetInfo($name: String, $modelKeys: [JSON], $creationPlace: String) {
-		upsertCustomAssetInfo(name: $name, modelKeys: $modelKeys, creationPlace: $creationPlace)
+	mutation upsertCustomAssetInfo($name: String, $modelKeys: [JSON], $creationPlace: String, $shapeType: String) {
+		upsertCustomAssetInfo(name: $name, modelKeys: $modelKeys, creationPlace: $creationPlace, shapeType: $shapeType)
 	}
 `;
 

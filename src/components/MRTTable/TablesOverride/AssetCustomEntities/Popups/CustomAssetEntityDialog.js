@@ -2,13 +2,23 @@ import React, { useEffect } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
-import { Grid, Dialog, IconButton, Button, TextField, MenuItem } from '@material-ui/core';
+import {
+	Grid,
+	Dialog,
+	IconButton,
+	Button,
+	TextField,
+	MenuItem,
+	RadioGroup,
+	FormControlLabel,
+	Radio,
+} from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { useMutation } from '@apollo/client';
 
 import Loader from 'components/Loaders';
-import { entityCreationOptions } from 'components/MRTTable/utils/data';
+import { entityCreationOptions, entityShapeOptions } from 'components/MRTTable/utils/data';
 
 import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetInfo';
 
@@ -42,11 +52,13 @@ function CustomAssetEntityDialog() {
 			asset_name: '',
 			fields: defaultFields,
 			creation_place: '',
+			shape_type: 'Polygon',
 		},
 	});
 
 	const fields = useWatch({ control, name: 'fields' });
 	const name = watch('asset_name', ''); // Watch the "asset_name" field
+	const creationPlace = watch('creation_place', ''); // Watch the "creation_place" field
 
 	const { stateValues } = tableGlobalController.useState(['AssetCustomEntityDialog', 'selectedAsset']);
 	const { type, isOpen } = stateValues.AssetCustomEntityDialog || {};
@@ -74,6 +86,7 @@ function CustomAssetEntityDialog() {
 			asset_name: selectedAsset?.name || '',
 			fields: selectedAsset?.modelKeys || defaultFields,
 			creation_place: selectedAsset?.creationPlace || '',
+			shape_type: selectedAsset?.shapeType || '',
 		});
 	}, [selectedAsset, reset]);
 
@@ -94,11 +107,14 @@ function CustomAssetEntityDialog() {
 		Loader.createToast(toastType, `${capitalizedToastType} Entity in Progress`);
 		handleClose();
 
+		const modelKeys = data?.fields?.map(({ _id, ...rest }) => (_id ? { _id, ...rest } : rest));
+
 		storeCustomAsset({
 			variables: {
 				name: data.asset_name,
-				modelKeys: data.fields,
+				modelKeys,
 				creationPlace: data.creation_place,
+				shapeType: data.shape_type,
 			},
 		}).then(res => {
 			if (res?.data?.upsertCustomAssetInfo) {
@@ -192,6 +208,34 @@ function CustomAssetEntityDialog() {
 											)}
 										/>
 									</Grid>
+									{creationPlace && creationPlace === 'onMap' && (
+										<Grid item xs={6}>
+											<h3>Select the Shape Type</h3>
+											<Controller
+												control={control}
+												name={'shape_type'}
+												render={({ field }) => (
+													<RadioGroup
+														row
+														value={field.value}
+														onChange={e => {
+															field.onChange(e.target.value);
+														}}
+													>
+														{entityShapeOptions.map((option, index) => (
+															<FormControlLabel
+																disabled={!isCreateMode}
+																index={index}
+																value={option.value}
+																control={<Radio />}
+																label={option.label}
+															/>
+														))}
+													</RadioGroup>
+												)}
+											/>
+										</Grid>
+									)}
 								</Grid>
 								<Grid item>
 									<h3>Add Model Keys for this Entity in this table </h3>
