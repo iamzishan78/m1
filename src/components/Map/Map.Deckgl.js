@@ -57,7 +57,7 @@ import { extractUniqueFilters } from './DeckGL/helpers/common';
 import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import MarkerIcon from './sprites/marker-icon.png';
-import backgroundIcon from './sprites/bg2.png';
+import backgroundIcon from './sprites/draw-radius-label-background.png';
 import {
 	drawBoundary,
 	drawWellBoundary,
