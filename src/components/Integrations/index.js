@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Grid, makeStyles } from '@material-ui/core';
@@ -77,6 +77,13 @@ const Integrations = () => {
 	const [externalToolExists] = useLazyQuery(EXTERNAL_TOOL_EXISTS);
 	const { data: allTools } = useQuery(ALL_EXTERNAL_TOOLS);
 
+	useEffect(() => {
+		const dialpad = allTools?.allExternalTools?.find(tool => tool.toolName === 'dialpad');
+		if (dialpad) {
+			adminOperationsController.updateState({ apiKeys: { ...apiKeys, dialpad: dialpad?.apiKey } });
+		}
+	}, [allTools]);
+
 	const {
 		adminOperationsState: { apiKeys },
 	} = adminOperationsController.useState(['apiKeys'], 'adminOperationsState');
@@ -98,9 +105,6 @@ const Integrations = () => {
 				dispatch(showErrorMessage('Invalid Api Key'));
 			} else {
 				dispatch(showSuccessMessage('Api Key saved successfully'));
-				if (value) {
-					adminOperationsController.updateState({ apiKeys: { ...apiKeys, [fieldName]: '' } });
-				}
 			}
 		});
 	};
