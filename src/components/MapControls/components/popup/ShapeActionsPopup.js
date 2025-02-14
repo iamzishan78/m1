@@ -381,28 +381,30 @@ const ShapeActionsPopup = props => {
 				)}
 
 				{/* Dynamic related map assets */}
-				{mapCreationAsset.map(option => (
-					<MenuItem
-						key={option._id}
-						value={option.name}
-						onClick={e => {
-							e.stopPropagation();
-							globalStateController.updateState({
-								currentAsset: option,
-							});
-							setAnchorEl(null);
-							tableGlobalController.updateState({
-								dialog: {
-									type: 'addCustomAsset',
-									tableName: option?.tableName,
-									isOpen: true,
-								},
-							});
-						}}
-					>
-						{option.name}
-					</MenuItem>
-				))}
+				{mapCreationAsset
+					?.filter(asset => asset?.shapeType === currentFeature?.geometry?.type)
+					?.map(option => (
+						<MenuItem
+							key={option._id}
+							value={option.name}
+							onClick={e => {
+								e.stopPropagation();
+								globalStateController.updateState({
+									currentAsset: option,
+								});
+								setAnchorEl(null);
+								tableGlobalController.updateState({
+									dialog: {
+										type: 'addCustomAsset',
+										tableName: option?.tableName,
+										isOpen: true,
+									},
+								});
+							}}
+						>
+							{option.name}
+						</MenuItem>
+					))}
 			</Menu>
 
 			<Menu
