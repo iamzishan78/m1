@@ -762,6 +762,14 @@ function Map({
 			return;
 		}
 
+		const onLoad = () => {
+			const { onMapLoad } = globalStateController.getAllValues();
+			if (onMapLoad) {
+				onMapLoad();
+				globalStateController.updateState({ onMapLoad: null });
+			}
+		};
+
 		const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
 			const { id } = mapEl.current;
 
@@ -907,11 +915,14 @@ function Map({
 					},
 					zoom: zoom,
 				});
+				onLoad();
 			});
 		};
 
 		if (!map || mapStateValues.reintializeMap) {
 			initializeMap({ setMap, mapEl, setStateApp, setDraw });
+		} else {
+			onLoad();
 		}
 	}, [map, mapStyles, mapStateValues.mapVars.styleId]);
 

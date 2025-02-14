@@ -641,7 +641,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 						<Typography>Search for existing tract to associate to agreement and populate ownership detail</Typography>
 					)}
 				</Box>
-				<TextField id="_id" name="_id" style={{ display: 'none' }} {...register()} />
+				<TextField id="_id" style={{ display: 'none' }} {...register('_id')} />
 
 				<TractForm
 					isNewTract={isNewTract}
@@ -652,7 +652,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 					prefix={'tract.'}
 				/>
 
-				<TextField id="tractId" name="tract.tractId" style={{ display: 'none' }} {...register()} />
+				<TextField id="tractId" style={{ display: 'none' }} {...register('tract.tractId')} />
 				<Grid container direction="row" spacing={1} className={classes.qtrCalls}>
 					<Grid item xs={3}>
 						<Autocomplete
@@ -844,8 +844,8 @@ function AddAgreementOwnerAndTractDialog(props) {
 				/>
 			)}
 
-			<TextField id="ownerEntity" name={'ownerEntity'} style={{ display: 'none' }} {...register()} />
-			<TextField id="ownerName" name={'ownerName'} style={{ display: 'none' }} {...register()} />
+			<TextField id="ownerEntity" style={{ display: 'none' }} {...register('ownerEntity')} />
+			<TextField id="ownerName" style={{ display: 'none' }} {...register('ownerName')} />
 
 			{interestMapping?.['Mineral Interest']?.includes(layerType) && (
 				<Controller
@@ -951,7 +951,6 @@ function AddAgreementOwnerAndTractDialog(props) {
 
 			{interestMapping?.['Working Interest']?.includes(layerType) && (
 				<Controller
-					{...register()}
 					control={control}
 					name="working_interest"
 					render={({ field }) => (
@@ -1013,7 +1012,6 @@ function AddAgreementOwnerAndTractDialog(props) {
 			/>
 
 			<Controller
-				{...register()}
 				control={control}
 				name="company_net_acres"
 				render={({ field }) => (
@@ -1177,7 +1175,6 @@ function AddAgreementOwnerAndTractDialog(props) {
 
 			<Grid item xs={12} style={{ display: parcelOwnersRadioBValue !== 'false' ? 'none' : 'block' }}>
 				<Controller
-					{...register()}
 					control={control}
 					name="depthFrom"
 					render={({ field }) => (
@@ -1194,7 +1191,6 @@ function AddAgreementOwnerAndTractDialog(props) {
 				/>
 
 				<Controller
-					{...register()}
 					control={control}
 					name="depthTo"
 					render={({ field }) => (

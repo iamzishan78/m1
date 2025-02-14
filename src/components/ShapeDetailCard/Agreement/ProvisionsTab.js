@@ -141,7 +141,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 	const [provisionAutoCompleteList, setProvisionsList] = useState([]);
 	const [hoverProvision, setHoverProvision] = useState(-1);
 	const [, setAnchorEl] = useState();
-	const { control, register, reset, getValues, watch } = useForm();
+	const { control, reset, getValues, watch } = useForm();
 
 	const [getProvisionAutoCompleteList, { data: dataProvisionAutoCompleteList }] = useLazyQuery(
 		GET_PROVISION_AUTOCOMPLETE_LIST
@@ -334,19 +334,17 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 						>
 							<Grid item>
 								<Grid container direction="row" spacing={2}>
-									<TextField
-										{...register()}
-										id="_id"
+									<Controller
 										name={`provisions[${index}]._id`}
-										type={'hidden'}
+										control={control}
 										defaultValue={item._id}
+										render={({ field }) => <TextField {...field} id="_id" type="hidden" />}
 									/>
-									<TextField
-										{...register()}
-										id="templateRef"
+									<Controller
 										name={`provisions[${index}].templateRef`}
-										type={'hidden'}
+										control={control}
 										defaultValue={item.templateRef}
+										render={({ field }) => <TextField {...field} id="templateRef" type="hidden" />}
 									/>
 									<Grid item md={4}>
 										<Controller
@@ -424,15 +422,20 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 									</Grid>
 									<Grid item md={6}>
 										<FormControl variant="outlined" fullWidth>
-											<TextField
-												{...register()}
-												fullWidth
-												id={`provision-value-${index}`}
-												label="Provision Value"
-												variant="outlined"
+											<Controller
 												name={`provisions[${index}].value`}
+												control={control}
 												defaultValue={item.value}
-												onBlur={() => handleChange(item, index)}
+												render={({ field }) => (
+													<TextField
+														{...field}
+														fullWidth
+														id={`provision-value-${index}`}
+														label="Provision Value"
+														variant="outlined"
+														onBlur={() => handleChange(item, index)}
+													/>
+												)}
 											/>
 										</FormControl>
 									</Grid>
@@ -599,17 +602,22 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 							</Grid>
 
 							<Grid item>
-								<TextField
-									{...register()}
-									id={`provisionDescription-${index}`}
-									label="Full Description"
-									variant="outlined"
-									fullWidth
-									multiline
-									rows={4}
+								<Controller
 									name={`provisions[${index}].description`}
+									control={control}
 									defaultValue={item.description}
-									onBlur={() => handleChange(item, index)}
+									render={({ field }) => (
+										<TextField
+											{...field}
+											id={`provisionDescription-${index}`}
+											label="Full Description"
+											variant="outlined"
+											fullWidth
+											multiline
+											rows={4}
+											onBlur={() => handleChange(item, index)}
+										/>
+									)}
 								/>
 							</Grid>
 						</Grid>

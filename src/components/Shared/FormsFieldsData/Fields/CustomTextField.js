@@ -128,12 +128,12 @@ function CustomTextField({
 		autoFocus = false,
 		variant = 'standard',
 		customStyleClass = '',
-		labelAsHeading = true,
 	} = {},
 	fieldAttributes: {
 		name = '',
 		value: _value = '',
-		label = '',
+		label = null,
+		title = null,
 		inputRef = null,
 		placeholder = '',
 		InputProps = {},
@@ -270,7 +270,7 @@ function CustomTextField({
 
 	return (
 		<Grid item xs={12}>
-			{label && labelAsHeading && <h3>{label}</h3>}
+			{title && <h3>{title}</h3>}
 			{control ? (
 				<Controller control={control} name={name} render={props => renderTextField(props)} />
 			) : (
