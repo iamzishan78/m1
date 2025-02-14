@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-
 import { Grid, Typography, Box, Accordion, AccordionSummary, AccordionDetails, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import CheckIcon from '@material-ui/icons/Check';
@@ -145,7 +144,6 @@ export default function Summary({
 											onBlur: () => setFocusSate(false),
 											onKeyDown: event => {
 												if (event.key === 'Enter') {
-													console.log('Enter pressed', { val: event.target.value });
 													document.activeElement.blur();
 													updateAgreement('metaDescription', event.target.value);
 												}

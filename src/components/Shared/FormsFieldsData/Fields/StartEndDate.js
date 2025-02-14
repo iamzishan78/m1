@@ -37,7 +37,7 @@ function StartEndDate({ control, item, watch, error }) {
 				<Controller
 					control={control}
 					name={'startDate'}
-					render={props => (
+					render={({ field }) => (
 						<KeyboardDatePicker
 							className={classes.marginNormal}
 							disableToolbar
@@ -49,10 +49,10 @@ function StartEndDate({ control, item, watch, error }) {
 							format="MM/DD/YYYY"
 							margin="normal"
 							id={'startDate'}
-							ref={props.ref}
-							value={props.value || null}
+							ref={field.ref}
+							value={field.value || null}
 							onChange={date => {
-								onStartDateChange ? onStartDateChange(date) : props.onChange(date);
+								onStartDateChange ? onStartDateChange(date) : field.onChange(date);
 							}}
 							onBlur={onBlur}
 							KeyboardButtonProps={{ 'aria-label': 'change date' }}
@@ -65,7 +65,7 @@ function StartEndDate({ control, item, watch, error }) {
 				<Controller
 					control={control}
 					name={'endDate'}
-					render={props => (
+					render={({ field }) => (
 						<KeyboardDatePicker
 							className={classes.marginNormal}
 							disableToolbar
@@ -77,10 +77,10 @@ function StartEndDate({ control, item, watch, error }) {
 							format="MM/DD/YYYY"
 							margin="normal"
 							id={'endDate'}
-							ref={props.ref}
-							value={props.value || null}
+							ref={field.ref}
+							value={field.value || null}
 							onChange={date => {
-								onEndDateChange ? onEndDateChange(date) : props.onChange(date);
+								onEndDateChange ? onEndDateChange(date) : field.onChange(date);
 							}}
 							onBlur={onBlur}
 							KeyboardButtonProps={{ 'aria-label': 'change date' }}

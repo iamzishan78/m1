@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Grid, TextField, Select, MenuItem, IconButton, Typography } from '@material-ui/core';
@@ -25,13 +24,10 @@ import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GET_AUTOCOMPLETE_PROPERTY_LIST } from 'graphQL/useQueryGetProperty';
 import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
 
-import { showInfoMessage } from 'actions';
-import { AppContext } from 'AppContext';
-
 import CountyField from './County';
 import StateField from './State';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	titleText: {
 		textTransform: 'uppercase',
 		margin: '5px 16px 10px',
@@ -130,8 +126,6 @@ const useStyles = makeStyles(theme => ({
 export default function HeaderSection(props) {
 	const classes = useStyles();
 	let history = useHistory();
-	const dispatch = useDispatch();
-	const [, setStateApp] = useContext(AppContext);
 	const { control, setValue, watch, register, reset } = useForm();
 	const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
 	const [entityType, setEntityType] = useState('');
@@ -153,27 +147,18 @@ export default function HeaderSection(props) {
 
 	const [updateProperty] = useMutation(UPDATE_PROPERTY);
 
-	useEffect(() => {
-		return () => {
-			const number = watch('number');
-			const internalID = watch('internalID');
-			const purchaser = watch('purchaser');
-			const purchaserNumber = watch('purchaserNumber');
-
-			// if (!number && !internalID) {
-			//   dispatch(
-			//     showInfoMessage("Accounting Ref ID or Operator Prop # is required.")
-			//   );
-			//   history.goBack();
-			// }
-			// if (!purchaser || !purchaserNumber) {
-			//   dispatch(
-			//     showInfoMessage("Payor and Payor Prop # are required.")
-			//   );
-			//   history.goBack();
-			// }
-		};
-	}, []);
+	const updatePropertyData = (key, value) => {
+		updateProperty({
+			variables: {
+				property: {
+					_id: propertyDetails._id || props.propertyId,
+					[key]: value,
+				},
+			},
+			refetchQueries: ['getProperty'],
+			awaitRefetchQueries: true,
+		});
+	};
 
 	useEffect(() => {
 		getOperatorList({
@@ -253,19 +238,6 @@ export default function HeaderSection(props) {
 		}
 	};
 
-	const updatePropertyData = (key, value) => {
-		updateProperty({
-			variables: {
-				property: {
-					_id: propertyDetails._id || props.propertyId,
-					[key]: value,
-				},
-			},
-			refetchQueries: ['getProperty'],
-			awaitRefetchQueries: true,
-		});
-	};
-
 	const handleUpdate = debounce((key, value) => {
 		updatePropertyData(key, value);
 	}, 500);
@@ -293,9 +265,9 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="systemId"
-									render={params => (
+									render={({ field }) => (
 										<TextField
-											{...params}
+											{...field}
 											className={classes.textField}
 											variant="outlined"
 											margin="dense"
@@ -322,16 +294,16 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="name"
-									render={params => (
+									render={({ field }) => (
 										<TextField
-											{...params}
+											{...field}
 											className={classes.textField}
 											variant="outlined"
 											margin="dense"
 											type="text"
 											fullWidth
 											onChange={e => {
-												params.onChange(e.target.value);
+												field.onChange(e.target.value);
 											}}
 											onBlur={e => updatePropertyData('name', e.target.value)}
 										/>
@@ -350,16 +322,16 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="number"
-									render={params => (
+									render={({ field }) => (
 										<TextField
-											{...params}
+											{...field}
 											className={classes.textField}
 											variant="outlined"
 											margin="dense"
 											type="text"
 											fullWidth
 											onChange={e => {
-												params.onChange(e.target.value);
+												field.onChange(e.target.value);
 											}}
 											onBlur={e => updatePropertyData('number', e.target.value)}
 										/>
@@ -378,7 +350,7 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="operator"
-									render={props => (
+									render={({ field }) => (
 										<AutoCompleteWithAddNew
 											value={searchOperator}
 											variant="outlined"
@@ -387,7 +359,7 @@ export default function HeaderSection(props) {
 											}}
 											setValue={value => {
 												handleUpdate('operator', { name: value?.name });
-												props.onChange(value);
+												field.onChange(value);
 											}}
 											options={get(operatorList, 'getESFilterList.hits', [])?.map(campaign => ({
 												_id: campaign.key,
@@ -396,66 +368,6 @@ export default function HeaderSection(props) {
 										/>
 									)}
 								/>
-								{/* <Controller
-                  control={control}
-                  name="operator"
-                  render={(params) => (
-                    <ContactPaginatedAutocomplete
-                      className={classes.field}
-                      nameAutValue={
-                        params.value ? params.value : { _id: "", name: "" }
-                      }
-                      setNameAutValue={(value) => {
-                        if (value) contactEntity(value?._id, "operator");
-                        else handleUpdate("operator", null);
-                      }}
-                      renderInput={(params2) => (
-                        <TextField
-                          {...params2}
-                          margin="dense"
-                          variant="outlined"
-                          InputLabelProps={{
-                            ...params2.InputLabelProps,
-                            shrink: true,
-                          }}
-                          InputProps={{
-                            ...params2.InputProps,
-                            endAdornment: (
-                              <React.Fragment>
-                                {params2.InputProps.endAdornment}
-                                <div
-                                  className={classes.contactCardIcon}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (params?.value?._id) {
-                                      history.push(
-                                        `/contact/details/${params?.value?._id}`
-                                      );
-                                      setStateApp((stateApp) => ({
-                                        ...stateApp,
-                                        selectedContact: `${params?.value?._id}`,
-                                      }));
-                                    }
-                                  }}
-                                >
-                                  <ContactCardIcon
-                                    fill={
-                                      !checkIfContact(
-                                        propertyDetails?.operator?._id
-                                      )
-                                        ? "darkgrey"
-                                        : undefined
-                                    }
-                                  />
-                                </div>
-                              </React.Fragment>
-                            ),
-                          }}
-                        />
-                      )}
-                    />
-                  )}
-                /> */}
 							</Grid>
 						</Grid>
 					</Grid>
@@ -469,16 +381,16 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="purchaserNumber"
-									render={params => (
+									render={({ field }) => (
 										<TextField
-											{...params}
+											{...field}
 											className={classes.textField}
 											variant="outlined"
 											margin="dense"
 											type="text"
 											fullWidth
 											onChange={e => {
-												params.onChange(e.target.value);
+												field.onChange(e.target.value);
 											}}
 											onBlur={e => updatePropertyData('purchaserNumber', e.target.value)}
 										/>
@@ -497,7 +409,7 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="purchaser"
-									render={props => (
+									render={({ field }) => (
 										<AutoCompleteWithAddNew
 											value={searchPurchaser}
 											variant="outlined"
@@ -506,7 +418,7 @@ export default function HeaderSection(props) {
 											}}
 											setValue={value => {
 												handleUpdate('purchaser', { name: value?.name });
-												props.onChange(value);
+												field.onChange(value);
 											}}
 											options={get(purchaserList, 'getESFilterList.hits', [])?.map(campaign => ({
 												_id: campaign.key,
@@ -528,16 +440,16 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="internalID"
-									render={params => (
+									render={({ field }) => (
 										<TextField
-											{...params}
+											{...field}
 											className={classes.textField}
 											variant="outlined"
 											margin="dense"
 											placeholder=""
 											fullWidth
 											onChange={e => {
-												params.onChange(e.target.value);
+												field.onChange(e.target.value);
 											}}
 											onBlur={e => updatePropertyData('internalID', e.target.value)}
 										/>
@@ -556,16 +468,16 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="description"
-									render={params => (
+									render={({ field }) => (
 										<TextField
-											{...params}
+											{...field}
 											className={classes.textField}
 											variant="outlined"
 											margin="dense"
 											type="text"
 											fullWidth
 											onChange={e => {
-												params.onChange(e.target.value);
+												field.onChange(e.target.value);
 											}}
 											onBlur={e => updatePropertyData('description', e.target.value)}
 										/>
@@ -584,10 +496,10 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="ownerNumber"
-									render={params => (
+									render={({ field }) => (
 										<Autocomplete
 											className={classes.field}
-											value={params.value ? { _id: params.value, name: params.value } : null}
+											value={field.value ? { _id: field.value, name: field.value } : null}
 											disableListWrap
 											onBlur={e => updatePropertyData('ownerNumber', e.target.value)}
 											options={getMappedOptions(ownerOptions?.getAutoCompletePropertyList)}
@@ -612,7 +524,9 @@ export default function HeaderSection(props) {
 											}}
 											renderOption={option => {
 												if (option.isNew) {
-													return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+													return (
+														<Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>
+													);
 												}
 
 												return (
@@ -675,9 +589,9 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="owner"
-									render={params => (
+									render={({ field }) => (
 										<ContactPaginatedAutocomplete
-											nameAutValue={params.value ? params.value : { _id: '', name: '' }}
+											nameAutValue={field.value ? field.value : { _id: '', name: '' }}
 											className={classes.field}
 											setNameAutValue={value => {
 												if (value) {
@@ -704,11 +618,11 @@ export default function HeaderSection(props) {
 																	className={classes.contactCardIcon}
 																	onClick={e => {
 																		e.stopPropagation();
-																		if (params?.value?._id) {
-																			history.push(`/contact/details/${params?.value?._id}`);
-																			setStateApp(stateApp => ({
+																		if (field?.value?._id) {
+																			history.push(`/contact/details/${field?.value?._id}`);
+																			window.setStateApp(stateApp => ({
 																				...stateApp,
-																				selectedContact: `${params?.value?._id}`,
+																				selectedContact: `${field?.value?._id}`,
 																			}));
 																		}
 																		setEntity(propertyDetails?.owner);
@@ -736,16 +650,16 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="documentDate"
-									render={params => (
+									render={({ field }) => (
 										<TextField
 											autoOk
 											type="date"
 											variant="outlined"
 											margin="normal"
 											fullWidth
-											value={moment(params?.value || '').format('yyyy-MM-DD')}
+											value={moment(field?.value || '').format('yyyy-MM-DD')}
 											onChange={e => {
-												params.onChange(moment(e.target.value).toISOString());
+												field.onChange(moment(e.target.value).toISOString());
 											}}
 											onBlur={e => {
 												updatePropertyData('documentDate', moment(e.target.value).toISOString());
@@ -759,7 +673,7 @@ export default function HeaderSection(props) {
 											PopoverProps={{ disablePortal: false }}
 											InputProps={{
 												endAdornment: (
-													<IconButton onClick={event => updatePropertyData('documentDate', null)}>
+													<IconButton onClick={() => updatePropertyData('documentDate', null)}>
 														<Clear style={{ height: 22, width: 22 }} />
 													</IconButton>
 												),
@@ -782,15 +696,15 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="divOrderStatus"
-									render={params => (
+									render={({ field }) => (
 										<Select
-											{...params}
+											{...field}
 											id="divOrderStatus-simple-select-outlined-label"
 											variant="outlined"
-											value={params.value ? params.value : ''}
+											value={field.value ? field.value : ''}
 											fullWidth
 											onChange={e => {
-												params.onChange(e.target.value);
+												field.onChange(e.target.value);
 												updatePropertyData('divOrderStatus', e.target.value);
 											}}
 										>
@@ -812,9 +726,9 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="state"
-									render={params => (
+									render={({ field }) => (
 										<StateField
-											value={params.value}
+											value={field.value}
 											onStateChange={state => {
 												updatePropertyData('state', state.acronym);
 												setValue('state', state.acronym);
@@ -837,9 +751,9 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="county"
-									render={params => (
+									render={({ field }) => (
 										<CountyField
-											value={params.value}
+											value={field.value}
 											state={selectedState}
 											onCountyChange={selectedCounty => {
 												const county = selectedCounty?.county ?? '';
@@ -862,7 +776,7 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="status"
-									render={params => {
+									render={({ field }) => {
 										// Normalize the value to match the case and format of the MenuItem values
 										const normalizeValue = value => {
 											if (value) {
@@ -878,10 +792,10 @@ export default function HeaderSection(props) {
 										};
 										return (
 											<Select
-												{...params}
+												{...field}
 												id="status-simple-select-outlined-label"
 												variant="outlined"
-												value={params.value ? normalizeValue(params.value) : ''}
+												value={field.value ? normalizeValue(field.value) : ''}
 												fullWidth
 												onChange={e => {
 													updatePropertyData('status', e.target.value);
@@ -906,16 +820,16 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="internalCompany"
-									render={params => {
+									render={({ field }) => {
 										return (
 											<AutoCompleteTypeComponent
-												{...params}
+												{...field}
 												autoFocus={false}
 												shapeType={'Unit'}
 												typeKey={'internalCompany'}
 												variant="outlined"
 												onChange={(e, value) => {
-													params.onChange(value?.name || '');
+													field.onChange(value?.name || '');
 												}}
 												onBlur={e => {
 													updatePropertyData('internalCompany', e.target.value || '');
@@ -937,10 +851,10 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="prospectID"
-									render={params => (
+									render={({ field }) => (
 										<Autocomplete
 											className={classes.field}
-											value={params.value ? { _id: params.value, name: params.value } : null}
+											value={field.value ? { _id: field.value, name: field.value } : null}
 											disableListWrap
 											onBlur={e => updatePropertyData('prospectID', e.target.value)}
 											options={getMappedOptions(prospectOptions?.shapeAutoCompleteList)}
@@ -965,7 +879,9 @@ export default function HeaderSection(props) {
 											}}
 											renderOption={option => {
 												if (option.isNew) {
-													return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+													return (
+														<Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>
+													);
 												}
 
 												return (
@@ -1028,10 +944,10 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="acquisitionID"
-									render={params => (
+									render={({ field }) => (
 										<Autocomplete
 											className={classes.field}
-											value={params.value ? { _id: params.value, name: params.value } : null}
+											value={field.value ? { _id: field.value, name: field.value } : null}
 											disableListWrap
 											onBlur={e => updatePropertyData('acquisitionID', e.target.value)}
 											options={getMappedOptions(acquisitionOptions?.getAutoCompletePropertyList)}
@@ -1056,7 +972,9 @@ export default function HeaderSection(props) {
 											}}
 											renderOption={option => {
 												if (option.isNew) {
-													return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+													return (
+														<Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>
+													);
 												}
 
 												return (
@@ -1120,16 +1038,16 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="approvalStatus"
-									render={params => (
+									render={({ field }) => (
 										<TextField
-											{...params}
+											{...field}
 											className={classes.textField}
 											variant="outlined"
 											margin="dense"
 											type="text"
 											fullWidth
 											onChange={e => {
-												params.onChange(e.target.value);
+												field.onChange(e.target.value);
 											}}
 											onBlur={e => updatePropertyData('approvalStatus', e.target.value)}
 										/>
@@ -1148,17 +1066,17 @@ export default function HeaderSection(props) {
 								<Controller
 									control={control}
 									name="legalDescription"
-									render={params => (
+									render={({ field }) => (
 										<TextField
-											{...params}
+											{...field}
 											margin="dense"
 											type="text"
-											value={params.value}
+											value={field.value}
 											variant="outlined"
 											fullWidth
 											multiline
 											rows={5}
-											onBlur={e => updatePropertyData('legalDescription', params.value)}
+											onBlur={() => updatePropertyData('legalDescription', field.value)}
 										/>
 									)}
 								/>

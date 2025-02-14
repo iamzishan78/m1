@@ -150,16 +150,16 @@ function CustomTextField({
 	const [showUrlTooltip, setShowUrlTooltip] = useState(false);
 	const watchTextFieldValue = watch ? watch(name) : '';
 
+	// Sync internal value with external props
+	useEffect(() => {
+		setValue(_value);
+	}, [_value]);
+
 	useEffect(() => {
 		if (!value) {
 			setValue(defaultValue);
 		}
 	}, [defaultValue]);
-
-	// Sync internal value with external props
-	useEffect(() => {
-		setValue(_value);
-	}, [_value]);
 
 	// Unified logic to check if value is overridden
 	useEffect(() => {
@@ -169,19 +169,24 @@ function CustomTextField({
 	}, [watchTextFieldValue, isValueOverridden]);
 
 	// URL Tooltip handling
-	const handleTooltipOpen = value => {
-		setShowUrlTooltip(value?.split(' ')?.some(subString => validator.isURL(subString, { require_protocol: false })));
+	const handleTooltipOpen = textFieldValue => {
+		const value = textFieldValue ?? defaultValue;
+		if (value && typeof value === 'string') {
+			setShowUrlTooltip(value?.split(' ')?.some(subString => validator.isURL(subString, { require_protocol: false })));
+		} else {
+			setShowUrlTooltip(false);
+		}
 	};
 
 	// Render function for TextField
-	const renderTextField = props => {
-		const textFieldValue = props ? props.value : value;
+	const renderTextField = ({ field } = {}) => {
+		const textFieldValue = field ? field.value : value;
 		return (
 			<div style={{ position: 'relative' }}>
 				<TextField
 					type={type}
 					size={size}
-					label={label}
+					{...(!labelAsHeading && { label })}
 					value={textFieldValue}
 					margin={margin}
 					autoFocus={autoFocus}
@@ -197,7 +202,7 @@ function CustomTextField({
 					variant={variant || 'filled'}
 					data-testid={`${name}-field`}
 					className={customStyleClass}
-					inputRef={inputRef || props?.ref || null}
+					inputRef={inputRef || field?.ref || null}
 					onKeyUp={onKeyUp || (() => {})}
 					onKeyDown={onKeyDown || (() => {})}
 					onMouseEnter={() => handleTooltipOpen(textFieldValue)}
@@ -213,8 +218,8 @@ function CustomTextField({
 
 									handleTooltipOpen(newValue);
 									onChange?.(newValue);
-									props?.onChange?.(newValue);
-									if (!onChange && !props?.onChange) {
+									field?.onChange?.(newValue);
+									if (!onChange && !field?.onChange) {
 										setValue(newValue);
 									}
 								}}
@@ -231,8 +236,8 @@ function CustomTextField({
 						const newValue = e.target.value;
 						handleTooltipOpen(newValue);
 						onChange?.(newValue);
-						props?.onChange?.(e);
-						if (!onChange && !props?.onChange) {
+						field?.onChange?.(e);
+						if (!onChange && !field?.onChange) {
 							setValue(newValue);
 						}
 					}}
@@ -242,7 +247,7 @@ function CustomTextField({
 							newValue = onBlur(newValue);
 							if (newValue != null) {
 								onChange?.(newValue);
-								props?.onChange?.(newValue);
+								field?.onChange?.(newValue);
 							}
 						}
 					}}
@@ -251,7 +256,7 @@ function CustomTextField({
 
 				{showUrlTooltip && (
 					<UrlTooltip
-						value={textFieldValue}
+						value={textFieldValue || defaultValue}
 						handleMouseEnter={() => setShowUrlTooltip(true)}
 						handleMouseLeave={() => setShowUrlTooltip(false)}
 						containerStyles={{ top: margin === 'dense' ? '8px' : margin === 'normal' ? '16px' : '0' }}

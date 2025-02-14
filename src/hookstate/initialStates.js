@@ -28,6 +28,7 @@ export const globalInitialState = {
 	tenant: null,
 	layerSettingsLoading: false,
 	selectedIconTpe: 'Chip',
+	onMapLoad: null,
 };
 
 export const globalState = hookstate(copy(globalInitialState));

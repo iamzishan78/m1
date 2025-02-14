@@ -264,7 +264,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			globalState.universalLoader.set(false);
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getAllActivities', 'getDbData'],
+		refetchQueries: ['getAllActivities', 'getDbData', 'getContact'],
 		awaitRefetchQueries: true,
 	});
 
@@ -284,7 +284,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			slidoutStateController.updateEntityLoading(false);
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getAllActivities', 'getDbData', 'getContactSummary'],
+		refetchQueries: ['getAllActivities', 'getDbData', 'getContactSummary', 'getContact'],
 		awaitRefetchQueries: true,
 	});
 

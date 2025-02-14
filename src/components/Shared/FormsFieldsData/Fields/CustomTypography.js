@@ -19,6 +19,11 @@ const useStyles = makeStyles({
 function CustomTypography({ value }) {
 	const classes = useStyles();
 	const renderValue = Array.isArray(value) && value.length > 0 ? value.join(', ') : value;
+
+	if (typeof renderValue !== 'string') {
+		return <Typography component="span">{renderValue}</Typography>;
+	}
+
 	const subStrings = renderValue?.split(' ') || [];
 
 	return (

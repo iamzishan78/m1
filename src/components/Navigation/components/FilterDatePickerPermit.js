@@ -85,7 +85,7 @@ export default function FilterDatePickerPermit({ labelDates }) {
 					control={control}
 					name="permitDateFrom"
 					defaultValue=""
-					render={({ value, onChange }) => (
+					render={({ field: { value, onChange } }) => (
 						<TextField
 							type="date"
 							label={`${labelDates} From`}
@@ -124,7 +124,7 @@ export default function FilterDatePickerPermit({ labelDates }) {
 					control={control}
 					name="permitDateTo"
 					defaultValue=""
-					render={({ value, onChange }) => (
+					render={({ field: { value, onChange } }) => (
 						<TextField
 							type="date"
 							label={`${labelDates} To`}

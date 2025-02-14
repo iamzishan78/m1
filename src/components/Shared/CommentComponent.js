@@ -566,7 +566,7 @@ export default function CommentComponent(props) {
 					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
-			refetchQueries: ['getCommentsByObjectId', 'getCommentsCounter', 'getCommentsByObjectsIds'],
+			refetchQueries: ['getCommentsByObjectId', 'getCommentsCounter', 'getCommentsByObjectsIds', 'getContact'],
 			awaitRefetchQueries: true,
 		});
 		setShowActions(false);
@@ -698,7 +698,7 @@ export default function CommentComponent(props) {
 			variables: {
 				comment,
 			},
-			refetchQueries: ['getCommentsByObjectId', 'getCommentsCounter', 'getCommentsByObjectsIds'],
+			refetchQueries: ['getCommentsByObjectId', 'getCommentsCounter', 'getCommentsByObjectsIds', 'getContact'],
 			awaitRefetchQueries: true,
 		}).then(() => {
 			setScrollIntoView(false);
