@@ -1,15 +1,18 @@
-import React from "react";
-import { globalStateController } from "hookstate/globalStateController";
+import React from 'react';
+import { globalStateController } from 'hookstate/globalStateController';
 
 export function FeatureFlag({ children, feature, noAccess, noCheck }) {
-    const { stateValues: { user } } = globalStateController.useState(['user']);
+	const {
+		stateValues: { user },
+	} = globalStateController.useState(['user']);
 
-    const allowedFeature = user?.features?.find(f => f.name === feature)
-    return (
-        <>
-            {((allowedFeature && !noAccess) || (!allowedFeature && noAccess) || noCheck) && <> {children}</>}
-        </>
-    );
-};
+	const allowedFeature = user?.features?.find(f => f.name === feature);
+	const userAccess =
+		!!allowedFeature && user?.featureSettings?.[feature] !== undefined ? user?.featureSettings?.[feature] : true;
+
+	return (
+		<>{( (allowedFeature && !noAccess && userAccess) || (!allowedFeature && noAccess) || noCheck) && <> {children}</>}</>
+	);
+}
 
 export default FeatureFlag;

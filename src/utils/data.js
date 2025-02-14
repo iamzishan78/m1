@@ -688,3 +688,42 @@ export const OWNERTYPE = {
 };
 
 export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost'];
+
+export const NavigationFeatures = [
+	{
+		name: 'Dashboard',
+		featureFlag: 'dashboardModule'
+	},
+	{
+		name: 'Map',
+		featureFlag: 'mapModule'
+	},
+	{
+		name: 'Contacts',
+		featureFlag: 'ContactsSubMenu'
+	},
+	{
+		name: 'Flow',
+		featureFlag: 'flowModule'
+	},
+	{
+		name: 'Assets',
+		featureFlag: 'landModule'
+	},
+	{
+		name: 'Revenue',
+		featureFlag: 'revenueModule'
+	},
+	{
+		name: 'Files',
+		featureFlag: 'filesModule'
+	},
+	{
+		name: 'Calendar',
+		featureFlag: 'calendarModule'
+	},
+	{
+		name: 'Analytics',
+		featureFlag: 'analyticsModule'
+	},
+];

@@ -5,9 +5,18 @@ import { GET_ALL_USERS } from 'graphQL/userManagement';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 import Grid from '@material-ui/core/Grid';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-
+import { NavigationFeatures } from 'utils/data';
 
 export const userManagementTableKey = 'UserManagement';
+
+const getNavigationColumns = () => {
+	return NavigationFeatures.map(feat => {
+		return {
+			...CommonSchema.NAVIGATION_CHECK_COLUMN(feat.featureFlag),
+			header: feat.name,
+		};
+	});
+};
 
 const UserManagementMeta = {
 	query: GET_ALL_USERS,
@@ -116,6 +125,7 @@ const UserManagementMeta = {
 			name: 'rolePrivileges',
 			accessorFn: row => row?.rolePrivileges || '',
 		},
+		...getNavigationColumns(),
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Last Login',

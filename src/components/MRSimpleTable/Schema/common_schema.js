@@ -1,3 +1,5 @@
+import NavigationFlagField from 'components/MRTTable/Common/TableCells/NavigationFlagField';
+
 export const CommonSchema = {
 	COMMENTS: {
 		name: 'comments',
@@ -84,5 +86,24 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		enableColumnOrdering: false,
 		enableResizing: false,
+	},
+	NAVIGATION_CHECK_COLUMN: featureName => {
+		const column = {
+			isPinned: false,
+			hidden: false,
+			filter: false,
+			isSearchField: false,
+			enableSorting: false,
+			enableColumnActions: false,
+			enableHiding: false,
+			type: 'string',
+			enableColumnFilter: false,
+			enableColumnOrdering: true,
+			enableResizing: true,
+			Cell: ({ row }) => {
+				return <NavigationFlagField featureName={featureName} row={row?.original} />;
+			},
+		};
+		return column;
 	},
 };

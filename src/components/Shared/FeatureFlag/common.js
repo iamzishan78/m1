@@ -24,6 +24,11 @@ export const FEATURES = {
     TRACKEDWELLSLAYER: 'showTrackedWellsLayer',
     USERTAGSLAYER: 'showUserTagsLayer',
     SEARCHLAYER: 'showSearchLayer',
+    DASHBOARD: 'dashboardModule',
+    MAP: 'mapModule',
+	FLOW: 'flowModule',
+	FILES: 'filesModule',
+	CALENDAR: 'calendarModule',
 };
 
 export const ROUTES = {

@@ -14,6 +14,7 @@ export const BYPASS_LOGIN_MUTATION = gql`
         adUserId
         rolePrivileges
         roles
+        featureSettings
         }
       }
     }
@@ -33,6 +34,7 @@ mutation simpleBypassLogin($email: String) {
       adUserId
       rolePrivileges
       roles
+      featureSettings
       }
     }
   }
