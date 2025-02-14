@@ -43,7 +43,7 @@ const viewStatesControllerHandler = state => ({
 		});
 	},
 
-	applyView: selectedView => {
+	applyView: (selectedView, keepViewMenuOpen = false) => {
 		if (!selectedView) {
 			return;
 		}
@@ -59,15 +59,14 @@ const viewStatesControllerHandler = state => ({
 
 		ViewController.updateState({
 			isLoading: false,
-			isViewOpen: false,
 			shouldSyncView: true,
+			...(!keepViewMenuOpen ? { isViewOpen: false } : {}),
 		});
 	},
 
 	fetchAllViews: async () => {
 		const userId = globalStateController.getValue('user').mongoId;
 		const { client = null, isTable = false, moduleName = '' } = state?.get({ noproxy: true }) ?? {};
-		const ViewController = viewStateController(moduleName);
 
 		const result = await client.query({
 			variables: {
@@ -79,10 +78,10 @@ const viewStatesControllerHandler = state => ({
 
 		const allViews = result?.data?.getGridViews?.gridViews || [];
 
-		ViewController.updateState({ allViews });
+		return allViews;
 	},
 
-	updateAllViews: view => {
+	inMemoryViewsUpdate: view => {
 		const allViews = state.allViews?.get({ noproxy: true }) || [];
 		let updatedViews = [];
 
@@ -123,7 +122,12 @@ const viewStatesControllerHandler = state => ({
 
 			if (client) {
 				const userId = globalStateController.getValue('user').mongoId;
-				const { isTable = false, moduleName = '', selectedView = {} } = state?.get({ noproxy: true }) ?? {};
+				const {
+					isTable = false,
+					moduleName = '',
+					selectedView = {},
+					allViews = [],
+				} = state?.get({ noproxy: true }) ?? {};
 
 				const ViewController = viewStateController(moduleName);
 				const TableController = tableController(moduleName);
@@ -154,7 +158,7 @@ const viewStatesControllerHandler = state => ({
 				};
 
 				ViewController.updateState({ isLoading: true });
-				ViewController.updateAllViews(view);
+				ViewController.inMemoryViewsUpdate(view);
 
 				await client.mutate({
 					variables: {
@@ -163,8 +167,24 @@ const viewStatesControllerHandler = state => ({
 					mutation: UPSERT_GRID_VIEW,
 				});
 
-				await ViewController.fetchAllViews();
-				ViewController.updateState({ isLoading: false, fetchViewSettings: false });
+				const fetchedViews = await ViewController.fetchAllViews();
+				if (!id) {
+					let targetViewObject = null;
+
+					const allViewIds = allViews.map(view => view._id);
+
+					fetchedViews.forEach(fetchedView => {
+						if (!allViewIds.includes(fetchedView._id)) {
+							targetViewObject = fetchedView;
+						}
+					});
+
+					if (targetViewObject) {
+						ViewController.applyView(targetViewObject);
+					}
+				}
+
+				ViewController.updateState({ isLoading: false, fetchViewSettings: false, allViews: fetchedViews });
 			} else {
 				throw new Error('Apollo Client is undefined or invalid.');
 			}
