@@ -769,6 +769,7 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 		};
 		// props.textMaxWidth = 5;
 		props.pointType = 'text';
+		if (dbLayer.layerPaintProps?.[0]?.paintType === 'circle') props.pointType = 'circle+text';
 
 		props.textFontFamily = 'Poppins';
 		// props.textSizeUnits = 'meters';

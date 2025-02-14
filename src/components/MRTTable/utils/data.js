@@ -201,6 +201,12 @@ export const entityCreationOptions = [
 	{ label: 'Add with RightDialog', value: 'RightDialog' },
 ];
 
+export const entityShapeOptions = [
+	{ label: 'Polygon', value: 'Polygon' },
+	{ label: 'Point', value: 'Point' },
+	{ label: 'Line', value: 'LineString' },
+];
+
 export const entityKeyTypes = [
 	{ label: 'String', value: 'string' },
 	{ label: 'Json', value: 'json' },

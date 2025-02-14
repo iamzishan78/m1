@@ -336,45 +336,49 @@ const ShapeActionsPopup = props => {
 			>
 				<MenuItem disabled>Shape Layer Type</MenuItem>
 
-				<FeatureFlag feature={FEATURES.AGREEMENT_LAYER}>
-					<MenuItem
-						id="agreementItem"
-						onClick={event => {
-							clearSelectedAbstracts();
-							setAgreementAnchorEl(event.currentTarget);
-						}}
-					>
-						Agreement
-					</MenuItem>
-				</FeatureFlag>
+				{!drawController.isLine() && !drawController.isPoint() && (
+					<>
+						<FeatureFlag feature={FEATURES.AGREEMENT_LAYER}>
+							<MenuItem
+								id="agreementItem"
+								onClick={event => {
+									clearSelectedAbstracts();
+									setAgreementAnchorEl(event.currentTarget);
+								}}
+							>
+								Agreement
+							</MenuItem>
+						</FeatureFlag>
 
-				<MenuItem
-					id="tractItem"
-					onClick={e => {
-						if (showAddShapePopup) {
-							setTractAnchorEl(e.currentTarget);
-						} else {
-							clearSelectedAbstracts();
-							saveAndOpenParcelDetail(upsertCustomLayer, dispatch, history);
-						}
-					}}
-				>
-					Tract
-				</MenuItem>
+						<MenuItem
+							id="tractItem"
+							onClick={e => {
+								if (showAddShapePopup) {
+									setTractAnchorEl(e.currentTarget);
+								} else {
+									clearSelectedAbstracts();
+									saveAndOpenParcelDetail(upsertCustomLayer, dispatch, history);
+								}
+							}}
+						>
+							Tract
+						</MenuItem>
 
-				<MenuItem
-					id="unitBoundaryItem"
-					onClick={e => {
-						if (showAddShapePopup) {
-							setUnitAnchorEl(e.currentTarget);
-						} else {
-							clearSelectedAbstracts();
-							saveAndOpenShapeDetail('unit');
-						}
-					}}
-				>
-					Unit Boundary
-				</MenuItem>
+						<MenuItem
+							id="unitBoundaryItem"
+							onClick={e => {
+								if (showAddShapePopup) {
+									setUnitAnchorEl(e.currentTarget);
+								} else {
+									clearSelectedAbstracts();
+									saveAndOpenShapeDetail('unit');
+								}
+							}}
+						>
+							Unit Boundary
+						</MenuItem>
+					</>
+				)}
 
 				{/* Dynamic related map assets */}
 				{mapCreationAsset.map(option => (
@@ -469,7 +473,7 @@ const ShapeActionsPopup = props => {
 					{drawController.isLine() ? 'Calc. Dist' : isAoi ? 'AOI Area' : 'Calc. Area'}
 				</span>{' '}
 				{calculateLandArea(currentFeature)}
-				<span className={`${classes.actions} ${drawController.isLine() ? classes.gray : ''}`}>
+				<span className={`${classes.actions}`}>
 					{isShapeResizeMode ? (
 						<ShapeEditActions
 							shapeEdit={shapeEdit}
@@ -478,48 +482,55 @@ const ShapeActionsPopup = props => {
 						/>
 					) : (
 						<>
-							<FeatureFlag feature={FEATURES.MAPSHAPEEXPORT}>
-								<Tooltip title="Bulk Actions" className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
-									<IconButton
-										size="small"
-										disabled={onlyAddShape ? true : enableEditOnly}
-										aria-label="Parcel"
-										id="convert-button"
-										aria-controls="convert-button"
-										aria-haspopup="true"
-										onClick={event => {
-											setAnchorConvertEl(event.currentTarget);
-											setShowConvertMenu(true);
-										}}
-									>
-										<OfflineBoltIcon />
-									</IconButton>
-								</Tooltip>
-							</FeatureFlag>
+							{!drawController.isLine() && !drawController.isPoint() && (
+								<>
+									<FeatureFlag feature={FEATURES.MAPSHAPEEXPORT}>
+										<Tooltip
+											title="Bulk Actions"
+											className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}
+										>
+											<IconButton
+												size="small"
+												disabled={onlyAddShape ? true : enableEditOnly}
+												aria-label="Parcel"
+												id="convert-button"
+												aria-controls="convert-button"
+												aria-haspopup="true"
+												onClick={event => {
+													setAnchorConvertEl(event.currentTarget);
+													setShowConvertMenu(true);
+												}}
+											>
+												<OfflineBoltIcon />
+											</IconButton>
+										</Tooltip>
+									</FeatureFlag>
 
-							<Tooltip title="Grid" className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
-								<IconButton
-									disabled={onlyAddShape ? true : enableEditOnly}
-									size="small"
-									onClick={() => drawController.actionShowWellsAndOwners(dispatch)}
-									aria-label="Grid"
-									data-testid="filter-on-grid"
-								>
-									<GridOnIcon className={mapControlsStateValues.mapGridCardActivated ? 'selected' : ''} />
-								</IconButton>
-							</Tooltip>
+									<Tooltip title="Grid" className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
+										<IconButton
+											disabled={onlyAddShape ? true : enableEditOnly}
+											size="small"
+											onClick={() => drawController.actionShowWellsAndOwners(dispatch)}
+											aria-label="Grid"
+											data-testid="filter-on-grid"
+										>
+											<GridOnIcon className={mapControlsStateValues.mapGridCardActivated ? 'selected' : ''} />
+										</IconButton>
+									</Tooltip>
 
-							<Tooltip title="Filter" className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
-								<IconButton
-									size="small"
-									disabled={onlyAddShape ? true : enableEditOnly}
-									onClick={drawController.actionFilter}
-									aria-label="Filter"
-									data-testid="filter-on-map"
-								>
-									<FilterAltIcon className={shapeActionsFilterSelected ? 'selected' : ''} />
-								</IconButton>
-							</Tooltip>
+									<Tooltip title="Filter" className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
+										<IconButton
+											size="small"
+											disabled={onlyAddShape ? true : enableEditOnly}
+											onClick={drawController.actionFilter}
+											aria-label="Filter"
+											data-testid="filter-on-map"
+										>
+											<FilterAltIcon className={shapeActionsFilterSelected ? 'selected' : ''} />
+										</IconButton>
+									</Tooltip>
+								</>
+							)}
 
 							<Tooltip
 								title="Add Shape to Layer"
@@ -549,21 +560,26 @@ const ShapeActionsPopup = props => {
 								</IconButton>
 							</Tooltip>
 
-							<Tooltip title="Area of Interest" className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
-								<IconButton
-									size="small"
-									disabled={onlyAddShape ? true : enableEditOnly}
-									onClick={drawController.actionAOI}
-									aria-label="Area of Interest"
+							{!drawController.isLine() && !drawController.isPoint() && (
+								<Tooltip
+									title="Area of Interest"
+									className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}
 								>
-									<span style={{ color: 'white' }}>AOI</span>
-								</IconButton>
-							</Tooltip>
+									<IconButton
+										size="small"
+										disabled={onlyAddShape ? true : enableEditOnly}
+										onClick={drawController.actionAOI}
+										aria-label="Area of Interest"
+									>
+										<span style={{ color: 'white' }}>AOI</span>
+									</IconButton>
+								</Tooltip>
+							)}
 						</>
 					)}
 
 					<span className={classes.divider} />
-					{currentFeature && (
+					{currentFeature && !drawController.isLine() && !drawController.isPoint() && (
 						<Tooltip
 							title="Add shape"
 							className={onlyAddShape || selectedAction === 'edit-aoi' ? classes.disableAction : ''}
