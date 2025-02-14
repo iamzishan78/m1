@@ -4,40 +4,6 @@ import { ROUTES } from 'components/Shared/FeatureFlag/common';
 import { copy } from 'components/Shared/functions';
 
 /* -------------------------------------------------------------------------- */
-/*                              Table Controller                              */
-/* -------------------------------------------------------------------------- */
-
-export const tableInitialState = {
-	defaultFilters: [],
-	customProps: [],
-	filters: [],
-	sorting: [],
-	searchFields: [],
-	groupedField: {},
-	grouping: [],
-	footerProps: [],
-	ExternalFilter: [],
-	defaultSort: {},
-	columnOrdering: [],
-	columnPinning: {
-		left: [],
-	},
-	isIncludeInactive: false,
-	gridView: {},
-	showTypes: false,
-	editedData: {},
-	validationErrors: {},
-	isCreateMode: false,
-};
-export const tableESState = {};
-export const tableGlobalState = hookstate({
-	refetch: false,
-	refetchAdditionalQueries: false,
-	reInitialized: false,
-	tabKey: 0,
-});
-
-/* -------------------------------------------------------------------------- */
 /*                           Layer State Controller                           */
 /* -------------------------------------------------------------------------- */
 
@@ -85,23 +51,3 @@ export const drawInitialState = {
 };
 
 export const drawState = hookstate(copy(drawInitialState));
-
-/* -------------------------------------------------------------------------- */
-/*                            Job State Controller                            */
-/* -------------------------------------------------------------------------- */
-
-export const jobInitialState = {
-	activeStepNumber: 0,
-	csvDataToSend: [],
-	mappedHeadersFromCSV: [],
-	m1neralHeaders: [],
-	csvDataList: [],
-	transferData: null,
-	uploaderFormValues: {},
-	selectedShapeLayerOption: null,
-	bulkUpload: false,
-	jobType: null,
-	job: null,
-};
-
-export const jobState = hookstate(copy(jobInitialState));

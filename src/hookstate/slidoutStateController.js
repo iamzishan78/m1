@@ -1,3 +1,5 @@
+import { Slide } from '@mui/material';
+
 import { StateController } from './stateController';
 
 const slidoutInitialState = {
@@ -14,20 +16,21 @@ const slidoutInitialState = {
 	selectedActivityId: '',
 	newComments: [],
 	loader: false,
+	parentType: '',
+	isLoading: false,
 };
 
 class SlidoutStateController extends StateController {
 	constructor(initialState) {
-		super(initialState);
+		super(initialState, SlidoutStateController.name);
 	}
 
 	updateProps(newProps) {
-
 		this.updateState({ props: { ...this.getValue('props'), ...newProps } });
 	}
 
 	updateActiveTabs(tab) {
-		const activeTabs = this.getValue('activeTabs')
+		const activeTabs = this.getValue('activeTabs');
 		activeTabs[tab] = !activeTabs[tab];
 		this.updateState({ activeTabs });
 	}

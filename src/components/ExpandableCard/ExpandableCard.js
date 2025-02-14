@@ -703,9 +703,9 @@ function ExpandableCard(props) {
 								targetLabel !== 'parcel' &&
 								!selectedShape && (
 									<CommentsWithIcon
-										objectId={targetSourceId.toLowerCase()}
-										targetLabel={props.targetLabel}
-										iconZiseSmall={!stateExpandableCard.expanded}
+										objectId={targetSourceId?.toLowerCase()}
+										targetLabel={props?.targetLabel}
+										iconZiseSmall={!stateExpandableCard?.expanded}
 									/>
 								)}
 
@@ -715,16 +715,16 @@ function ExpandableCard(props) {
 								!selectedShape &&
 								targetLabel !== 'recent_submitted_permits' && (
 									<TaggerWithIcon
-										objectId={targetSourceId.toLowerCase()}
-										targetLabel={props.targetLabel}
+										objectId={targetSourceId?.toLowerCase()}
+										targetLabel={props?.targetLabel}
 										iconZiseSmall={!stateExpandableCard.expanded}
 									/>
 								)}
 
 							{targetLabel === 'contact' && parent !== 'table' && (
 								<LinkWithIcon
-									objectId={targetSourceId.toLowerCase()}
-									targetLabel={props.targetLabel}
+									objectId={targetSourceId?.toLowerCase()}
+									targetLabel={props?.targetLabel}
 									iconZiseSmall={!stateExpandableCard.expanded}
 								/>
 							)}
@@ -737,7 +737,7 @@ function ExpandableCard(props) {
 									<TrackToggleButton
 										target={target}
 										targetLabel={targetLabel}
-										targetSourceId={targetSourceId.toLowerCase()}
+										targetSourceId={targetSourceId?.toLowerCase()}
 										iconZiseSmall={!stateExpandableCard.expanded}
 									/>
 								)}

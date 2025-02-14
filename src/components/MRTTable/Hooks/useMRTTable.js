@@ -20,7 +20,7 @@ const useMRTTable = tableKey => {
 	const tableRef = useRef(null); // access the MUI Table element
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useCompleteState();
-	const tableStateValues = tableState?.get({ noproxy: true });
+	const tableStateValues = tableState;
 
 	const { isClientSide } = tableStateValues;
 
@@ -169,11 +169,11 @@ const useMRTTable = tableKey => {
 			}),
 
 			muiTableBodyRowProps: row => {
-				const { enableRowSelected } = tableState.get({ noproxy: true });
+				const { enableRowSelected } = tableState;
 
 				return {
 					onClick: e => {
-						const { onClickedRow, enableRowSelected } = tableState.get({ noproxy: true });
+						const { onClickedRow, enableRowSelected } = tableState;
 
 						const { className } = e.target;
 						if (
@@ -242,18 +242,20 @@ const useMRTTable = tableKey => {
 					}
 				: {
 						onGroupingChange: groupingFunc => {
-							const grouping = tableState.grouping.get({ noproxy: true });
+							const grouping = tableState.grouping;
 
 							const newGrouping = groupingFunc(grouping);
-							tableState.grouping.set(newGrouping);
+							Controller.updateState({ grouping: newGrouping });
 
 							if (newGrouping.length > 0) {
-								return tableState.sorting.set([
-									{
-										id: newGrouping[0],
-										desc: false,
-									},
-								]);
+								return Controller.updateState({
+									sorting: [
+										{
+											id: newGrouping[0],
+											desc: false,
+										},
+									],
+								});
 							}
 
 							return newGrouping;
@@ -262,10 +264,12 @@ const useMRTTable = tableKey => {
 						...(!tableStateValues?.isInFiniteScroll && {
 							manualPagination: true,
 							onPaginationChange: paginationFunc => {
-								const pagination = tableState.pagination.get({ noproxy: true });
+								const pagination = tableState.pagination;
 
 								const newPagination = paginationFunc(pagination);
-								tableState.pagination.set(newPagination);
+								Controller.updateState({
+									pagination: newPagination,
+								});
 								return newPagination;
 							},
 						}),
@@ -273,8 +277,7 @@ const useMRTTable = tableKey => {
 						enableHiding: tableStateValues?.enableHiding,
 						manualFiltering: true,
 						onGlobalFilterChange: globalFilterFunc => {
-							const globalFilter = tableState.globalFilter.get({ noproxy: true });
-
+							const globalFilter = tableState.globalFilter;
 							const newGlobalFilter =
 								typeof globalFilterFunc === 'function' ? globalFilterFunc(globalFilter) : globalFilterFunc;
 
@@ -283,7 +286,7 @@ const useMRTTable = tableKey => {
 							return newGlobalFilter;
 						},
 						onColumnPinningChange: pinningFunc => {
-							const { columnPinning, TableSchema } = tableState.get({ noproxy: true });
+							const { columnPinning, TableSchema } = tableState;
 
 							const newPinning = typeof pinningFunc === 'function' ? pinningFunc(columnPinning) : pinningFunc;
 
@@ -298,9 +301,7 @@ const useMRTTable = tableKey => {
 								return;
 							}
 
-							const { rowSelection, pageSize, data, asyncRowSelection, isSubSetSelect } = tableState.get({
-								noproxy: true,
-							});
+							const { rowSelection, pageSize, data, asyncRowSelection, isSubSetSelect } = tableState;
 
 							let newstate = checkFunc(rowSelection);
 							const allNumbers = _.range(0, pageSize);
@@ -346,8 +347,8 @@ const useMRTTable = tableKey => {
 							Controller.setColumnCheck(newstate);
 						},
 						onColumnFiltersChange: filtersFunc => {
-							const columnFilters = tableState.filters.get({ noproxy: true });
-							const TableSchema = tableState.TableSchema.get({ noproxy: true });
+							const columnFilters = tableState.filters;
+							const TableSchema = tableState.TableSchema;
 							const emptyFilters = ['empty', 'notEmpty'];
 
 							const formattedColumnFilters = (columnFilters || []).map(filter => ({
@@ -380,7 +381,7 @@ const useMRTTable = tableKey => {
 										columnType: column?.type,
 									};
 
-									const { mode } = tableState?.filterModes?.get({ noproxy: true })?.[idValue] || {};
+									const { mode } = tableState?.filterModes?.[idValue] || {};
 
 									// Ignore "between" filters if both values are empty to prevent unnecessary backend calls
 									const areBothValuesEmpty = item?.value?.every?.(v => v === '');
@@ -393,7 +394,7 @@ const useMRTTable = tableKey => {
 							Controller.syncFilters(result);
 
 							result.forEach(filter => {
-								const { mode } = tableState?.filterModes?.get({ noproxy: true })?.[filter.id] || {};
+								const { mode } = tableState?.filterModes?.[filter.id] || {};
 
 								let { value } = filter;
 								const { type, oRFilter, columnType, searchType, isMapViewFilter } = filter;
@@ -425,7 +426,7 @@ const useMRTTable = tableKey => {
 						},
 
 						onColumnOrderChange: orderingFunc => {
-							const ordering = tableState.ordering.get({ noproxy: true });
+							const ordering = tableState?.ordering;
 
 							const newOrder = typeof orderingFunc === 'function' ? orderingFunc(ordering || []) : orderingFunc;
 
@@ -436,7 +437,7 @@ const useMRTTable = tableKey => {
 
 						onColumnVisibilityChange: visibilityFunc => {
 							let showColumns;
-							const { columnVisibility, TableSchema } = tableState.get({ noproxy: true });
+							const { columnVisibility, TableSchema } = tableState;
 							if (typeof visibilityFunc === 'function') {
 								showColumns = visibilityFunc(columnVisibility);
 							} else if (typeof visibilityFunc === 'object') {
@@ -453,28 +454,28 @@ const useMRTTable = tableKey => {
 							Controller.setColumnVisibility(showColumns);
 						},
 						onShowColumnFiltersChange: showColumnFilterFunc => {
-							const showColumnFilters = tableState.showColumnFilters.get({ noproxy: true });
+							const showColumnFilters = tableState.showColumnFilters;
 
 							const newShowColumnFilters =
 								typeof showColumnFilterFunc === 'function'
 									? showColumnFilterFunc(showColumnFilters)
 									: showColumnFilterFunc;
 
-							tableState.showColumnFilters.set(newShowColumnFilters);
+							Controller.updateState({ showColumnFilters: newShowColumnFilters });
 
 							return newShowColumnFilters;
 						},
 						onSortingChange: sortingFunc => {
-							const sorting = tableState.sorting.get({ noproxy: true });
+							const sorting = tableState.sorting;
 
 							const newSorting = sortingFunc(sorting);
-							tableState.sorting.set(newSorting);
+							Controller.updateState({ sorting: newSorting });
 							return newSorting;
 						},
 						rowCount: tableStateValues?.data?.total,
 						renderToolbarInternalActions: tableStateValues.toolbarInternalActions
 							? ({ table }) => {
-									const { toolbarInternalActions, enableHiding } = tableState.get({ noproxy: true });
+									const { toolbarInternalActions, enableHiding } = tableState;
 
 									return (
 										<ToolbarInternalActions

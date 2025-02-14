@@ -28,11 +28,13 @@ export const popupInitialState = {
 	permitSelectedCoordinates: null,
 	selectionLayers: [],
 	coordinate: null,
+	customLayerId: '',
+	data: {},
 };
 
 class PopupStateController extends StateController {
 	constructor(initialState) {
-		super(initialState);
+		super(initialState, PopupStateController.name);
 	}
 
 	/**

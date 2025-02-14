@@ -25,13 +25,18 @@ const initialState = {
 		value: [],
 	},
 	// ...
+	filterDrawing: [],
+	filterIntersectingWellLines: [],
+	filterBasin: [],
+	filterAOI: [],
+	filterParcel: [],
 };
 
 export const WellsGeographyFilters = ['state', 'county', 'GrId1', 'GrId2', 'GrId3', 'GrId4', 'GrId5'];
 
 class NavStateController extends StateController {
 	constructor(initialState) {
-		super(initialState);
+		super(initialState, NavStateController.name);
 	}
 
 	/**

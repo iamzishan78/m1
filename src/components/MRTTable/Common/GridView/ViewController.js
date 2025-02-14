@@ -1,7 +1,6 @@
 import { UPSERT_GRID_VIEW } from 'graphQL/useMutationUpsertGridView';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 
-
 import { globalStateController } from 'hookstate/globalStateController';
 import { StateController } from 'hookstate/stateController';
 import { tableController } from 'hookstate/tableController';
@@ -55,7 +54,11 @@ class ViewStateController extends StateController {
 
 	async fetchAllViews() {
 		const userId = globalStateController.getValue('user').mongoId;
-		const { client = null, isTable = false, moduleName = '' } = this.getValues(['client', 'isTable', 'moduleName']) || {};
+		const {
+			client = null,
+			isTable = false,
+			moduleName = '',
+		} = this.getValues(['client', 'isTable', 'moduleName']) || {};
 
 		const result = await client.query({
 			variables: {
@@ -108,19 +111,23 @@ class ViewStateController extends StateController {
 
 			if (client) {
 				const userId = globalStateController.getValue('user').mongoId;
-				const { isTable = false, moduleName = '', selectedView = {} } = this.getValues(['isTable', 'moduleName', 'selectedView']) || {};
+				const {
+					isTable = false,
+					moduleName = '',
+					selectedView = {},
+				} = this.getValues(['isTable', 'moduleName', 'selectedView']) || {};
 
 				const TableController = tableController(moduleName);
 
 				let requestedViewProps = {};
-				const fetchViewSettings = id === null ? true : this.getValue('fetchViewSettings') ?? false;
+				const fetchViewSettings = id === null ? true : (this.getValue('fetchViewSettings') ?? false);
 				const newViewAttributes = fetchViewSettings
 					? {
-						user: userId,
-						type: 'Custom',
-						module: isTable ? TableController.getModuleName() : moduleName,
-						isDeleted: false,
-					}
+							user: userId,
+							type: 'Custom',
+							module: isTable ? TableController.getModuleName() : moduleName,
+							isDeleted: false,
+						}
 					: {};
 
 				if (isTable) {
@@ -196,7 +203,6 @@ export const viewInitialState = {
 	isLoading: false,
 	shouldSyncView: true,
 };
-
 
 export const viewStates = {};
 

@@ -187,7 +187,7 @@ const layerFilterInitialState = {
 
 class LayerFiltersController extends StateController {
 	constructor(initialState) {
-		super(initialState);
+		super(initialState, LayerFiltersController.name);
 	}
 
 	setVariables(layerType, variables) {

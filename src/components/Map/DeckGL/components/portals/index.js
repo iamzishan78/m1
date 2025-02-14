@@ -123,7 +123,7 @@ function Portals({ hideShape }) {
 			<WellClick />
 			<PermitClick />
 
-			{popupVals.selectedWell && popupVals.expandedCard && (
+			{popupVals?.selectedWell?.id && popupVals.expandedCard && (
 				<div /* className={classes.draggable} */>
 					<ExpandableCardProvider
 						expanded
@@ -195,7 +195,7 @@ function Portals({ hideShape }) {
 			<Portal container={container.current}>
 				{popupVals.popupOpen === true ? (
 					<div>
-						{popupVals.selectedWell && (
+						{popupVals?.selectedWell?.id && (
 							<PortalD id="popupContainer">
 								{!popupVals.expandedCard && (
 									<ExpandableCardProvider

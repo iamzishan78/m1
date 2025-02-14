@@ -38,7 +38,7 @@ const mapControlsInitialState = {
 // Example class-based controller
 class MapControlsController extends StateController {
 	constructor(initialState) {
-		super(initialState);
+		super(initialState, MapControlsController.name);
 	}
 
 	/**

@@ -14,11 +14,14 @@ export const mapStateInitialState = {
 	defaultMapVars,
 	isDefaultViewAllowed: true,
 	isMapRefreshing: false,
+	toggleZoomOut: null,
+	toggle3d: null,
+	reintializeMap: false,
 };
 
 class MapStateController extends StateController {
 	constructor(initialState) {
-		super(initialState);
+		super(initialState, MapStateController.name);
 	}
 
 	moved() {

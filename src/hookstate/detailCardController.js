@@ -19,7 +19,7 @@ export const detailCardInitialState = {
 
 class DetailCardController extends StateController {
 	constructor(initialState) {
-		super(initialState);
+		super(initialState, DetailCardController.name);
 	}
 
 	initialize(stateToUpdate = {}) {

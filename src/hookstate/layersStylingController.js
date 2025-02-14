@@ -33,7 +33,7 @@ const layerStylingInitialState = {
 
 class LayerStylingStateController extends StateController {
 	constructor(initialState) {
-		super(initialState);
+		super(initialState, LayerStylingStateController.name);
 	}
 
 	handleLayerChange(layer) {
@@ -570,4 +570,4 @@ class LayerStylingStateController extends StateController {
 }
 
 // Export instance of LayerStylingStateController
-export const layerStylingController = new LayerStylingStateController(layerStylingInitialState);
+export const layerStylingController = new LayerStylingStateController({});

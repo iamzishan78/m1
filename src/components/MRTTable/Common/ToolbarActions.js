@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 
+import { Typography } from '@material-ui/core';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { IconButton, Tooltip, ToggleButton } from '@mui/material';
-import { Typography } from '@material-ui/core';
 
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -19,11 +19,8 @@ import { excludeFilters } from './CommonToolBarActions';
 import TableHeader from './TableHeader';
 
 function ToolbarActions({ table, tableKey, children }) {
-	const tableState = tableController(tableKey).useCompleteState();
-	const tableStateValues = tableState?.get({ noproxy: true });
-	const { user } = globalStateController.useState(['user']);
-	const getUser = user;
-
+	const tableStateValues = tableController(tableKey).useCompleteState();
+	const { user: getUser } = globalStateController.useState(['user']);
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomeRowsSelected =
 		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
@@ -93,12 +90,18 @@ function ToolbarActions({ table, tableKey, children }) {
 				acc[key] =
 					selectedRows?.length > 0
 						? selectedRows.map(item => {
-							let val;
-							if (originalKey) val = _.get(item, originalKey);
-							if (func) val = func(val);
-							if (value) val = value;
-							return val;
-						})
+								let val;
+								if (originalKey) {
+									val = _.get(item, originalKey);
+								}
+								if (func) {
+									val = func(val);
+								}
+								if (value) {
+									val = value;
+								}
+								return val;
+							})
 						: null;
 				return acc;
 			}, {});

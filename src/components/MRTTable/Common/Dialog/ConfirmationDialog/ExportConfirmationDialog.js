@@ -30,7 +30,7 @@ function ExportConfirmationDialog({ table, tableKey, header, onClose, children, 
 	const Controller = controller(tableKey);
 
 	const tableState = Controller.useCompleteState();
-	const tableStateValues = tableState?.get({ noproxy: true });
+	const tableStateValues = tableState;
 
 	const handleExport = () => {
 		const rows = table.getSelectedRowModel().flatRows.map(row => row.original);

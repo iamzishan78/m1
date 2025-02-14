@@ -17,9 +17,8 @@ import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } fr
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { globalStateController } from 'hookstate/globalStateController';
-import { tableESState } from 'hookstate/initialStates';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { tableController } from 'hookstate/tableController';
+import { tableController, tableESState } from 'hookstate/tableController';
 
 import { customLayersFieldAccessors } from './consts';
 import CustomAutocomplete from './CustomAutocomplete';
@@ -285,10 +284,10 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
 				const tableKey = Object.keys(tableESState).find(key => {
-					const tableState = tableESState[key].get({ noproxy: true });
+					const tableState = tableESState[key];
 					return tableState?.layerIdentifier === dataSourceName;
 				});
-				const tableState = tableESState[tableKey]?.get({ noproxy: true });
+				const tableState = tableESState[tableKey];
 
 				const formattedFilter = getFormattedFilterBasedOnType(
 					selectedField?.type || filterType,
@@ -375,7 +374,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			return [];
 		}
 		const tableKey = Object.keys(tableESState).find(key => {
-			const tableState = tableESState[key].get({ noproxy: true });
+			const tableState = tableESState[key];
 			return tableState?.layerIdentifier === dataSourceName;
 		});
 
@@ -389,7 +388,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					: null, // Set default value if mapView is provided
 				onChange: (e, v, r, previousValue) => {
 					const tableKey = Object.keys(tableESState).find(key => {
-						const tableState = tableESState[key].get({ noproxy: true });
+						const tableState = tableESState[key];
 						return tableState?.layerIdentifier === previousValue?.value;
 					});
 					tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
@@ -480,7 +479,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		mapViewFilters = mapViewFilters.filter((_, i) => i !== index);
 
 		const tableKey = Object.keys(tableESState).find(key => {
-			const tableState = tableESState[key].get({ noproxy: true });
+			const tableState = tableESState[key];
 			return tableState?.layerIdentifier === dataSourceName;
 		});
 		tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);

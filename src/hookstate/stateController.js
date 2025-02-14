@@ -5,22 +5,30 @@ import { store } from 'JotaiProvider';
 
 // Base Class for Jotai State Controller
 export class StateController {
-	constructor(initialState) {
+	constructor(initialState, controllerName) {
 		this.store = store;
+		this.controllerName = controllerName;
 		this.initialState = initialState;
 		this.state = atom(this.initialState);
 		this.focusState = {};
 
 		Object.keys(this.initialState).forEach(key => {
-			this.getFocusItem(key);
+			this.getFocusItem(key, true);
 		});
 	}
 
-	getFocusItem(key) {
+	getFocusItem(key, fromInitialState) {
 		if (!this.focusState[key]) {
 			this.focusState[key] = focusAtom(this.state, optic =>
 				key.split('.').reduce((acc, part) => acc.prop(part), optic)
 			);
+			if (!fromInitialState) {
+				this.missingKeys = this.missingKeys || new Set();
+				this.missingKeys.add(key);
+				console.warn(
+					`Key: ${key} does not exist in initial State of ${this.controllerName}. Add it to prevent issues.`
+				);
+			}
 		}
 		return this.focusState[key];
 	}
@@ -43,7 +51,8 @@ export class StateController {
 	}
 
 	useCompleteState() {
-		return this.useState(Object.keys(this.focusState));
+		const completeState = useAtom(this.state);
+		return completeState[0];
 	}
 
 	useScopeState(key) {
@@ -80,9 +89,8 @@ export class StateController {
 	getValue(key) {
 		try {
 			return this.focusState[key] ? store.get(this.focusState[key]) : null;
-		} catch (e) {
-			console.log(key, e);
-			return e;
+		} catch (_) {
+			throw Error(`Key: ${key} does not exist in initial State of ${this.controllerName}`);
 		}
 	}
 

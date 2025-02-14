@@ -23,11 +23,19 @@ export const globalInitialState = {
 	layerSettingsLoading: false,
 	abstract_geo: {},
 	selectedIconTpe: 'Chip',
+	client: null,
+	datasets: null,
+	selectedMeta: null,
+	currentAsset: null,
+	deckLayer: null,
+	previousLayers: [],
+	filters: [],
+	myMSALObj: {},
 };
 
 class GlobalStateController extends StateController {
 	constructor(initialState) {
-		super(initialState);
+		super(initialState, GlobalStateController.name);
 	}
 
 	setLayerLoading(type, value) {
