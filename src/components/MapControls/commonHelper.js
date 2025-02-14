@@ -124,6 +124,7 @@ export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
 								left: 1200,
 								right: 0,
 							},
+					maxZoom: 14, // Max zoom value
 				}
 			);
 		} catch (err) {

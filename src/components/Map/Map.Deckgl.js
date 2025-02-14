@@ -420,7 +420,8 @@ function Map({
 			const interval = setInterval(() => {
 				if (window.mapRef) {
 					findBoundsMap([feature], window.mapRef);
-					drawBoundary(feature);
+					if (feature?.geometry?.type === 'Point') drawWellBoundary(feature?.geometry?.coordinates);
+					else drawBoundary(feature);
 					popupController.updateState({
 						[key]: feature,
 						expandedCard: true,
