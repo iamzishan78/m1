@@ -346,6 +346,8 @@ export default function DrawShapes() {
 		!currentFeature.id?.includes('draw_polygon') &&
 		!currentFeature.id?.includes('drag_circle') &&
 		!currentFeature.id?.includes('draw_rectangle') &&
+		!currentFeature.id?.includes('draw_point') &&
+		!currentFeature.id?.includes('draw_line_string') &&
 		!currentFeature.id?.includes('edit_polygon');
 
 	if (!globalStateValues.mapReady) {

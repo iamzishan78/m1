@@ -379,6 +379,7 @@ const drawStateControllerHandler = state => {
 	/* ------------------------ ShapeActionsPopup Actions ----------------------- */
 
 	const isLine = () => drawController.getValue('currentFeature')?.geometry?.type === 'LineString';
+	const isPoint = () => drawController.getValue('currentFeature')?.geometry?.type === 'Point';
 
 	const updateSelectedLayerFeature = (dispatch, customLayer) => {
 		let feature = copy(customLayer.shapeJson);
@@ -432,7 +433,7 @@ const drawStateControllerHandler = state => {
 		// If filter is applied, then remove it
 		clearFilter();
 
-		if (!shapeEdit && currentFeature?.geometry?.type) {
+		if (!shapeEdit && currentFeature?.geometry?.type !== 'Point') {
 			window.drawRef?.changeMode('direct_select', {
 				featureId: selectedFeature.id,
 			});
@@ -1034,6 +1035,7 @@ const drawStateControllerHandler = state => {
 
 		/* --- ShapeActionsPopup Actions -- */
 		isLine,
+		isPoint,
 		updateSelectedLayerFeature,
 		clearFilter,
 		actionEdit,
