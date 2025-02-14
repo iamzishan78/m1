@@ -202,7 +202,10 @@ const onFeatureClick = (feature, layer) => {
 		return;
 	}
 
-	if (ifDeckGlDataLayerIdentifiers(feature.layer.id) || layer.layerType === 'dynamic data layer') {
+	if (layer.layerType === 'dynamic data layer') {
+		onDataLayerClick(feature.object, feature.layer.id, layer);
+		return;
+	} else if (ifDeckGlDataLayerIdentifiers(feature.layer.id)) {
 		switch (feature.featureType || feature.object?.geometry?.type) {
 			case 'MultiPolygon':
 			case 'Polygon':

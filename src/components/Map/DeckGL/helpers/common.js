@@ -176,6 +176,9 @@ export const makeGeoJSON = (mdata, labelProps) => ({
 								newShape.geometry.coordinates = shapesCoordinates[i];
 								labels.push(getShapeLabelProps(newShape, labelProps));
 							}
+						} else if (shape.geometry?.type === 'Point') {
+							const { properties } = getShapeLabelProps(shape, labelProps);
+							shape.properties = { ...shape.properties, ...properties };
 						} else {
 							labels.push(getShapeLabelProps(shape, labelProps));
 						}
