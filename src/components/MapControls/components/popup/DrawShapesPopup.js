@@ -11,6 +11,8 @@ import CheckCircle from '../../../Shared/svgIcons/check-circle';
 import MouseClicked from '../../../Shared/svgIcons/MouseClicked';
 import DrawPoly from '../../../Shared/svgIcons/polygon';
 import Rect from '../../../Shared/svgIcons/rectangle';
+import Point from 'components/Shared/svgIcons/point';
+import Line from 'components/Shared/svgIcons/line';
 
 const DrawShapesPopup = props => {
 	const { classes, children, handleClose } = props;
@@ -49,6 +51,18 @@ const DrawShapesPopup = props => {
 				title: 'Rectangle',
 				mode: 'draw_rectangle',
 				icon: <Rect />,
+				disable: drawStateValues.multiSelectLandGrids,
+			},
+			{
+				title: 'Point',
+				mode: 'draw_point',
+				icon: <Point />,
+				disable: drawStateValues.multiSelectLandGrids,
+			},
+			{
+				title: 'Line',
+				mode: 'draw_line_string',
+				icon: <Line />,
 				disable: drawStateValues.multiSelectLandGrids,
 			},
 		],
