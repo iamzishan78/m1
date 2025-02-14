@@ -35,7 +35,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 			},
 			fieldAttributes: {
 				name: item.name,
-				label: item.label,
+				title: item.label,
 				defaultValue: item.defaultValue,
 				InputProps: item.InputProps,
 				isValueOverridden: item.isValueOverridden,

@@ -153,7 +153,6 @@ export default function Summary({
 											type: 'text',
 											multiline: true,
 											variant: 'outlined',
-											labelAsHeading: false,
 										}}
 										fieldAttributes={{
 											defaultValue: agreementDetails?.metaDescription || '',
