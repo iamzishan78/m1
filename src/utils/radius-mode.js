@@ -77,8 +77,7 @@ DragRadiusCircleMode.onDrag = DragRadiusCircleMode.onMouseMove = function (state
 
 			state.radiusLine.incomingCoords([center, [e.lngLat.lng, e.lngLat.lat]]);
 
-			const labelOffset = 0.0005; // adjust as needed
-			state.labelFeature.incomingCoords([center[0], center[1] + labelOffset]);
+			state.labelFeature.incomingCoords([center[0], center[1]]);
 			// Set the label text property to display the distance in miles.
 			state.labelFeature.properties.labelText = distanceInMiles.toFixed(2) + ' miles';
 		}
