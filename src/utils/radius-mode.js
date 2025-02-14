@@ -86,7 +86,6 @@ DragRadiusCircleMode.onDrag = DragRadiusCircleMode.onMouseMove = function (state
 
 DragRadiusCircleMode.onStop = function (state) {
 	this.updateUIClasses({ mouse: Constants.cursors.NONE });
-	// doubleClickZoom.enable(this);
 	this.activateUIButton();
 
 	// check to see if we've deleted this feature
@@ -97,8 +96,6 @@ DragRadiusCircleMode.onStop = function (state) {
 		return;
 	}
 
-	//remove last added coordinate
-	// state.polygon.removeCoordinate(`0.${state.currentVertexPosition}`);
 	if (state.polygon.isValid()) {
 		this.map.fire(Constants.events.CREATE, {
 			features: [state.polygon.toGeoJSON()],
@@ -115,24 +112,17 @@ DragRadiusCircleMode.onClick = DragRadiusCircleMode.onTap = function (state, e) 
 	if (state.polygon.properties.center.length === 0) {
 		state.polygon.properties.center = [e.lngLat.lng, e.lngLat.lat];
 	} else {
-		// dragPan.enable(this);
 		this.updateUIClasses({ mouse: 'pointer' });
-		// Remove the helper radius line so that only the circle remains.
-		// this.deleteFeature([state.radiusLine.id, state.labelFeature.id]);
 		// Change to SIMPLE_SELECT mode, keeping the drawn circle selected.
 		return this.changeMode(Constants.modes.SIMPLE_SELECT);
 	}
 };
 
 DragRadiusCircleMode.toDisplayFeatures = function (state, geojson, display) {
-	// console.log("Feature properties:", geojson.properties); // Debug properties
 	// Display all helper features (center dot and label) as well as the main polygon.
 	if (geojson.properties.user_meta === 'radiusLine') {
 		return display(geojson);
 	}
-	// if (geojson.properties.user_meta === 'centerDot') {
-	// 	return display(geojson);
-	// }
 	if (geojson.properties.user_meta === 'label') {
 		return display(geojson);
 	}

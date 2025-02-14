@@ -3,8 +3,8 @@ const Constants = require('@mapbox/mapbox-gl-draw/src/constants');
 const distance = require('@turf/distance').default;
 const turfHelpers = require('@turf/helpers');
 const circle = require('@turf/circle').default;
-const turfCircle = require('@turf/circle').default;
 
+// eslint-disable-next-line import/order
 import constrainFeatureMovement from '@mapbox/mapbox-gl-draw/src/lib/constrain_feature_movement' 
 import createSupplementaryPoints from '@mapbox/mapbox-gl-draw/src/lib/create_supplementary_points'
 import doubleClickZoom from '@mapbox/mapbox-gl-draw/src/lib/double_click_zoom';
@@ -37,24 +37,8 @@ const createSupplementaryPointsForCircle = (geojson) => {
         supplementaryPoints.push(createVertex(properties.id, vertices[index], `0.${index}`, false));
     }
 
-    // Calculate center point
-    // const center = calculateCircleCenter(vertices);
-    // if (center) {
-    //     supplementaryPoints.push(createVertex(properties.id, center, "center", false));
-    // }
-
     return supplementaryPoints;
 }
-
-// Function to calculate the center of a circle given its boundary points
-const calculateCircleCenter = (vertices) => {
-    let sumX = 0, sumY = 0;
-    vertices.forEach(([x, y]) => {
-        sumX += x;
-        sumY += y;
-    });
-    return [sumX / vertices.length, sumY / vertices.length];
-};
 
 const DirectModeOverride = MapboxDraw.modes.direct_select;
 
@@ -71,7 +55,6 @@ DirectModeOverride.onSetup = function (opts) {
         throw new TypeError('direct_select mode doesn\'t handle point features');
     }
 
-    console.log("feature",feature)
 
     // Create a helper feature to show the radius line.
     const radiusLine = this.newFeature({
@@ -119,12 +102,10 @@ DirectModeOverride.onSetup = function (opts) {
         labelFeature,
         currentVertexPosition: 0,
     };
-    console.log("newState", newState)
     return newState;
 }
 
 DirectModeOverride.dragFeature = function (state, e, delta) {
-    console.log('DirectModeOverride.dragFeature');
     moveFeatures(this.getSelected(), delta);
     this.getSelected()
         .filter(feature => feature.properties.isCircle)
@@ -137,10 +118,8 @@ DirectModeOverride.dragFeature = function (state, e, delta) {
 };
 
 DirectModeOverride.dragVertex = function (state, e, delta) {
-    console.log('DirectModeOverride.dragVertex');
     if (state.feature.properties.isCircle) {
         state.feature.properties.isdragMode = true;
-        console.log('DirectModeOverride.dragVertex isCircle', state.feature);
         const center = state.feature.properties.center;
         const movedVertex = [e.lngLat.lng, e.lngLat.lat];
         const radius = distance(turfHelpers.point(center), turfHelpers.point(movedVertex), { units: 'kilometers' });
@@ -196,10 +175,10 @@ DirectModeOverride.toDisplayFeatures = function (state, geojson, push) {
 
 
 DirectModeOverride.onStop = function (state) {
-    console.log("state", state);
+    this.deleteFeature([state.radiusLine.id, state.labelFeature.id], { silent: true });
     doubleClickZoom.enable(this);
     this.clearSelectedCoordinates();
-    this.deleteFeature([state.radiusLine.id, state.labelFeature.id], { silent: true });
+   
     state.feature.properties.isdragMode = undefined;
 };
 

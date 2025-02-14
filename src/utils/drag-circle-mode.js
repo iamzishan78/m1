@@ -10,8 +10,6 @@ const DragCircleMode = { ...MapboxDraw.modes.draw_polygon };
 import doubleClickZoom from '@mapbox/mapbox-gl-draw/src/lib/double_click_zoom';
 
 DragCircleMode.onSetup = function (opts) {
-    debugger
-    console.log("DragCircleMode onSetup")
     const polygon = this.newFeature({
         type: Constants.geojsonTypes.FEATURE,
         properties: {
@@ -42,7 +40,6 @@ DragCircleMode.onSetup = function (opts) {
 };
 
 DragCircleMode.onMouseDown = DragCircleMode.onTouchStart = function (state, e) {
-    console.log("DragCircleMode onMouseDown")
     const currentCenter = state.polygon.properties.center;
     if (currentCenter.length === 0) {
         state.polygon.properties.center = [e.lngLat.lng, e.lngLat.lat];
@@ -50,7 +47,6 @@ DragCircleMode.onMouseDown = DragCircleMode.onTouchStart = function (state, e) {
 };
 
 DragCircleMode.onDrag = DragCircleMode.onMouseMove = function (state, e) {
-    console.log("DragCircleMode onDrag")
     const center = state.polygon.properties.center;
     if (center.length > 0) {
         const distanceInKm = distance(
@@ -64,14 +60,12 @@ DragCircleMode.onDrag = DragCircleMode.onMouseMove = function (state, e) {
 };
 
 DragCircleMode.onMouseUp = DragCircleMode.onTouchEnd = function (state, e) {
-    console.log("DragCircleMode onMouseUp")
-
+    
     dragPan.enable(this);
     return this.changeMode(Constants.modes.SIMPLE_SELECT, { featureIds: [state.polygon.id] });
 };
 
 DragCircleMode.onClick = DragCircleMode.onTap = function (state, e) {
-    console.log("DragCircleMode onClick")
 
     // don't draw the circle if its a tap or click event
     state.polygon.properties.center = [];
