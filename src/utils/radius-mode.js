@@ -4,6 +4,11 @@ const turfCircle = require('@turf/circle').default;
 const distance = require('@turf/distance').default;
 const turfHelpers = require('@turf/helpers');
 
+const removeRadiusline = (state, context) => {
+	context.deleteFeature([state?.radiusLine?.id, state?.labelFeature?.id], { silent: true });
+	state.radiusLine = undefined;
+	state.labelFeature = undefined;
+}
 const DragRadiusCircleMode = { ...MapboxDraw.modes.draw_polygon };
 
 DragRadiusCircleMode.onSetup = function (opts) {
@@ -25,7 +30,7 @@ DragRadiusCircleMode.onSetup = function (opts) {
 	// Create a helper feature to show the radius line.
 	const radiusLine = this.newFeature({
 		type: Constants.geojsonTypes.FEATURE,
-		properties: { meta: 'radiusLine', parent: polygon.id, type: 'line', },
+		properties: { meta: 'radiusLine', parent: polygon.id, type: 'line' },
 		geometry: {
 			type: Constants.geojsonTypes.LINE_STRING,
 			coordinates: [],
@@ -100,12 +105,9 @@ DragRadiusCircleMode.onStop = function (state) {
 		this.map.fire(Constants.events.CREATE, {
 			features: [state.polygon.toGeoJSON()],
 		});
+		removeRadiusline(state, this);
 	} else {
-		this.deleteFeature([state.radiusLine.id, state.labelFeature.id], { silent: true });
-		state.radiusLine = undefined;
-		state.labelFeature = undefined;
-		state.feature.properties.isdragMode = undefined;
-
+		removeRadiusline(state, this);
 		// Add a flag to prevent recursive call
 		if (!state.isChangingMode) {
 			state.isChangingMode = true;
