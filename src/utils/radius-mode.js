@@ -46,10 +46,10 @@ DragRadiusCircleMode.onSetup = function (opts) {
 	this.addFeature(radiusLine);
 	this.addFeature(labelFeature);
 
-	this.updateUIClasses({ mouse: "add" });
-    this.setActionableState({
-      trash: true
-    });
+	this.updateUIClasses({ mouse: 'add' });
+	this.setActionableState({
+		trash: true
+	});
 
 	// Return state including both features.
 	return {
@@ -102,11 +102,15 @@ DragRadiusCircleMode.onStop = function (state) {
 		});
 	} else {
 		this.deleteFeature([state.radiusLine.id, state.labelFeature.id], { silent: true });
-		 // Add a flag to prevent recursive call
-		 if (!state.isChangingMode) {
-            state.isChangingMode = true;
-            this.changeMode(Constants.modes.SIMPLE_SELECT, {}, { silent: true });
-        }
+		state.radiusLine = undefined;
+		state.labelFeature = undefined;
+		state.feature.properties.isdragMode = undefined;
+
+		// Add a flag to prevent recursive call
+		if (!state.isChangingMode) {
+			state.isChangingMode = true;
+			this.changeMode(Constants.modes.SIMPLE_SELECT, {}, { silent: true });
+		}
 	}
 };
 
