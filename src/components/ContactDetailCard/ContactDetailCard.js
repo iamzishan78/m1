@@ -607,7 +607,7 @@ function ContactDetailCard(props) {
 				if (dialpadConnect && stateApp?.user?.dialpad) {
 					dispatch(showInfoMessage('Initiating call...'));
 					initiateDialpadCall({
-						variables: { phoneNumber: data.phoneNumber },
+						variables: { phoneNumber: data.phoneNumber, dialpadUserId: stateApp?.user?.dialpad?.id },
 					}).then(({ data }) => {
 						if (data?.initiateDialpadCall?.success) {
 							dispatch(showSuccessMessage('Call initiated successfully'));
