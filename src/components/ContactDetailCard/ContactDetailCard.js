@@ -64,6 +64,8 @@ import { SYNC_CONTACT_TO_DIALPAD } from '../../graphQL/useMutationSyncContactToD
 import { showErrorMessage, showInfoMessage, showSuccessMessage } from 'actions';
 import moment from 'moment';
 import { INITIATE_DIALPAD_CALL } from 'graphQL/useMutationInitiateCall';
+import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
+import { RESYNC_DIALPAD_CONTACT } from 'graphQL/useMutationResyncDialpadContact';
 
 const useStyles = makeStyles(theme => ({
 	Contacts: {
@@ -379,7 +381,6 @@ const useStyles = makeStyles(theme => ({
 		position: 'absolute',
 		right: '15px',
 		'& button': {
-			margin: '0px 5px',
 			color: 'grey',
 			fontWeight: 'bold',
 			textTransform: 'capitalize',
@@ -396,49 +397,6 @@ const useStyles = makeStyles(theme => ({
 		width: '100%',
 	},
 }));
-
-const StyledTabs = withStyles({
-	root: {
-		textTransform: 'capitalize',
-	},
-	indicator: {
-		backgroundColor: '#12abe0',
-		height: '5px',
-	},
-})(Tabs);
-
-const StyledTab = withStyles(theme => ({
-	root: {
-		textTransform: 'uppercase',
-		minWidth: 72,
-		fontWeight: theme.typography.fontWeightRegular,
-		marginRight: theme.spacing(4),
-		fontFamily: [
-			'-apple-system',
-			'BlinkMacSystemFont',
-			'"Segoe UI"',
-			'Roboto',
-			'"Helvetica Neue"',
-			'Arial',
-			'sans-serif',
-			'"Apple Color Emoji"',
-			'"Segoe UI Emoji"',
-			'"Segoe UI Symbol"',
-		].join(','),
-		'&:hover': {
-			color: 'black',
-			opacity: 1,
-		},
-		'&$selected': {
-			color: 'black',
-			fontWeight: theme.typography.fontWeightMedium,
-		},
-		'&:focus': {
-			color: 'black',
-		},
-	},
-	selected: {},
-}))(props => <Tab disableRipple {...props} />);
 
 function ContactDetailCard(props) {
 	// contexts
@@ -479,6 +437,7 @@ function ContactDetailCard(props) {
 	});
 	const [updateContact] = useMutation(UPDATECONTACT);
 	const [syncContactToDialpad] = useMutation(SYNC_CONTACT_TO_DIALPAD);
+	const [resyncDialpadContact] = useMutation(RESYNC_DIALPAD_CONTACT);
 	const [initiateDialpadCall] = useMutation(INITIATE_DIALPAD_CALL);
 
 	const handleClick = event => setAnchorEl(event.currentTarget);
@@ -682,6 +641,40 @@ function ContactDetailCard(props) {
 		});
 	};
 
+	const handleContactResync = async () => {
+		if (!contactData?.entityDetail?.firstName || !contactData?.entityDetail?.lastName) {
+			dispatch(showErrorMessage('First Name and Last Name are required to sync contact to Dialpad'));
+			return;
+		}
+		dispatch(showInfoMessage('Syncing contact to Dialpad...'));
+		resyncDialpadContact({
+			variables: { contactId: contactData?._id },
+			refetchQueries: ['getContact'],
+			awaitRefetchQueries: true,
+		}).then(({ data }) => {
+			if (data?.resyncDialpadContact && !data.resyncDialpadContact?.success) {
+				dispatch(showErrorMessage(data?.resyncDialpadContact?.message));
+			} else {
+				dispatch(showSuccessMessage('Contact synced successfully'));
+			}
+		});
+	};
+
+	const options = [
+		{
+			text: 'Launch Dialpad',
+			isShow: false,
+			action: () => {
+				window.open('https://dialpad.com/app/contacts/frequent', '_blank');
+			},
+		},
+		{
+			text: 'Resync Contact',
+			isShow: true,
+			action: handleContactResync,
+		},
+	];
+
 	return contactData ? (
 		<div
 			style={{
@@ -802,30 +795,37 @@ function ContactDetailCard(props) {
 								</div>
 								<div className={classes.metaActions}>
 									<FeatureFlag feature={FEATURES.DIALPAD_INTEGRATION}>
-										<Tooltip
-											title={
-												contactData?.dialpadSyncAt
-													? `Last Synced: ${moment(contactData?.dialpadSyncAt).format('MM/DD/YYYY, h:mm a')}`
-													: `Sync to Dialpad`
-											}
-											placement="top-start"
-										>
-											<Button
-												color={dialpadConnect ? 'primary' : 'transparent'}
-												className={!dialpadConnect ? classes.contactDataButton : {}}
-												variant={dialpadConnect ? 'contained' : ''}
-												startIcon={<DialpadIcon color={dialpadConnect ? 'white' : 'grey'} />}
-												style={{ color: dialpadConnect ? 'white' : 'grey' }}
-												onClick={() => {
-													if (!dialpadConnect) {
-														handleContactSync();
-													} else {
-														window.open('https://dialpad.com/app/contacts/frequent', '_blank');
-													}
-												}}
-											>
-												{dialpadConnect ? 'Launch Dialpad' : 'Sync to Dialpad'}
-											</Button>
+										<Tooltip title={`Sync to Dialpad`} placement="top-start">
+											<>
+												{!dialpadConnect && (
+													<Button
+														color={'transparent'}
+														className={classes.contactDataButton}
+														variant={''}
+														startIcon={<DialpadIcon color={'grey'} />}
+														style={{ color: 'grey' }}
+														onClick={() => {
+															handleContactSync();
+														}}
+													>
+														{'Sync to Dialpad'}
+													</Button>
+												)}
+												{dialpadConnect && (
+													<ButtonDropDown
+														startIcon={<DialpadIcon color={'white'} />}
+														options={options}
+														tooltipText={`Last Synced: ${moment(contactData?.dialpadSyncAt).format('MM/DD/YYYY, h:mm a')}`}
+														buttonStyles={{ color: 'white', transform: 'translateY(4px)' }}
+														sideButtonStyles={{
+															minWidth: '25px',
+															padding: 0,
+															color: 'white',
+															transform: 'translateY(4px)',
+														}}
+													/>
+												)}
+											</>
 										</Tooltip>
 									</FeatureFlag>
 
