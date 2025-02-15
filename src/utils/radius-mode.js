@@ -102,7 +102,11 @@ DragRadiusCircleMode.onStop = function (state) {
 		});
 	} else {
 		this.deleteFeature([state.radiusLine.id, state.labelFeature.id], { silent: true });
-		this.changeMode(Constants.modes.SIMPLE_SELECT, {}, { silent: true });
+		 // Add a flag to prevent recursive call
+		 if (!state.isChangingMode) {
+            state.isChangingMode = true;
+            this.changeMode(Constants.modes.SIMPLE_SELECT, {}, { silent: true });
+        }
 	}
 };
 

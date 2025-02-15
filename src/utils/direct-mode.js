@@ -43,7 +43,6 @@ const createSupplementaryPointsForCircle = (geojson) => {
 const DirectModeOverride = MapboxDraw.modes.direct_select;
 
 DirectModeOverride.onSetup = function (opts) {
-    console.log('DirectModeOverride.onSetup', opts);
     const featureId = opts.featureId;
     const feature = this.getFeature(featureId);
 
@@ -180,6 +179,8 @@ DirectModeOverride.onStop = function (state) {
     this.clearSelectedCoordinates();
    
     state.feature.properties.isdragMode = undefined;
+    state.radiusLine = undefined;
+    state.labelFeature = undefined;
 };
 
 export default DirectModeOverride;
