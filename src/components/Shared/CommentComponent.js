@@ -761,7 +761,7 @@ export default function CommentComponent(props) {
 						<Tab label="Activities" disabled={editCommentId} />
 					</Tabs>
 					{tab === 2 && (
-						<div style={{ flexGrow: 1 }}>
+						<div style={{ flexGrow: 0.5 }}>
 							<CommentsAutoComplete
 								options={activityTypes}
 								onChange={value => setActivityType(value)}
@@ -770,7 +770,7 @@ export default function CommentComponent(props) {
 						</div>
 					)}
 					{tab === 1 && (
-						<div style={{ flexGrow: 1 }}>
+						<div style={{ flexGrow: 0.5 }}>
 							<CommentsAutoComplete
 								options={commentTypes}
 								onChange={value => setCommentType(value)}
