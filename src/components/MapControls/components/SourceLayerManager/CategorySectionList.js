@@ -11,6 +11,8 @@ import List from '@material-ui/core/List';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
+import { Skeleton } from '@mui/material';
+
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
@@ -74,7 +76,16 @@ const useStyles = makeStyles(() => ({
 		cursor: 'pointer',
 	},
 }));
-const CategorySectionList = ({ search, SectionLayers, actionItem, layerCategory, handleClick, setActionItem }) => {
+
+const CategorySectionList = ({
+	search,
+	loading,
+	SectionLayers,
+	actionItem,
+	layerCategory,
+	handleClick,
+	setActionItem,
+}) => {
 	const classes = useStyles();
 	let history = useHistory();
 	const parentRef = useRef();
@@ -111,6 +122,16 @@ const CategorySectionList = ({ search, SectionLayers, actionItem, layerCategory,
 		setUDLayersStates([]);
 		rowVirtualizer.measure();
 	}, [filteredLayers]);
+
+	if (loading) {
+		return (
+			<List className={classes.list} ref={parentRef} style={{ overflowY: 'auto', overflowX: 'hidden', height: '33vh' }}>
+				{Array.from({ length: 6 }, (_, i) => i + 1).map(i => (
+					<Skeleton key={i} variant="rounded" height={i === 6 ? 30 : 50} style={{ margin: '1rem' }} />
+				))}
+			</List>
+		);
+	}
 
 	return (
 		<List className={classes.list} ref={parentRef} style={{ overflowY: 'auto', overflowX: 'hidden', height: '33vh' }}>

@@ -181,6 +181,7 @@ export default function CategorySection({ title, search, layerCategory }) {
 			<Collapse in={openM1} timeout="auto" unmountOnExit>
 				<CategorySectionList
 					search={search}
+					loading={!projectedLayers || projectedLayers.length === 0}
 					SectionLayers={SectionLayers}
 					actionItem={actionItem}
 					layerCategory={layerCategory}
