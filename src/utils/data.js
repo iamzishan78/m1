@@ -665,6 +665,8 @@ export const bypassTenants = [
 	'm1cypress',
 	'm1Staging',
 	'wildbasin',
+	'covenant',
+	'sansaba',
 	// "m1Production",
 	// "m1Development",
 	// "GHR",
