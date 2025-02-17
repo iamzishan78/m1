@@ -14,6 +14,7 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { Skeleton } from '@mui/material';
 
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { min } from 'lodash';
 
 import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
@@ -123,9 +124,16 @@ const CategorySectionList = ({
 		rowVirtualizer.measure();
 	}, [filteredLayers]);
 
+	const maxHeight = 454.5;
+	const itemHeight = 50.5;
+
 	if (loading) {
 		return (
-			<List className={classes.list} ref={parentRef} style={{ overflowY: 'auto', overflowX: 'hidden', height: '33vh' }}>
+			<List
+				className={classes.list}
+				ref={parentRef}
+				style={{ overflowY: 'auto', overflowX: 'hidden', height: maxHeight }}
+			>
 				{Array.from({ length: 6 }, (_, i) => i + 1).map(i => (
 					<Skeleton key={i} variant="rounded" height={i === 6 ? 30 : 50} style={{ margin: '1rem' }} />
 				))}
@@ -134,7 +142,11 @@ const CategorySectionList = ({
 	}
 
 	return (
-		<List className={classes.list} ref={parentRef} style={{ overflowY: 'auto', overflowX: 'hidden', height: '33vh' }}>
+		<List
+			className={classes.list}
+			ref={parentRef}
+			style={{ overflowY: 'auto', overflowX: 'hidden', height: min([maxHeight, filteredLayers.length * itemHeight]) }}
+		>
 			<div
 				style={{
 					height: `${rowVirtualizer.getTotalSize()}px`,
