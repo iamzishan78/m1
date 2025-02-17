@@ -604,7 +604,7 @@ function SourceManager(props) {
 																		// const labelId = `m1layer-list-label-${index}`;
 																		return (
 																			<StyledListItem
-																				key={layer.identifier || layer.name}
+																				key={layer.layerIdentifier || layer.name}
 																				ContainerComponent="li"
 																				style={{ padding: 10 }}
 																			>

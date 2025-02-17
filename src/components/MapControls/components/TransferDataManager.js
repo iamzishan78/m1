@@ -230,7 +230,7 @@ export default function TransferDataManager() {
 										{dataset?.categories.map((layer, index) => {
 											const labelId = `m1layer-list-label-${index}`;
 											return (
-												<StyledListItem key={layer._id || layer.layerName} ContainerComponent="li">
+												<StyledListItem key={layer.layerName || layer.layerIdentifier} ContainerComponent="li">
 													<Checkbox
 														checked={selectedSourceCategory?.layerName === (layer.layerName || layer.layerIdentifier)}
 														color="dark gray"
