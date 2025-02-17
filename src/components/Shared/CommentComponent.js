@@ -314,7 +314,7 @@ export default function CommentComponent(props) {
 
 	useEffect(() => {
 		if (commentResponse && Array.isArray(commentResponse.commentsType)) {
-			const commentsType = commentResponse.commentsType;
+			const commentsType = commentResponse?.commentsType || [];
 			const uniqueCommonType = uniqBy(commentsType, e => {
 				return e.commentType;
 			});
@@ -761,7 +761,7 @@ export default function CommentComponent(props) {
 						<Tab label="Activities" disabled={editCommentId} />
 					</Tabs>
 					{tab === 2 && (
-						<div>
+						<div style={{ flexGrow: 1 }}>
 							<CommentsAutoComplete
 								options={activityTypes}
 								onChange={value => setActivityType(value)}
@@ -770,7 +770,7 @@ export default function CommentComponent(props) {
 						</div>
 					)}
 					{tab === 1 && (
-						<div>
+						<div style={{ flexGrow: 1 }}>
 							<CommentsAutoComplete
 								options={commentTypes}
 								onChange={value => setCommentType(value)}
