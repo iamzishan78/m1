@@ -625,6 +625,25 @@ const layerStateControllerHandler = state => {
 				},
 			});
 
+			if (!deckLayers['HexagonLayer']) {
+				const hexagonLayer = DeckGlLayer.addLayer({
+					layerId: 'HexagonLayer',
+					type: 'HexagonLayer',
+					beforeLayer: beforeLayerId,
+					props: {
+						data: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/sf-bike-parking.json',
+						getColorWeight: d => d.SPACES,
+						getElevationWeight: d => d.SPACES,
+						getPosition: d => d.COORDINATES,
+					},
+				});
+
+				deckLayers['HexagonLayer'] = {
+					beforeLayerId,
+					deckLayer: hexagonLayer,
+				};
+			}
+
 			deckLayers[layerId].deckLayer = deckLayer;
 			deckLayers[layerId].beforeLayerId = beforeLayerId;
 		}
