@@ -439,7 +439,8 @@ export default function MetadataDrawer(props) {
 				</div>
 				<div
 					style={{
-						height: '500px',
+						flex: '1 1 auto',
+						overflow: 'hidden',
 					}}
 				>
 					<CommentComponent
