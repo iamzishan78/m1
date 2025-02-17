@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
+import React from 'react';
+
 import * as turf from '@turf/turf';
 import { isEqual } from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -64,7 +66,6 @@ const dataset = {
 	public: true,
 	createBy: '659ce7cf97935e0ffa857858',
 	file: '66d70caad30f046db3a43a82',
-	originalFile: '66d70caad30f046db3a43a82',
 	IsDeleted: false,
 	categories: [
 		{
@@ -72,7 +73,6 @@ const dataset = {
 			layerGeometry: 'Point',
 			layerShapeName: 'surv025Abspt - Point',
 			file: '66d70caad30f046db3a43a82',
-			originalFile: '66d70caad30f046db3a43a82',
 			layerName: 'surv025Abspt - Point',
 			groupId: layerGroupId,
 		},
@@ -81,7 +81,6 @@ const dataset = {
 			layerGeometry: 'Point',
 			layerShapeName: 'surv025Abspt_ - Point',
 			file: '66d70caad30f046db3a43a82',
-			originalFile: '66d70caad30f046db3a43a82',
 			layerName: 'surv025Abspt_ - Point',
 			groupId: layerGroupId,
 		},
@@ -90,7 +89,6 @@ const dataset = {
 			layerGeometry: 'LineString',
 			layerShapeName: 'surv025l - LineString',
 			file: '66d70caad30f046db3a43a82',
-			originalFile: '66d70caad30f046db3a43a82',
 			layerName: 'surv025l - LineString',
 			groupId: layerGroupId,
 		},
@@ -99,7 +97,6 @@ const dataset = {
 			layerGeometry: 'Point',
 			layerShapeName: 'surv025Labpt - Point',
 			file: '66d70caad30f046db3a43a82',
-			originalFile: '66d70caad30f046db3a43a82',
 			layerName: 'surv025Labpt - Point',
 			groupId: layerGroupId,
 		},
@@ -108,7 +105,6 @@ const dataset = {
 			layerGeometry: 'Point',
 			layerShapeName: 'surv025Labpt_ - Point',
 			file: '66d70caad30f046db3a43a82',
-			originalFile: '66d70caad30f046db3a43a82',
 			layerName: 'surv025Labpt_ - Point',
 			groupId: layerGroupId,
 		},
@@ -117,7 +113,6 @@ const dataset = {
 			layerGeometry: 'LineString',
 			layerShapeName: 'surv025l_ - LineString',
 			file: '66d70caad30f046db3a43a82',
-			originalFile: '66d70caad30f046db3a43a82',
 			layerName: 'surv025l_ - LineString',
 			groupId: layerGroupId,
 		},
@@ -126,7 +121,6 @@ const dataset = {
 			layerGeometry: 'Polygon',
 			layerShapeName: 'surv025p - Polygon',
 			file: '66d70caad30f046db3a43a82',
-			originalFile: '66d70caad30f046db3a43a82',
 			layerName: 'surv025p - Polygon',
 			groupId: layerGroupId,
 		},
@@ -135,7 +129,6 @@ const dataset = {
 			layerGeometry: 'Polygon',
 			layerShapeName: 'surv025p_ - Polygon',
 			file: '66d70caad30f046db3a43a82',
-			originalFile: '66d70caad30f046db3a43a82',
 			layerName: 'surv025p_ - Polygon',
 			groupId: layerGroupId,
 		},

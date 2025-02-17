@@ -86,7 +86,6 @@ function NewLayerManager() {
 					file: source.file,
 					layerName: layerName,
 					layerGeometry: selectCategory.layerGeometry,
-					originalFile: source.originalFile,
 					defaultSettings: {
 						...handleLayerChange(),
 						bbox: selectCategory?.bbox || [],

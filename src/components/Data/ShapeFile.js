@@ -30,7 +30,6 @@ const ShapeFile = () => {
 			_id: dataset._id,
 			fileName: dataset.fileName,
 			file: dataset.file,
-			originalFile: dataset.originalFile,
 		};
 
 		if (!Array.isArray(dataset.categories)) {

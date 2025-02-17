@@ -146,7 +146,6 @@ function Datasets({ headerButton, search }) {
 					dataset.visibility = typeof settings[dataset._id] === 'undefined' ? true : settings[dataset._id];
 					dataset.categories.forEach(category => {
 						category.file = dataset.file;
-						category.originalFile = dataset.originalFile;
 						category.fileName = dataset?.fileInfo?.name;
 					});
 				}
