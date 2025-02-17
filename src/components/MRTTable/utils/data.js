@@ -209,15 +209,15 @@ export const entityShapeOptions = [
 
 export const entityKeyTypes = [
 	{ label: 'String', value: 'string' },
-	{ label: 'Json', value: 'json' },
+	// { label: 'Json', value: 'json' },
 	{ label: 'Number', value: 'number' },
 	{ label: 'Date', value: 'date' },
-	{ label: 'ObjectId', value: 'objectId' },
+	// { label: 'ObjectId', value: 'objectId' },
 	{ label: 'Boolean', value: 'boolean' },
-	{ label: 'Array', value: 'array' },
+	// { label: 'Array', value: 'array' },
 	{ label: 'User', value: 'user' },
-	{ label: 'Tags', value: 'tags' },
-	{ label: 'Comments', value: 'comments' },
+	// { label: 'Tags', value: 'tags' },
+	// { label: 'Comments', value: 'comments' },
 ];
 
 // Dummy schema for dynamic schema loading
