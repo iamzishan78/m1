@@ -108,7 +108,7 @@ const LayerMeta = {
 			filterFeatures: (features, dbLayer) =>
 				features.filter(
 					feature =>
-						feature?.properties?.layerShapeName === dbLayer.layerShapeName &&
+						feature?.properties?.layerShapeName === dbLayer.layerIdentifier &&
 						feature?.properties?.layerGeometry === dbLayer.layerGeometry
 				),
 			getProps: layerId => {
@@ -568,11 +568,11 @@ const layerStateControllerHandler = state => {
 		const filterIdentifier = isAgreementLayer
 			? 'Agreements'
 			: isFileLayer
-				? dbLayer.layerShapeName
+				? dbLayer.layerIdentifier
 				: dbLayer.identifier;
 
 		const filterKey = isFileLayer
-			? `${dbLayer.file}_${dbLayer.layerShapeName}`
+			? `${dbLayer.file}_${dbLayer.layerIdentifier}`
 			: getLayerKey(filterIdentifier, layerFilters);
 
 		let {
@@ -711,12 +711,12 @@ const layerStateControllerHandler = state => {
 			key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
 		);
 
-		// If layerId is not found, then find layerId by layerShapeName
+		// If layerId is not found, then find layerId by layerIdentifier
 		if (!layerId && identifier != 'all') {
-			// Find layer by layerShapeName
+			// Find layer by layerIdentifier
 			const requiredLayers = state.layers
 				.get({ noproxy: true })
-				.filter(layer => `${layer.file}_${layer.layerShapeName}` === identifier);
+				.filter(layer => `${layer.file}_${layer.layerIdentifier}` === identifier);
 
 			requiredLayers.forEach(requiredLayer => {
 				// If layer is not found, then return

@@ -181,7 +181,7 @@ function Datasets({ headerButton, search }) {
 		} else {
 			const layers = layerController.getValue('layers');
 			const layer = layers.find(
-				l => l.file === dataset.categories[0]?.file && l.layerShapeName === dataset.categories[0]?.layerShapeName
+				l => l.file === dataset.categories[0]?.file && l.layerIdentifier === dataset.categories[0]?.layerIdentifier
 			);
 			stateToUpdate.selectedLayer = { ...dataset.categories[0], layerSchema: layer?.layerSchema };
 			stateToUpdate.layerGridCard = true;

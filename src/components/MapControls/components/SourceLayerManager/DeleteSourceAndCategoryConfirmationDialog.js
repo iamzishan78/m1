@@ -42,7 +42,7 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 			isSource
 				? layer.file === props.actionItem.dataset?.file
 				: layer.file === props.actionItem.dataset?.file &&
-					layer.layerShapeName === props.actionItem.category.layerShapeName
+					layer.layerIdentifier === props.actionItem.category.layerIdentifier
 		);
 
 	useEffect(() => {

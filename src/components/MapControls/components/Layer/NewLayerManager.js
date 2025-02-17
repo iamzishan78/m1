@@ -70,7 +70,7 @@ function NewLayerManager() {
 	const createLayer = () => {
 		const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
 		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
-		const layerShapeName = source.name === 'M1 Platform' ? null : selectCategory.name;
+		const layerIdentifier = source.name === 'M1 Platform' ? null : selectCategory.name;
 		const identifier = source.name === 'M1 Platform' ? selectCategory.value + uuid() : layerName + uuid();
 
 		addLayer({
@@ -78,7 +78,7 @@ function NewLayerManager() {
 				layer: {
 					...layer,
 					layerCategory,
-					layerShapeName,
+					layerIdentifier,
 					layerType,
 					identifier,
 					groupId: null,
@@ -115,7 +115,7 @@ function NewLayerManager() {
 			getShapeFileSchema({
 				variables: {
 					file: source.file,
-					layerShapeName: selectCategory.layerShapeName,
+					layerIdentifier: selectCategory.layerIdentifier,
 				},
 			});
 		}

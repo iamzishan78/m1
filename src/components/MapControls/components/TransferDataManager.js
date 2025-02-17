@@ -232,12 +232,12 @@ export default function TransferDataManager() {
 											return (
 												<StyledListItem key={layer._id || layer.layerName} ContainerComponent="li">
 													<Checkbox
-														checked={selectedSourceCategory?.layerName === (layer.layerName || layer.layerShapeName)}
+														checked={selectedSourceCategory?.layerName === (layer.layerName || layer.layerIdentifier)}
 														color="dark gray"
 														onClick={e => e.stopPropagation()}
 														onChange={() => {
 															setSelectedSourceCategory(
-																selectedSourceCategory?.layerName !== (layer.layerName || layer.layerShapeName)
+																selectedSourceCategory?.layerName !== (layer.layerName || layer.layerIdentifier)
 																	? layer
 																	: null
 															);

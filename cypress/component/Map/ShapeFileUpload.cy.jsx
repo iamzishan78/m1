@@ -71,7 +71,7 @@ const dataset = {
 		{
 			name: 'surv025Abspt - Point',
 			layerGeometry: 'Point',
-			layerShapeName: 'surv025Abspt - Point',
+			layerIdentifier: 'surv025Abspt - Point',
 			file: '66d70caad30f046db3a43a82',
 			layerName: 'surv025Abspt - Point',
 			groupId: layerGroupId,
@@ -79,7 +79,7 @@ const dataset = {
 		{
 			name: 'surv025Abspt_ - Point',
 			layerGeometry: 'Point',
-			layerShapeName: 'surv025Abspt_ - Point',
+			layerIdentifier: 'surv025Abspt_ - Point',
 			file: '66d70caad30f046db3a43a82',
 			layerName: 'surv025Abspt_ - Point',
 			groupId: layerGroupId,
@@ -87,7 +87,7 @@ const dataset = {
 		{
 			name: 'surv025l - LineString',
 			layerGeometry: 'LineString',
-			layerShapeName: 'surv025l - LineString',
+			layerIdentifier: 'surv025l - LineString',
 			file: '66d70caad30f046db3a43a82',
 			layerName: 'surv025l - LineString',
 			groupId: layerGroupId,
@@ -95,7 +95,7 @@ const dataset = {
 		{
 			name: 'surv025Labpt - Point',
 			layerGeometry: 'Point',
-			layerShapeName: 'surv025Labpt - Point',
+			layerIdentifier: 'surv025Labpt - Point',
 			file: '66d70caad30f046db3a43a82',
 			layerName: 'surv025Labpt - Point',
 			groupId: layerGroupId,
@@ -103,7 +103,7 @@ const dataset = {
 		{
 			name: 'surv025Labpt_ - Point',
 			layerGeometry: 'Point',
-			layerShapeName: 'surv025Labpt_ - Point',
+			layerIdentifier: 'surv025Labpt_ - Point',
 			file: '66d70caad30f046db3a43a82',
 			layerName: 'surv025Labpt_ - Point',
 			groupId: layerGroupId,
@@ -111,7 +111,7 @@ const dataset = {
 		{
 			name: 'surv025l_ - LineString',
 			layerGeometry: 'LineString',
-			layerShapeName: 'surv025l_ - LineString',
+			layerIdentifier: 'surv025l_ - LineString',
 			file: '66d70caad30f046db3a43a82',
 			layerName: 'surv025l_ - LineString',
 			groupId: layerGroupId,
@@ -119,7 +119,7 @@ const dataset = {
 		{
 			name: 'surv025p - Polygon',
 			layerGeometry: 'Polygon',
-			layerShapeName: 'surv025p - Polygon',
+			layerIdentifier: 'surv025p - Polygon',
 			file: '66d70caad30f046db3a43a82',
 			layerName: 'surv025p - Polygon',
 			groupId: layerGroupId,
@@ -127,7 +127,7 @@ const dataset = {
 		{
 			name: 'surv025p_ - Polygon',
 			layerGeometry: 'Polygon',
-			layerShapeName: 'surv025p_ - Polygon',
+			layerIdentifier: 'surv025p_ - Polygon',
 			file: '66d70caad30f046db3a43a82',
 			layerName: 'surv025p_ - Polygon',
 			groupId: layerGroupId,

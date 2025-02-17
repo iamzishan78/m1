@@ -39,7 +39,7 @@ const ShapeFile = () => {
 		return dataset.categories.map(category => ({
 			...ds,
 			layerGeometry: category.layerGeometry,
-			layerShapeName: category.layerShapeName,
+			layerIdentifier: category.layerIdentifier,
 		}));
 	}, [dataset]);
 
@@ -52,10 +52,10 @@ const ShapeFile = () => {
 			tableGlobalController.reInitialized();
 
 			return {
-				filterLayerType: fileLayer.layerShapeName,
+				filterLayerType: fileLayer.layerIdentifier,
 				defaultFilters: fileQuery.variables.filters,
 				advanceSearch: fileQuery.variables.search.advanceSearch,
-				...(subFiles.length > 1 && { tabLabels: subFiles.map(f => f.layerShapeName) }),
+				...(subFiles.length > 1 && { tabLabels: subFiles.map(f => f.layerIdentifier) }),
 			};
 		}
 

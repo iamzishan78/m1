@@ -220,8 +220,8 @@ function LayerStyling() {
 	useEffect(() => {
 		setRows(0);
 		if (selectedLayer.file) {
-			selectedLayer.layerShapeName = selectedLayer.layerShapeName || selectedLayer.layerCategory;
-			layerFeaturesCount({ variables: { fileId: selectedLayer.file, layerShapeName: selectedLayer.layerShapeName } });
+			selectedLayer.layerIdentifier = selectedLayer.layerIdentifier || selectedLayer.layerCategory;
+			layerFeaturesCount({ variables: { fileId: selectedLayer.file, layerIdentifier: selectedLayer.layerIdentifier } });
 		}
 	}, [mapControlStates.selectedLayer.file, layerFeaturesCount]);
 

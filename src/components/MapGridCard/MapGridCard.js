@@ -238,13 +238,13 @@ function MapGridCard() {
 		if (mapControlsStateValues?.selectedLayer) {
 			const fileQuery = generateFileFilters({ fileLayer: mapControlsStateValues.selectedLayer });
 			const fileId = mapControlsStateValues.selectedLayer?.file;
-			const layerShapeName = mapControlsStateValues?.selectedLayer?.layerShapeName;
+			const layerIdentifier = mapControlsStateValues?.selectedLayer?.layerIdentifier;
 
 			const globalLayer = layerController
 				.getValue('layers')
-				?.find(layer => layer?.layerShapeName === layerShapeName && layer?.file === fileId);
+				?.find(layer => layer?.layerIdentifier === layerIdentifier && layer?.file === fileId);
 
-			const layerDataSourceName = `${fileId}_${layerShapeName}`;
+			const layerDataSourceName = `${fileId}_${layerIdentifier}`;
 			tableGlobalController.reInitialized();
 			return {
 				filterLayerType: layerDataSourceName,

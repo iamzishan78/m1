@@ -257,8 +257,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		navStateValues.wellFilterCount +
 		(selectedView?.filters?.filter(filter => {
 			const fileId = filter?.dataSourceName?.substring(0, filter?.dataSourceName?.indexOf('_'));
-			const layerShapeName = filter?.dataSourceName?.substring(filter?.dataSourceName?.indexOf('_') + 1);
-			const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
+			const layerIdentifier = filter?.dataSourceName?.substring(filter?.dataSourceName?.indexOf('_') + 1);
+			const layer = layers.find(l => l.file === fileId && l.layerIdentifier === layerIdentifier);
 			const dataSourceExists = filter?.dataSourceName && (customLayersFieldAccessors[filter?.dataSourceName] || layer);
 			return (filter?.filterValues || ['empty', 'notEmpty'.includes(filter?.filterType)]) && dataSourceExists;
 		})?.length || 0);

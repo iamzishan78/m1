@@ -461,7 +461,7 @@ function Map({
 		);
 
 		const layer = layerStateValues.layers.find(
-			l => popupStateValues.selectedShapeFile.properties?.layerShapeName === l.layerShapeName
+			l => popupStateValues.selectedShapeFile.properties?.layerShapeName === l.layerIdentifier
 		);
 
 		udLayerClickHandler(popupStateValues.selectedShapeFile, layer);
