@@ -149,9 +149,6 @@ function Map({
 		'mapStateValues'
 	);
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
-	const {
-		stateValues: { currentAssetRecord },
-	} = detailCardController.useState(['currentAssetRecord'], 'stateValues');
 
 	const [stateApp, setStateApp] = useContext(AppContext);
 
@@ -499,12 +496,11 @@ function Map({
 
 	useEffect(() => {
 		const clickedFeature = layerController.getValue('clickedFeature');
-		const isGenericAsset = currentAssetRecord?.assetShape?.isGenericAssetShape;
 		if (paramId && clickedFeature?.object?.id !== paramId) {
 			try {
 				if (type === 'wells') {
 					getElasticWell(paramId);
-				} else if (!isGenericAsset) {
+				} else {
 					getCustomLayer(paramId);
 				}
 			} catch (e) {

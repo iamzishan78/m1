@@ -30,7 +30,7 @@ import { getPolygonString } from 'components/Shared/functions';
 import { shapeTypeLayers, calculateLandArea } from 'components/Shared/functions/shapeLayer';
 import ConvertContact from 'components/Shared/svgIcons/convert_contact';
 
-import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
+import { ADD_RECORD_IN_RUN_TIME_MODEL, UPDATE_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
@@ -50,6 +50,7 @@ import FilterAltIcon from '../../../Shared/svgIcons/FilterAltIcon';
 import { drawBoundary, clearSelectedAbstracts } from '../DrawShapes/drawShapesHelpers';
 import { tableGlobalController } from 'hookstate/tableController';
 import AddCustomAssetDialog from 'components/Shared/components/common/DetailCard/RightDialogs/AddCustomAssetDialog';
+import { detailCardController } from 'hookstate/detailCardController';
 
 const ShapeActionsPopup = props => {
 	const dispatch = useDispatch();
@@ -82,6 +83,14 @@ const ShapeActionsPopup = props => {
 		selectedAction,
 		shapeToExtend,
 	} = drawState.stateValues;
+
+	const {
+		stateValues: { currentAssetRecord },
+	} = detailCardController.useState(['currentAssetRecord'], 'stateValues');
+
+	const {
+		globalStateValues: { currentAsset },
+	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
 
 	const [isDeleteModal, setDeleteModal] = useState(false);
 	const [error, setError] = useState(false);
@@ -147,6 +156,11 @@ const ShapeActionsPopup = props => {
 	});
 
 	const [addRecordInRunTimeModel] = useMutation(ADD_RECORD_IN_RUN_TIME_MODEL, {
+		fetchPolicy: 'no-cache',
+		awaitRefetchQueries: true,
+	});
+
+	const [updateRecordInRunTimeModel] = useMutation(UPDATE_RECORD_IN_RUN_TIME_MODEL, {
 		fetchPolicy: 'no-cache',
 		awaitRefetchQueries: true,
 	});
@@ -281,6 +295,19 @@ const ShapeActionsPopup = props => {
 		},
 		[addRecordInRunTimeModel, dispatch, history, abstractData]
 	);
+
+	const updateAndOpenMapAssetShape = useCallback(() => {
+		if (currentAssetRecord) {
+			drawController.confirmShapeEditing({
+				dispatch,
+				history,
+				updateRecordInRunTimeModel,
+				currentAssetRecord,
+				currentAsset,
+				isEditCustomAsset: true,
+			});
+		}
+	}, [addRecordInRunTimeModel, dispatch, history, abstractData, currentAssetRecord]);
 
 	const deleteAOI = () => {
 		// Turning off the confirmation modal
@@ -658,7 +685,8 @@ const ShapeActionsPopup = props => {
 											shapeEditMode === 'redraw' ||
 											shapeEditMode === 'fullEdit'
 										) {
-											drawController.confirmShapeEditing(updateCustomLayer, dispatch, history);
+											if (currentAssetRecord) updateAndOpenMapAssetShape();
+											else drawController.confirmShapeEditing({ updateCustomLayer, dispatch, history });
 										}
 									}}
 								>

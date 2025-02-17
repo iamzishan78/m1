@@ -915,7 +915,15 @@ const drawStateControllerHandler = state => {
 		updateSelectedLayerFeature(dispatch, layerData);
 	};
 
-	const confirmShapeEditing = (updateCustomLayer, dispatch, history) => {
+	const confirmShapeEditing = ({
+		updateCustomLayer,
+		dispatch,
+		history,
+		updateRecordInRunTimeModel,
+		currentAssetRecord,
+		currentAsset,
+		isEditCustomAsset,
+	}) => {
 		const { featureToEdit, shapeEditMode, currentFeature } = drawController.getValues([
 			'featureToEdit',
 			'shapeEditMode',
@@ -971,46 +979,87 @@ const drawStateControllerHandler = state => {
 				currentFeature.geometry = drawFeature.geometry;
 			}
 		}
-		const shapeJson = {
-			...featureToEdit,
-			geometry: currentFeature?.geometry,
-			properties: {
-				...featureToEdit.properties,
-				shapeArea: calculateLandArea(currentFeature),
-				shapeCenter: calculateShapeCenter(currentFeature?.geometry),
-			},
-		};
 
 		const user = globalStateController.getValue('user');
 
-		const customLayerData = {
-			shapeJson,
-			shape: JSON.stringify(shapeJson),
-			// layer: featureToEdit.layer.id,
-			user: user.mongoId,
-		};
-		addCustomShapeProperties(currentFeature, window.drawRef);
-		updateCustomLayer({
-			variables: {
-				customLayerId: featureToEdit.id,
-				customLayer: customLayerData,
-			},
-			refetchQueries: ['getCustomLayers'],
-			awaitRefetchQueries: true,
-		}).then(() => {
-			jobController.toggleBulkUpload();
-			if (isShapeResizeMode) {
-				let newPath = '';
+		if (!isEditCustomAsset) {
+			const shapeJson = {
+				...featureToEdit,
+				geometry: currentFeature?.geometry,
+				properties: {
+					...featureToEdit.properties,
+					shapeArea: calculateLandArea(currentFeature),
+					shapeCenter: calculateShapeCenter(currentFeature?.geometry),
+				},
+			};
 
-				const type = featureToEdit?.properties?.agreementType || featureToEdit?.properties?.type;
+			const customLayerData = {
+				shapeJson,
+				shape: JSON.stringify(shapeJson),
+				// layer: featureToEdit.layer.id,
+				user: user.mongoId,
+			};
+			addCustomShapeProperties(currentFeature, window.drawRef);
+			updateCustomLayer({
+				variables: {
+					customLayerId: featureToEdit.id,
+					customLayer: customLayerData,
+				},
+				refetchQueries: ['getCustomLayers'],
+				awaitRefetchQueries: true,
+			}).then(() => {
+				jobController.toggleBulkUpload();
+				if (isShapeResizeMode) {
+					let newPath = '';
 
-				if (type) {
-					newPath = `/map/${type}s/${featureToEdit?.id}`;
-					history.location.pathname !== newPath && history.replace(newPath);
+					const type = featureToEdit?.properties?.agreementType || featureToEdit?.properties?.type;
+
+					if (type) {
+						newPath = `/map/${type}s/${featureToEdit?.id}`;
+						history.location.pathname !== newPath && history.replace(newPath);
+					}
+					layerController.resetBounds(customLayerData?.shapeJson?.identifier || customLayerData?.shapeJson?.layer?.id);
 				}
-				layerController.resetBounds(customLayerData?.shapeJson?.identifier || customLayerData?.shapeJson?.layer?.id);
-			}
-		});
+			});
+		} else if (isEditCustomAsset && currentAssetRecord?.assetShape?.isGenericAssetShape) {
+			const currentShape = currentAssetRecord?.assetShape?.shapeJson;
+			const shapeJson = {
+				...currentShape,
+				geometry: { ...currentShape?.geometry, ...currentFeature?.geometry },
+				properties: {
+					...currentShape?.properties,
+					...featureToEdit.properties,
+					shapeArea: calculateLandArea(currentFeature),
+					shapeCenter: calculateShapeCenter(currentFeature?.geometry),
+				},
+				identifier: featureToEdit?.identifier,
+				layer: featureToEdit?.layer,
+			};
+
+			const assetShape = {
+				...currentAssetRecord?.assetShape,
+				shapeJson,
+				shape: JSON.stringify(shapeJson),
+				user: user.mongoId,
+			};
+
+			updateRecordInRunTimeModel({
+				variables: {
+					tableName: currentAsset?.tableName,
+					ids: [currentAssetRecord?._id],
+					record: { assetShape },
+				},
+				refetchQueries: ['getRecordFromRunTimeModel', 'getCustomAssetInfo', 'getDbData'],
+				awaitRefetchQueries: true,
+			}).then(result => {
+				if (!result?.data?.updateRecordInRunTimeModel?.success) {
+					dispatch(showErrorMessage(result?.data?.updateRecordInRunTimeModel?.message));
+					return;
+				}
+				layerController.resetBounds(assetShape?.shapeJson?.identifier || assetShape?.shapeJson?.layer?.id, true);
+			});
+		}
+
 		setTimeout(() => actionClose(dispatch, { rotateableFeature: drawFeature }), 0);
 	};
 
