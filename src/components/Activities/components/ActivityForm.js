@@ -9,15 +9,16 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { useHookstate } from '@hookstate/core';
 import get from 'lodash/get';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
 import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
+import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 import DateField from 'components/Shared/Slideout/FieldComponents/DateField';
 import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
 import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
 import SearchableSelectField from 'components/Shared/Slideout/FieldComponents/searchableSelectField';
-import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTextfield';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
 import { slidoutState, globalState } from 'hookstate/initialStates';
@@ -488,10 +489,18 @@ export default function ActivityForm({ setSelectedActivityId }) {
 
 	return (
 		<div className={classes.inputFieldRoot}>
-			<SimpleTextField
-				title="Description"
-				value={activityName}
-				setValue={value => slidoutStateController.updateTitle(value)}
+			<CustomTextField
+				fieldConfig={{
+					margin: 'dense',
+					variant: 'outlined',
+					size: 'small',
+				}}
+				fieldAttributes={{
+					value: activityName,
+					title: 'Description',
+					titleComponent: 'div',
+					layout: 'horizontal',
+				}}
 			/>
 			<SingleSelectField
 				title="Type"
@@ -638,3 +647,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 		</div>
 	);
 }
+
+ActivityForm.propTypes = {
+	setSelectedActivityId: PropTypes.func.isRequired,
+};

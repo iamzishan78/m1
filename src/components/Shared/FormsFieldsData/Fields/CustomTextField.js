@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 
 import { AddIcCall, Autorenew, EmailOutlined, Textsms, Voicemail } from '@mui/icons-material';
-import { CircularProgress, Grid, IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
+import { CircularProgress, Grid, IconButton, InputAdornment, TextField, Tooltip, Box } from '@mui/material';
 
 import PropTypes from 'prop-types';
 import validator from 'validator';
 
 import UrlTooltip from './UrlTooltip';
 
-const classes = {
+const sx = {
 	maxWidth: {
 		width: '100%',
 		'& .MuiInputLabel-root.Mui-focused': {
@@ -90,7 +90,7 @@ function renderAdornment(type, value, handleAction, dialpadFeature, dialpadIds) 
 			<InputAdornment position="end" key={iconConfig.tooltip}>
 				<Tooltip title={iconConfig.tooltip} placement="top">
 					<IconButton
-						className={classes.emailAdornment}
+						className={sx.emailAdornment}
 						href={iconConfig.href?.(value, dialpadFeature, dialpadIds)}
 						onClick={() => iconConfig.action(value, handleAction, dialpadFeature, dialpadIds)}
 					>
@@ -104,7 +104,7 @@ function renderAdornment(type, value, handleAction, dialpadFeature, dialpadIds) 
 	return (
 		<InputAdornment position="end">
 			<Tooltip title={config.tooltip} placement="top">
-				<IconButton className={classes.emailAdornment} href={config.action(value)}>
+				<IconButton className={sx.emailAdornment} href={config.action(value)}>
 					{config.icon}
 				</IconButton>
 			</Tooltip>
@@ -134,6 +134,7 @@ function CustomTextField({
 		value: _value = '',
 		label = null,
 		title = null,
+		titleComponent = 'h3',
 		inputRef = null,
 		placeholder = '',
 		InputProps = {},
@@ -142,6 +143,7 @@ function CustomTextField({
 		isValueOverridden = () => false,
 		resetOveriddenValue,
 		endAdornmentProps,
+		layout = 'vertical',
 	} = {},
 	...propsRest
 }) {
@@ -207,7 +209,7 @@ function CustomTextField({
 					onKeyDown={onKeyDown || (() => {})}
 					onMouseEnter={() => handleTooltipOpen(textFieldValue)}
 					onMouseLeave={() => setShowUrlTooltip(false)}
-					sx={baseValueChanged ? classes.baseValueChanged : classes.maxWidth}
+					sx={{ ...propsRest.sx, ...(baseValueChanged ? sx.baseValueChanged : sx.maxWidth) }}
 					InputProps={{
 						...InputProps,
 						endAdornment: baseValueChanged ? (
@@ -268,14 +270,23 @@ function CustomTextField({
 		);
 	};
 
+	const titleXs = layout === 'horizontal' ? 3 : 12;
+	const fieldXs = layout === 'horizontal' ? 9 : 12;
+
 	return (
-		<Grid item xs={12}>
-			{title && <h3>{title}</h3>}
-			{control ? (
-				<Controller control={control} name={name} render={props => renderTextField(props)} />
-			) : (
-				renderTextField()
+		<Grid container spacing={2}>
+			{title && (
+				<Grid item xs={titleXs} sx={{ display: 'flex', alignItems: 'center' }}>
+					<Box component={titleComponent}>{title}</Box>
+				</Grid>
 			)}
+			<Grid item xs={fieldXs}>
+				{control ? (
+					<Controller control={control} name={name} render={props => renderTextField(props)} />
+				) : (
+					renderTextField()
+				)}
+			</Grid>
 		</Grid>
 	);
 }

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect, useRef } from 'react';
 
 import { FormControl, Grid } from '@material-ui/core';
@@ -7,18 +6,18 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { useHookstate } from '@hookstate/core';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
+import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 import DateField from 'components/Shared/Slideout/FieldComponents/DateField';
 import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
 import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
-import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTextfield';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
 import { DELETEACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-import { slidoutState } from 'hookstate/initialStates';
-import { globalState } from 'hookstate/initialStates';
+import { slidoutState, globalState } from 'hookstate/initialStates';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -26,7 +25,30 @@ import { AppContext } from 'AppContext';
 
 import { obligationFormState } from './obligationFormStateController';
 
-const useStyles = makeStyles(theme => ({
+const commonTextFieldProps = {
+	fieldConfig: {
+		margin: 'dense',
+		variant: 'outlined',
+		size: 'small',
+		disabled: true,
+	},
+	fieldAttributes: {
+		titleComponent: 'div',
+		layout: 'horizontal',
+	},
+	sx: {
+		'&:hover': {
+			backgroundColor: '#EBEBEB',
+		},
+	},
+};
+
+const useStyles = makeStyles(() => ({
+	fieldGridStyle: {
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
 	dialogExpCard: {
 		'& .MuiDialog-paperScrollPaper': {
 			height: '100%',
@@ -191,6 +213,26 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		notes,
 	} = useHookstate(obligationFormState);
 
+	const clearFields = () => {
+		notes.set('');
+
+		activityType.set('');
+		slidoutStateController.updateTitle('');
+		status.set(false);
+		startDate.set(getCurrentDate());
+		endDate.set(getCurrentDate());
+		applicable.set('');
+	};
+
+	const onModalClose = () => {
+		window.history.pushState('', '', '/calendar/obligations');
+
+		clearFields();
+		setSelectedActivityId(null);
+		slidoutState.selectedActivity.set(null);
+		slidoutStateController.hideSlideout();
+	};
+
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
 		fetchPolicy: 'cache-and-network',
 	});
@@ -228,6 +270,23 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
+
+	const updateActivity = async () => {
+		globalState.universalLoader.set(true);
+
+		updateActivityMutation({
+			variables: {
+				activity: {
+					_id: selectedActivity.get()?._id,
+					...(status.get() ? { status: status.get() } : {}),
+					notes: notes.get(),
+					user: stateApp.user._id,
+				},
+			},
+		}).then(() => {
+			globalState.universalLoader.set(false);
+		});
+	};
 
 	const statusOptions = [
 		{ value: 'notYetReviewed', label: 'Not Yet Reviewed' },
@@ -286,47 +345,17 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		}
 	}, [formMode.get()]);
 
-	const onModalClose = () => {
-		window.history.pushState('', '', '/calendar/obligations');
-
-		clearFields();
-		setSelectedActivityId(null);
-		slidoutState.selectedActivity.set(null);
-		slidoutStateController.hideSlideout();
-	};
-
-	const clearFields = () => {
-		notes.set('');
-
-		activityType.set('');
-		slidoutStateController.updateTitle('');
-		status.set(false);
-		startDate.set(getCurrentDate());
-		endDate.set(getCurrentDate());
-		applicable.set('');
-	};
-
-	const updateActivity = async () => {
-		globalState.universalLoader.set(true);
-
-		updateActivityMutation({
-			variables: {
-				activity: {
-					_id: selectedActivity.get()?._id,
-					...(status.get() ? { status: status.get() } : {}),
-					notes: notes.get(),
-					user: stateApp.user._id,
-				},
-			},
-		}).then(result => {
-			globalState.universalLoader.set(false);
-		});
-	};
-
 	return (
 		<div>
 			<div className={classes.inputFieldRoot}>
-				<SimpleTextField disabled title="Obligation Type" value={activityType.get()} setValue={() => {}} />
+				<CustomTextField
+					{...commonTextFieldProps}
+					fieldAttributes={{
+						...commonTextFieldProps.fieldAttributes,
+						value: activityType.get(),
+						title: 'Obligation Type',
+					}}
+				/>
 
 				<FormControl variant="outlined" fullWidth size="small">
 					<Grid container className={classes.gridStyle}>
@@ -335,12 +364,40 @@ export default function ObligationForm({ setSelectedActivityId }) {
 					</Grid>
 				</FormControl>
 
-				<SimpleTextField disabled title="Frequecy" value={frequency.get()} setValue={() => {}} />
+				<CustomTextField
+					{...commonTextFieldProps}
+					fieldAttributes={{
+						...commonTextFieldProps.fieldAttributes,
+						value: frequency.get(),
+						title: 'Frequecy',
+					}}
+				/>
 				{activityType.get() !== 'Payment' && (
-					<SimpleTextField disabled title="Applicable" value={applicable.get()} setValue={() => {}} />
+					<CustomTextField
+						{...commonTextFieldProps}
+						fieldAttributes={{
+							...commonTextFieldProps.fieldAttributes,
+							value: applicable.get(),
+							title: 'Applicable',
+						}}
+					/>
 				)}
-				<SimpleTextField disabled title="Value" value={obligationValue.get()} setValue={() => {}} />
-				<SimpleTextField disabled title="Responsible Party" value={responsibleParty.get()} setValue={() => {}} />
+				<CustomTextField
+					{...commonTextFieldProps}
+					fieldAttributes={{
+						...commonTextFieldProps.fieldAttributes,
+						value: obligationValue.get(),
+						title: 'Value',
+					}}
+				/>
+				<CustomTextField
+					{...commonTextFieldProps}
+					fieldAttributes={{
+						...commonTextFieldProps.fieldAttributes,
+						value: responsibleParty.get(),
+						title: 'Responsible Party',
+					}}
+				/>
 
 				<OwnerField
 					disabled={true}
@@ -365,3 +422,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		</div>
 	);
 }
+
+ObligationForm.propTypes = {
+	setSelectedActivityId: PropTypes.func.isRequired,
+};
