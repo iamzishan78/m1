@@ -287,7 +287,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			if (canUpdateMapView) {
 				const tableKey = Object.keys(tableESState).find(key => {
 					const tableState = tableESState[key].get({ noproxy: true });
-					return tableState?.layerIdentifier === dataSourceName;
+					return tableState?.layerDataSourceName === dataSourceName;
 				});
 				const tableState = tableESState[tableKey]?.get({ noproxy: true });
 
@@ -377,7 +377,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		}
 		const tableKey = Object.keys(tableESState).find(key => {
 			const tableState = tableESState[key].get({ noproxy: true });
-			return tableState?.layerIdentifier === dataSourceName;
+			return tableState?.layerDataSourceName === dataSourceName;
 		});
 
 		const fields = [
@@ -391,7 +391,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				onChange: (e, v, r, previousValue) => {
 					const tableKey = Object.keys(tableESState).find(key => {
 						const tableState = tableESState[key].get({ noproxy: true });
-						return tableState?.layerIdentifier === previousValue?.value;
+						return tableState?.layerDataSourceName === previousValue?.value;
 					});
 					tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 					tableController(tableKey).setFilterMode(
@@ -482,7 +482,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 		const tableKey = Object.keys(tableESState).find(key => {
 			const tableState = tableESState[key].get({ noproxy: true });
-			return tableState?.layerIdentifier === dataSourceName;
+			return tableState?.layerDataSourceName === dataSourceName;
 		});
 		tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 		tableController(tableKey).setFilterMode(

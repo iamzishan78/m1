@@ -258,7 +258,7 @@ const tableESStateControllerHandler = state => ({
 		tableKey,
 		{
 			esIndex,
-			layerIdentifier,
+			layerDataSourceName,
 			layerSchema,
 			pageSize,
 			defaultSort,
@@ -332,7 +332,7 @@ const tableESStateControllerHandler = state => ({
 		const selectedMapViewFilters = selectedView?.filters || [];
 
 		const mapViewFilters = selectedMapViewFilters
-			.filter(view => view.dataSourceName === layerIdentifier)
+			.filter(view => view.dataSourceName === layerDataSourceName)
 			.filter(
 				view =>
 					view?.filterValues?.length > 0 ||
@@ -381,7 +381,7 @@ const tableESStateControllerHandler = state => ({
 			search,
 			columnVirtualization,
 			globalFilter,
-			layerIdentifier,
+			layerDataSourceName,
 			isClientSide,
 			excludeFields,
 		});
@@ -487,7 +487,7 @@ const tableESStateControllerHandler = state => ({
 				showColumnFilters: formatedGridView?.filters ? true : false,
 				defaultFilters: filterValidFilters(_defaultFilters),
 				filters: filterValidFilters(extractUniqueFilters(combinedFilters)),
-				layerIdentifier,
+				layerDataSourceName,
 				layerSchema,
 				sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],
 				columnVisibility: formatedGridView?.columnVisibility ? formatedGridView.columnVisibility : columnVisibility,
@@ -518,7 +518,7 @@ const tableESStateControllerHandler = state => ({
 		if (mapViewFilters.length > 0) {
 			tableController(tableKey).setShowColumnFilters(true);
 		}
-		if (customLayersFieldAccessors[layerIdentifier]) {
+		if (customLayersFieldAccessors[layerDataSourceName]) {
 			mapViewFilters?.forEach(filter => {
 				tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
 			});
@@ -730,9 +730,9 @@ const tableESStateControllerHandler = state => ({
 		const tableState = state.get({
 			noproxy: true,
 		});
-		if (tableState?.layerIdentifier) {
+		if (tableState?.layerDataSourceName) {
 			const identifierMapViewSchema =
-				customLayersFieldAccessors[tableState?.layerIdentifier]?.keys || tableState?.layerSchema;
+				customLayersFieldAccessors[tableState?.layerDataSourceName]?.keys || tableState?.layerSchema;
 			if (
 				identifierMapViewSchema &&
 				identifierMapViewSchema?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
@@ -752,7 +752,7 @@ const tableESStateControllerHandler = state => ({
 				const updateMapFilter = isNonValuesFilter && existingFilter?.filterType === filter?.searchType;
 				if (!(isValuesEqual || updateMapFilter)) {
 					const newFilter = {
-						dataSourceName: tableState?.layerIdentifier,
+						dataSourceName: tableState?.layerDataSourceName,
 						filterType: tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode
 							? tableState.filterModes[filter.field.replace('.keyword', '')]?.mode
 							: existingFilter?.filterType
@@ -769,7 +769,7 @@ const tableESStateControllerHandler = state => ({
 						...mapViewsFitlers.filter(
 							({ fieldName, dataSourceName }) =>
 								(fieldName?.value || fieldName).replace('.keyword', '') !== filter.field ||
-								dataSourceName !== tableState?.layerIdentifier
+								dataSourceName !== tableState?.layerDataSourceName
 						),
 						newFilter,
 					];
@@ -810,7 +810,7 @@ const tableESStateControllerHandler = state => ({
 				noproxy: true,
 			});
 
-			if (tableState?.layerIdentifier) {
+			if (tableState?.layerDataSourceName) {
 				viewStateController('MapView').updateState({
 					shouldSyncView,
 					selectedView: {
@@ -819,7 +819,7 @@ const tableESStateControllerHandler = state => ({
 							...mapViewsFitlers.filter(
 								({ dataSourceName, fieldName }) =>
 									(fieldName?.value || fieldName).replace('.keyword', '') !== field ||
-									dataSourceName !== tableState?.layerIdentifier
+									dataSourceName !== tableState?.layerDataSourceName
 							),
 						],
 					},
@@ -868,7 +868,7 @@ const tableESStateControllerHandler = state => ({
 			.filter(filter => !filterKeys.includes(filter.field.replace(/.keyword/, 'g', '')))
 			.map(filter => filter.field);
 
-		if (tableState?.layerIdentifier) {
+		if (tableState?.layerDataSourceName) {
 			viewStateController('MapView').updateState({
 				shouldSyncView: true,
 				selectedView: {
@@ -877,7 +877,7 @@ const tableESStateControllerHandler = state => ({
 						...mapViewsFitlers.filter(
 							({ dataSourceName, fieldName }) =>
 								!keysToClear?.includes((fieldName?.value || fieldName)?.replace('.keyword', '')) ||
-								dataSourceName !== tableState?.layerIdentifier
+								dataSourceName !== tableState?.layerDataSourceName
 						),
 					],
 				},
@@ -992,7 +992,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			search,
 			columnVirtualization,
-			layerIdentifier,
+			layerDataSourceName,
 		} = state.get({
 			noproxy: true,
 		});
@@ -1020,7 +1020,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			search,
 			columnVirtualization,
-			layerIdentifier,
+			layerDataSourceName,
 		});
 
 		genericState.TableSchema = _TableSchema;

@@ -100,7 +100,7 @@ export const handleMRTSchema = ({
 	defaultFlterMode,
 	search,
 	globalFilter,
-	layerIdentifier,
+	layerDataSourceName,
 	isClientSide,
 	excludeFields,
 }) => {
@@ -114,7 +114,7 @@ export const handleMRTSchema = ({
 	const selectedMapView = viewStateController('MapView').getValue('selectedView');
 	const selectedMapViewFilters = selectedMapView?.filters || [];
 
-	const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
+	const dataSourceViews = selectedMapViewFilters?.filter(view => layerDataSourceName === view.dataSourceName);
 	const mapViewFilters =
 		dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
 		[];
@@ -189,7 +189,7 @@ export const handleMRTSchema = ({
 					name: schemaColumn.accessorKey || schemaColumn.id,
 					schemaColumn,
 					controller: tableController,
-					layerIdentifier,
+					layerDataSourceName,
 				});
 			}
 
@@ -302,7 +302,7 @@ export const handleMRTSchema = ({
 				name: schemaColumn.accessorKey || schemaColumn.id,
 				schemaColumn,
 				controller: tableController,
-				layerIdentifier,
+				layerDataSourceName,
 			});
 		}
 
@@ -310,7 +310,7 @@ export const handleMRTSchema = ({
 		const columnMapView = mapViewFilters.find(
 			filter => filter?.field?.replace('.keyword', '') === schemaColumn?.name?.replace('.keyword', '')
 		);
-		if (!columnMapView || customLayersFieldAccessors[layerIdentifier]) {
+		if (!columnMapView || customLayersFieldAccessors[layerDataSourceName]) {
 			return schemaColumn;
 		}
 

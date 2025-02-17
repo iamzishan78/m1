@@ -244,10 +244,10 @@ function MapGridCard() {
 				.getValue('layers')
 				?.find(layer => layer?.layerShapeName === layerShapeName && layer?.file === fileId);
 
-			const layerIdentifier = `${fileId}_${layerShapeName}`;
+			const layerDataSourceName = `${fileId}_${layerShapeName}`;
 			tableGlobalController.reInitialized();
 			return {
-				filterLayerType: layerIdentifier,
+				filterLayerType: layerDataSourceName,
 				maxTableHeight: '45vh',
 				layerSchema: mapControlsStateValues?.selectedLayer?.layerSchema || globalLayer?.layerSchema,
 				toolbarInternalActions: {
@@ -258,7 +258,7 @@ function MapGridCard() {
 				},
 				defaultFilters: fileQuery?.variables?.filters || [],
 				advanceSearch: fileQuery?.variables?.search?.advanceSearch || [],
-				layerIdentifier,
+				layerDataSourceName,
 			};
 		} else {
 			return {};
@@ -393,7 +393,7 @@ function MapGridCard() {
 												},
 												maxTableHeight: '45vh',
 												filterLayerType: 'Wells',
-												layerIdentifier: 'Wells',
+												layerDataSourceName: 'Wells',
 											}}
 										/>
 									)}
@@ -427,7 +427,7 @@ function MapGridCard() {
 												},
 												maxTableHeight: '45vh',
 												filterLayerType: 'Units',
-												layerIdentifier: 'Units',
+												layerDataSourceName: 'Units',
 											}}
 										/>
 									)}
@@ -443,7 +443,7 @@ function MapGridCard() {
 												},
 												maxTableHeight: '45vh',
 												filterLayerType: 'Agreements',
-												layerIdentifier: 'Agreements',
+												layerDataSourceName: 'Agreements',
 											}}
 										/>
 									)}
@@ -460,7 +460,7 @@ function MapGridCard() {
 												},
 												maxTableHeight: '45vh',
 												filterLayerType: 'Parcels',
-												layerIdentifier: 'Parcels',
+												layerDataSourceName: 'Parcels',
 											}}
 										/>
 									)}
@@ -476,7 +476,7 @@ function MapGridCard() {
 												},
 												maxTableHeight: '45vh',
 												filterLayerType: 'My Wells',
-												layerIdentifier: 'My Wells',
+												layerDataSourceName: 'My Wells',
 											}}
 										/>
 									)}

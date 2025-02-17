@@ -8,11 +8,11 @@ import { viewStateController } from '../Common/GridView/ViewController';
 export const columnFilterModesFnRefs = {};
 
 const filterModeMenu =
-	({ options, tableKey, name, schemaColumn, controller, layerIdentifier }) =>
+	({ options, tableKey, name, schemaColumn, controller, layerDataSourceName }) =>
 	({ onSelectFilterMode }) => {
 		const selectedMapView = viewStateController('MapView').getValue('selectedView');
 		const mapViewFilter = selectedMapView?.filters?.find(
-			filter => filter?.fieldName?.replace('.keyword', '') === name && filter?.dataSourceName === layerIdentifier
+			filter => filter?.fieldName?.replace('.keyword', '') === name && filter?.dataSourceName === layerDataSourceName
 		);
 		const isClientSide = tableController(tableKey).getValue('isClientSide');
 
