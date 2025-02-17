@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { IconButton, Divider, withStyles, ListItem, makeStyles } from '@material-ui/core';
@@ -83,11 +83,15 @@ const CategorySectionList = ({ search, SectionLayers, actionItem, layerCategory,
 
 	const [openUDLayers, setUDLayersStates] = useState([]);
 
-	const filteredLayers = SectionLayers?.filter(
-		layer =>
-			!search ||
-			layer.name?.toLowerCase().includes(search?.toLowerCase()) ||
-			layer.layerName?.toLowerCase().includes(search?.toLowerCase())
+	const filteredLayers = useMemo(
+		() =>
+			SectionLayers?.filter(
+				layer =>
+					!search ||
+					layer.name?.toLowerCase().includes(search?.toLowerCase()) ||
+					layer.layerName?.toLowerCase().includes(search?.toLowerCase())
+			),
+		[SectionLayers, search]
 	);
 
 	const rowVirtualizer = useVirtualizer({
@@ -102,6 +106,11 @@ const CategorySectionList = ({ search, SectionLayers, actionItem, layerCategory,
 			return 50;
 		},
 	});
+
+	useEffect(() => {
+		setUDLayersStates([]);
+		rowVirtualizer.measure();
+	}, [filteredLayers]);
 
 	return (
 		<List className={classes.list} ref={parentRef} style={{ overflowY: 'auto', overflowX: 'hidden', height: '33vh' }}>
