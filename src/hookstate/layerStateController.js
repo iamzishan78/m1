@@ -880,6 +880,7 @@ const layerStateControllerHandler = state => {
 				variables: {
 					userId: user._id,
 					project: {
+						dataset: 1,
 						file: 1,
 						layerId: 1,
 						layerType: 1,
