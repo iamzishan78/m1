@@ -64,7 +64,7 @@ const TractMeta = {
 				>
 					<ColumnWithLink
 						value={renderedCellValue || row.getValue('shapeJson.properties.originalProperties.State')}
-						link={`/map/parcels/${row.getValue('_id')}`}
+						link={`/map/parcels/${row?.original?.parcel?._id}`}
 					/>
 				</div>
 			),

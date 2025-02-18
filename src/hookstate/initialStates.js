@@ -28,6 +28,7 @@ export const globalInitialState = {
 	bypassType: '',
 	tenant: null,
 	selectedIconTpe: 'Chip',
+	onMapLoad: null,
 };
 
 export const globalState = hookstate(copy(globalInitialState));
