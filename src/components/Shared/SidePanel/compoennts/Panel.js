@@ -475,7 +475,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 									>
 										{layerIcons.map((action, index) => (
 											<Tab
-												key={action}
+												key={action.action}
 												icon={action.icon}
 												{...a11yProps(index)}
 												onClick={() =>

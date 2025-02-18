@@ -169,7 +169,7 @@ const CategorySectionList = ({
 									transform: `translateY(${virtualRow.start}px)`,
 								}}
 							>
-								<Accordion key={labelId} className={classes.accordion}>
+								<Accordion className={classes.accordion}>
 									<AccordionSummary
 										// expandIcon={<ExpandMoreIcon />}
 										aria-controls="panel1a-content"
@@ -224,8 +224,8 @@ const CategorySectionList = ({
 									</AccordionSummary>
 									<Box paddingLeft={2} paddingRight={2}>
 										<List className={classes.list}>
-											{layer.layers.map((groupLayer, index) => (
-												<StyledListItem key={`${groupLayer.layerName - index}`} ContainerComponent="li">
+											{layer.layers.map(groupLayer => (
+												<StyledListItem key={groupLayer.layerId || groupLayer.layerName} ContainerComponent="li">
 													<Checkbox
 														checked={groupLayer.layerSettings.showable}
 														color="dark gray"
