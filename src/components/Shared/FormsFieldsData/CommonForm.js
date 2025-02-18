@@ -35,7 +35,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 			},
 			fieldAttributes: {
 				name: item.name,
-				label: item.label,
+				title: item.label,
 				defaultValue: item.defaultValue,
 				InputProps: item.InputProps,
 				isValueOverridden: item.isValueOverridden,
@@ -65,13 +65,13 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 								<Controller
 									control={control}
 									name={item.name}
-									render={props => (
+									render={({ field }) => (
 										<CampaignField
-											{...props}
-											value={props?.value}
+											{...field}
+											value={field?.value}
 											onChange={values => {
 												sideDialogController(dialogKey).updateState({ [item.name]: values });
-												props.onChange(values);
+												field.onChange(values);
 											}}
 											fullWidth
 											targetLabel="Contact"
@@ -90,14 +90,14 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 								<Controller
 									control={control}
 									name={item.name}
-									render={props => (
+									render={({ field }) => (
 										<AssociatedDealField
-											{...props}
+											{...field}
 											onChange={values => {
 												sideDialogController(dialogKey).updateState({ [item.name]: values });
-												props.onChange(values);
+												field.onChange(values);
 											}}
-											value={props.value}
+											value={field.value}
 											fullWidth
 											targetLabel="Contact"
 											simpleChips

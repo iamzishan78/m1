@@ -6,7 +6,6 @@ export const getLayerColor = (layer, type, colors) => {
 		return '#263551';
 	}
 	const { basinLayerColor, GLOUnitsColor, GLOLeasesColor } = colors;
-	// layerName: "Rig Activity"
 	if (type !== 'layer' && type !== 'marketplace') {
 		return {};
 	}
@@ -24,10 +23,6 @@ export const getLayerColor = (layer, type, colors) => {
 	}
 
 	if (layer) {
-		if (layer.identifier == 'Rig Activity') {
-			return '#263451';
-		}
-
 		if (layer.layerPaintProps && layer.layerPaintProps[0] && layer.layerPaintProps[0].paintProps) {
 			if (layer.layerPaintProps[0].paintProps['circle-color']) {
 				return layer.layerPaintProps[0].paintProps['circle-color'];
@@ -67,18 +62,7 @@ export const ifLayerHaveData = layer => {
 
 	const { wellListFromSearch } = layerController.getValues(['wellListFromSearch']);
 
-	if (
-		// (layer.identifier === "User Tags" &&
-		//     !(
-		//         stateApp.wellListFromTagsFilter &&
-		//         stateApp.wellListFromTagsFilter.length > 0
-		//     )) ||
-		layer.identifier === 'Search' &&
-		!(wellListFromSearch && wellListFromSearch.length > 0)
-		// && !(stateApp.landGridListFromSearch && stateApp.landGridListFromSearch.length > 0)
-		// || (layer.identifier === "Tracked Owners" &&
-		//     !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
-	) {
+	if (layer.identifier === 'Search' && !(wellListFromSearch && wellListFromSearch.length > 0)) {
 		return false;
 	}
 	return true;

@@ -179,8 +179,6 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 				customLayer,
 				userId: globalStateController.getValue('user').mongoId,
 			},
-			refetchQueries: ['getAllLayerSettingsByUser'],
-			awaitRefetchQueries: true,
 		}).then(res => {
 			jobController.toggleBulkUpload();
 			layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer);

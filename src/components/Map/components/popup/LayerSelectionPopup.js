@@ -173,10 +173,6 @@ function LayerSelectionPopup(props) {
 				labels.push(properties.shapeLabel || properties.label);
 				break;
 
-			case 'Recent Submitted Permits':
-				labels.push(properties.PermitId);
-				break;
-
 			default:
 				if (properties.layerShapeName) {
 					labels.push(properties.Unit_Name || properties.layerShapeName || layer.layer.id);
@@ -220,9 +216,6 @@ function LayerSelectionPopup(props) {
 
 				case 'Units':
 					return includes(search, [properties.uNumber, properties.shapeLabel || properties.label]);
-
-				case 'Recent Submitted Permits':
-					return includes(search, [properties.PermitId]);
 
 				default:
 					if (properties.layerShapeName) {

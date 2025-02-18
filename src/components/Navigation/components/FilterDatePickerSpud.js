@@ -85,7 +85,7 @@ export default function FilterDatePickerSpud({ labelDates }) {
 					control={control}
 					name="spudDateFrom"
 					defaultValue=""
-					render={({ value, onChange }) => (
+					render={({ field: { value, onChange } }) => (
 						<TextField
 							type="date"
 							label={`${labelDates} From`}
@@ -124,7 +124,7 @@ export default function FilterDatePickerSpud({ labelDates }) {
 					control={control}
 					name="spudDateTo"
 					defaultValue=""
-					render={({ value, onChange }) => (
+					render={({ field: { value, onChange } }) => (
 						<TextField
 							type="date"
 							label={`${labelDates} To`}

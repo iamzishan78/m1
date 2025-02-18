@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { IconButton, Grid, Table, TableCell, TableBody, FormControl, CircularProgress } from '@material-ui/core';
@@ -12,6 +12,7 @@ import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
 import { hookstate, useHookstate } from '@hookstate/core';
 import { set, get, upperFirst, capitalize } from 'lodash';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import filterConsts from 'components/Common/TableAddDialog/Common/filterConsts';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
@@ -20,11 +21,12 @@ import CountyField from 'components/Revenue/components/Properties/DetailComponen
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { summaryTableStyles } from 'components/ShapeDetailCard/style';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
-import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import DateField from 'components/Shared/components/Fields/DateField';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
+import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomTypography from 'components/Shared/FormsFieldsData/Fields/CustomTypography';
 import { copy } from 'components/Shared/functions';
 import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
 import UserList from 'components/Shared/UserList';
@@ -35,10 +37,9 @@ import { globalStateController } from 'hookstate/globalStateController';
 
 import { KEYBOARD_KEYS, INTEREST_TO_FIXED } from 'utils/consts';
 import { US_STATES_CODES } from 'utils/data';
-import { getRoundedNra, isEven, validateUrl } from 'utils/helper';
+import { getRoundedNra, isEven } from 'utils/helper';
 
 import { showErrorMessage, showInfoMessage } from 'actions';
-import { AppContext } from 'AppContext';
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps, loading }) {
 	const dispatch = useDispatch();
@@ -138,7 +139,6 @@ export default function SummaryTableInfo({
 }) {
 	const classes = summaryTableStyles();
 	const dispatch = useDispatch();
-	const [, setStateApp] = useContext(AppContext);
 	const [tableDataState, setTableDataState] = useState({});
 	const [state, setState] = useState();
 	const [county, setCounty] = useState();
@@ -507,14 +507,21 @@ export default function SummaryTableInfo({
 													<CustomTextField
 														id={`field-${data.key}`}
 														index={data.key}
-														field={data}
-														fieldKey={data.key}
-														defaultValue={get(tableTempProperties, `${data.key}`, '')}
-														showLinkPopup={false}
-														offClickHandler={(key, value) => {
-															set(tableTempProperties, key, value);
-															setTableTempProperties(tableTempProperties);
-															updateProperties(null, key, value);
+														fieldConfig={{
+															size: 'small',
+															variant: 'outlined',
+															margin: 'dense',
+															disabled: data.disabled,
+														}}
+														fieldAttributes={{
+															defaultValue: get(tableTempProperties, `${data.key}`, ''),
+														}}
+														fieldEvents={{
+															onBlur: value => {
+																set(tableTempProperties, data.key, value);
+																setTableTempProperties(tableTempProperties);
+																updateProperties(null, data.key, value);
+															},
 														}}
 													/>
 												) : (
@@ -611,7 +618,6 @@ export default function SummaryTableInfo({
 										)}
 										{data.type === 'custom' && (
 											<>
-												{console.log('data 2', data)}
 												{['qualifier', 'reviewer'].includes(data.key) && (
 													<UserList
 														id={data.key + 'Input'}
@@ -688,14 +694,17 @@ export default function SummaryTableInfo({
 														data.type !== 'multiselect' &&
 														data.type !== 'calculation' &&
 														data.type !== 'state' &&
-														data.type !== 'county' &&
-														(data.type === 'text' && validateUrl(get(tableTempProperties, `${data.key}`, '')) ? (
-															<a href={get(tableTempProperties, `${data.key}`, '')} target="_blank" rel="noreferrer">
-																{get(tableTempProperties, `${data.key}`, '')}
-															</a>
-														) : (
-															data.value || get(properties, `${data.key}`, '-')
-														))}
+														data.type !== 'county' && (
+															<>
+																<CustomTypography
+																	value={
+																		get(tableTempProperties, `${data.key}`, '') ||
+																		data.value ||
+																		get(properties, `${data.key}`, '-')
+																	}
+																/>
+															</>
+														)}
 
 													{data.type === 'state' &&
 														(get(properties, 'originalProperties.StateAbbreviation', '') ||
@@ -757,3 +766,58 @@ export default function SummaryTableInfo({
 		</Table>
 	);
 }
+
+EditIconComponent.propTypes = {
+	data: PropTypes.object,
+	dataKey: PropTypes.string,
+	classes: PropTypes.object,
+	onClick: PropTypes.func,
+};
+
+TableTextField.propTypes = {
+	data: PropTypes.shape({
+		type: PropTypes.string,
+		label: PropTypes.string,
+		key: PropTypes.string,
+	}),
+	value: PropTypes.shape({
+		unitNra: PropTypes.number,
+		calculatedNra: PropTypes.number,
+	}),
+	onChange: PropTypes.func,
+	onKeyDown: PropTypes.func,
+	onBlur: PropTypes.func,
+	onWheel: PropTypes.func,
+	showMessage: PropTypes.bool,
+	type: PropTypes.string,
+	InputProps: PropTypes.object,
+	loading: PropTypes.bool,
+};
+
+SummaryTableInfo.propTypes = {
+	tableData: PropTypes.arrayOf(
+		PropTypes.shape({
+			key: PropTypes.string,
+			label: PropTypes.string,
+			type: PropTypes.string,
+			options: PropTypes.array,
+			isCustom: PropTypes.bool,
+			isCustomData: PropTypes.bool,
+			formatValue: PropTypes.func,
+			value: PropTypes.any,
+			InputProps: PropTypes.object,
+			disabled: PropTypes.bool,
+			nonEditable: PropTypes.bool,
+		})
+	),
+	properties: PropTypes.object,
+	updateProperties: PropTypes.func,
+	updateCustomProperties: PropTypes.func,
+	search: PropTypes.string,
+	metaData: PropTypes.array,
+	id: PropTypes.string,
+	updating: PropTypes.bool,
+	isCustomLayerAutoComplete: PropTypes.bool,
+	customLayer: PropTypes.object,
+	shapeType: PropTypes.string,
+};

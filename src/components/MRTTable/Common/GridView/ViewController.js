@@ -8,6 +8,7 @@ import { tableController } from 'hookstate/tableController';
 class ViewStateController extends StateController {
 	constructor(initialState) {
 		super(initialState);
+		this.autoBind(this);
 	}
 
 	initialize({ Icon, label, client, allViews, isTable = false, styleOverride = null, defaultViewOverride = null }) {
@@ -32,7 +33,7 @@ class ViewStateController extends StateController {
 		});
 	}
 
-	applyView(selectedView) {
+	applyView(selectedView, keepViewMenuOpen = false) {
 		if (!selectedView) {
 			return;
 		}
@@ -47,8 +48,8 @@ class ViewStateController extends StateController {
 
 		this.updateState({
 			isLoading: false,
-			isViewOpen: false,
 			shouldSyncView: true,
+			...(!keepViewMenuOpen ? { isViewOpen: false } : {}),
 		});
 	}
 
@@ -69,11 +70,11 @@ class ViewStateController extends StateController {
 		});
 
 		const allViews = result?.data?.getGridViews?.gridViews || [];
-		this.updateState({ allViews });
+		return allViews;
 	}
 
-	updateAllViews(view) {
-		const allViews = this.getValue('allViews') || [];
+	inMemoryViewsUpdate(view) {
+		const allViews = this.getValue('allViews');
 		let updatedViews = [];
 
 		if (view.isDeleted) {
@@ -115,7 +116,8 @@ class ViewStateController extends StateController {
 					isTable = false,
 					moduleName = '',
 					selectedView = {},
-				} = this.getValues(['isTable', 'moduleName', 'selectedView']) || {};
+					allViews = [],
+				} = this.getValues(['isTable', 'moduleName', 'selectedView', 'allViews']) || {};
 
 				const TableController = tableController(moduleName);
 
@@ -145,7 +147,7 @@ class ViewStateController extends StateController {
 				};
 
 				this.updateState({ isLoading: true });
-				this.updateAllViews(view);
+				this.inMemoryViewsUpdate(view);
 
 				await client.mutate({
 					variables: {
@@ -154,8 +156,24 @@ class ViewStateController extends StateController {
 					mutation: UPSERT_GRID_VIEW,
 				});
 
-				await this.fetchAllViews();
-				this.updateState({ isLoading: false, fetchViewSettings: false });
+				const fetchedViews = await this.fetchAllViews();
+				if (!id) {
+					let targetViewObject = null;
+
+					const allViewIds = allViews.map(view => view._id);
+
+					fetchedViews.forEach(fetchedView => {
+						if (!allViewIds.includes(fetchedView._id)) {
+							targetViewObject = fetchedView;
+						}
+					});
+
+					if (targetViewObject) {
+						this.applyView(targetViewObject);
+					}
+				}
+
+				this.updateState({ isLoading: false, fetchViewSettings: false, allViews: fetchedViews });
 			} else {
 				throw new Error('Apollo Client is undefined or invalid.');
 			}
@@ -210,6 +228,5 @@ export const viewStateController = moduleName => {
 	if (!viewStates[moduleName]) {
 		viewStates[moduleName] = new ViewStateController({ ...viewInitialState, moduleName });
 	}
-
 	return viewStates[moduleName];
 };

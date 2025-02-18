@@ -469,7 +469,7 @@ function Map({
 				} else if (!isGenericAsset) {
 					getCustomLayer(paramId);
 				}
-			} catch (e) {
+			} catch {
 				history.push('/');
 			}
 		}
@@ -478,11 +478,10 @@ function Map({
 	useEffect(() => {
 		if (stateApp.user && stateApp.user.mongoId) {
 			setLoading(true);
-			const onlyShowable = true;
 			getAllLayerSettingsByUser({
 				variables: {
 					userId: stateApp.user.mongoId,
-					onlyShowable,
+					onlyShowable: true,
 				},
 			});
 		}
@@ -573,25 +572,24 @@ function Map({
 	useEffect(() => {
 		// USE EFFECT FOR BASEMAP LAYER HANDLING
 		const mapLayers = copy(globalState.stateValues.layers);
-		if (!stateApp.baseMapLayers || stateApp.baseMapLayers.length === 0 || !map) {
+		if (!stateApp.baseMapLayers?.length || !map) {
 			return;
 		}
+
+		const getBaseMapIndex = name => stateApp.baseMapLayers.findIndex(layer => layer.name === name);
+
 		const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
-		const baseMapLandIndex = stateApp.baseMapLayers.findIndex(layer => layer.name === 'Land Grid');
 		const landLayerVisible = landLayer?.layerSettings?.visiable && landLayer?.layerSettings?.showable;
 
-		if (!landLayerVisible && stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
-			setStateApp(state => ({
-				...state,
-				checkedBaseLayers: stateApp.checkedBaseLayers.filter(l => l !== baseMapLandIndex),
-			}));
-		}
-		if (landLayerVisible && !stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
-			setStateApp(state => ({
-				...state,
-				checkedBaseLayers: [...stateApp.checkedBaseLayers, baseMapLandIndex],
-			}));
-		}
+		const layersToToggle = ['Land Grid', 'Roads', 'Map Labels'];
+		const indicesToToggle = layersToToggle.map(getBaseMapIndex).filter(index => index !== -1);
+
+		setStateApp(state => ({
+			...state,
+			checkedBaseLayers: landLayerVisible
+				? [...new Set([...state.checkedBaseLayers, ...indicesToToggle])]
+				: state.checkedBaseLayers.filter(index => !indicesToToggle.includes(index)),
+		}));
 	}, [map, stateApp.baseMapLayers, globalState.layers]);
 
 	useEffect(() => {
@@ -726,6 +724,14 @@ function Map({
 		if (mapStyles.length <= 0) {
 			return;
 		}
+
+		const onLoad = () => {
+			const { onMapLoad } = globalStateController.getAllValues();
+			if (onMapLoad) {
+				onMapLoad();
+				globalStateController.updateState({ onMapLoad: null });
+			}
+		};
 
 		const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
 			const { id } = mapEl.current;
@@ -872,11 +878,14 @@ function Map({
 					},
 					zoom: zoom,
 				});
+				onLoad();
 			});
 		};
 
 		if (!map || mapStateValues.reintializeMap) {
 			initializeMap({ setMap, mapEl, setStateApp, setDraw });
+		} else {
+			onLoad();
 		}
 	}, [map, mapStyles, mapStateValues.mapVars.styleId]);
 

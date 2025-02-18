@@ -27,11 +27,15 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 	}, []);
 
 	useEffect(() => {
-		// Dynamically load the schema
+		let isMounted = true; // Flag to track component mount state
+
 		const loadSchema = async () => {
 			try {
 				const schemaModule = await SCHEMA[name](); // Dynamically import the schema
-				const schema = schemaModule.default; // Access the default export from the dynamic import
+				if (!isMounted) {
+					return;
+				} // Prevent setting state if unmounted
+				const schema = schemaModule.default;
 				const metaCopy = {
 					...copy(schema),
 					...overrideMeta,
@@ -40,13 +44,16 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 				setExtendedMeta(metaCopy);
 				await Controller.initialize(tableKey || name, metaCopy, client);
 			} catch (error) {
-				console.error(`Failed to load schema for ${name}:`, error);
+				if (isMounted) {
+					console.error(`Failed to load schema for ${name}:`, error);
+				}
 			}
 		};
 		loadSchema();
 
 		return () => {
 			Controller.reset();
+			isMounted = false; // Mark component as unmounted
 		};
 	}, [reInitialized]);
 

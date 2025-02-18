@@ -641,7 +641,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 						<Typography>Search for existing tract to associate to agreement and populate ownership detail</Typography>
 					)}
 				</Box>
-				<TextField id="_id" name="_id" style={{ display: 'none' }} inputRef={register()} />
+				<TextField id="_id" style={{ display: 'none' }} {...register('_id')} />
 
 				<TractForm
 					isNewTract={isNewTract}
@@ -652,7 +652,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 					prefix={'tract.'}
 				/>
 
-				<TextField id="tractId" name="tract.tractId" style={{ display: 'none' }} inputRef={register()} />
+				<TextField id="tractId" style={{ display: 'none' }} {...register('tract.tractId')} />
 				<Grid container direction="row" spacing={1} className={classes.qtrCalls}>
 					<Grid item xs={3}>
 						<Autocomplete
@@ -709,59 +709,50 @@ function AddAgreementOwnerAndTractDialog(props) {
 					</Grid>
 				</Grid>
 				<Controller
-					as={TextField}
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name="tract.sdGrossAcres"
-					label={'Gross. Acres'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
 					defaultValue={tract?.sdGrossAcres || ''}
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							margin="dense"
+							label={'Gross. Acres'}
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+						/>
+					)}
 				/>
 				<Controller
-					as={TextField}
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name="tract.shapeArea"
-					label={'Calc. Acres'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
-					disabled
 					defaultValue={tract?.shapeArea || ''}
+					disabled
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							label={'Calc. Acres'}
+							margin="dense"
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+						/>
+					)}
 				/>
-				{/* <Controller
-      control={control}
-      name={`tract.tractStatus`}
-      defaultValue={tract?.tractStatus || ''}
-      render={(props) => (
-        <AutoCompleteTypeComponent
-          value={props.value}
-          meta={{
-            path: 'shapeJson.properties.tractStatus'
-          }}
-          label="Tract Status"
-          variant="outlined"
-          onChange={(e, value) => { props.onChange(value?.name || '') }}
-          autoFocus={false}
-        />
-      )}
-    /> */}
 				<Controller
 					control={control}
 					name={'tract.department'}
 					defaultValue={tract?.department || ''}
-					render={props => (
+					render={({ field }) => (
 						<AutoCompleteTypeComponent
-							value={props.value}
+							value={field.value}
 							meta={{
 								path: 'shapeJson.properties.department',
 							}}
 							label="Department"
 							variant="outlined"
 							onChange={(e, value) => {
-								props.onChange(value?.name || '');
+								field.onChange(value?.name || '');
 							}}
 							autoFocus={false}
 						/>
@@ -771,16 +762,16 @@ function AddAgreementOwnerAndTractDialog(props) {
 					control={control}
 					name={'tract.mapStatus'}
 					defaultValue={tract?.mapStatus || ''}
-					render={props => (
+					render={({ field }) => (
 						<AutoCompleteTypeComponent
-							value={props.value}
+							value={field.value}
 							meta={{
 								path: 'shapeJson.properties.mapStatus',
 							}}
 							label="Map Status"
 							variant="outlined"
 							onChange={(e, value) => {
-								props.onChange(value?.name || '');
+								field.onChange(value?.name || '');
 							}}
 							autoFocus={false}
 						/>
@@ -853,14 +844,14 @@ function AddAgreementOwnerAndTractDialog(props) {
 				/>
 			)}
 
-			<TextField id="ownerEntity" name={'ownerEntity'} style={{ display: 'none' }} inputRef={register()} />
-			<TextField id="ownerName" name={'ownerName'} style={{ display: 'none' }} inputRef={register()} />
+			<TextField id="ownerEntity" style={{ display: 'none' }} {...register('ownerEntity')} />
+			<TextField id="ownerName" style={{ display: 'none' }} {...register('ownerName')} />
 
 			{interestMapping?.['Mineral Interest']?.includes(layerType) && (
 				<Controller
 					control={control}
 					name="mineral_interest"
-					render={({ onChange, value }) => (
+					render={({ field: { onChange, value } }) => (
 						<TextField
 							variant="outlined"
 							InputLabelProps={{ shrink: true }}
@@ -890,33 +881,11 @@ function AddAgreementOwnerAndTractDialog(props) {
 				/>
 			)}
 
-			{/* {interestMapping?.['Lease Royalty Interest']?.includes(layerType) && (
-      <Controller
-        control={control}
-        name="lease_royalty_interest"
-        render={({ onChange, value }) => (
-          <TextField
-            variant="outlined"
-            InputLabelProps={{ shrink: true }}
-            margin="dense"
-            value={value}
-            type="number"
-            label={'Lease Royalty Interest'}
-            fullWidth
-            onWheel={(e) => e.target.blur()}
-            onChange={(e) => {
-              onChange(e.target.value)
-            }}
-          />
-        )}
-      />
-    )} */}
-
 			{interestMapping?.['Royalty Interest']?.includes(layerType) && (
 				<Controller
 					control={control}
 					name="royalty_interest"
-					render={({ onChange, value }) => (
+					render={({ field: { onChange, value } }) => (
 						<TextField
 							variant="outlined"
 							InputLabelProps={{ shrink: true }}
@@ -950,7 +919,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 				<Controller
 					control={control}
 					name="orri"
-					render={({ onChange, value }) => (
+					render={({ field: { onChange, value } }) => (
 						<TextField
 							variant="outlined"
 							InputLabelProps={{ shrink: true }}
@@ -982,24 +951,27 @@ function AddAgreementOwnerAndTractDialog(props) {
 
 			{interestMapping?.['Working Interest']?.includes(layerType) && (
 				<Controller
-					as={TextField}
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name="working_interest"
-					inputRef={register()}
-					label={'Working Interest'}
-					InputLabelProps={{ shrink: true }}
-					type="number"
-					fullWidth
-					onWheel={e => e.target.blur()}
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							margin="dense"
+							label={'Working Interest'}
+							InputLabelProps={{ shrink: true }}
+							type="number"
+							fullWidth
+							onWheel={e => e.target.blur()}
+						/>
+					)}
 				/>
 			)}
 
 			<Controller
 				control={control}
 				name="net_acres"
-				render={({ onChange, value }) => (
+				render={({ field: { onChange, value } }) => (
 					<TextField
 						variant="outlined"
 						InputLabelProps={{ shrink: true }}
@@ -1040,23 +1012,26 @@ function AddAgreementOwnerAndTractDialog(props) {
 			/>
 
 			<Controller
-				as={TextField}
 				control={control}
-				variant="outlined"
-				margin="dense"
 				name="company_net_acres"
-				inputRef={register()}
-				label={'Company Net Acres'}
-				InputLabelProps={{ shrink: true }}
-				type="number"
-				fullWidth
-				onWheel={e => e.target.blur()}
+				render={({ field }) => (
+					<TextField
+						{...field}
+						variant="outlined"
+						margin="dense"
+						label={'Company Net Acres'}
+						InputLabelProps={{ shrink: true }}
+						type="number"
+						fullWidth
+						onWheel={e => e.target.blur()}
+					/>
+				)}
 			/>
 
 			<Controller
 				control={control}
 				name="nra"
-				render={({ onChange, value }) => (
+				render={({ field: { onChange, value } }) => (
 					<TextField
 						variant="outlined"
 						InputLabelProps={{ shrink: true }}
@@ -1110,16 +1085,16 @@ function AddAgreementOwnerAndTractDialog(props) {
 			<Controller
 				control={control}
 				name="acquisition_nra"
-				render={props => (
+				render={({ field }) => (
 					<TextField
 						label="Acquisition $/NRA"
 						variant="outlined"
 						margin="dense"
-						value={parseFloat(props.value).toFixed(TO_FIXED)}
-						inputRef={props.ref}
+						value={parseFloat(field.value).toFixed(TO_FIXED)}
+						inputRef={field.ref}
 						onWheel={e => e.target.blur()}
 						onChange={e => {
-							props.onChange(parseFloat(e.target.value).toFixed(TO_FIXED));
+							field.onChange(parseFloat(e.target.value).toFixed(TO_FIXED));
 							if (!isAcquisitionCostOverridden) {
 								setValue('acquisition_cost', calculateAcquisitionCost(getValues().nra, e.target.value));
 							}
@@ -1136,18 +1111,18 @@ function AddAgreementOwnerAndTractDialog(props) {
 			<Controller
 				control={control}
 				name="acquisition_cost"
-				render={props => (
+				render={({ field }) => (
 					<TextField
 						label="Acquisition Cost"
 						variant="outlined"
 						margin="dense"
-						value={parseFloat(props.value).toFixed(TO_FIXED)}
-						inputRef={props.ref}
+						value={parseFloat(field.value).toFixed(TO_FIXED)}
+						inputRef={field.ref}
 						onWheel={e => e.target.blur()}
 						className={isAcquisitionCostOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
 						onChange={e => {
 							const toFixedValue = parseFloat(e.target.value).toFixed(TO_FIXED);
-							props.onChange(toFixedValue);
+							field.onChange(toFixedValue);
 							const acquisition_cost = calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra);
 							setIsAcquisitionCostOverridden(acquisition_cost !== toFixedValue);
 						}}
@@ -1180,7 +1155,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 			<Controller
 				control={control}
 				name={'parcelOwnersRadioBValue'}
-				render={({ onChange, value }) => (
+				render={({ field: { onChange, value } }) => (
 					<RadioGroup
 						row
 						value={value || 'true'}
@@ -1200,29 +1175,35 @@ function AddAgreementOwnerAndTractDialog(props) {
 
 			<Grid item xs={12} style={{ display: parcelOwnersRadioBValue !== 'false' ? 'none' : 'block' }}>
 				<Controller
-					as={TextField}
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name="depthFrom"
-					inputRef={register()}
-					label={'Depth From'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
-					onWheel={e => e.target.blur()}
+					render={({ field }) => (
+						<TextField
+							{...field}
+							margin="dense"
+							variant="outlined"
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+							onWheel={e => e.target.blur()}
+							label={'Depth From'}
+						/>
+					)}
 				/>
 
 				<Controller
-					as={TextField}
 					control={control}
-					variant="outlined"
-					margin="dense"
 					name="depthTo"
-					inputRef={register()}
-					label={'Depth To'}
-					InputLabelProps={{ shrink: true }}
-					fullWidth
-					onWheel={e => e.target.blur()}
+					render={({ field }) => (
+						<TextField
+							{...field}
+							variant="outlined"
+							margin="dense"
+							label={'Depth To'}
+							InputLabelProps={{ shrink: true }}
+							fullWidth
+							onWheel={e => e.target.blur()}
+						/>
+					)}
 				/>
 			</Grid>
 
@@ -1231,7 +1212,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 					<Controller
 						control={control}
 						name={'tractStatus'}
-						render={({ onChange, value }) => (
+						render={({ field: { onChange, value } }) => (
 							<AutoCompleteWithNewOption
 								margin="dense"
 								label="Tract Status"
@@ -1251,7 +1232,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 						control={control}
 						name="countAcres"
 						defaultValue={''}
-						render={({ onChange, value }) => (
+						render={({ field: { onChange, value } }) => (
 							<FormControl variant="outlined" fullWidth margin="dense">
 								<InputLabel id="countAcres-label">Count Acres</InputLabel>
 								<Select

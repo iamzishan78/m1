@@ -7,6 +7,7 @@ import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawS
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
+import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from 'hookstate/popupStateController';
 
 const COLUMN_SIZE = 250;
@@ -52,9 +53,23 @@ const ShapesFilesGenericMeta = {
 					size: 70,
 					Cell: ({ row }) => {
 						const id = row.getValue('_id');
-						const Action = () => {
-							drawBoundary(row.original);
-							popupController.updateState({ selectedShapeFile: row.original });
+						const Action = history => {
+							const flyTo = () => {
+								drawBoundary(row.original);
+								popupController.updateState({ selectedShapeFile: row.original });
+							};
+
+							if (history && !history.location.pathname.includes('map')) {
+								history.push('/');
+
+								globalStateController.updateState({
+									onMapLoad: flyTo,
+								});
+
+								return;
+							}
+
+							flyTo();
 						};
 						return <FlyToMap id={id} Action={Action} type="shapefile" />;
 					},

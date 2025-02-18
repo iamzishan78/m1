@@ -365,7 +365,7 @@ const MultipleOwnerToContactDrawer = ({
 									control={control}
 									name="contactStatus"
 									defaultValue={contactStatusOptions[0].value}
-									render={props => (
+									render={({ field }) => (
 										<Select
 											styles={{
 												menu: provided => ({ ...provided, zIndex: 9999 }),
@@ -373,7 +373,7 @@ const MultipleOwnerToContactDrawer = ({
 											value={contactStatus}
 											menuPlacement="auto"
 											onChange={e => {
-												props.onChange(e.target.value);
+												field.onChange(e.target.value);
 											}}
 											className={classes.fullWidth}
 											isDisabled={globalStateValues.selectedMeta}
@@ -390,12 +390,12 @@ const MultipleOwnerToContactDrawer = ({
 								<Controller
 									control={control}
 									name="contactOwner"
-									render={props => (
+									render={({ field }) => (
 										<ContactAutoComplete
 											value={contactOwner}
 											contactValue="email"
 											onChange={(e, user) => {
-												props.onChange(user.value);
+												field.onChange(user.value);
 											}}
 										/>
 									)}
@@ -406,13 +406,13 @@ const MultipleOwnerToContactDrawer = ({
 								<Controller
 									control={control}
 									name="campaigns"
-									render={params => (
+									render={({ field }) => (
 										<CampaignField
-											{...params}
-											value={params.value}
+											{...field}
+											value={field.value}
 											className={classes.maxWidth}
 											onChange={values => {
-												params.onChange(values);
+												field.onChange(values);
 												setCampaigns(values.map(val => ({ ...val, id: val._id })));
 											}}
 											fullWidth

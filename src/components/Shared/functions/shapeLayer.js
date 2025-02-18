@@ -132,15 +132,11 @@ export const deckGlDataLayerIdentifiers = [
 	'My Wells',
 ];
 export const deckGlLandGridIdentifiers = ['AbstractGeo', 'Pls', 'Land Grid'];
-export const deckGlLayerIdentifiers = [
-	...deckGlDataLayerIdentifiers,
-	'Wells',
-	'Recent Submitted Permits' /* , 'Rig Activity' */,
-];
+export const deckGlLayerIdentifiers = [...deckGlDataLayerIdentifiers, 'Wells'];
 export const isCustomLayerCopy = identifier =>
 	deckGlLayerIdentifiers.some(layer => identifier.toLowerCase().includes(layer.toLowerCase()));
-export const mapBoxLayerIdentifiers = ['Search', 'Rig Activity'];
-export const staticMapBoxLayerIdentifiers = ['Basins', 'Pipelines'];
+export const mapBoxLayerIdentifiers = ['Search'];
+export const staticMapBoxLayerIdentifiers = ['Basins'];
 
 export const ifDeckGlDataLayerIdentifiers = id =>
 	deckGlDataLayerIdentifiers.some(identifier => id.startsWith(identifier));

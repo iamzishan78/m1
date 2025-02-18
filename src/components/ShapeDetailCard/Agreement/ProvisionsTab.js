@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Controller, useForm, useFieldArray } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
 
 import {
 	Grid,
@@ -38,10 +37,8 @@ import debounce from 'lodash/debounce';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 
 import Loader from 'components/Loaders';
-import { NavigationContext } from 'components/Navigation/NavigationContext';
 import CommentsWithIcon from 'components/Shared/CommentsWithIcon';
 import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
-import { copy } from 'components/Shared/functions';
 
 import { CREATE_AGREEMENT_PROVISION } from 'graphQL/useMutationCreateAgreementProvision';
 import { GET_PROVISION_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetProvisionAutoCompleteList';
@@ -137,16 +134,14 @@ const styles = makeStyles(() => ({
 
 export default function ProvisionsTab({ provisions, standardProvisions, id, setPCounts }) {
 	const classes = styles();
-	let history = useHistory();
-	const [stateApp, setStateApp] = useContext(AppContext);
-	const [, setStateNav] = useContext(NavigationContext);
+	const [stateApp] = useContext(AppContext);
 	const [users, setUsers] = useState([]);
 	const [selectionProvision, setSelectedProvision] = useState('');
 	const [frequenciesList, setFrequenciesList] = useState([]);
 	const [provisionAutoCompleteList, setProvisionsList] = useState([]);
 	const [hoverProvision, setHoverProvision] = useState(-1);
 	const [, setAnchorEl] = useState();
-	const { control, register, reset, getValues, watch } = useForm();
+	const { control, reset, getValues, watch } = useForm();
 
 	const [getProvisionAutoCompleteList, { data: dataProvisionAutoCompleteList }] = useLazyQuery(
 		GET_PROVISION_AUTOCOMPLETE_LIST
@@ -227,7 +222,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 					variables: { provision: { ...addProvision, isDeleted: false } },
 					refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList'],
 				}).then(
-					res => {
+					() => {
 						Loader.successToast('addRemoveProvision', 'Provision updation Success');
 						detailCardController.updateState({
 							isStandardProvisionsRefetch: true,
@@ -246,7 +241,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 				variables: { provision: { agreement: id, type: provision.type, isDeleted: true } },
 				refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList'],
 			}).then(
-				res => {
+				() => {
 					Loader.successToast('addRemoveProvision', 'Provision updation Success');
 					detailCardController.updateState({
 						isStandardProvisionsRefetch: true,
@@ -283,18 +278,6 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 			}
 		}
 	}, 500);
-
-	const getParty = item => {
-		return item?.parties && item?.parties[0] ? item?.parties[0] : item?.parties;
-	};
-	const getCurrentParty = index => {
-		const formValues = copy(getValues());
-		if (formValues?.provisions) {
-			const item = formValues?.provisions[index];
-			const parties = item?.parties && item?.parties[0] ? item?.parties[0] : item?.parties;
-			return parties && parties?._id ? parties : parties && parties[0]?._id ? parties[0] : null;
-		}
-	};
 
 	return (
 		<Grid container direction="column" spacing={5} className={classes.root}>
@@ -338,7 +321,6 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 			</Grid>
 			<Grid item>
 				{fields.map((item, index) => {
-					const currentParty = getCurrentParty(index);
 					return (
 						<Grid
 							key={item.id}
@@ -352,26 +334,24 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 						>
 							<Grid item>
 								<Grid container direction="row" spacing={2}>
-									<TextField
-										id="_id"
+									<Controller
 										name={`provisions[${index}]._id`}
-										type={'hidden'}
-										inputRef={register()}
+										control={control}
 										defaultValue={item._id}
+										render={({ field }) => <TextField {...field} id="_id" type="hidden" />}
 									/>
-									<TextField
-										id="templateRef"
+									<Controller
 										name={`provisions[${index}].templateRef`}
-										type={'hidden'}
-										inputRef={register()}
+										control={control}
 										defaultValue={item.templateRef}
+										render={({ field }) => <TextField {...field} id="templateRef" type="hidden" />}
 									/>
 									<Grid item md={4}>
 										<Controller
 											control={control}
 											name={`provisions[${index}].type`}
 											defaultValue={item.type}
-											render={({ onChange, value, ref }) => (
+											render={({ field: { onChange, value, ref } }) => (
 												<>
 													{item.templateRef ? (
 														<FormControl variant="outlined" fullWidth>
@@ -417,7 +397,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 											control={control}
 											name={`provisions[${index}].applicable`}
 											defaultValue={item.applicable}
-											render={({ onChange, value, ref }) => (
+											render={({ field: { onChange, value, ref } }) => (
 												<FormControl variant="outlined" fullWidth>
 													<InputLabel id="applicable-label">Applicable</InputLabel>
 													<Select
@@ -442,15 +422,20 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 									</Grid>
 									<Grid item md={6}>
 										<FormControl variant="outlined" fullWidth>
-											<TextField
-												fullWidth
-												id={`provision-value-${index}`}
-												label="Provision Value"
-												variant="outlined"
+											<Controller
 												name={`provisions[${index}].value`}
-												inputRef={register()}
+												control={control}
 												defaultValue={item.value}
-												onBlur={() => handleChange(item, index)}
+												render={({ field }) => (
+													<TextField
+														{...field}
+														fullWidth
+														id={`provision-value-${index}`}
+														label="Provision Value"
+														variant="outlined"
+														onBlur={() => handleChange(item, index)}
+													/>
+												)}
 											/>
 										</FormControl>
 									</Grid>
@@ -463,7 +448,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 										<Controller
 											control={control}
 											name={`provisions[${index}].startDate`}
-											render={({ onChange, value, ref }) => (
+											render={({ field: { onChange, value, ref } }) => (
 												<KeyboardDatePicker
 													className={classes.marginNormal}
 													disableToolbar
@@ -489,7 +474,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 										<Controller
 											control={control}
 											name={`provisions[${index}].endDate`}
-											render={({ onChange, value, ref }) => (
+											render={({ field: { onChange, value, ref } }) => (
 												<KeyboardDatePicker
 													className={classes.marginNormal}
 													disableToolbar
@@ -518,7 +503,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 											control={control}
 											name={`provisions[${index}].frequency`}
 											defaultValue={item.frequency}
-											render={({ onChange, value, ref }) => (
+											render={({ field: { onChange, value } }) => (
 												<AutoCompleteWithNewOption
 													variant="outlined"
 													label="Frequency"
@@ -537,12 +522,12 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 											control={control}
 											name={`provisions[${index}].responsibleParty`}
 											defaultValue={item?.responsibleParty?.name}
-											render={props => (
+											render={({ field }) => (
 												<ResponsibleParty
-													value={props.value}
+													value={field.value}
 													handleChange={value => {
 														handleChange(item, index);
-														props.onChange(value?.name || null);
+														field.onChange(value?.name || null);
 													}}
 												/>
 											)}
@@ -552,15 +537,15 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 										<Controller
 											control={control}
 											name={`provisions[${index}].ownerId`}
-											render={params => (
+											render={({ field }) => (
 												<Autocomplete
 													options={users.filter(u => u.text)}
 													onChange={(e, user) => {
 														const value = user?.value || null;
-														params.onChange(value);
+														field.onChange(value);
 														handleChange(item, index);
 													}}
-													value={users.find(user => user.value === params.value) || null}
+													value={users.find(user => user.value === field.value) || null}
 													getOptionLabel={option => option.text}
 													getOptionSelected={option => option.value === item.ownerId}
 													renderInput={params => <TextField {...params} variant="outlined" label="Assigned To" />}
@@ -617,17 +602,22 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 							</Grid>
 
 							<Grid item>
-								<TextField
-									id={`provisionDescription-${index}`}
-									label="Full Description"
-									variant="outlined"
-									fullWidth
-									multiline
-									rows={4}
+								<Controller
 									name={`provisions[${index}].description`}
-									inputRef={register()}
+									control={control}
 									defaultValue={item.description}
-									onBlur={() => handleChange(item, index)}
+									render={({ field }) => (
+										<TextField
+											{...field}
+											id={`provisionDescription-${index}`}
+											label="Full Description"
+											variant="outlined"
+											fullWidth
+											multiline
+											rows={4}
+											onBlur={() => handleChange(item, index)}
+										/>
+									)}
 								/>
 							</Grid>
 						</Grid>

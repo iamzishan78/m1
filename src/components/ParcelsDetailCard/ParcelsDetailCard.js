@@ -409,8 +409,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 				customLayer,
 				userId: globalStateController.getValue('user')?._id,
 			},
-			refetchQueries: ['getAllLayerSettingsByUser'],
-			awaitRefetchQueries: true,
 		}).then(res => {
 			jobController.toggleBulkUpload();
 			layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer);

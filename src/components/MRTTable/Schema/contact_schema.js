@@ -13,7 +13,6 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import OwnerTypeCell from '../Common/TableCells/OwnerTypeCell';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
@@ -24,6 +23,8 @@ import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
 import { tableGlobalController } from 'hookstate/tableController';
 
 import { copy } from 'utils/helper';
+
+import OwnerTypeCell from '../Common/TableCells/OwnerTypeCell';
 
 const esIndex = 'contacts_flat';
 
@@ -622,7 +623,13 @@ const ContactMeta = {
 			header: 'Industry Type',
 			hidden: true,
 		},
-
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'outcome',
+			id: 'outcome',
+			header: 'Outcome',
+			hidden: true,
+		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			name: 'leadSource.keyword',

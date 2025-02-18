@@ -5,3 +5,9 @@ export const ALLLAYERSETTINGSBYUSER = gql`
 		allLayerSettingsByUser(userId: $userId, project: $project, onlyShowable: $onlyShowable)
 	}
 `;
+
+export const GET_PROJECTED_LAYERS = gql`
+	query getProjectedLayers($userId: ID, $project: JSON, $onlyShowable: Boolean) {
+		allLayerSettingsByUser(userId: $userId, project: $project, onlyShowable: $onlyShowable)
+	}
+`;

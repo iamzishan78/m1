@@ -12,7 +12,6 @@ import Typography from '@material-ui/core/Typography';
 import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
 
 import { useApolloClient, useMutation } from '@apollo/client';
-import { v4 as uuid } from 'uuid';
 
 import { getFileExtension, uploadFileData } from 'components/Shared/functions';
 
@@ -130,8 +129,6 @@ const FileUploadDialog = () => {
 			return setError(true);
 		}
 
-		const source = groupName + uuid() + '_source';
-
 		createDatasetLayers({
 			variables: {
 				dataset,
@@ -139,7 +136,7 @@ const FileUploadDialog = () => {
 				layerNames,
 				isCreateLayers,
 				defaultSettings: dataset.categories.map(({ layerGeometry, name, bbox }) =>
-					getDefaultSettings(layerGeometry, name, source, bbox)
+					getDefaultSettings(layerGeometry, name, bbox)
 				),
 			},
 			refetchQueries: ['getDatasets', ...(isCreateLayers ? ['getLayerGroups', 'getAllLayerSettingsByUser'] : [])],

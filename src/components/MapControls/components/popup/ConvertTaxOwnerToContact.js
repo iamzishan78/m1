@@ -24,7 +24,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 
 import { getMapFilters } from 'utils/helper';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		width: '557px',
 		padding: '10px 30px',
@@ -59,7 +59,6 @@ const ConvertTaxOwnerToContact = ({
 	convertTaxOwnerToContactAction,
 	getShapeOwnersAndCountAction,
 	getContactCampaignAction,
-	campaignList,
 	shapeCount,
 	fetching,
 	onClose,
@@ -172,7 +171,7 @@ const ConvertTaxOwnerToContact = ({
 						control={control}
 						name="contactStatus"
 						defaultValue={contactStatusOptions[0].value}
-						render={props => (
+						render={({ field }) => (
 							<Select
 								styles={{
 									menu: provided => ({ ...provided, zIndex: 9999 }),
@@ -180,7 +179,7 @@ const ConvertTaxOwnerToContact = ({
 								value={contactStatus}
 								menuPlacement="auto"
 								onChange={e => {
-									props.onChange(e.target.value);
+									field.onChange(e.target.value);
 								}}
 								className={classes.fullWidth}
 								isDisabled={globalStateValues.selectedMeta}
@@ -197,12 +196,12 @@ const ConvertTaxOwnerToContact = ({
 					<Controller
 						control={control}
 						name="contactOwner"
-						render={props => (
+						render={({ field }) => (
 							<ContactAutoComplete
 								value={contactOwner}
 								contactValue="email"
 								onChange={(e, user) => {
-									props.onChange(user.value);
+									field.onChange(user.value);
 								}}
 							/>
 						)}
@@ -213,13 +212,13 @@ const ConvertTaxOwnerToContact = ({
 					<Controller
 						control={control}
 						name="campaigns"
-						render={params => (
+						render={({ field }) => (
 							<CampaignField
-								{...params}
-								value={params.value}
+								{...field}
+								value={field.value}
 								className={classes.maxWidth}
 								onChange={values => {
-									params.onChange(values);
+									field.onChange(values);
 									setCampaigns(values.map(val => ({ ...val, id: val._id })));
 								}}
 								fullWidth
