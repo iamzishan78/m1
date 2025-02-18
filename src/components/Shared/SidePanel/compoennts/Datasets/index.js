@@ -139,7 +139,6 @@ function Datasets({ headerButton, search }) {
 					dataset.Icon = DatabaseIcon;
 					dataset.visibility = true;
 					dataset.categoryCount = snapGridSideBarData.length;
-					dataset.categories = snapGridSideBarData;
 				} else {
 					dataset.Icon = FileDatasetIcon;
 					dataset.categoryCount = dataset.categories.length;

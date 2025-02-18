@@ -69,18 +69,16 @@ function NewLayerManager() {
 
 	const createLayer = () => {
 		const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
-		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
-		const layerIdentifier = source.name === 'M1 Platform' ? null : selectCategory.name;
-		const identifier = source.name === 'M1 Platform' ? selectCategory.value + uuid() : layerName + uuid();
+		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.layerIdentifier;
 
 		addLayer({
 			variables: {
 				layer: {
 					...layer,
 					layerCategory,
-					layerIdentifier,
+					layerIdentifier: selectCategory.layerIdentifier,
 					layerType,
-					identifier,
+					identifier: selectCategory.layerIdentifier + uuid(),
 					groupId: null,
 					groupName: null,
 					file: source.file,
@@ -94,6 +92,7 @@ function NewLayerManager() {
 					layerPaintProps: undefined,
 					layerSettings: undefined,
 					public: true,
+					dataset: source._id,
 				},
 			},
 		}).then(async ({ data }) => {
@@ -125,17 +124,11 @@ function NewLayerManager() {
 		const datasets = globalStateValues.datasets;
 		return datasets || [];
 	}, [globalStateValues.datasets]);
+
 	const layerCategories = useMemo(() => {
 		const dataset = globalStateValues.datasets.find(dataset => dataset.name === source?.name);
 		if (source?.name === 'M1 Platform') {
-			dataset.categories = dataset?.categories.filter(category => category.value !== 'agreement');
-			dataset.categories = [
-				...dataset.categories,
-				{ value: 'Deeds', label: 'Deeds' },
-				{ value: 'Leases', label: 'Leases' },
-				{ value: 'Contracts', label: 'Contracts' },
-				{ value: 'Surfaces', label: 'Surfaces' },
-			];
+			dataset.categories = dataset?.categories.filter(category => category.isNewLayerCreationAllowed);
 		}
 		return dataset?.categories || [];
 	}, [source, globalStateValues.datasets]);
