@@ -136,6 +136,7 @@ function CustomTextField({
 		title = null,
 		titleComponent = 'h3',
 		inputRef = null,
+		helperText = '',
 		placeholder = '',
 		InputProps = {},
 		InputLabelProps = {},
@@ -234,7 +235,7 @@ function CustomTextField({
 					}}
 					InputLabelProps={InputLabelProps}
 					error={required && !watchTextFieldValue && error}
-					helperText={error?.message}
+					helperText={error?.message ?? helperText}
 					onChange={e => {
 						const newValue = e.target.value;
 						handleTooltipOpen(newValue);

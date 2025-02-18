@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 
-import { TextField, Grid } from '@material-ui/core';
+
+import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
-import { truncate } from 'components/Shared/functions';
+import PropTypes from 'prop-types';
+
+import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+
 import NameWithTooltip from '../../SidePanel/compoennts/Common/NameWithTooltip';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	heading: ({ type }) => ({
 		marginTop: type === 'group' ? '8px' : '6px',
 	}),
@@ -89,30 +92,32 @@ function EditableTextField({
 						height={'100%'}
 					/>
 				) : (
-					<TextField
-						fullWidth={true}
-						placeholder="Project Name..."
-						className={classes.textField}
-						variant="outlined"
-						id="reddit-input"
-						defaultValue={name}
-						autoFocus
-						required
-						helperText={'Return to save'}
-						InputProps={{
-							className: classes.textFieldInput,
-							disableUnderline: true,
+					<CustomTextField
+						fieldEvents={{
+							onKeyDown: e => {
+								if (e.key === 'Enter') {
+									e.preventDefault();
+									onChange(item, e.target.value);
+									setEdit({ able: false, mode: false });
+								}
+							},
+							onBlur: () => setEdit({ able: false, mode: false }),
+							// onClick: e => e.stopPropagation(),
 						}}
-						onClick={e => e.stopPropagation()}
-						InputLabelProps={{ className: classes.textFieldLabel }}
-						onKeyDown={e => {
-							if (e.keyCode === 13) {
-								e.preventDefault();
-								onChange(item, e.target.value);
-								setEdit({ able: false, mode: false });
-							}
+						fieldConfig={{
+							variant: 'outlined',
+							autoFocus: true,
+							required: true,
+							customStyleClass: classes.textField,
 						}}
-						onBlur={() => setEdit({ able: false, mode: false })}
+						fieldAttributes={{
+							name: 'projectName',
+							value: name,
+							placeholder: 'Project Name...',
+							label: 'Project Name',
+							InputProps: { disableUnderline: true, className: classes.textFieldInput },
+							helperText: 'Return to save',
+						}}
 					/>
 				)}
 			</Grid>
@@ -136,5 +141,15 @@ function EditableTextField({
 		</Grid>
 	);
 }
+
+EditableTextField.propTypes = {
+	item: PropTypes.object.isRequired,
+	onChange: PropTypes.func.isRequired,
+	name: PropTypes.string.isRequired,
+	isEditable: PropTypes.bool,
+	showExpandIcon: PropTypes.bool,
+	openUd: PropTypes.bool,
+	openEditField: PropTypes.bool,
+};
 
 export default EditableTextField;
