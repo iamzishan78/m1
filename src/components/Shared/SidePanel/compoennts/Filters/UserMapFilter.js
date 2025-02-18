@@ -284,10 +284,10 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
 				const tableKey = Object.keys(tableESState).find(key => {
-					const tableState = tableESState[key];
-					return tableState?.layerIdentifier === dataSourceName;
+					const layerIdentifier = tableESState[key].getValue('layerIdentifier');
+					return layerIdentifier === dataSourceName;
 				});
-				const tableState = tableESState[tableKey];
+				const tableStateFilters = tableESState[tableKey].getValue('filters');
 
 				const formattedFilter = getFormattedFilterBasedOnType(
 					selectedField?.type || filterType,
@@ -295,7 +295,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					filterValues
 				);
 
-				const isFilterApplied = tableState?.filters?.find(
+				const isFilterApplied = tableStateFilters?.find(
 					filter =>
 						formattedFilter?.field?.replace('.keyword', '') === filter?.field?.replace('.keyword', '') &&
 						(formattedFilter?.searchType === 'multiselect' || formattedFilter?.searchType === filter.searchType) &&
@@ -374,8 +374,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			return [];
 		}
 		const tableKey = Object.keys(tableESState).find(key => {
-			const tableState = tableESState[key];
-			return tableState?.layerIdentifier === dataSourceName;
+			const layerIdentifier = tableESState[key].getValue('layerIdentifier');
+			return layerIdentifier === dataSourceName;
 		});
 
 		const fields = [
@@ -388,8 +388,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					: null, // Set default value if mapView is provided
 				onChange: (e, v, r, previousValue) => {
 					const tableKey = Object.keys(tableESState).find(key => {
-						const tableState = tableESState[key];
-						return tableState?.layerIdentifier === previousValue?.value;
+						const layerIdentifier = tableESState[key].getValue('layerIdentifier');
+						return layerIdentifier === previousValue?.value;
 					});
 					tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 					tableController(tableKey).setFilterMode(
