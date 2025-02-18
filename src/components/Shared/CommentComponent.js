@@ -289,8 +289,8 @@ export default function CommentComponent(props) {
 	const commentContainerRef = useRef(null);
 	const [tab, setTab] = useState(0);
 	const [activityType, setActivityType] = useState('all');
-	const [activityTypes, setActivityTypes] = useState('all');
-	const [commentTypes, setCommentTypes] = useState([]);
+	const [activityTypes, setActivityTypes] = useState([{ label: 'All', value: 'all' }]);
+	const [commentTypes, setCommentTypes] = useState([{ label: 'All', value: 'All' }]);
 	const [commentType, setCommentType] = useState('All');
 
 	const [removeComment] = useMutation(REMOVECOMMENT);
@@ -360,20 +360,23 @@ export default function CommentComponent(props) {
 		let allComments = [];
 		if (dataComments && dataComments.commentsByObjectId) {
 			let activityData = [];
-			const commentsType = commentResponse.commentsType;
-			const uniqueCommonType = uniqBy(commentsType, e => {
-				return e.commentType;
-			});
-			const formattedOptions = uniqueCommonType.map(c => ({ label: c.commentType, value: c.commentType }));
-			formattedOptions.push({ label: 'All', value: 'All' });
-			setCommentTypes(
-				formattedOptions.filter(
-					type =>
-						dataComments.commentsByObjectId?.some(
-							ct => ct?.commentType?.commentType === type.value || ct?.commentType === type.value
-						) || type.value === 'All'
-				)
-			);
+
+			if (commentResponse?.commentsType) {
+				const commentsType = commentResponse.commentsType;
+				const uniqueCommonType = uniqBy(commentsType, e => {
+					return e.commentType;
+				});
+				const formattedOptions = uniqueCommonType.map(c => ({ label: c.commentType, value: c.commentType }));
+				formattedOptions.push({ label: 'All', value: 'All' });
+				setCommentTypes(
+					formattedOptions.filter(
+						type =>
+							dataComments.commentsByObjectId?.some(
+								ct => ct?.commentType?.commentType === type.value || ct?.commentType === type.value
+							) || type.value === 'All'
+					)
+				);
+			}
 			if (props.activityLog && props.activityLog.length > 0) {
 				setActivityTypes(
 					typeOptions.filter(t => props.activityLog?.some(act => act?.type === t.value) || t.value === 'all')
