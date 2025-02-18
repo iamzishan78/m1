@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -159,13 +158,14 @@ const CategorySectionList = ({
 
 					if (layer.type === 'group') {
 						return (
-							<div
+							<StyledListItem
+								ContainerComponent="li"
 								key={labelId}
 								style={{
 									position: 'absolute',
 									top: 0,
 									left: 0,
-									// width: '100%',
+									width: '100%',
 									transform: `translateY(${virtualRow.start}px)`,
 								}}
 							>
@@ -265,7 +265,7 @@ const CategorySectionList = ({
 									</Box>
 								</Accordion>
 								<Divider style={{ height: '2px' }} />
-							</div>
+							</StyledListItem>
 						);
 					}
 
