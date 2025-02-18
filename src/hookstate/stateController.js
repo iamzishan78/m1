@@ -3,7 +3,7 @@ import { focusAtom } from 'jotai-optics';
 
 import { store } from 'JotaiProvider';
 
-// Base Class for Jotai State Controller
+// Base Class for Jotai State Controllerxs
 export class StateController {
 	constructor(initialState, controllerName) {
 		this.store = store;
@@ -15,6 +15,19 @@ export class StateController {
 		Object.keys(this.initialState).forEach(key => {
 			this.getFocusItem(key, true);
 		});
+	}
+
+	autoBind(instance) {
+		let proto = Object.getPrototypeOf(instance);
+		while (proto !== null) {
+			const methodNames = Object.getOwnPropertyNames(proto).filter(
+				prop => typeof instance[prop] === 'function' && prop !== 'constructor'
+			);
+			for (const name of methodNames) {
+				instance[name] = instance[name].bind(instance);
+			}
+			proto = Object.getPrototypeOf(proto);
+		}
 	}
 
 	getFocusItem(key, fromInitialState) {
@@ -89,7 +102,7 @@ export class StateController {
 	getValue(key) {
 		try {
 			return this.focusState[key] ? store.get(this.focusState[key]) : null;
-		} catch (_) {
+		} catch {
 			throw Error(`Key: ${key} does not exist in initial State of ${this.controllerName}`);
 		}
 	}

@@ -10,18 +10,16 @@ const defaultMapVars = {
 };
 
 export const mapStateInitialState = {
+	// mapStyles: [],
 	mapVars: defaultMapVars,
 	defaultMapVars,
 	isDefaultViewAllowed: true,
-	isMapRefreshing: false,
-	toggleZoomOut: null,
-	toggle3d: null,
-	reintializeMap: false,
 };
 
 class MapStateController extends StateController {
 	constructor(initialState) {
 		super(initialState, MapStateController.name);
+		this.autoBind(this);
 	}
 
 	moved() {

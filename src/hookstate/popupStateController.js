@@ -16,6 +16,7 @@ export const popupInitialState = {
 	layerSelectionPopup: false,
 	selectedUserDefinedLayer: null,
 	selectedShape: null,
+	selectedParcel: null,
 	selectedShapeFile: null,
 	selectedWell: null,
 	selectedWellId: null,
@@ -28,13 +29,12 @@ export const popupInitialState = {
 	permitSelectedCoordinates: null,
 	selectionLayers: [],
 	coordinate: null,
-	customLayerId: '',
-	data: {},
 };
 
 class PopupStateController extends StateController {
 	constructor(initialState) {
 		super(initialState, PopupStateController.name);
+		this.autoBind(this);
 	}
 
 	/**
@@ -135,13 +135,9 @@ class PopupStateController extends StateController {
 				[selectedWell.longitude + 0.5 * alpha, selectedWell.latitude],
 			];
 
-			try {
-				window.mapRef?.fitBounds(bbox, {
-					easing: () => 1, // immediate
-				});
-			} catch (err) {
-				// safe fallback
-			}
+			window.mapRef?.fitBounds(bbox, {
+				easing: () => 1, // immediate
+			});
 		}
 	}
 

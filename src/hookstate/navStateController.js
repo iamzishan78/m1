@@ -5,31 +5,19 @@ import { copy, deepEqual } from 'components/Shared/functions';
 import { layerFiltersController } from './layerFiltersController';
 import { StateController } from './stateController'; // <-- Your generic class-based controller
 
-// Original initial state
 const initialState = {
 	drawingMode: null,
 	filterFeatureId: null,
 	bulkUploadFromMap: false,
 	bulkUploadShape: null,
+	/////
+	filterBasin: null,
+	filterAOI: null,
+	filterParcel: null,
 	bulkUploadParcel: null,
-	selectedModule: ROUTES.MAP.module,
-	wellFilterCount: 0,
-	// For Geography Filter
-	geographyFilterCount: 0,
-	interestFilter: {
-		shapes: [],
-		value: [],
-	},
-	parcelFilter: {
-		shapes: [],
-		value: [],
-	},
-	// ...
+	bulkUploadFromContacts: false,
 	filterDrawing: [],
-	filterIntersectingWellLines: [],
-	filterBasin: [],
-	filterAOI: [],
-	filterParcel: [],
+	selectedModule: ROUTES.MAP.module,
 };
 
 export const WellsGeographyFilters = ['state', 'county', 'GrId1', 'GrId2', 'GrId3', 'GrId4', 'GrId5'];
@@ -37,6 +25,7 @@ export const WellsGeographyFilters = ['state', 'county', 'GrId1', 'GrId2', 'GrId
 class NavStateController extends StateController {
 	constructor(initialState) {
 		super(initialState, NavStateController.name);
+		this.autoBind(this);
 	}
 
 	/**

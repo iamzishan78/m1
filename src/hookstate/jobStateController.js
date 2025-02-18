@@ -1,6 +1,6 @@
 import { StateController } from './stateController';
 
-const jobInitialState = {
+export const jobInitialState = {
 	activeStepNumber: 0,
 	csvDataToSend: [],
 	mappedHeadersFromCSV: [],
@@ -12,16 +12,12 @@ const jobInitialState = {
 	bulkUpload: false,
 	jobType: null,
 	job: null,
-	JobOutput: null,
-	isJobCompleted: null,
-	isJobFailed: null,
-	storeJobOutput: null,
-	options: {},
 };
 
 class JobStateController extends StateController {
 	constructor(initialState) {
 		super(initialState, JobStateController.name);
+		this.autoBind(this);
 	}
 
 	initialize(stateToUpdate = {}) {

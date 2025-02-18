@@ -188,6 +188,7 @@ const layerFilterInitialState = {
 class LayerFiltersController extends StateController {
 	constructor(initialState) {
 		super(initialState, LayerFiltersController.name);
+		this.autoBind(this);
 	}
 
 	setVariables(layerType, variables) {

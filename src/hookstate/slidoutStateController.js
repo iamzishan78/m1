@@ -1,8 +1,6 @@
-import { Slide } from '@mui/material';
-
 import { StateController } from './stateController';
 
-const slidoutInitialState = {
+export const slidoutInitialState = {
 	show: false,
 	views: [],
 	parentId: '',
@@ -16,13 +14,12 @@ const slidoutInitialState = {
 	selectedActivityId: '',
 	newComments: [],
 	loader: false,
-	parentType: '',
-	isLoading: false,
 };
 
 class SlidoutStateController extends StateController {
 	constructor(initialState) {
 		super(initialState, SlidoutStateController.name);
+		this.autoBind(this);
 	}
 
 	updateProps(newProps) {

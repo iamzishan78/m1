@@ -1,6 +1,6 @@
 import { StateController } from './stateController'; // <-- Import your generic class-based controller
 
-const mapControlsInitialState = {
+export const mapControlsInitialState = {
 	searchValue: '',
 	fileUploadedContent: null,
 	fileUploaded: null,
@@ -25,7 +25,6 @@ const mapControlsInitialState = {
 	Draw: null,
 	mapStyleList: [],
 	expandedPanel: true,
-	manageTransferData: false,
 	// TODO: Remove conflicting selectedLayer states
 	selectedLayerControl: null,
 	selectedLayer: null,
@@ -35,10 +34,11 @@ const mapControlsInitialState = {
 	// From Redux MapGridCard
 	mapGridCardActivated: false,
 };
-// Example class-based controller
+
 class MapControlsController extends StateController {
 	constructor(initialState) {
 		super(initialState, MapControlsController.name);
+		this.autoBind(this);
 	}
 
 	/**

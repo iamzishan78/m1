@@ -2,7 +2,6 @@
 /* eslint-disable no-use-before-define */
 import React from 'react';
 
-import { atom } from 'jotai';
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
 
 import { extractUniqueFilters, filterValidFilters } from 'components/Map/DeckGL/helpers/common';
@@ -14,7 +13,6 @@ import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectFie
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import Table from 'components/MRTTable/Table';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
 import { formatGridViewToMRT, removeSpaces } from 'components/MRTTable/utils/helper';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
@@ -55,87 +53,14 @@ export const tableInitialState = {
 	editedData: {},
 	validationErrors: {},
 	isCreateMode: false,
-	initialized: false,
-	tableKey: '',
-	pagination: {},
-	maxTableHeight: '',
-	minTableHeight: '',
-	isExportDisabled: false,
-	isError: false,
-	isFetching: false,
-	isLoading: false,
-	isClientSide: false,
-	isSelectAllAllowed: false,
-	isAllRowsSelected: false,
-	showColumnFilters: false,
-	isDeleteDisabled: false,
-	geoKey: '',
-	asyncRowSelection: false,
-	getIdsFromRows: null,
-	additionalQueries: [],
-	toolbarInternalActions: {},
-	filterLayerType: '',
-	fetchDynamicSchema: null,
-	assetName: '',
-	associatedAssetName: '',
-	pageSize: '',
-	data: {},
-	modelName: '',
-	layerIdentifier: '',
-	layerSchema: {},
-	esIndex: '',
-	defaultFlterMode: '',
-	columnVirtualization: false,
-	columnVisibility: {},
-	advanceSearch: [],
-	globalFilter: '',
-	enableHiding: false,
-	refetchQueries: [],
-	excludeFields: [],
-	rowSelection: {},
-	isInFiniteScroll: false,
-	TableSchema: null,
-	tableCss: {},
-	filterModes: {},
-	commentsCounter: [],
-	tagsList: [],
-	isTrackedList: [],
-	search: '',
-	gridViewSettings: {},
-	fetchMetaData: {},
-	isSelectall: false,
-	density: '',
-	initialGridView: {},
-	defaultTableSchema: [],
-	defaultColumnsOrdering: [],
-	defaultColumnPinning: {},
-	alreadyCheckedOwnersLength: 0,
-	ownersWhoAreContact: [],
-	mrtTableRef: null,
-	CustomToolBar: null,
-	metaFieldList: false,
-	showAddContactButton: false,
-	tableStateValues: {},
-	onClickedRow: null,
-	query: '',
-	getVariables: null,
-	getDataFromRes: null,
-	disableRowSelection: false,
-	enableFacetedValues: false,
-	FooterKeys: [],
-	tabLabels: null,
-	customValue: {},
-	isCampaignRefetch: false,
 };
 export const tableESState = {};
+
 export const tableGlobalState = {
 	refetch: false,
 	refetchAdditionalQueries: false,
 	reInitialized: false,
 	tabKey: 0,
-	users: [],
-	dialog: {},
-	addWellDialog: {},
 };
 
 function isDateFormat(inputString) {
@@ -268,7 +193,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 	// Create dynamic grid schema
 	const dynamicTableSchema = columns
 		.filter(column => !!column?.isGridDisplayed)
-		.map((item, index) => {
+		.map(item => {
 			let key, modelName;
 			if (fetchDynamicSchema.isAssociatedModel) {
 				key = `${fetchDynamicSchema?.associationKey || 'relatedObject'}.${item.mappingKey}`;
@@ -335,7 +260,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 	return _Schema;
 }
 
-async function fetchGridViews(client, module, tableKey, gridViewOverride) {
+async function fetchGridViews(client, module) {
 	// Retrieve the current user's information from a global state controller.
 	const user = globalStateController.getValue('user');
 
@@ -354,6 +279,7 @@ async function fetchGridViews(client, module, tableKey, gridViewOverride) {
 class TableESStateControllerHandler extends StateController {
 	constructor(initialState) {
 		super(initialState, TableESStateControllerHandler.name);
+		this.autoBind(this);
 	}
 	async initialize(
 		tableKey,
@@ -691,11 +617,8 @@ class TableESStateControllerHandler extends StateController {
 		const updatedColumnSchema = this.setInitialFilterMode(columnSchema, mode, column);
 
 		this.updateState({
-			TableSchema: [
-				...tableSchema.slice(0, index),
-				{ ...tableSchema[index], ...updatedColumnSchema },
-				...tableSchema.slice(index + 1),
-			],
+			TableSchema:
+				this.getValue('TableSchema')?.map((col, i) => (i === index ? { ...col, ...updatedColumnSchema } : col)) || [],
 		});
 
 		if (callSelectFilterMode) {
@@ -1212,7 +1135,7 @@ class TableESStateControllerHandler extends StateController {
 	}
 
 	clearEditing() {
-		const { editedData, validationErrors } = this.getValues(['editedData', 'validationErrors']);
+		const validationErrors = this.getValue('validationErrors');
 
 		this.updateState({
 			editedData: {},
@@ -1311,6 +1234,7 @@ export const tableController = TableKey => {
 class TableGlobalController extends StateController {
 	constructor(initialState) {
 		super(initialState, TableGlobalController.name);
+		this.autoBind(this);
 	}
 
 	refetch() {

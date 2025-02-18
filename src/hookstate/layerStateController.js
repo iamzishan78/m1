@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { NotificationManager } from 'react-notifications';
 
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
@@ -25,15 +24,14 @@ import {
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { getLayerKey } from 'hookstate/helpers';
-import { hookStateController } from 'hookstate/hookStateController';
 
 import { drawController } from './drawStateController';
 import { globalStateController } from './globalStateController';
-import { layerState, layerStateInitialState } from './initialStates';
 import { layerFiltersController } from './layerFiltersController';
 import { mapControlsController } from './mapControlsController';
 import { navController } from './navStateController';
 import { popupController } from './popupStateController';
+import { StateController } from './stateController';
 
 const TWO = 2;
 const FIFTEEN = 15;
@@ -55,6 +53,19 @@ const TWO_FORTY_TWO = 242;
 const TWO_FIFTY_ONE = 251;
 const SEVEN_FIFTY = 750;
 const SIX_THOUSAND = 6000;
+
+const layerStateInitialState = {
+	projectedLayers: [],
+	client: null,
+	history: null,
+	boundingStates: null,
+	bbox: null,
+	zoom: 0,
+	recalculate: false,
+
+	wellListFromSearch: [], // Not Moved
+	rigsData: [], // Not Moved
+};
 
 const getWellColor = w => {
 	// Check if the well status is of Permit type
@@ -286,16 +297,17 @@ const LayerMeta = {
 	},
 };
 
-const baseLayerController = {
-	...hookStateController(layerState, copy(layerStateInitialState)),
-};
+class LayerStateControllerHandler extends StateController {
+	constructor(initialState) {
+		super(initialState, LayerStateControllerHandler.name);
+		this.autoBind(this);
+	}
 
-const layerStateControllerHandler = state => {
-	const showError = debounce(error => {
+	showError(error) {
 		NotificationManager.error(error, 'Error', SIX_THOUSAND);
-	}, 1000);
+	}
 
-	const getShowableLayers = () => {
+	getShowableLayers() {
 		let layers = globalStateController.getValue('layers');
 		if (layers?.length === 0) {
 			const deckLayer = globalStateController.getValue('deckLayer');
@@ -340,12 +352,10 @@ const layerStateControllerHandler = state => {
 
 			return true;
 		});
-	};
+	}
 
-	const handleBounds = (layerId, defaultZoom, visible, layerBBox, polygonFilter) => {
-		const { boundingStates, bbox, zoom } = state.get({
-			noproxy: true,
-		});
+	handleBounds(layerId, defaultZoom, visible, layerBBox, polygonFilter) {
+		const { boundingStates, bbox, zoom } = this.getValues(['boundingStates', 'bbox', 'zoom']);
 
 		const boundingStateVal = boundingStates?.[layerId] || {};
 		let { previousBounds, ...rest } = boundingStateVal;
@@ -363,8 +373,11 @@ const layerStateControllerHandler = state => {
 				show: { current: visible, previous: !!boundingStates?.[layerId]?.show?.current },
 			};
 
-			state.boundingStates.merge({
-				[layerId]: boundingState,
+			this.updateState({
+				boundingStates: {
+					...boundingStates,
+					[layerId]: boundingState,
+				},
 			});
 
 			return boundingState;
@@ -412,21 +425,24 @@ const layerStateControllerHandler = state => {
 				show: { current: show, previous: !!boundingStates?.[layerId]?.show?.current },
 			};
 
-			state.boundingStates.merge({
-				[layerId]: boundingState,
+			this.updateState({
+				boundingStates: {
+					...boundingStates,
+					[layerId]: boundingState,
+				},
 			});
 
 			return boundingState;
 		} catch (err) {
 			if (polygonFilter) {
-				showError('Invalid Shape');
+				debounce(() => this.showError('Invalid Shape'), 1000)(); // Debounce at call site
 			}
 			console.log(`🚀 ~ file: layerStateController.js:285 ~ handleBounds ~ err:${layerId}`, err.message);
 			return boundingStateVal;
 		}
-	};
+	}
 
-	const updateLayers = (layerId, updatedState, type) => {
+	updateLayers(layerId, updatedState, type) {
 		window?.deckOverlay?._deck?.layerManager?.layers?.forEach?.(layer => {
 			if (!layer.id.includes(layerId)) {
 				return;
@@ -438,14 +454,14 @@ const layerStateControllerHandler = state => {
 
 			DeckGlLayer.updateLayer(updatedState, layer.id);
 		});
-	};
+	}
 
-	const updateLayer = (layer, updatedState) => {
+	updateLayer(layer, updatedState) {
 		const layerId = `${layer?.identifier}_${layer.layerId}`;
 		DeckGlLayer.updateLayer(updatedState, layerId);
-	};
+	}
 
-	const removeLayer = (layer, recalculate = false) => {
+	removeLayer(layer, recalculate = false) {
 		if (!layer) {
 			return;
 		}
@@ -454,12 +470,18 @@ const layerStateControllerHandler = state => {
 		DeckGlLayer.removeLayer(layerId);
 		delete deckLayers[layerId];
 
-		const { boundingStates } = state.get({ noproxy: true });
-		state.boundingStates.merge({
-			[layerId]: {
-				...boundingStates?.[layerId],
-				previousBounds: undefined,
-				callApi: false,
+		// Retrieve current boundingStates
+		const boundingStates = this.getValue('boundingStates');
+
+		// Update state properly
+		this.updateState({
+			boundingStates: {
+				...boundingStates,
+				[layerId]: {
+					...boundingStates?.[layerId],
+					previousBounds: undefined,
+					callApi: false,
+				},
 			},
 		});
 
@@ -468,54 +490,55 @@ const layerStateControllerHandler = state => {
 				// baseLayerController.recalculate();
 			}
 		}, 10);
-	};
+	}
 
-	const removeLayers = (timeout = true) => {
-		const showableLayers = getShowableLayers();
+	removeLayers(timeout = true) {
+		const showableLayers = this.getShowableLayers();
 		showableLayers.forEach(layer => {
 			if (timeout) {
 				setTimeout(() => {
-					removeLayer(layer);
+					this.removeLayer(layer);
 				}, FIFTY);
 			} else {
-				removeLayer(layer);
+				this.removeLayer(layer);
 			}
 		});
-	};
+	}
 
-	const recalculate = () => {
-		state.recalculate.set(!state.recalculate.get({ noproxy: true }));
-	};
+	recalculate() {
+		const currentValue = this.getValue('recalculate');
+		this.updateState({ recalculate: !currentValue });
+	}
 
-	const getLayerFromMongoId = layerId => {
-		const layers = getShowableLayers();
+	getLayerFromMongoId(layerId) {
+		const layers = this.getShowableLayers();
 
 		const layer = layers.find(layer => layer.layerId === layerId);
 
 		return layer;
-	};
+	}
 
-	const getBeforeLayerId = identifier => {
-		const showableLayers = getShowableLayers();
+	getBeforeLayerId(identifier) {
+		const showableLayers = this.getShowableLayers();
 		const layerIndex = showableLayers.findIndex(dbLayer => {
 			return identifier === dbLayer?.identifier;
 		});
 		return layerIndex > 0
 			? `${showableLayers[layerIndex - 1]?.identifier}_${showableLayers[layerIndex - 1].layerId}`
 			: null;
-	};
+	}
 
-	const handleMapBoxLayer = dbLayer => {
+	handleMapBoxLayer(dbLayer) {
 		const map = window.mapRef;
 		const layerId = dbLayer.layerId;
 
 		// Layer data and converting it to geojson
 		let layerData = null;
 		if (dbLayer.identifier === 'Search') {
-			layerData = baseLayerController.getValue('wellListFromSearch');
+			layerData = this.getValue('wellListFromSearch');
 		}
 		if (dbLayer.identifier === 'Rig Activity') {
-			layerData = baseLayerController.getValue('rigsData');
+			layerData = this.getValue('rigsData');
 		}
 
 		// Return if we not get any data
@@ -614,18 +637,18 @@ const layerStateControllerHandler = state => {
 				selectedWellId: features[0].properties.id,
 			});
 		});
-	};
+	}
 
-	const handleStaticMapBoxLayer = dbLayer => {
+	handleStaticMapBoxLayer(dbLayer) {
 		const map = window.mapRef;
 		const meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
 		const visible = dbLayer?.layerSettings?.visiable;
 		if (map.getLayer(meta?.id)) {
 			map.setLayoutProperty(meta?.id, 'visibility', visible ? 'visible' : 'none');
 		}
-	};
+	}
 
-	const reinitializeLayer = ({ meta, layerId, beforeLayerId, labelProps, pickable, visible, position }) => {
+	reinitializeLayer({ meta, layerId, beforeLayerId, labelProps, pickable, visible, position }) {
 		if (!deckLayers[layerId]) {
 			deckLayers[layerId] = {
 				getData: generateDataFunc(),
@@ -649,21 +672,21 @@ const layerStateControllerHandler = state => {
 			deckLayers[layerId].deckLayer = deckLayer;
 			deckLayers[layerId].beforeLayerId = beforeLayerId;
 		}
-	};
+	}
 
-	const handleDeckLayer = (dbLayer, isUpdateTrigger) => {
-		const client = baseLayerController.getValue('client');
+	handleDeckLayer(dbLayer, isUpdateTrigger) {
+		const client = this.getValue('client');
 		if (!client) {
 			return null;
 		}
 
 		if (ifMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
-			handleMapBoxLayer(dbLayer);
+			this.handleMapBoxLayer(dbLayer);
 			return null;
 		}
 
 		if (ifStaticMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
-			handleStaticMapBoxLayer(dbLayer);
+			this.handleStaticMapBoxLayer(dbLayer);
 			return null;
 		}
 
@@ -674,7 +697,7 @@ const layerStateControllerHandler = state => {
 		}
 
 		const layerId = `${dbLayer.identifier}_${dbLayer.layerId}`;
-		const beforeLayerId = getBeforeLayerId(dbLayer.identifier);
+		const beforeLayerId = this.getBeforeLayerId(dbLayer.identifier);
 
 		const isFileLayer = dbLayer.layerType === 'file layer';
 
@@ -697,7 +720,7 @@ const layerStateControllerHandler = state => {
 			polygonsFilter,
 		} = layerFiltersController.getValues([filterKey, 'polygonFilter', 'polygonsFilter']);
 
-		const boundingState = handleBounds(
+		const boundingState = this.handleBounds(
 			layerId,
 			meta.defaultZoom,
 			dbLayer.layerSettings?.showable && dbLayer.layerSettings?.visiable,
@@ -731,7 +754,7 @@ const layerStateControllerHandler = state => {
 			};
 		}
 
-		reinitializeLayer({ meta, layerId, beforeLayerId, labelProps, pickable, visible, position: dbLayer.position });
+		this.reinitializeLayer({ meta, layerId, beforeLayerId, labelProps, pickable, visible, position: dbLayer.position });
 
 		if (isUpdateTrigger) {
 			const newId = uuid();
@@ -748,7 +771,7 @@ const layerStateControllerHandler = state => {
 			};
 		}
 		if (!boundingState.show?.current) {
-			updateLayer(dbLayer, {
+			this.updateLayer(dbLayer, {
 				pickable,
 				...updatedProps,
 				visible: boundingState.show?.current,
@@ -757,7 +780,7 @@ const layerStateControllerHandler = state => {
 		}
 
 		if (!boundingState.callApi) {
-			updateLayer(dbLayer, {
+			this.updateLayer(dbLayer, {
 				pickable,
 				...updatedProps,
 				visible: boundingState.show?.current,
@@ -765,7 +788,7 @@ const layerStateControllerHandler = state => {
 			return null;
 		}
 
-		updateLayer(dbLayer, updatedProps);
+		this.updateLayer(dbLayer, updatedProps);
 
 		getBoundsQuery({
 			multiQuery: meta.multiQuery,
@@ -800,28 +823,26 @@ const layerStateControllerHandler = state => {
 			},
 		});
 		return null;
-	};
+	}
 
-	const toggleLayersActivity = (identifier, value) => {
+	toggleLayersActivity(identifier, value) {
 		let layers = globalStateController.getValue('layers');
 		const layer = layers.find(layer => layer.identifier.startsWith(identifier));
 
-		handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } });
-	};
+		this.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } });
+	}
 
-	const resetBounds = (identifier, updateTriggers = false) => {
+	resetBounds(identifier, updateTriggers = false) {
 		if (typeof identifier !== 'string') {
 			return;
 		}
 		if (identifier === 'Agreements') {
 			['Deeds', 'Leases', 'Contracts', 'Surfaces'].forEach(type => {
-				resetBounds(type);
+				this.resetBounds(type);
 			});
 			return;
 		}
-		const { boundingStates } = state.get({
-			noproxy: true,
-		});
+		const boundingStates = this.getValue('boundingStates');
 
 		let layerId = Object.keys(boundingStates || {}).find(
 			key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
@@ -843,10 +864,10 @@ const layerStateControllerHandler = state => {
 						key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
 					);
 					if (layerId) {
-						const showableLayers = getShowableLayers();
+						const showableLayers = this.getShowableLayers();
 						showableLayers.forEach(dbLayer => {
 							if (dbLayer.identifier.toLowerCase().startsWith(identifier.toLowerCase())) {
-								removeLayer(dbLayer, true);
+								this.removeLayer(dbLayer, true);
 							}
 						});
 					}
@@ -855,10 +876,10 @@ const layerStateControllerHandler = state => {
 			return;
 		}
 
-		const showableLayers = getShowableLayers();
+		const showableLayers = this.getShowableLayers();
 		showableLayers.forEach(dbLayer => {
 			if (dbLayer.identifier.toLowerCase().startsWith(identifier.toLowerCase()) || identifier === 'all') {
-				removeLayer(dbLayer, true);
+				this.removeLayer(dbLayer, true);
 			}
 		});
 
@@ -867,20 +888,20 @@ const layerStateControllerHandler = state => {
 			// Retrieve all layers from the global state
 			globalStateController.getValue('layers').forEach(layer => {
 				// Handle each layer using the layer controller
-				layerController.handleDeckLayer(layer);
+				this.handleDeckLayer(layer);
 			});
 		}
 
 		const layer = globalStateController.getValue('layers').find(l => l.identifier === identifier);
 		if (updateTriggers) {
-			layerController.handleDeckLayer(layer, true);
+			this.handleDeckLayer(layer, true);
 		}
-	};
+	}
 
-	const resetMapStates = (mapReady = false) => {
-		const rigsData = baseLayerController.getValue('rigsData');
-		const client = baseLayerController.getValue('client');
-		removeLayers(false);
+	resetMapStates(mapReady = false) {
+		const rigsData = this.getValue('rigsData');
+		const client = this.getValue('client');
+		this.removeLayers(false);
 		popupController.reset();
 		drawController.reset();
 		layerFiltersController.reset();
@@ -898,73 +919,55 @@ const layerStateControllerHandler = state => {
 			});
 		});
 
-		baseLayerController.setState({ rigsData, client });
+		this.setState({ rigsData, client });
 		navController.reset();
 		mapControlsController.setState({
 			selectedControl: mapControlsController.getValue('selectedControl'),
 		});
 		globalStateController.updateState({ mapReady });
-	};
+	}
 
-	return {
-		init: (client, history) => {
-			baseLayerController.updateState({ client, history });
-		},
-		resetBounds,
-		updateLayers,
-		updateLayer,
-		recalculate,
-		handleDeckLayer,
-		handleMapBoxLayer,
-		getLayerFromMongoId,
-		removeLayer,
-		removeLayers,
-		toggleLayersActivity,
-		handleChange: () => {
-			const showableLayers = getShowableLayers();
+	resetMap() {
+		this.resetMapStates();
+		window.mapRef?.remove();
+		window.mapRef = null;
+		window.drawRef = null;
+	}
 
-			showableLayers.reverse().forEach(dbLayer => {
-				handleDeckLayer(dbLayer);
-			});
-		},
-		changeLayerPosition: (currentLayer, beforeLayer) => {
-			if (!currentLayer) {
-				return null;
-			}
+	init(client, history) {
+		this.updateState({ client, history });
+	}
 
-			if (currentLayer && !beforeLayer) {
-				DeckGlLayer.moveLayer(`${currentLayer?.identifier}_${currentLayer.layerId}`);
-			} else {
-				DeckGlLayer.moveLayer(
-					`${currentLayer?.identifier}_${currentLayer.layerId}`,
-					`${beforeLayer?.identifier}_${beforeLayer.layerId}`
-				);
-			}
+	handleChange() {
+		const showableLayers = this.getShowableLayers();
+
+		showableLayers.reverse().forEach(dbLayer => {
+			this.handleDeckLayer(dbLayer);
+		});
+	}
+
+	changeLayerPosition(currentLayer, beforeLayer) {
+		if (!currentLayer) {
 			return null;
-		},
-		resetMapStates,
-		resetMap: () => {
-			resetMapStates();
-			window.mapRef?.remove();
-			window.mapRef = null;
-			window.drawRef = null;
-		},
-		generateUpdateFn: (layers, value, currentLayers, field) => {
-			const updatefn = {};
-			layers.forEach(layer => {
-				if (layer.type === 'group') {
-					layer.layers.forEach(l => {
-						const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
-						if (layerIndex !== -1) {
-							if (field === 'showable') {
-								updatefn[layerIndex] = { layerSettings: { [field]: { $set: value } } };
-							} else {
-								updatefn[layerIndex] = { [field]: { $set: value } };
-							}
-						}
-					});
-				} else {
-					const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === layer.identifier);
+		}
+
+		if (currentLayer && !beforeLayer) {
+			DeckGlLayer.moveLayer(`${currentLayer?.identifier}_${currentLayer.layerId}`);
+		} else {
+			DeckGlLayer.moveLayer(
+				`${currentLayer?.identifier}_${currentLayer.layerId}`,
+				`${beforeLayer?.identifier}_${beforeLayer.layerId}`
+			);
+		}
+		return null;
+	}
+
+	generateUpdateFn(layers, value, currentLayers, field) {
+		const updatefn = {};
+		layers.forEach(layer => {
+			if (layer.type === 'group') {
+				layer.layers.forEach(l => {
+					const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
 					if (layerIndex !== -1) {
 						if (field === 'showable') {
 							updatefn[layerIndex] = { layerSettings: { [field]: { $set: value } } };
@@ -972,21 +975,28 @@ const layerStateControllerHandler = state => {
 							updatefn[layerIndex] = { [field]: { $set: value } };
 						}
 					}
+				});
+			} else {
+				const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === layer.identifier);
+				if (layerIndex !== -1) {
+					if (field === 'showable') {
+						updatefn[layerIndex] = { layerSettings: { [field]: { $set: value } } };
+					} else {
+						updatefn[layerIndex] = { [field]: { $set: value } };
+					}
 				}
-			});
-			return updatefn;
-		},
+			}
+		});
+		return updatefn;
+	}
 
-		updateProjectedLayers: ({ layer, value, field }) => {
-			const projectedLayers = layerState.projectedLayers.get({ noproxy: true });
-			const updatefn = layerController.generateUpdateFn([layer], value, projectedLayers, field);
+	updateProjectedLayers({ layer, value, field }) {
+		const projectedLayers = this.getValue('projectedLayers');
 
-			layerController.updateState({ projectedLayers: update(projectedLayers, updatefn) });
-		},
-	};
-};
+		const updatefn = this.generateUpdateFn([layer], value, projectedLayers, field);
 
-export const layerController = {
-	...baseLayerController,
-	...layerStateControllerHandler(layerState),
-};
+		this.updateState({ projectedLayers: update(projectedLayers, updatefn) });
+	}
+}
+
+export const layerController = new LayerStateControllerHandler(layerStateInitialState);
