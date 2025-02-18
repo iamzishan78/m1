@@ -14,6 +14,7 @@ import { Skeleton } from '@mui/material';
 
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { min } from 'lodash';
+import PropTypes from 'prop-types';
 
 import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
@@ -124,7 +125,18 @@ const CategorySectionList = ({
 	}, [filteredLayers]);
 
 	const maxHeight = 454.5;
-	const itemHeight = 50.5;
+	const itemHeight = 54;
+
+	const calculatedHeight = useMemo(() => {
+		const hasSingleLayerWithSubLayers =
+			filteredLayers.length === 1 && openUDLayers.length > 0 && filteredLayers[0]?.layers?.length;
+
+		if (hasSingleLayerWithSubLayers) {
+			return 42 * filteredLayers[0].layers.length + 116;
+		}
+
+		return min([maxHeight, filteredLayers.length * itemHeight]);
+	}, [filteredLayers, openUDLayers, maxHeight, itemHeight]);
 
 	if (loading) {
 		return (
@@ -144,7 +156,11 @@ const CategorySectionList = ({
 		<List
 			className={classes.list}
 			ref={parentRef}
-			style={{ overflowY: 'auto', overflowX: 'hidden', height: min([maxHeight, filteredLayers.length * itemHeight]) }}
+			style={{
+				overflowY: 'auto',
+				overflowX: 'hidden',
+				height: calculatedHeight,
+			}}
 		>
 			<div
 				style={{
@@ -347,6 +363,35 @@ const CategorySectionList = ({
 			</div>
 		</List>
 	);
+};
+
+CategorySectionList.propTypes = {
+	search: PropTypes.string,
+	loading: PropTypes.bool.isRequired,
+	SectionLayers: PropTypes.arrayOf(
+		PropTypes.shape({
+			name: PropTypes.string,
+			layerName: PropTypes.string,
+			type: PropTypes.string,
+			layers: PropTypes.arrayOf(
+				PropTypes.shape({
+					layerId: PropTypes.string,
+					layerName: PropTypes.string,
+					layerSettings: PropTypes.shape({
+						showable: PropTypes.bool,
+					}),
+				})
+			),
+		})
+	).isRequired,
+	actionItem: PropTypes.shape({
+		group: PropTypes.object,
+		layer: PropTypes.object,
+		type: PropTypes.string,
+	}),
+	layerCategory: PropTypes.string.isRequired,
+	handleClick: PropTypes.func.isRequired,
+	setActionItem: PropTypes.func.isRequired,
 };
 
 export default CategorySectionList;
