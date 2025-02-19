@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
 import { TransitionGroup } from 'react-transition-group';
@@ -58,7 +58,6 @@ import {
 	StyledMenuHActionHeader,
 	StyledMenuSecondaryHeaderItem,
 } from './style';
-import { AppContext } from '../../../../AppContext';
 import { deepEqualObjects } from '../../functions';
 import { customLayersFieldAccessors } from './Filters/consts';
 
@@ -84,8 +83,8 @@ const layerIcons = [
 const SEARCH_DELAY = 200;
 const Z_INDEX_DIALOG = 1300;
 
-const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle }) => {
-	const { mapStateValues } = mapStateController.useState(['reintializeMap'], 'mapStateValues');
+const BasemapImageBox = React.memo(({ setBaseMap, title, currentStyle }) => {
+	const { mapStateValues } = mapStateController.useState(['reintializeMap', 'mapStyles'], 'mapStateValues');
 	return (
 		<Grid container direction="column" spacing={3}>
 			<Grid item>
@@ -104,7 +103,7 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 							overflow: 'scroll',
 						}}
 					>
-						{mapStyles.map(style => (
+						{mapStateValues.mapStyles.map(style => (
 							<StyledMenuItem
 								disableRipple
 								key={style.id}
@@ -234,13 +233,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	);
 	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars'], 'mapStateValues');
 	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
-	const { globalStateValues } = globalStateController.useState(
-		['filters', 'layerSettingsLoading', 'datasets'],
-		'globalStateValues'
+	const { globalStateValues } = globalStateController.useState(['filters', 'user'], 'globalStateValues');
+	const { checkedBaseLayers, checkedHeats, layerStateValues } = layerController.useState(
+		['layers', 'datasets', 'checkedBaseLayers', 'checkedHeats', 'layerSettingsLoading'],
+		'layerStateValues'
 	);
-	const layers = globalStateController.getValue('layers');
 
-	const [stateApp] = useContext(AppContext);
 	const [totalHitMapCount, setTotalHitMapCount] = useState(null);
 	const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
 
@@ -249,7 +247,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 
 	const [filteredItems, setFilteredItems] = useState([]);
 	const [layerMap, setLayerMap] = useState([]);
-	const [mapStyles, setMapStyles] = useState([]);
 	const [search, setSearch] = useState('');
 	const [searchState, setSearchState] = useState(false);
 	const [tab, setTab] = useState(0);
@@ -259,21 +256,15 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		navStateValues.wellFilterCount +
 		(selectedView?.filters?.filter(filter => {
 			const fileId = filter?.dataSourceName?.substring(0, filter?.dataSourceName?.indexOf('_'));
-			const layerShapeName = filter?.dataSourceName?.substring(filter?.dataSourceName?.indexOf('_') + 1);
-			const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
+			const layerIdentifier = filter?.dataSourceName?.substring(filter?.dataSourceName?.indexOf('_') + 1);
+			const layer = layerStateValues.layers.find(l => l.file === fileId && l.layerIdentifier === layerIdentifier);
 			const dataSourceExists = filter?.dataSourceName && (customLayersFieldAccessors[filter?.dataSourceName] || layer);
 			return (filter?.filterValues || ['empty', 'notEmpty'.includes(filter?.filterType)]) && dataSourceExists;
 		})?.length || 0);
 
 	useEffect(() => {
-		setTotalHitMapCount(stateApp.checkedHeats.length);
-	}, [stateApp]);
-
-	useEffect(() => {
-		if (stateApp.mapStyles && stateApp.mapStyles.length > 0) {
-			setMapStyles([...stateApp.mapStyles]);
-		}
-	}, [stateApp.mapStyles]);
+		setTotalHitMapCount(layerStateValues.checkedHeats.length);
+	}, [layerStateValues.checkedHeats.length]);
 
 	useEffect(() => {
 		const TAB_LAYER = 0;
@@ -329,7 +320,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		} else if (type === 'base' && filteredItems) {
 			setLayerMap(filteredItems.filter(item => item.name !== 'Water' && item.name !== 'Land'));
 		}
-	}, [selectedControl, filteredItems, stateApp.checkedBaseLayers, stateApp.checkedHeatLayers, type]);
+	}, [selectedControl, filteredItems, checkedBaseLayers, checkedHeats, type]);
 
 	useEffect(() => {
 		dispatch(toggleLayersFiltersPanel(!!mapControlsStateValues.expandedPanel));
@@ -389,7 +380,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		updateUserMapSettings({
 			variables: {
 				settings: {
-					user: stateApp.user.mongoId,
+					user: globalStateValues.user.mongoId,
 					type,
 					settings: {
 						activeBaseMap: style.name,
@@ -403,7 +394,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		updateUserMapSettings({
 			variables: {
 				settings: {
-					user: stateApp.user.mongoId,
+					user: globalStateValues.user.mongoId,
 					type: 'baseMap',
 					settings: {
 						mapDefaultPosition: {
@@ -483,11 +474,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 									>
 										{layerIcons.map((action, index) => (
 											<Tab
-												key={action}
+												key={action.action}
 												icon={action.icon}
 												{...a11yProps(index)}
 												onClick={() =>
-													globalStateValues.datasets &&
+													layerStateValues.datasets &&
 													mapControlsController.updateState({ selectedControl: action.action })
 												}
 											/>
@@ -550,11 +541,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 							<div>
 								<div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
 									<ListItemText primary={title} />
-									{globalStateValues.layerSettingsLoading && <CircularProgress size={20} color="secondary" />}
+									{layerStateValues.layerSettingsLoading && <CircularProgress size={20} color="secondary" />}
 								</div>
 
 								{type === 'layer' && (
-									<AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
+									<AddGroup userId={globalStateValues.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
 								)}
 							</div>
 							{headerButton && (
@@ -576,12 +567,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 						{/* base Stuff */}
 						{type === 'base' && (
 							<>
-								<BasemapImageBox
-									mapStyles={mapStyles}
-									setBaseMap={setBaseMap}
-									currentStyle={mapStateValues.mapVars.styleId}
-									title={title}
-								/>
+								<BasemapImageBox setBaseMap={setBaseMap} currentStyle={mapStateValues.mapVars.styleId} title={title} />
 								<Box sx={{ maxHeight: 'calc(100vh - 500px)', overflow: 'auto' }}>
 									<Collapse in={true} timeout="auto" unmountOnExit>
 										<DisplayList
@@ -602,7 +588,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 						)}
 
 						{type === 'layer' && mapControlsStateValues.expandedPanel && (
-							<SortableLayer search={search} mongoId={stateApp.user.mongoId} />
+							<SortableLayer search={search} mongoId={globalStateValues.user.mongoId} />
 						)}
 						{type === 'heatMaps' && (
 							<DisplayList
@@ -630,7 +616,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 }
 
 BasemapImageBox.propTypes = {
-	mapStyles: PropTypes.array.isRequired,
 	setBaseMap: PropTypes.func.isRequired,
 	title: PropTypes.string.isRequired,
 	currentStyle: PropTypes.string.isRequired,

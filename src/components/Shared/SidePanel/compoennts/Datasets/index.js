@@ -1,4 +1,5 @@
-import React, { memo, useCallback, useContext, useEffect, useMemo } from 'react';
+/* eslint-disable react/prop-types */
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Typography } from '@material-ui/core';
@@ -29,14 +30,13 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 import { scrollbarStyle } from 'styles/common';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
-import { AppContext } from 'AppContext';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import DatasetMenu from './Menu';
 import NameWithTooltip from '../Common/NameWithTooltip';
 
 const useStyles = makeStyles(theme => ({
-	root: props => ({
+	root: () => ({
 		background: '#0e111a',
 		overflow: 'auto',
 		maxHeight: '274px',
@@ -106,19 +106,13 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const DatasetsMemo = memo(Datasets);
-export default function DatasetsContainer(props) {
-	const [stateApp] = useContext(AppContext);
-	const stateAppMemo = useMemo(
-		() => ({ layers: stateApp.layers, user: stateApp.user }),
-		[stateApp.layers, stateApp.user]
-	);
-	return <DatasetsMemo stateApp={stateAppMemo} headerButton={props.headerButton} search={props.search} />;
-}
-
-function Datasets({ headerButton, search, stateApp }) {
+function Datasets({ headerButton, search }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
+
+	const {
+		stateValues: { user },
+	} = globalStateController.useState(['user']);
 
 	const [getDatasets, { data: _datasets }] = useLazyQuery(GET_DATASETS);
 	const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
@@ -129,9 +123,9 @@ function Datasets({ headerButton, search, stateApp }) {
 	const [userMapSettings, { data: mapSettings }] = useLazyQuery(USER_MAP_SETTINGS_QUERY);
 
 	useEffect(() => {
-		userMapSettings({ variables: { user: stateApp.user._id, type: 'DatasetVisibility' } });
-		getDatasets({ variables: { userId: stateApp.user._id } });
-	}, [getDatasets, stateApp.user._id, userMapSettings]);
+		userMapSettings({ variables: { user: user._id, type: 'DatasetVisibility' } });
+		getDatasets({ variables: { userId: user._id } });
+	}, [getDatasets, user._id, userMapSettings]);
 
 	const datasets = useMemo(() => {
 		if (_datasets?.getDatasets?.length && mapSettings?.userMapSettings?.message) {
@@ -144,19 +138,17 @@ function Datasets({ headerButton, search, stateApp }) {
 					dataset.Icon = DatabaseIcon;
 					dataset.visibility = true;
 					dataset.categoryCount = snapGridSideBarData.length;
-					dataset.categories = snapGridSideBarData;
 				} else {
 					dataset.Icon = FileDatasetIcon;
 					dataset.categoryCount = dataset.categories.length;
 					dataset.visibility = typeof settings[dataset._id] === 'undefined' ? true : settings[dataset._id];
 					dataset.categories.forEach(category => {
 						category.file = dataset.file;
-						category.originalFile = dataset.originalFile;
 						category.fileName = dataset?.fileInfo?.name;
 					});
 				}
 			});
-			globalStateController.updateState({ datasets });
+			layerController.updateState({ datasets });
 			datasets = datasets.filter(dataset => {
 				return dataset.visibility;
 			});
@@ -185,9 +177,9 @@ function Datasets({ headerButton, search, stateApp }) {
 			stateToUpdate.layerGridCard = false;
 			stateToUpdate.mapGridCardActivated = true;
 		} else {
-			const layers = globalStateController.getValue('layers');
+			const layers = layerController.getValue('layers');
 			const layer = layers.find(
-				l => l.file === dataset.categories[0]?.file && l.layerShapeName === dataset.categories[0]?.layerShapeName
+				l => l.file === dataset.categories[0]?.file && l.layerIdentifier === dataset.categories[0]?.layerIdentifier
 			);
 			stateToUpdate.selectedLayer = { ...dataset.categories[0], layerSchema: layer?.layerSchema };
 			stateToUpdate.layerGridCard = true;
@@ -199,7 +191,7 @@ function Datasets({ headerButton, search, stateApp }) {
 	const handleRemove = (dataset, value) => {
 		datasets.find(d => d._id === dataset._id).visibility = value;
 		const layersSettingsToUpdate = [];
-		const layers = globalStateController.getValue('layers');
+		const layers = layerController.getValue('layers');
 		layers.forEach((clayer, layerIndex) => {
 			if (clayer.file === dataset.file) {
 				layersSettingsToUpdate.push({
@@ -213,12 +205,12 @@ function Datasets({ headerButton, search, stateApp }) {
 				};
 			}
 		});
-		globalStateController.updateState({ layers, datasets });
+		layerController.updateState({ layers, datasets });
 
 		updateUserMapSettings({
 			variables: {
 				settings: {
-					user: stateApp.user.mongoId,
+					user: user.mongoId,
 					type: 'DatasetVisibility',
 					settings: { [dataset._id]: value },
 				},
@@ -278,7 +270,7 @@ function Datasets({ headerButton, search, stateApp }) {
 				{datasets?.map(({ sourceName, Icon, categories, ...rest }, index) => (
 					<Grid
 						className="item"
-						key={sourceName + index}
+						key={rest._id}
 						data-testid={`dataset-${sourceName === 'M1 Platform' ? 'platform' : 'custom'}`}
 						onClick={() => onItemClick({ sourceName, Icon, categories, ...rest })}
 					>
@@ -334,3 +326,5 @@ function Datasets({ headerButton, search, stateApp }) {
 		</>
 	);
 }
+
+export default memo(Datasets);

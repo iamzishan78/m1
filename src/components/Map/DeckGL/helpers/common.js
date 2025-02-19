@@ -7,8 +7,8 @@ import { colorBasedAttributes } from 'components/MapControls/components/Layer/La
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { deckGlLandGridIdentifiers, ifDefaultLayers } from 'components/Shared/functions/shapeLayer';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { getLayerKey } from 'hookstate/helpers';
+import { layerController } from 'hookstate/layerStateController';
 import { popupController } from 'hookstate/popupStateController';
 
 const MAX_COLOR_VALUE_HEX = 0xfffff;
@@ -492,16 +492,16 @@ export const generateFileFilters = ({
 	// Added fileAlternateName to support the case where the file name is different from the layer name
 	const fileAlternateName = `${fileLayer?.fileName} - ${fileLayer.layerGeometry}`;
 	// Altered query accordingly
-	if (fileLayer.layerShapeName) {
+	if (fileLayer.layerIdentifier) {
 		mustQuery = [
 			{ 'properties.layerShapeName': fileAlternateName },
-			{ 'properties.layerShapeName': fileLayer.layerShapeName },
+			{ 'properties.layerShapeName': fileLayer.layerIdentifier },
 		];
 	}
 
 	const advanceSearch = getAdvancedSearch(fileLayer.layerGeometry, mustQuery);
 
-	const filters = [{ field: 'fileId', value: [fileLayer.file, fileLayer.originalFile].filter(Boolean) }];
+	const filters = [{ field: 'fileId', value: fileLayer.file }];
 
 	return {
 		variables: {
@@ -824,7 +824,7 @@ export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true }
 	let clickedFeature = null;
 	let layer = null;
 
-	const layers = globalStateController.getValue('layers');
+	const layers = layerController.getValue('layers');
 
 	layers
 		.filter(l => l.layerSettings?.showable && l.layerSettings?.visiable)

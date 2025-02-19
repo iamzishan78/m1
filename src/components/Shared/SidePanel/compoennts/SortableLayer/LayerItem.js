@@ -139,8 +139,8 @@ const LayerItem = React.memo(props => {
 
 		// In case of shape files
 		const fileId = dataSourceName.substring(0, dataSourceName.indexOf('_'));
-		const layerShapeName = dataSourceName.substring(dataSourceName.indexOf('_') + 1);
-		if (fileId === data?.file && layerShapeName === data?.layerShapeName) {
+		const layerIdentifier = dataSourceName.substring(dataSourceName.indexOf('_') + 1);
+		if (fileId === data?.file && layerIdentifier === data?.layerIdentifier) {
 			return true;
 		}
 
@@ -307,7 +307,7 @@ LayerItem.propTypes = {
 		collapsed: PropTypes.bool,
 		name: PropTypes.string,
 		file: PropTypes.string,
-		layerShapeName: PropTypes.string,
+		layerIdentifier: PropTypes.string,
 		identifier: PropTypes.string,
 		layerName: PropTypes.string,
 		emptyLayer: PropTypes.bool,

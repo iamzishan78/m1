@@ -16,8 +16,8 @@ import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } fr
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { layerController } from 'hookstate/layerStateController';
 import { tableController, tableESState } from 'hookstate/tableController';
 
 import { customLayersFieldAccessors } from './consts';
@@ -157,7 +157,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 	const mapViews = watch('mapViews');
 
-	const layers = globalStateController.getValue('layers');
+	const layers = layerController.getValue('layers');
 
 	const [debouncedFilterValues, setDebouncedFilterValues] = useState(filterValues); // New state for debounced filter values
 
@@ -175,8 +175,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 	const getSelectedField = (fieldName, _dataSource) => {
 		const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
-		const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
-		const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
+		const layerIdentifier = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
+		const layer = layers.find(l => l.file === fileId && l.layerIdentifier === layerIdentifier);
 		return (
 			customLayersFieldAccessors[_dataSource || dataSourceName || mapView?.dataSourceName]?.keys || layer?.layerSchema
 		)?.find(key => key.value.replace('.keyword', '') === fieldName || key?.value === fieldName);
@@ -233,10 +233,10 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		} else {
 			esIndex = 'shapefile_flat';
 			const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
-			const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
-			const selectedLayer = globalStateController
+			const layerIdentifier = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
+			const selectedLayer = layerController
 				.getValue('layers')
-				?.find(layer => layer?.layerShapeName === layerShapeName && layer?.file === fileId);
+				?.find(layer => layer?.layerIdentifier === layerIdentifier && layer?.file === fileId);
 			filters = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.filters : [];
 			search = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.search : {};
 			search.fields = [];
@@ -284,8 +284,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
 				const tableKey = Object.keys(tableESState).find(key => {
-					const layerIdentifier = tableESState[key].getValue('layerIdentifier');
-					return layerIdentifier === dataSourceName;
+					const layerDataSourceName = tableESState[key].getValue('layerDataSourceName');
+					return layerDataSourceName === dataSourceName;
 				});
 				const tableStateFilters = tableESState[tableKey].getValue('filters');
 
@@ -339,14 +339,14 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		});
 
 		// making datasets fields in the below code block
-		let datasets = globalStateController.getValue('datasets');
+		let datasets = layerController.getValue('datasets');
 		datasets = datasets?.filter(dataset => dataset.sourceName !== 'M1 Platform');
 
 		let datasetsShapeNames =
 			datasets?.flatMap(dataset =>
 				dataset.categories.map(category => ({
-					label: `[${dataset.name}] - ${category.layerShapeName}`,
-					value: `${dataset.file}_${category.layerShapeName}`,
+					label: `[${dataset.name}] - ${category.layerIdentifier}`,
+					value: `${dataset.file}_${category.layerIdentifier}`,
 				}))
 			) || [];
 
@@ -367,15 +367,15 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		}
 
 		const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
-		const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
-		const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
+		const layerIdentifier = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
+		const layer = layers.find(l => l.file === fileId && l.layerIdentifier === layerIdentifier);
 
 		if (dataSourceName && !(customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema)) {
 			return [];
 		}
 		const tableKey = Object.keys(tableESState).find(key => {
-			const layerIdentifier = tableESState[key].getValue('layerIdentifier');
-			return layerIdentifier === dataSourceName;
+			const layerDataSourceName = tableESState[key].getValue('layerDataSourceName');
+			return layerDataSourceName === dataSourceName;
 		});
 
 		const fields = [
@@ -388,8 +388,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					: null, // Set default value if mapView is provided
 				onChange: (e, v, r, previousValue) => {
 					const tableKey = Object.keys(tableESState).find(key => {
-						const layerIdentifier = tableESState[key].getValue('layerIdentifier');
-						return layerIdentifier === previousValue?.value;
+						const layerDataSourceName = tableESState[key].getValue('layerDataSourceName');
+						return layerDataSourceName === previousValue?.value;
 					});
 					tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 					tableController(tableKey).setFilterMode(
@@ -479,8 +479,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		mapViewFilters = mapViewFilters.filter((_, i) => i !== index);
 
 		const tableKey = Object.keys(tableESState).find(key => {
-			const tableState = tableESState[key];
-			return tableState?.layerIdentifier === dataSourceName;
+			const layerDataSourceName = tableESState[key].getValue('layerDataSourceName');
+			return layerDataSourceName === dataSourceName;
 		});
 		tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 		tableController(tableKey).setFilterMode(

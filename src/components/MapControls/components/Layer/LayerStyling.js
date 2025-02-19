@@ -122,7 +122,7 @@ function LayerStyling() {
 	}, [layerDataCount]);
 
 	useEffect(() => {
-		const hookStateAppLayers = globalStateController.getValue('layers');
+		const hookStateAppLayers = layerController.getValue('layers');
 		if (!layerInitialized) {
 			return null;
 		}
@@ -157,7 +157,7 @@ function LayerStyling() {
 
 			const TWOFIFTY = 250;
 			const debouncedUpdate = _.debounce(() => {
-				globalStateController.updateState({ layers: [...currentLayers] });
+				layerController.updateState({ layers: [...currentLayers] });
 				layerController.resetBounds(selectedLayer?.identifier, true);
 				updateLayerSettings({
 					variables: {
@@ -212,8 +212,8 @@ function LayerStyling() {
 	useEffect(() => {
 		setRows(0);
 		if (selectedLayer.file) {
-			selectedLayer.layerShapeName = selectedLayer.layerShapeName || selectedLayer.layerCategory;
-			layerFeaturesCount({ variables: { fileId: selectedLayer.file, layerShapeName: selectedLayer.layerShapeName } });
+			selectedLayer.layerIdentifier = selectedLayer.layerIdentifier || selectedLayer.layerCategory;
+			layerFeaturesCount({ variables: { fileId: selectedLayer.file, layerIdentifier: selectedLayer.layerIdentifier } });
 		}
 	}, [selectedLayer.file, layerFeaturesCount]);
 

@@ -3,7 +3,6 @@ import { bypassTenants, simpleAuthBypass } from 'utils/data';
 import { StateController } from './stateController'; // Import your StateController class
 
 export const globalInitialState = {
-	layers: [],
 	panelItems: [],
 	emptyGroups: [],
 	globalSearch: '',
@@ -20,7 +19,6 @@ export const globalInitialState = {
 	bypassLogin: simpleAuthBypass || false,
 	bypassType: '',
 	tenant: null,
-	layerSettingsLoading: false,
 	selectedIconTpe: 'Chip',
 	onMapLoad: null,
 };

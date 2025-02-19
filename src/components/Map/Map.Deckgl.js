@@ -127,7 +127,7 @@ function Map({
 	layerPadding = null,
 }) {
 	// context states
-	const globalState = globalStateController.useState(['layers', 'mapReady']);
+	const globalState = globalStateController.useState(['mapReady']);
 	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues');
 	const { selectedShapeFile, selectedPlaces, popupStateValues } = popupController.useState(
 		['selectedShapeFile', 'selectedPlaces'],
@@ -145,7 +145,16 @@ function Map({
 		],
 		'mapStateValues'
 	);
-	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
+	const {
+		layers: layersState,
+		wellListFromSearch,
+		baseMapLayers,
+		checkedBaseLayers,
+		layerStateValues,
+	} = layerController.useState(
+		['wellListFromSearch', 'baseMapLayers', 'checkedBaseLayers', 'layers'],
+		'layerStateValues'
+	);
 	const {
 		stateValues: { currentAssetRecord },
 	} = detailCardController.useState(['currentAssetRecord'], 'stateValues');
@@ -315,10 +324,7 @@ function Map({
 		fetchStyles(abortController)
 			.then(styles => {
 				setMapStyles(styles);
-				setStateApp(state => ({
-					...state,
-					mapStyles: styles,
-				}));
+				mapStateController.updateState({ mapStyles: styles });
 			})
 			.catch(error => {
 				// Handle any errors from fetchStyles
@@ -396,7 +402,7 @@ function Map({
 			},
 		});
 		if (layer?.customLayer) {
-			let layers = globalStateController.getValue('layers');
+			let layers = layerStateValues.layers;
 			if (!layers || layers?.length === 0) {
 				const { data } = await client.query({
 					query: LAYERSETTINGSBYUSER,
@@ -405,9 +411,9 @@ function Map({
 						identifier: convertToTitleCase(layer.customLayer.layer + 's'),
 					},
 				});
-				layers = globalStateController.getValue('layers');
+				layers = layerStateValues.layers;
 				if ((!layers || layers?.length === 0) && data?.layerSettingsByUser) {
-					globalStateController.updateState({
+					layerController.updateState({
 						deckLayer: data.layerSettingsByUser,
 					});
 				}
@@ -452,9 +458,9 @@ function Map({
 			{ padding: { top: 100, bottom: 200, left: 10, right: 100 }, easing: () => 1 }
 		);
 
-		const layers = globalStateController.getValue('layers');
-
-		const layer = layers.find(l => popupStateValues.selectedShapeFile.properties?.layerShapeName === l.layerShapeName);
+		const layer = layerStateValues.layers.find(
+			l => popupStateValues.selectedShapeFile.properties?.layerShapeName === l.layerIdentifier
+		);
 
 		udLayerClickHandler(popupStateValues.selectedShapeFile, layer);
 	}, [selectedShapeFile]);
@@ -488,18 +494,13 @@ function Map({
 	}, [stateApp.user]);
 
 	useEffect(() => {
-		globalStateController.updateState({ layerSettingsLoading });
+		layerController.updateState({ layerSettingsLoading });
 	}, [layerSettingsLoading]);
 
 	useEffect(() => {
 		if (layerStates && layerStates.allLayerSettingsByUser) {
 			const layers = copy(layerStates.allLayerSettingsByUser);
-			setStateApp(state => ({
-				...state,
-				layers,
-			}));
-			globalStateController.updateState({ layers });
-			stateApp.layers = layers;
+			layerController.updateState({ layers });
 
 			const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
 			// for of loop on mapViewFilters
@@ -571,12 +572,12 @@ function Map({
 
 	useEffect(() => {
 		// USE EFFECT FOR BASEMAP LAYER HANDLING
-		const mapLayers = copy(globalState.stateValues.layers);
-		if (!stateApp.baseMapLayers?.length || !map) {
+		const mapLayers = copy(layerStateValues.layers);
+		if (!layerStateValues.baseMapLayers?.length || !map) {
 			return;
 		}
 
-		const getBaseMapIndex = name => stateApp.baseMapLayers.findIndex(layer => layer.name === name);
+		const getBaseMapIndex = name => layerStateValues.baseMapLayers.findIndex(layer => layer.name === name);
 
 		const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
 		const landLayerVisible = landLayer?.layerSettings?.visiable && landLayer?.layerSettings?.showable;
@@ -584,24 +585,26 @@ function Map({
 		const layersToToggle = ['Land Grid', 'Roads', 'Map Labels'];
 		const indicesToToggle = layersToToggle.map(getBaseMapIndex).filter(index => index !== -1);
 
-		setStateApp(state => ({
-			...state,
-			checkedBaseLayers: landLayerVisible
-				? [...new Set([...state.checkedBaseLayers, ...indicesToToggle])]
-				: state.checkedBaseLayers.filter(index => !indicesToToggle.includes(index)),
-		}));
-	}, [map, stateApp.baseMapLayers, globalState.layers]);
+		layerController.memoizedStateUpdate(
+			'checkedBaseLayers',
+			landLayerVisible
+				? [...new Set([...layerStateValues.checkedBaseLayers, ...indicesToToggle])]
+				: layerStateValues.checkedBaseLayers.filter(index => !indicesToToggle.includes(index))
+		);
+	}, [map, baseMapLayers, layersState]);
 
 	useEffect(() => {
 		// USE EFFECT FOR BASEMAP LAYER HANDLING
-		const mapLayers = copy(stateApp.layers);
-		if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
+		const mapLayers = copy(layerStateValues.layers);
+		if (layerStateValues.baseMapLayers && layerStateValues.baseMapLayers.length > 0 && map) {
 			const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
-			stateApp.baseMapLayers?.forEach((l, index) => {
-				if (l.name === 'Land Grid' && !stateApp.checkedBaseLayers.includes(index)) {
+			layerStateValues.baseMapLayers?.forEach((l, index) => {
+				if (l.name === 'Land Grid' && !layerStateValues.checkedBaseLayers.includes(index)) {
 					if (landLayer) {
-						landLayer.layerSettings.visiable = false;
-						setStateApp(state => ({ ...state, layers: [...mapLayers] }));
+						if (landLayer.layerSettings.visiable) {
+							landLayer.layerSettings.visiable = false;
+							layerController.updateState({ layers: [...mapLayers] });
+						}
 					}
 				}
 
@@ -612,21 +615,23 @@ function Map({
 				});
 			});
 
-			if (stateApp.checkedBaseLayers.length > 0) {
-				const layers = stateApp.checkedBaseLayers.slice(0);
+			if (layerStateValues.checkedBaseLayers.length > 0) {
+				const layers = layerStateValues.checkedBaseLayers.slice(0);
 				layers.sort((a, b) => b - a);
 				if (layers.length > 0) {
 					let belowlayer = null;
 					for (let k = layers.length - 1; k >= 0; k--) {
 						const i = layers[k];
-						if (stateApp.baseMapLayers[i].name === 'Land Grid') {
+						if (layerStateValues.baseMapLayers[i].name === 'Land Grid') {
 							if (landLayer) {
-								landLayer.layerSettings.visiable = true;
-								setStateApp(state => ({ ...state, layers: [...mapLayers] }));
+								if (!landLayer.layerSettings.visiable) {
+									landLayer.layerSettings.visiable = true;
+									layerController.updateState({ layers: [...mapLayers] });
+								}
 							}
 							continue;
 						}
-						const currentLayerArray = stateApp.baseMapLayers[i].id;
+						const currentLayerArray = layerStateValues.baseMapLayers[i].id;
 
 						currentLayerArray.forEach(j => {
 							const mapLayer = map.getLayer(j);
@@ -644,45 +649,7 @@ function Map({
 				}
 			}
 		}
-	}, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
-
-	// useEffect(() => {
-	// 	// USE EFFECT FOR HEATMAP LAYER HANDLES
-	// 	if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
-	// 		stateApp.heatLayers.forEach(l => {
-	// 			l.id.forEach(k => {
-	// 				if (map?.getLayer(k)) {
-	// 					map?.setLayoutProperty(k, 'visibility', 'none');
-	// 				}
-	// 			});
-	// 		});
-
-	// 		if (stateApp.checkedHeats.length > 0) {
-	// 			const layers = stateApp.checkedHeats.slice(0);
-	// 			layers.sort((a, b) => b - a);
-	// 			if (layers.length > 0) {
-	// 				let belowlayer = null;
-	// 				for (let k = layers.length - 1; k >= 0; k--) {
-	// 					const i = layers[k];
-	// 					const currentLayerArray = stateApp.heatLayers[i].id;
-
-	// 					currentLayerArray.forEach(j => {
-	// 						const mapLayer = map.getLayer(j);
-	// 						if (typeof mapLayer !== 'undefined') {
-	// 							if (map.getLayer(j)) {
-	// 								map.setLayoutProperty(j, 'visibility', 'visible');
-	// 								if (belowlayer != null) {
-	// 									map.moveLayer(j, belowlayer);
-	// 								}
-	// 								belowlayer = j;
-	// 							}
-	// 						}
-	// 					});
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
+	}, [map, checkedBaseLayers, baseMapLayers]);
 
 	function getIndex(value, arr, prop) {
 		for (let i = 0; i < arr.length; i++) {

@@ -23,7 +23,6 @@ import { copy } from 'components/Shared/functions';
 import { ADDLAYER } from 'graphQL/useMutationAddLayer';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
@@ -61,7 +60,7 @@ function NewLayerManager() {
 	const [source, setSource] = useState();
 	const [selectCategory, setCategory] = useState();
 
-	const { globalStateValues } = globalStateController.useState(['datasets'], 'globalStateValues');
+	const { datasets, layerStateValues } = layerController.useState(['datasets'], 'layerStateValues');
 
 	const handleClose = () => {
 		mapControlsController.updateState({ manageLayer: false });
@@ -69,24 +68,21 @@ function NewLayerManager() {
 
 	const createLayer = () => {
 		const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
-		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
-		const layerShapeName = source.name === 'M1 Platform' ? null : selectCategory.name;
-		const identifier = source.name === 'M1 Platform' ? selectCategory.value + uuid() : layerName + uuid();
+		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.layerIdentifier;
 
 		addLayer({
 			variables: {
 				layer: {
 					...layer,
 					layerCategory,
-					layerShapeName,
+					layerIdentifier: selectCategory.layerIdentifier,
 					layerType,
-					identifier,
+					identifier: selectCategory.layerIdentifier + uuid(),
 					groupId: null,
 					groupName: null,
 					file: source.file,
 					layerName: layerName,
 					layerGeometry: selectCategory.layerGeometry,
-					originalFile: source.originalFile,
 					defaultSettings: {
 						...handleLayerChange(),
 						bbox: selectCategory?.bbox || [],
@@ -95,16 +91,17 @@ function NewLayerManager() {
 					layerPaintProps: undefined,
 					layerSettings: undefined,
 					public: true,
+					dataset: source._id,
 				},
 			},
 		}).then(async ({ data }) => {
 			const layerToAdd = copy(data.addLayer.userLayer);
 			if (layerToAdd) {
-				const projectedLayers = layerController.getValue('projectedLayers');
-				layerController.updateState({ projectedLayers: [...projectedLayers, layerToAdd] });
-
-				const layers = globalStateController.getValue('layers');
-				globalStateController.updateState({ layers: [...layers, layerToAdd] });
+				const { projectedLayers, layers } = layerController.getValues(['projectedLayers', 'layers']);
+				layerController.updateState({
+					projectedLayers: [...projectedLayers, layerToAdd],
+					layers: [...layers, layerToAdd],
+				});
 			}
 
 			handleClose();
@@ -116,30 +113,23 @@ function NewLayerManager() {
 			getShapeFileSchema({
 				variables: {
 					file: source.file,
-					layerShapeName: selectCategory.layerShapeName,
+					layerIdentifier: selectCategory.layerIdentifier,
 				},
 			});
 		}
 	}, [source, selectCategory, getShapeFileSchema]);
 
 	const _datasets = useMemo(() => {
-		const datasets = globalStateValues.datasets;
-		return datasets || [];
-	}, [globalStateValues.datasets]);
+		return layerStateValues.datasets || [];
+	}, [datasets]);
+
 	const layerCategories = useMemo(() => {
-		const dataset = globalStateValues.datasets.find(dataset => dataset.name === source?.name);
+		const dataset = layerStateValues.datasets.find(dataset => dataset.name === source?.name);
 		if (source?.name === 'M1 Platform') {
-			dataset.categories = dataset?.categories.filter(category => category.value !== 'agreement');
-			dataset.categories = [
-				...dataset.categories,
-				{ value: 'Deeds', label: 'Deeds' },
-				{ value: 'Leases', label: 'Leases' },
-				{ value: 'Contracts', label: 'Contracts' },
-				{ value: 'Surfaces', label: 'Surfaces' },
-			];
+			dataset.categories = dataset?.categories.filter(category => category.isNewLayerCreationAllowed);
 		}
 		return dataset?.categories || [];
-	}, [source, globalStateValues.datasets]);
+	}, [source, datasets]);
 
 	return (
 		<ClickAwayListener>

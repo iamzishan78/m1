@@ -10,11 +10,10 @@ import moment from 'moment';
 import { TitleOpinionContext } from './TitleOpinionContext';
 import { AppContext } from '../../AppContext';
 import GeneralInfoForm from './components/GeneralInfoForm';
-import MapShape from './components/MapShape';
 import TitleOpinionsTaps from './components/TitleOpinionsTaps';
 import useQueryTitleOpinion from '../../graphQL/useQueryTitleOpinion';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	containerWrapper: {
 		width: '100%',
 		maxWidth: '100% ',
@@ -185,9 +184,7 @@ export default function TitleOpinion() {
 						<Grid item xs={6} sm={6} md={6} lg={5}>
 							<GeneralInfoForm />
 						</Grid>
-						<Grid item xs={6} sm={6} md={6} lg={7}>
-							{/* <MapShape /> */}
-						</Grid>
+						<Grid item xs={6} sm={6} md={6} lg={7}></Grid>
 					</Grid>
 					<Grid item xs={12} container>
 						<Grid item xs={12}>

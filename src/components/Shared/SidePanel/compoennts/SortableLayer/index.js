@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
 
 import { globalStateController } from 'hookstate/globalStateController';
+import { layerController } from 'hookstate/layerStateController';
 
 import FileTree from './FileTree';
 
@@ -50,11 +51,8 @@ const getEmptyGroupAndLayer = (group, type) => {
 const dnd = isMobile ? TouchBackend : HTML5Backend;
 const SortableLayer = ({ mongoId, search }) => {
 	const [layerMap, setLayerMap] = useState([]);
-	const { layers, panelItems, stateValues } = globalStateController.useState([
-		'layers',
-		'previousLayers',
-		'panelItems',
-	]);
+	const { panelItems, stateValues } = globalStateController.useState(['previousLayers', 'panelItems']);
+	const { layers, layerStateValues } = layerController.useState(['layers'], 'layerStateValues');
 	const [getLayerGroups, { data: layerGroupData }] = useLazyQuery(GET_LAYER_GROUPS);
 
 	useEffect(() => {
@@ -63,7 +61,7 @@ const SortableLayer = ({ mongoId, search }) => {
 
 	useEffect(() => {
 		if (layerGroupData?.getLayerGroups) {
-			const hookStateAppLayers = stateValues.layers;
+			const hookStateAppLayers = layerStateValues.layers;
 			const layerGroups = layerGroupData?.getLayerGroups;
 			const groupHandled = [];
 			const layerAndGroups = [];

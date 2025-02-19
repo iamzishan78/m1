@@ -1,5 +1,6 @@
 import { useAtom, atom } from 'jotai';
 import { focusAtom } from 'jotai-optics';
+import { isEqual } from 'lodash';
 
 import { store } from 'JotaiProvider';
 
@@ -117,5 +118,17 @@ export class StateController {
 
 	resetState(key) {
 		store.set(this.focusState[key], this.initialState[key]);
+	}
+
+	memoizedStateUpdate(key, value) {
+		const oldValue = store.get(this.focusState[key]);
+
+		if (isEqual(oldValue && value)) {
+			return;
+		}
+
+		const prevState = store.get(this.state);
+		const updatedState = { ...prevState, [key]: value };
+		store.set(this.state, updatedState);
 	}
 }

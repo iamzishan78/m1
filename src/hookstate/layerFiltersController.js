@@ -1,7 +1,6 @@
 import { deepEqual } from 'components/Shared/functions';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
-import { globalStateController } from './globalStateController';
 import { layerController } from './layerStateController';
 import { StateController } from './stateController';
 
@@ -232,7 +231,7 @@ class LayerFiltersController extends StateController {
 	}
 
 	getBeforeLayer(index) {
-		const layers = globalStateController.getValue('layers');
+		const layers = layerController.getValue('layers');
 
 		let id;
 

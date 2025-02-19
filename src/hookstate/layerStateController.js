@@ -26,10 +26,11 @@ import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compo
 
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
-import { GET_PROJECTED_LAYERS } from 'graphQL/useQueryAllLayerSettingsByUser';
-import { GETLAYERBYID } from 'graphQL/useQueryLayerById';
+import { GET_PROJECTED_LAYERS, LAYERS_BY_ID } from 'graphQL/useQueryAllLayerSettingsByUser';
 
-import { getLayerKey } from 'hookstate/helpers';
+import { generateDataFunc, getLayerKey, getWellColor } from 'hookstate/helpers';
+
+import { baseMapLayers, heatLayers } from 'LayerConfig';
 
 import { drawController } from './drawStateController';
 import { globalStateController } from './globalStateController';
@@ -39,28 +40,12 @@ import { navController } from './navStateController';
 import { popupController } from './popupStateController';
 import { StateController } from './stateController';
 
-const TWO = 2;
-const FIFTEEN = 15;
-const TWENTY = 20;
-const THIRTY = 30;
-const FORTY = 40;
-const FIFTY = 50;
-const FIFTY_THREE = 53;
-const FIFTY_EIGHT = 58;
-const SEVENTY_FOUR = 74;
-const SEVENTY_SEVEN = 77;
-const ONE_HUNDRED = 100;
-const ONE_THREE_SIX = 136;
-const ONE_FIVE_TWO = 152;
-const TWO_O_SEVEN = 207;
-const TWO_ELEVEN = 211;
-const TWO_THIRTY = 230;
-const TWO_FORTY_TWO = 242;
-const TWO_FIFTY_ONE = 251;
-const SEVEN_FIFTY = 750;
-const SIX_THOUSAND = 6000;
-
 const layerStateInitialState = {
+	layers: [],
+	datasets: null,
+	deckLayer: null,
+	layerSettingsLoading: false,
+	projectedLayers: [],
 	client: null,
 	history: null,
 	boundingStates: null,
@@ -69,80 +54,11 @@ const layerStateInitialState = {
 	recalculate: false,
 
 	wellListFromSearch: [], // Not Moved
-};
 
-const getWellColor = w => {
-	// Check if the well status is of Permit type
-	const isWellPermitStatus = ['PERMIT', 'PERMIT - NEW DRILL', 'PERMIT - EXISTING WELL'].includes(
-		w?.properties?.wellStatus
-	);
-
-	// Switch on whether wellStatus or wellType
-	const switchType = isWellPermitStatus ? w.properties.wellStatus : w.properties.wellType;
-	switch (switchType) {
-		// rgb(2, 207, 53)
-		case 'OIL':
-		case 'OIL AND GAS':
-			return [TWO, TWO_O_SEVEN, FIFTY_THREE]; // green
-
-		// rgb(230, 15, 15)
-		case 'GAS':
-			return [TWO_THIRTY, FIFTEEN, FIFTEEN]; // red
-
-		// rgb(74, 211, 242)
-		case 'WATER':
-			return [SEVENTY_FOUR, TWO_ELEVEN, TWO_FORTY_TWO]; // blue
-
-		// rgb(251, 152, 40)
-		case 'PERMIT':
-		case 'PERMIT - NEW DRILL':
-		case 'PERMIT - EXISTING WELL':
-			return [TWO_FIFTY_ONE, ONE_FIVE_TWO, FORTY]; // orange
-
-		// rgba(30, 26, 26, 0.55)
-		case 'PERMITTED':
-			return [TWO_FIFTY_ONE, ONE_FIVE_TWO, FORTY]; // orange
-
-		// rgb(192, 0, 0)
-		default:
-			return [FIFTY_EIGHT, FIFTY_EIGHT, FIFTY_EIGHT]; // default dark for permitted
-	}
-};
-
-const generateDataFunc = () => {
-	async function* getData(initalData) {
-		let data = initalData;
-		let pausePromise;
-		// Expose a function to externally pause the generator
-
-		while (true) {
-			if (pausePromise) {
-				// Pause until the external promise is resolved
-				// eslint-disable-next-line no-await-in-loop
-				await pausePromise;
-			}
-			if (data) {
-				let dataToReturn = data;
-				data = null;
-				yield dataToReturn;
-			} else {
-				// No new data, pause until the external promise is resolved
-
-				pausePromise = new Promise(resolve => {
-					// Expose a function to externally pause the generator
-					getData.feedData = d => {
-						data = d;
-						pausePromise = null; // Reset the promise after resolving
-						resolve();
-					};
-				});
-				// eslint-disable-next-line no-await-in-loop
-				await pausePromise;
-			}
-		}
-	}
-
-	return getData;
+	baseMapLayers: baseMapLayers,
+	checkedBaseLayers: [0, 1, 2, 3, 4],
+	heatLayers: heatLayers,
+	checkedHeats: [],
 };
 
 const deckLayers = {};
@@ -212,7 +128,7 @@ const LayerMeta = {
 			filterFeatures: (features, dbLayer) =>
 				features.filter(
 					feature =>
-						feature?.properties?.layerShapeName === dbLayer.layerShapeName &&
+						feature?.properties?.layerShapeName === dbLayer.layerIdentifier &&
 						feature?.properties?.layerGeometry === dbLayer.layerGeometry
 				),
 			getProps: layerId => {
@@ -243,7 +159,7 @@ const LayerMeta = {
 					getLineColor: [0, 0, 0, 0],
 					lineWidthMinPixels: 1.5,
 					lineWidthMaxPixels: 8,
-					highlightColor: [ONE_THREE_SIX, ONE_THREE_SIX, ONE_THREE_SIX, SEVENTY_SEVEN],
+					highlightColor: [136, 136, 136, 77],
 					autoHighlight: true,
 					parameters: {
 						depthTest: false, // Disable depth testing to draw points on top
@@ -266,7 +182,7 @@ const LayerMeta = {
 					getLineColor: [0, 0, 0, 0],
 					lineWidthMinPixels: 1.5,
 					lineWidthMaxPixels: 8,
-					highlightColor: [ONE_THREE_SIX, ONE_THREE_SIX, ONE_THREE_SIX, SEVENTY_SEVEN],
+					highlightColor: [136, 136, 136, 77],
 					autoHighlight: true,
 					parameters: {
 						depthTest: false, // Disable depth testing to draw points on top
@@ -284,13 +200,13 @@ class LayerStateControllerHandler extends StateController {
 	}
 
 	showError(error) {
-		NotificationManager.error(error, 'Error', SIX_THOUSAND);
+		NotificationManager.error(error, 'Error', 6000);
 	}
 
 	getShowableLayers() {
-		let layers = globalStateController.getValue('layers');
+		let layers = this.getValue('layers');
 		if (layers?.length === 0) {
-			const deckLayer = globalStateController.getValue('deckLayer');
+			const deckLayer = this.getValue('deckLayer');
 			if (deckLayer) {
 				layers = [deckLayer];
 			}
@@ -478,7 +394,7 @@ class LayerStateControllerHandler extends StateController {
 			if (timeout) {
 				setTimeout(() => {
 					this.removeLayer(layer);
-				}, FIFTY);
+				}, 50);
 			} else {
 				this.removeLayer(layer);
 			}
@@ -559,8 +475,8 @@ class LayerStateControllerHandler extends StateController {
 			source: `${layerId}-cluster`,
 			filter: ['has', 'point_count'],
 			paint: {
-				'circle-color': ['step', ['get', 'point_count'], '#51bbd6', 100, '#f1f075', SEVEN_FIFTY, '#f28cb1'],
-				'circle-radius': ['step', ['get', 'point_count'], TWENTY, ONE_HUNDRED, THIRTY, SEVEN_FIFTY, FORTY],
+				'circle-color': ['step', ['get', 'point_count'], '#51bbd6', 100, '#f1f075', 750, '#f28cb1'],
+				'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
 			},
 		});
 		map.addLayer({
@@ -684,7 +600,7 @@ class LayerStateControllerHandler extends StateController {
 		const filterIdentifier = isAgreementLayer
 			? 'Agreements'
 			: isFileLayer
-				? dbLayer.layerShapeName
+				? dbLayer.layerIdentifier
 				: dbLayer.identifier;
 
 		const filterKey = isFileLayer
@@ -803,7 +719,7 @@ class LayerStateControllerHandler extends StateController {
 	}
 
 	toggleLayersActivity(identifier, value) {
-		let layers = globalStateController.getValue('layers');
+		let layers = this.getValue();
 		const layer = layers.find(layer => layer.identifier.startsWith(identifier));
 
 		this.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } });
@@ -825,12 +741,12 @@ class LayerStateControllerHandler extends StateController {
 			key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
 		);
 
-		// If layerId is not found, then find layerId by layerShapeName
+		// If layerId is not found, then find layerId by layerIdentifier
 		if (!layerId && identifier != 'all') {
-			// Find layer by layerShapeName
-			const requiredLayers = globalStateController
-				.getValue('layers')
-				.filter(layer => `${layer.file}_${layer.layerShapeName}` === identifier);
+			// Find layer by layerIdentifier
+			const requiredLayers = this.getValue('layers').filter(
+				layer => `${layer.file}_${layer.layerIdentifier}` === identifier
+			);
 
 			requiredLayers.forEach(requiredLayer => {
 				// If layer is not found, then return
@@ -863,13 +779,13 @@ class LayerStateControllerHandler extends StateController {
 		// Refresh all layers when the map is synchronized
 		if (identifier === 'all') {
 			// Retrieve all layers from the global state
-			globalStateController.getValue('layers').forEach(layer => {
+			this.getValue('layers').forEach(layer => {
 				// Handle each layer using the layer controller
 				this.handleDeckLayer(layer);
 			});
 		}
 
-		const layer = globalStateController.getValue('layers').find(l => l.identifier === identifier);
+		const layer = this.getValue('layers').find(l => l.identifier === identifier);
 		if (updateTriggers) {
 			this.handleDeckLayer(layer, true);
 		}
@@ -895,7 +811,19 @@ class LayerStateControllerHandler extends StateController {
 			});
 		});
 
-		this.setState({ client });
+		this.setState({
+			// ...baseLayerController.getValues([
+			// 	'layers',
+			// 	'datasets',
+			// 	'projectedLayers',
+			// 	'baseMapLayers',
+			// 	'checkedBaseLayers',
+			// 	'heatLayers',
+			// 	'checkedHeats',
+			// ]),
+
+			client,
+		});
 		navController.reset();
 		mapControlsController.setState({
 			selectedControl: mapControlsController.getValue('selectedControl'),
@@ -976,6 +904,7 @@ class LayerStateControllerHandler extends StateController {
 			variables: {
 				userId: user._id,
 				project: {
+					dataset: 1,
 					file: 1,
 					layerId: 1,
 					layerType: 1,
@@ -993,7 +922,7 @@ class LayerStateControllerHandler extends StateController {
 	}
 
 	updateProjectedLayers({ layer, value, field }) {
-		const projectedLayers = this.projectedLayers.get({ noproxy: true });
+		const projectedLayers = this.getValue('projectedLayers');
 		const updatefn = this.generateUpdateFn(layer, value, projectedLayers, field);
 		this.updateState({ projectedLayers: update(projectedLayers, updatefn) });
 	}
@@ -1006,8 +935,7 @@ class LayerStateControllerHandler extends StateController {
 		const layersSettingsToUpdate = [];
 		const layersToUpdate = [];
 		const user = globalStateController.getValue('user');
-		const layers = globalStateController.getValue('layers');
-		const projectedLayers = this.getValue('projectedLayers');
+		const { layers, projectedLayers } = this.getValues(['layers', 'projectedLayers']);
 
 		projectedLayers.forEach(layer => {
 			const layerToUpdate = layersToChange.find(l => l._id === layer._id);
@@ -1042,13 +970,13 @@ class LayerStateControllerHandler extends StateController {
 
 		if (fetchUserLayers.length > 0) {
 			const userLayers = await client.query({
-				query: GETLAYERBYID,
+				query: LAYERS_BY_ID,
 				variables: {
 					layerIds: fetchUserLayers,
 					userId: user._id,
 				},
 			});
-			const layersToAdd = copy(userLayers.data.layerById);
+			const layersToAdd = copy(userLayers.data.layersById);
 			layersToAdd.forEach(layer => {
 				set(layer, field, value);
 
@@ -1058,9 +986,9 @@ class LayerStateControllerHandler extends StateController {
 				});
 			});
 
-			globalStateController.updateState({ layers: sortBy([...layers, ...layersToAdd], 'position') });
+			this.updateState({ layers: sortBy([...layers, ...layersToAdd], 'position') });
 		} else {
-			globalStateController.updateState({ layers: [...layers] });
+			this.updateState({ layers: [...layers] });
 		}
 
 		if (layersSettingsToUpdate.length > 0) {

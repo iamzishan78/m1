@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -14,7 +15,6 @@ import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 import { REMOVE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 
 import { Modals } from 'styles/Modal';
@@ -42,7 +42,7 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 			isSource
 				? layer.file === props.actionItem.dataset?.file
 				: layer.file === props.actionItem.dataset?.file &&
-					layer.layerShapeName === props.actionItem.category.layerShapeName
+					layer.layerIdentifier === props.actionItem.category.layerIdentifier
 		);
 
 	useEffect(() => {
@@ -67,7 +67,6 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 				dispatch(showErrorMessage('Error occurred'));
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layersDeleted]);
 
 	const handleAccept = () => {
@@ -96,13 +95,13 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 					layers: layers.map(layer => ({ _id: layer.layerId, IsDeleted: true })),
 				},
 			});
-			layerController.updateState(prevState => ({
-				projectedLayers: prevState.projectedLayers.filter(layer => !layers.some(l => l.layerId === layer.layerId)),
-			}));
 
-			globalStateController.updateState(prevState => ({
-				layers: prevState.layers.filter(layer => !layers.some(l => l.layerId === layer.layerId)),
-			}));
+			layerController.updateState({
+				projectedLayers: layerController
+					.getValue('projectedLayers')
+					.filter(layer => !layers.some(l => l.layerId === layer.layerId)),
+				layers: layerController.getValue('layers').filter(layer => !layers.some(l => l.layerId === layer.layerId)),
+			});
 		} else {
 			setStateApp(state => ({
 				...state,

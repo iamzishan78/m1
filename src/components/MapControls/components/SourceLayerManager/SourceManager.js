@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, Fragment, useCallback, useMemo, memo } from 'react';
+import React, { useState, useEffect, Fragment, memo } from 'react';
 import { useDispatch } from 'react-redux';
 
 import {
@@ -39,14 +39,13 @@ import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
-import { GETLAYERBYFILEID } from 'graphQL/useQuerylayerByFileIds';
+import { LAYERS_BY_DATASET_ID } from 'graphQL/useQueryAllLayerSettingsByUser';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
 import { showInfoMessage } from 'actions';
-import { AppContext } from 'AppContext';
 
 import CategorySection from './CategorySection';
 import DeleteSourceAndCategoryConfirmationDialog from './DeleteSourceAndCategoryConfirmationDialog';
@@ -227,11 +226,11 @@ function SourceManager(props) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 
-	const { stateApp } = props;
-	const { globalStateValues } = globalStateController.useState(['layers', 'datasets'], 'globalStateValues');
-	const {
-		layerStateValues: { projectedLayers },
-	} = layerController.useState(['projectedLayers'], 'layerStateValues');
+	const { globalStateValues } = globalStateController.useState(['user'], 'globalStateValues');
+	const { layers, layerStateValues } = layerController.useState(
+		['projectedLayers', 'layers', 'datasets'],
+		'layerStateValues'
+	);
 	const [isOpenUserSources, setIsOpenUserSources] = React.useState(true);
 	const [openDataSets, setOpenDataSets] = React.useState({});
 	const [currentLayers, setCurrentLayers] = React.useState([]);
@@ -245,7 +244,7 @@ function SourceManager(props) {
 	const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
 	const [updateDataset] = useMutation(UPDATE_DATASET, { refetchQueries: ['getDatasets'], awaitRefetchQueries: true });
 	const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
-	const [getLayerByFileId] = useLazyQuery(GETLAYERBYFILEID);
+	const [layersByDatasetId] = useLazyQuery(LAYERS_BY_DATASET_ID);
 	const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, {
 		refetchQueries: ['getUserMapSettings', 'getDatasets'],
 		awaitRefetchQueries: true,
@@ -254,8 +253,7 @@ function SourceManager(props) {
 	const layer_limit = 50;
 
 	const updateStateLayers = currentLayers => {
-		stateApp.layers = currentLayers;
-		globalStateController.updateState({ layers: currentLayers });
+		layerController.updateState({ layers: currentLayers });
 	};
 
 	useEffect(() => {
@@ -265,10 +263,10 @@ function SourceManager(props) {
 	}, []);
 
 	useEffect(() => {
-		if (!deepEqual(currentLayers, globalStateValues.layers)) {
-			setCurrentLayers(copy(globalStateValues.layers));
+		if (!deepEqual(currentLayers, layerStateValues.layers)) {
+			setCurrentLayers(copy(layerStateValues.layers));
 		}
-	}, [currentLayers, globalStateValues.layers]);
+	}, [currentLayers, layers]);
 
 	const handleApplyChange = (currentLayers, allLayers) => {
 		// Initialize arrays to hold layers and settings
@@ -287,7 +285,7 @@ function SourceManager(props) {
 			// Add layer settings data to layersSettingsToUpdate
 			layersSettingsToUpdate.push({
 				_id: currentLayer._id,
-				user: stateApp.user._id,
+				user: globalStateValues.user._id,
 				layer: currentLayer.layerId,
 				layerSettings: currentLayer.layerSettings,
 				layerPaintProps: currentLayer.layerPaintProps,
@@ -377,42 +375,46 @@ function SourceManager(props) {
 	// Common function added for User layer which uses handleLayerSettingChange internally
 	const changeUserSources = async (sources, value) => {
 		const settings = {};
-		const fileIds = sources
-			.map((source, index) => {
-				const datasetIndex = globalStateValues.datasets.findIndex(d => d._id === source._id);
+		const datasetIds = sources
+			.map(source => {
+				const datasetIndex = layerStateValues.datasets.findIndex(d => d._id === source._id);
 				source.visibility = value;
-				globalStateValues.datasets[datasetIndex] = source;
+				layerStateValues.datasets[datasetIndex] = source;
 
-				settings[sources[index]._id] = value;
-				return source.file;
+				settings[source._id] = value;
+				return source._id;
 			})
-			.filter(fileId => fileId);
-		const layers = currentLayers.filter(layer => fileIds.includes(layer.file));
-		const pLayers = projectedLayers.filter(layer => fileIds.includes(layer.file));
+			.filter(Boolean);
+		const layers = currentLayers.filter(layer => datasetIds.includes(layer.dataset));
+		const pLayers = layerStateValues.projectedLayers.filter(layer => datasetIds.includes(layer.dataset));
 		layerController.updateProjectedLayers({ layer: pLayers, field: 'showable', value });
+
+		let layersUpdated = false;
 
 		if (value && layers.length == 0) {
 			// If turning on, fetch missing layers
-			let updatedLayers = await getLayerByFileId({
+			let updatedLayers = await layersByDatasetId({
 				variables: {
-					fileIds,
-					userId: stateApp.user._id,
+					datasetIds,
+					userId: globalStateValues.user._id,
 				},
 			});
 
-			if (updatedLayers?.data?.layerByFileId?.length) {
-				setLayerData(updatedLayers.data.layerByFileId);
-				setCurrentLayers(prevLayers => sortBy([...prevLayers, ...updatedLayers.data.layerByFileId], 'position'));
-				return;
+			if (updatedLayers?.data?.layersByDatasetId?.length) {
+				setLayerData(updatedLayers.data.layersByDatasetId);
+				setCurrentLayers(prevLayers => sortBy([...prevLayers, ...updatedLayers.data.layersByDatasetId], 'position'));
+				layersUpdated = true;
 			}
 		}
 
-		handleLayerSettingChange(layers, value);
+		if (!layersUpdated) {
+			handleLayerSettingChange(layers, value);
+		}
 
 		updateUserMapSettings({
 			variables: {
 				settings: {
-					user: stateApp.user.mongoId,
+					user: globalStateValues.user.mongoId,
 					type: 'DatasetVisibility',
 					settings,
 				},
@@ -458,8 +460,8 @@ function SourceManager(props) {
 			category.name = name;
 			category.layerName = name;
 		}
-		const index = globalStateValues.datasets.findIndex(dataset => dataset._id === actionItem.dataset._id);
-		globalStateValues.datasets[index] = actionItem.dataset;
+		const index = layerStateValues.datasets.findIndex(dataset => dataset._id === actionItem.dataset._id);
+		layerStateValues.datasets[index] = actionItem.dataset;
 
 		updateDataset({ variables: { dataset: actionItem.dataset } });
 	};
@@ -533,7 +535,10 @@ function SourceManager(props) {
 											className={classes.multiSelectionTopBarButtons}
 											onClick={event => {
 												event.stopPropagation();
-												changeUserSources(globalStateValues.datasets, false);
+												changeUserSources(
+													layerStateValues.datasets.filter(d => d.file),
+													false
+												);
 											}}
 										>
 											CLEAR ALL
@@ -542,7 +547,7 @@ function SourceManager(props) {
 										{isOpenUserSources ? <ExpandLess /> : <ExpandMore />}
 									</StyledListItem2>
 									<Collapse in={isOpenUserSources} timeout="auto" unmountOnExit>
-										{globalStateValues.datasets
+										{layerStateValues.datasets
 											?.filter(dataset => {
 												const isDatasetLayer = dataset.categories.find(
 													category =>
@@ -560,7 +565,6 @@ function SourceManager(props) {
 												<Fragment key={dataset._id}>
 													{dataset.sourceName !== 'M1 Platform' ? (
 														<>
-															{' '}
 															<StyledListItem2
 																data-testid={`source-${dataset.sourceName}`}
 																className={openDataSets[dataset.sourceName] ? 'isOpen' : ''}
@@ -609,7 +613,7 @@ function SourceManager(props) {
 																		// const labelId = `m1layer-list-label-${index}`;
 																		return (
 																			<StyledListItem
-																				key={layer.identifier || layer.name}
+																				key={layer.layerIdentifier || layer.name}
 																				ContainerComponent="li"
 																				style={{ padding: 10 }}
 																			>
@@ -712,16 +716,4 @@ SourceManager.propTypes = {
 	search: PropTypes.string,
 };
 
-const SourceManagerMemo = memo(SourceManager);
-
-export default function SourceManagerContainer(props) {
-	const [stateApp, setStateApp] = useContext(AppContext);
-
-	const setStateAppCallback = useCallback(setStateApp, [setStateApp]);
-	const stateAppMemo = useMemo(
-		() => ({ layers: stateApp.layers, user: stateApp.user }),
-		[stateApp.user, stateApp.layers]
-	);
-
-	return <SourceManagerMemo {...props} stateApp={stateAppMemo} setStateApp={setStateAppCallback} />;
-}
+export default memo(SourceManager);

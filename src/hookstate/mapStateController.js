@@ -10,10 +10,11 @@ const defaultMapVars = {
 };
 
 export const mapStateInitialState = {
-	// mapStyles: [],
+	mapStyles: [],
 	mapVars: defaultMapVars,
 	defaultMapVars,
 	isDefaultViewAllowed: true,
+	isMapRefreshing: false,
 };
 
 class MapStateController extends StateController {
