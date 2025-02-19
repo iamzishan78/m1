@@ -60,6 +60,7 @@ function NewLayerManager() {
 
 	const [source, setSource] = useState();
 	const [selectCategory, setCategory] = useState();
+	const [selectGeometry, setGeometry] = useState();
 
 	const { globalStateValues } = globalStateController.useState(['datasets'], 'globalStateValues');
 
@@ -68,7 +69,7 @@ function NewLayerManager() {
 	};
 
 	const createLayer = () => {
-		const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
+		const layerType = source.name === 'M1 Platform' ? 'data layer' : selectGeometry?.value || 'file layer';
 		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
 		const layerShapeName = source.name === 'M1 Platform' ? null : selectCategory.name;
 		const identifier = source.name === 'M1 Platform' ? selectCategory.value + uuid() : layerName + uuid();
@@ -180,6 +181,21 @@ function NewLayerManager() {
 								renderInput={params => <TextField {...params} label="Select Category" />}
 							/>
 						</Grid>
+						{selectCategory?.layerGeometry === 'Point' && (
+							<Grid item xs={12}>
+								<Autocomplete
+									id="layer-geometry"
+									options={[
+										{ label: 'Point', value: 'point' },
+										{ label: 'Hexagon', value: 'hexagon layer' },
+									]}
+									getOptionLabel={option => `${option.label}`}
+									value={selectGeometry}
+									onChange={(_, layerGeometry) => setGeometry(layerGeometry)}
+									renderInput={params => <TextField {...params} label="Select Layer Geometry" />}
+								/>
+							</Grid>
+						)}
 						<Grid item xs={12}>
 							<TextField
 								margin="dense"

@@ -195,6 +195,7 @@ const LayerMeta = {
 		defaultZoom: 10,
 		geoField: 'geometry',
 		isFilterable: true,
+		isFileDataSource: true,
 		propsFunc: getGeoJsonLayerProps,
 		props: {},
 		layer: {
@@ -216,6 +217,25 @@ const LayerMeta = {
 					parameters: {
 						depthTest: false, // Disable depth testing to draw points on top
 					},
+				};
+			},
+		},
+	},
+	'hexagon layer': {
+		defaultZoom: 10,
+		geoField: 'geometry',
+		isFilterable: true,
+		isFileDataSource: true,
+		props: {},
+		layer: {
+			id: 'HexagonLayer',
+			type: 'HexagonLayer',
+			getProps: layerId => {
+				return {
+					data: deckLayers[layerId].getData([]),
+					getColorWeight: d => [20, 30, 40][Math.floor(Math.random() * 3)],
+					getElevationWeight: d => [20, 30, 40][Math.floor(Math.random() * 3)],
+					getPosition: d => d.geometry.coordinates,
 				};
 			},
 		},
@@ -307,10 +327,10 @@ const layerStateControllerHandler = state => {
 				return false;
 			}
 
-			const isFileLayer = dbLayer?.layerType === 'file layer';
+			const { isFileDataSource } = meta;
 
 			if (
-				!isFileLayer &&
+				!isFileDataSource &&
 				!deckGlLayerIdentifiers.includes(dbLayer?.identifier) &&
 				!isCustomLayerCopy(dbLayer?.identifier) &&
 				!deckGlLandGridIdentifiers.includes(dbLayer?.identifier) &&
@@ -625,25 +645,6 @@ const layerStateControllerHandler = state => {
 				},
 			});
 
-			if (!deckLayers['HexagonLayer']) {
-				const hexagonLayer = DeckGlLayer.addLayer({
-					layerId: 'HexagonLayer',
-					type: 'HexagonLayer',
-					beforeLayer: beforeLayerId,
-					props: {
-						data: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/sf-bike-parking.json',
-						getColorWeight: d => d.SPACES,
-						getElevationWeight: d => d.SPACES,
-						getPosition: d => d.COORDINATES,
-					},
-				});
-
-				deckLayers['HexagonLayer'] = {
-					beforeLayerId,
-					deckLayer: hexagonLayer,
-				};
-			}
-
 			deckLayers[layerId].deckLayer = deckLayer;
 			deckLayers[layerId].beforeLayerId = beforeLayerId;
 		}
@@ -674,18 +675,18 @@ const layerStateControllerHandler = state => {
 		const layerId = `${dbLayer.identifier}_${dbLayer.layerId}`;
 		const beforeLayerId = getBeforeLayerId(dbLayer.identifier);
 
-		const isFileLayer = dbLayer.layerType === 'file layer';
+		const { isFileDataSource } = meta;
 
 		const isAgreementLayer = agreementLayerIdentifiers.some(layer =>
 			dbLayer?.identifier?.toLowerCase().includes(layer.toLowerCase())
 		);
 		const filterIdentifier = isAgreementLayer
 			? 'Agreements'
-			: isFileLayer
+			: isFileDataSource
 				? dbLayer.layerShapeName
 				: dbLayer.identifier;
 
-		const filterKey = isFileLayer
+		const filterKey = isFileDataSource
 			? `${dbLayer.file}_${dbLayer.layerShapeName}`
 			: getLayerKey(filterIdentifier, layerFilters);
 
@@ -772,10 +773,10 @@ const layerStateControllerHandler = state => {
 			layerSettings: dbLayer.layerSettings,
 			boundingState,
 			geoField: meta.geoField,
-			isFileLayer,
+			isFileDataSource,
 			polygonFilter,
 			polygonsFilter,
-			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
+			filters: isFileDataSource ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
 			onData: data => {
 				if (!Array.isArray(data)) {
 					return null;
