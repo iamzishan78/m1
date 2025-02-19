@@ -812,15 +812,15 @@ class LayerStateControllerHandler extends StateController {
 		});
 
 		this.setState({
-			// ...baseLayerController.getValues([
-			// 	'layers',
-			// 	'datasets',
-			// 	'projectedLayers',
-			// 	'baseMapLayers',
-			// 	'checkedBaseLayers',
-			// 	'heatLayers',
-			// 	'checkedHeats',
-			// ]),
+			...this.getValues([
+				'layers',
+				'datasets',
+				'projectedLayers',
+				'baseMapLayers',
+				'checkedBaseLayers',
+				'heatLayers',
+				'checkedHeats',
+			]),
 
 			client,
 		});
