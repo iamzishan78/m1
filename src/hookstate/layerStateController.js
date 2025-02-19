@@ -27,8 +27,7 @@ import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compo
 
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
-import { GET_PROJECTED_LAYERS } from 'graphQL/useQueryAllLayerSettingsByUser';
-import { GETLAYERBYID } from 'graphQL/useQueryLayerById';
+import { GET_PROJECTED_LAYERS, LAYERS_BY_ID } from 'graphQL/useQueryAllLayerSettingsByUser';
 
 import { generateDataFunc, getLayerKey, getWellColor } from 'hookstate/helpers';
 import { hookStateController } from 'hookstate/hookStateController';
@@ -947,13 +946,13 @@ const layerStateControllerHandler = state => {
 
 			if (fetchUserLayers.length > 0) {
 				const userLayers = await client.query({
-					query: GETLAYERBYID,
+					query: LAYERS_BY_ID,
 					variables: {
 						layerIds: fetchUserLayers,
 						userId: user._id,
 					},
 				});
-				const layersToAdd = copy(userLayers.data.layerById);
+				const layersToAdd = copy(userLayers.data.layersById);
 				layersToAdd.forEach(layer => {
 					set(layer, field, value);
 

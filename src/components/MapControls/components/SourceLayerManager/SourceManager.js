@@ -39,7 +39,7 @@ import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
-import { GETLAYERBYFILEID } from 'graphQL/useQuerylayerByFileIds';
+import { LAYERS_BY_DATASET_ID } from 'graphQL/useQueryAllLayerSettingsByUser';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
@@ -241,7 +241,7 @@ function SourceManager(props) {
 	const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
 	const [updateDataset] = useMutation(UPDATE_DATASET, { refetchQueries: ['getDatasets'], awaitRefetchQueries: true });
 	const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
-	const [getLayerByFileId] = useLazyQuery(GETLAYERBYFILEID);
+	const [layersByDatasetId] = useLazyQuery(LAYERS_BY_DATASET_ID);
 	const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, {
 		refetchQueries: ['getUserMapSettings', 'getDatasets'],
 		awaitRefetchQueries: true,
@@ -372,37 +372,41 @@ function SourceManager(props) {
 	// Common function added for User layer which uses handleLayerSettingChange internally
 	const changeUserSources = async (sources, value) => {
 		const settings = {};
-		const fileIds = sources
-			.map((source, index) => {
+		const datasetIds = sources
+			.map(source => {
 				const datasetIndex = globalStateValues.datasets.findIndex(d => d._id === source._id);
 				source.visibility = value;
 				globalStateValues.datasets[datasetIndex] = source;
 
-				settings[sources[index]._id] = value;
-				return source.file;
+				settings[source._id] = value;
+				return source._id;
 			})
-			.filter(fileId => fileId);
-		const layers = currentLayers.filter(layer => fileIds.includes(layer.file));
-		const pLayers = layerStateValues.projectedLayers.filter(layer => fileIds.includes(layer.file));
+			.filter(Boolean);
+		const layers = currentLayers.filter(layer => datasetIds.includes(layer.dataset));
+		const pLayers = layerStateValues.projectedLayers.filter(layer => datasetIds.includes(layer.dataset));
 		layerController.updateProjectedLayers({ layer: pLayers, field: 'showable', value });
+
+		let layersUpdated = false;
 
 		if (value && layers.length == 0) {
 			// If turning on, fetch missing layers
-			let updatedLayers = await getLayerByFileId({
+			let updatedLayers = await layersByDatasetId({
 				variables: {
-					fileIds,
+					datasetIds,
 					userId: globalStateValues.user._id,
 				},
 			});
 
-			if (updatedLayers?.data?.layerByFileId?.length) {
-				setLayerData(updatedLayers.data.layerByFileId);
-				setCurrentLayers(prevLayers => sortBy([...prevLayers, ...updatedLayers.data.layerByFileId], 'position'));
-				return;
+			if (updatedLayers?.data?.layersByDatasetId?.length) {
+				setLayerData(updatedLayers.data.layersByDatasetId);
+				setCurrentLayers(prevLayers => sortBy([...prevLayers, ...updatedLayers.data.layersByDatasetId], 'position'));
+				layersUpdated = true;
 			}
 		}
 
-		handleLayerSettingChange(layers, value);
+		if (!layersUpdated) {
+			handleLayerSettingChange(layers, value);
+		}
 
 		updateUserMapSettings({
 			variables: {
@@ -528,7 +532,10 @@ function SourceManager(props) {
 											className={classes.multiSelectionTopBarButtons}
 											onClick={event => {
 												event.stopPropagation();
-												changeUserSources(globalStateValues.datasets, false);
+												changeUserSources(
+													globalStateValues.datasets.filter(d => d.file),
+													false
+												);
 											}}
 										>
 											CLEAR ALL
@@ -555,7 +562,6 @@ function SourceManager(props) {
 												<Fragment key={dataset._id}>
 													{dataset.sourceName !== 'M1 Platform' ? (
 														<>
-															{' '}
 															<StyledListItem2
 																data-testid={`source-${dataset.sourceName}`}
 																className={openDataSets[dataset.sourceName] ? 'isOpen' : ''}
