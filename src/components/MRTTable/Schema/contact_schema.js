@@ -622,7 +622,13 @@ const ContactMeta = {
 			header: 'Industry Type',
 			hidden: true,
 		},
-
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'outcome.keyword',
+			accessorKey: 'outcome',
+			header: 'Outcome',
+			hidden: true,
+		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'leadSource.keyword',

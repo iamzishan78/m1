@@ -13,7 +13,7 @@ import { GET_LOGGED_IN_USER } from "graphQL/useMutationLoggedInUser";
 import { USER_MAP_SETTINGS } from "graphQL/useQueryUserMapSettings";
 import { setUserAction } from "store/actions/appActions";
 import { currentUserGridViewSettingsAction } from "store/actions/sessionActions"
-import { saveUserSession } from "utils/user";
+import { deleteSession, saveUserSession } from "utils/user";
 import Api from "api";
 
 import BypassSignInCard from "./BypassSignInCard";
@@ -255,8 +255,7 @@ const Login = (props) => {
             finishAADAuth(accountObj);
           } else {
             setLoading(false);
-            sessionStorage.clear();
-            window.location.replace(window.location.origin);
+            deleteSession();
           }
         })
         .catch((error) => {
@@ -282,15 +281,11 @@ const Login = (props) => {
           const logoutRequest = {
             account: currentAccount,
           };
-
-          sessionStorage.clear();
-          localStorage.clear();
-
           // Need to call this all the time on exception to clear msal cache
           // in particular when cancelling login to change workspaces
           stateApp.myMSALObj.logout(logoutRequest);
 
-          // window.location.replace(window.location.origin);
+          deleteSession();
           setLoading(false);
         });
     } else {
@@ -307,7 +302,6 @@ const Login = (props) => {
       history.push(history.location.pathname)
       return;
     }
-
     if (tenant) {
       setSigningIn(true);
       setLoadingSigInButton(true);
@@ -650,12 +644,11 @@ const Login = (props) => {
           <BypassSignInCard
             ready={loadingSigInButton}
             handleAADSignIn={handleBypassAADSignIn}
-            tenant={!stateApp.myMSALObj ? queryString.parse(props.location.search).tenant : undefined}
+            tenant={queryString.parse(props.location.search)?.tenant}
           /> :
           <SignInCard
             ready={loadingSigInButton}
             handleAADSignIn={handleAADSignIn}
-            tenant={!stateApp.myMSALObj ? queryString.parse(props?.location?.search).tenant : undefined}
           />
         }
       </div>

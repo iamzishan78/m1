@@ -105,6 +105,8 @@ function TractInterestTable(props) {
 					field: 'shape.layer.keyword',
 					value: 'parcel',
 				},
+				{ field: 'shape.IsDeleted', value: 'false' },
+				{ field: 'contact.IsDeleted', value: 'false' },
 			],
 
 			defaultSort: { field: '_ts', order: 'desc' },
