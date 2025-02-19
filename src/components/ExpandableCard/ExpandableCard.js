@@ -456,10 +456,14 @@ function ExpandableCard(props) {
 								</Grid>
 							)}
 							<Grid item>
-								<Box className="name">
-									{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
-								</Box>
-								{!selectedShape?.isGenericAssetShape && <Box className="description">{subTitle}</Box>}
+								{!selectedShape?.isGenericAssetShape && (
+									<>
+										<Box className="name">
+											{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
+										</Box>
+										<Box className="description">{subTitle}</Box>
+									</>
+								)}
 								{targetLabel === 'unit' && <Box className="type">Unit</Box>}
 								{targetLabel === 'agreement' && (
 									<Box className="type">
