@@ -9,7 +9,6 @@ export const adminOperationsInitialState = {
 	createNewFlatData: 'No',
 	warning: null,
 	message: null,
-	apiKeys: { dialpad: '' },
 };
 
 export const adminOperationsController = new StateController(adminOperationsInitialState);

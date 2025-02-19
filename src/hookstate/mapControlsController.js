@@ -11,7 +11,6 @@ export const mapControlsInitialState = {
 	anchorEl: null,
 	layers: [
 		{ name: 'Basins', value: 'basinLayer' },
-		{ name: 'Pipelines', value: 'pipelineLayer' },
 		{ name: 'Surveys', value: 'surveyLayer' },
 	],
 	userData: null,

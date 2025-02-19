@@ -70,6 +70,7 @@ class ViewStateController extends StateController {
 		});
 
 		const allViews = result?.data?.getGridViews?.gridViews || [];
+
 		return allViews;
 	}
 

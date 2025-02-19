@@ -21,6 +21,8 @@ export const globalInitialState = {
 	bypassType: '',
 	tenant: null,
 	layerSettingsLoading: false,
+	selectedIconTpe: 'Chip',
+	onMapLoad: null,
 };
 
 class GlobalStateController extends StateController {

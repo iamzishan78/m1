@@ -61,7 +61,6 @@ const SEVEN_FIFTY = 750;
 const SIX_THOUSAND = 6000;
 
 const layerStateInitialState = {
-	projectedLayers: [],
 	client: null,
 	history: null,
 	boundingStates: null,
@@ -70,7 +69,6 @@ const layerStateInitialState = {
 	recalculate: false,
 
 	wellListFromSearch: [], // Not Moved
-	rigsData: [], // Not Moved
 };
 
 const getWellColor = w => {
