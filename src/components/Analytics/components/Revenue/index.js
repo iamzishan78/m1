@@ -16,11 +16,11 @@ import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckD
 import { copy, deepEqual } from 'components/Shared/functions';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 
+import { tableController } from 'controllers/tableController';
+
 import { GET_CHECK_DETAILS_DATA } from 'graphQL/useQueryCheckDetailsData';
 import { GET_DB_MIN_VALUE, GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from 'graphQL/useQueryGetPortfolioGrossRevenueSummary';
-
-import { tableController } from 'hookstate/tableController';
 
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
 import AnalyticsCards from './Analytics';

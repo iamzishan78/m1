@@ -16,11 +16,11 @@ import { extractValueRecursively } from 'components/MRTTable/utils/helper';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 
-import { ADDCONTACT } from 'graphQL/useMutationAddContact';
+import { globalStateController } from 'controllers/globalStateController';
+import { sideDialogController } from 'controllers/sideDialogController';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { sideDialogController } from 'hookstate/sideDialogController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 
 const useStyles = makeStyles(theme => ({
 	dialogContent: {

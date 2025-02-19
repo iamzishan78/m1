@@ -37,12 +37,12 @@ import RequestPageIcon from 'components/Shared/svgIcons/request_page';
 import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFetchHoc';
 import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
 
+import { globalStateController } from 'controllers/globalStateController';
+
 import { INITIATE_DIALPAD_CALL } from 'graphQL/useMutationInitiateCall';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
 import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
-
-import { globalStateController } from 'hookstate/globalStateController';
 
 import { SMALL_TIMEOUT } from 'utils/consts';
 import { OWNERTYPE } from 'utils/data';

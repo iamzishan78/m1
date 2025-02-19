@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 const useStyles = makeStyles(() => ({
 	actionIcons: {

@@ -9,10 +9,10 @@ import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckD
 import AnalyticsCards from 'components/Revenue/components/Statements/AnalyticsCards';
 import { copy } from 'components/Shared/functions';
 
-import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(() => ({
 	root: {

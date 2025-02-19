@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 
 import { CircularProgress } from '@material-ui/core';
 
+import { detailCardController } from 'controllers/detailCardController';
+
 import Content from './Content';
 import useDetailCardUnmount from './Hooks/useDetailCardUnmount';
-import { detailCardController } from 'hookstate/detailCardController';
 
 function DetailLayout({ loading, ignoreUnmount, tabs, page, props }) {
 	useDetailCardUnmount(ignoreUnmount);
@@ -17,7 +18,7 @@ function DetailLayout({ loading, ignoreUnmount, tabs, page, props }) {
 		});
 	}, []);
 
-	if (loading)
+	if (loading) {
 		return (
 			<div
 				style={{
@@ -31,6 +32,7 @@ function DetailLayout({ loading, ignoreUnmount, tabs, page, props }) {
 				<CircularProgress size={80} disableShrink color="secondary" />
 			</div>
 		);
+	}
 
 	return <Content />;
 }

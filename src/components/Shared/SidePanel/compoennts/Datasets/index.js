@@ -18,14 +18,14 @@ import { copy } from 'components/Shared/functions';
 import DatabaseIcon from 'components/Shared/svgIcons/DatabaseIcon';
 import FileDatasetIcon from 'components/Shared/svgIcons/FileDatasetIcon';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { layerController } from 'controllers/layerStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 import { GET_DATASETS } from 'graphQL/useQueryDataset';
 import { USER_MAP_SETTINGS_QUERY } from 'graphQL/useQueryUserMapSettings';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
 
 import { scrollbarStyle } from 'styles/common';
 

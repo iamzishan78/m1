@@ -1,8 +1,12 @@
 import React, { memo } from 'react';
-import { tableGlobalController } from 'hookstate/tableController';
-import CustomAssetEntityDialog from '../Popups/CustomAssetEntityDialog';
+
 import PropTypes from 'prop-types';
+
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
+
+import { tableGlobalController } from 'controllers/tableController';
+
+import CustomAssetEntityDialog from '../Popups/CustomAssetEntityDialog';
 
 function AssetCustomEntitiesToolbar({ tableKey }) {
 	const addCustomAssetHandler = () => {

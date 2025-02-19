@@ -1,9 +1,9 @@
 import * as turf from '@turf/turf';
 import gjv from 'geojson-validation';
 
-import { drawController } from 'hookstate/drawStateController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { drawController } from 'controllers/drawStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { popupController } from 'controllers/popupStateController';
 
 export const clearMapAndCloseShapeActionsPopup = () => {
 	const currentFeature = drawController.getValue('currentFeature');
@@ -118,11 +118,11 @@ export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
 					padding: padding
 						? padding
 						: {
-							top: 200,
-							bottom: 200,
-							left: 1200,
-							right: 0,
-						},
+								top: 200,
+								bottom: 200,
+								left: 1200,
+								right: 0,
+							},
 				}
 			);
 		} catch (err) {

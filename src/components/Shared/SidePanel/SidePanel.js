@@ -4,10 +4,10 @@ import AddLayerIcon from '@material-ui/icons/Queue';
 
 import { useMutation } from '@apollo/client';
 
-import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
+import { layerController } from 'controllers/layerStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
 
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 
 import { copy } from 'utils/helper';
 

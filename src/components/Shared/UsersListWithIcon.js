@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
+
+import { TextField, Grid, Avatar, InputAdornment, CircularProgress } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
-import { TextField, Grid, Avatar, InputAdornment, CircularProgress } from '@material-ui/core';
+
 import { useLazyQuery } from '@apollo/client';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-import CustomAvatar from 'components/Shared/ui/CustomAvatar';
+
 import { getRandomColor } from 'components/Shared/functions/ui';
-import { detailCardController } from 'hookstate/detailCardController';
+import CustomAvatar from 'components/Shared/ui/CustomAvatar';
+
+import { detailCardController } from 'controllers/detailCardController';
+
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 const useStyles = makeStyles(theme => ({
 	gridStyle: {

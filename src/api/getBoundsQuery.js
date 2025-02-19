@@ -5,12 +5,12 @@ import { dividePolygon, makeGeoJSONFromStrings } from 'components/Map/DeckGL/hel
 import { copy, getPolygonString, processInBatches } from 'components/Shared/functions';
 import { agreementLayerIdentifiers } from 'components/Shared/functions/shapeLayer';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { layerController } from 'controllers/layerStateController';
+
 import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { PLSSSECONDDIVISIONGEO } from 'graphQL/useQueryPLSSSecondDivisionGeo';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
 
 const queries = {
 	Wells: {

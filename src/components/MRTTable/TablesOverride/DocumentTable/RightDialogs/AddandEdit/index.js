@@ -12,11 +12,11 @@ import PropTypes from 'prop-types';
 import Slideout from 'components/MRTTable/Common/Slideout';
 import WellIcon from 'components/Shared/svgIcons/well';
 
-import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument';
+import { globalStateController } from 'controllers/globalStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument';
 
 import { history } from 'store';
 

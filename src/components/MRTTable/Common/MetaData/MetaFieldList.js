@@ -21,8 +21,8 @@ import PropTypes from 'prop-types';
 
 import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController } from 'controllers/tableController';
 
 const useStyles = makeStyles(() => ({
 	header: {

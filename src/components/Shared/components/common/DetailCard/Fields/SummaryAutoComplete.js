@@ -10,9 +10,9 @@ import PropTypes from 'prop-types';
 
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { detailCardController } from 'controllers/detailCardController';
 
-import { detailCardController } from 'hookstate/detailCardController';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
 const useStyles = makeStyles({
 	inputRoot: {

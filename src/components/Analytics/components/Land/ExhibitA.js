@@ -5,8 +5,8 @@ import { Grid, makeStyles } from '@material-ui/core';
 import MRTTable from 'components/MRTTable';
 import MRTFilterComponent from 'components/MRTTable/Common/MRTFilterComponent';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController } from 'controllers/tableController';
 
 const TableKey = 'ExhibitATable';
 

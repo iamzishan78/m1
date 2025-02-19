@@ -7,8 +7,8 @@ import { makeStyles } from '@material-ui/styles';
 import MRTTable from 'components/MRTTable';
 import MultiGridsComponent from 'components/Shared/MultiGridsComponent';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { detailCardController } from 'controllers/detailCardController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 import { paymentGridsInitialData } from 'utils/data';
 

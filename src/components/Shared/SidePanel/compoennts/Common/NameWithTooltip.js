@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Typography, Tooltip, Box } from '@mui/material';
+
 import { makeStyles } from '@material-ui/core/styles';
+
+import { Typography, Tooltip, Box } from '@mui/material';
 
 const useStyles = makeStyles(theme => ({
 	iconTooltip: {

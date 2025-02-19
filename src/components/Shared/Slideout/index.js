@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
 
 import Dialog from './Dialog';
 import DialogHeader from './DialogHeader';

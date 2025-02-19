@@ -4,7 +4,7 @@ import { Button } from '@material-ui/core';
 
 import CotactDetailWellInterestTableDialogs from 'components/MRTTable/TablesOverride/ContactDetailWellInterestTable/RightDialog';
 
-import { tableGlobalController, tableController } from 'hookstate/tableController';
+import { tableGlobalController, tableController } from 'controllers/tableController';
 
 function WellInterestToolBar({ table, tableKey }) {
 	const Controller = tableController(tableKey);

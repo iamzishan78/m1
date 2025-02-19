@@ -12,8 +12,8 @@ import PropTypes from 'prop-types';
 import GridView from 'components/MRTTable/Common/GridView';
 import TabHeader from 'components/MRTTable/Common/TabHeader';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 import { excludeFilters } from './CommonToolBarActions';
 import TableHeader from './TableHeader';

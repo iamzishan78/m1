@@ -11,12 +11,12 @@ import moment from 'moment';
 
 import MRTTable from 'components/MRTTable';
 
+import { slidoutStateController } from 'controllers/slidoutStateController';
+import { tableController } from 'controllers/tableController';
+
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableController } from 'hookstate/tableController';
 
 import ActivitiesEvent from './components/ActivitiesEvent';
 import ActivitiesToolbar from './components/ActivitiesToolbar';

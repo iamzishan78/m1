@@ -20,12 +20,12 @@ import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
+import { globalStateController } from 'controllers/globalStateController';
+
 import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-
-import { globalStateController } from 'hookstate/globalStateController';
 
 import { compareObjects } from 'utils/helper';
 

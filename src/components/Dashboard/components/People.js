@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers */
 import React, { Fragment, useEffect, useState } from 'react';
 import Avatar from 'react-avatar';
 

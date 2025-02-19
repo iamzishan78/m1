@@ -33,13 +33,13 @@ import MarkUnreadIcon from 'components/Shared/svgIcons/mark-unread';
 import TractIcon from 'components/Shared/svgIcons/tract';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 
+import { globalStateController } from 'controllers/globalStateController';
+
 import { ARCHIVE_ALL_MUTATIONS } from 'graphQL/useMutationArchiverAllMentions';
 import { UPDATE_NOTIFICATION_STATUS } from 'graphQL/useMutationUpdateNotificationStatus';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-
-import { globalStateController } from 'hookstate/globalStateController';
 
 import { dateIsValid } from 'utils/helper';
 

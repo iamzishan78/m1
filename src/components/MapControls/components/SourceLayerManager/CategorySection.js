@@ -16,7 +16,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 
 import PropTypes from 'prop-types';
 
-import { layerController } from 'hookstate/layerStateController';
+import { layerController } from 'controllers/layerStateController';
 
 import DeleteConfirmationDialog from '../DeleteConfirmationDialog';
 import CategorySectionList from './CategorySectionList';

@@ -10,9 +10,9 @@ import { useMutation } from '@apollo/client';
 import Loader from 'components/Loaders';
 import { entityCreationOptions } from 'components/MRTTable/utils/data';
 
-import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetInfo';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetInfo';
 
 import { showInfoMessage } from 'actions';
 

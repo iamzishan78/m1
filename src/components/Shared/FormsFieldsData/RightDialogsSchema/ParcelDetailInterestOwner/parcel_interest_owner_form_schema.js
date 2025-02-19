@@ -7,11 +7,11 @@ import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/Currenc
 import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 import { addTrailingZeros } from 'components/Shared/functions';
 
+import { popupController } from 'controllers/popupStateController';
+import { sideDialogController } from 'controllers/sideDialogController';
+
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-
-import { popupController } from 'hookstate/popupStateController';
-import { sideDialogController } from 'hookstate/sideDialogController';
 
 import { calculateStandardNraForTract, safeParseFloat } from 'utils/calculatedNraHelper';
 

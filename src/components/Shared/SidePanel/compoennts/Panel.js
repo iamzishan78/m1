@@ -31,14 +31,14 @@ import LayerFilters from 'components/Shared/SidePanel/compoennts/Filters/LayerFi
 import MapPositions from 'components/Shared/SidePanel/compoennts/MapPositions';
 import FilterAltIcon from 'components/Shared/svgIcons/FilterAltIcon';
 
-import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
-
 // Contexts
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { navController } from 'hookstate/navStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { layerController } from 'controllers/layerStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { mapStateController } from 'controllers/mapStateController';
+import { navController } from 'controllers/navStateController';
+
+import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 
 // actions
 import { setActiveModule } from 'store/actions/commonActions';

@@ -15,10 +15,10 @@ import UnitIcon from 'components/Shared/svgIcons/unit';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
 import { CURRENCY_TO_FIXED } from 'utils/consts';
 import { copy } from 'utils/helper';

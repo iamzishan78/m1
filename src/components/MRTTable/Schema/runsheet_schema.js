@@ -10,7 +10,7 @@ import FileDownload from 'components/MRTTable/TablesOverride/DocumentTable/Table
 import FileView from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/FileView';
 import { formatDate } from 'components/Shared/functions';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import RunsheetToolbar from '../TablesOverride/RunsheetTable/RunsheetToolbar';
 

@@ -12,11 +12,11 @@ import ShapeDetailCard from 'components/ShapeDetailCard';
 import UdLayerCardProvider from 'components/UdLayerCard/UdLayerCardProvider';
 import WellCardProvider from 'components/WellCard/WellCardProvider';
 
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { globalStateController } from 'controllers/globalStateController';
+import { layerController } from 'controllers/layerStateController';
+import { popupController } from 'controllers/popupStateController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
 import PermitClick from './PermitClick';
 import WellClick from './WellClick';

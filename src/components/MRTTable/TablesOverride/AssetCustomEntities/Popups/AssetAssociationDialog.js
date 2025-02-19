@@ -9,10 +9,10 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 
 import Loader from 'components/Loaders';
 
+import { tableGlobalController } from 'controllers/tableController';
+
 import { UPSERT_ASSOCIATED_MODELS } from 'graphQL/useMutationUpsertCustomAssetInfo';
 import { GET_ALL_MODELS } from 'graphQL/useQueryModels';
-
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { showInfoMessage } from 'actions';
 

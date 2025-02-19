@@ -14,9 +14,9 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useLazyQuery } from '@apollo/client';
 import debounce from 'lodash/debounce';
 
-import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
+import { slidoutStateController } from 'controllers/slidoutStateController';
 
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
 
 import { AppContext } from 'AppContext';
 
@@ -117,8 +117,8 @@ const ActivitySearch = () => {
 			slidoutStateController.updateState({
 				selectedActivityId: id,
 				show: true,
-				selectedActivity: activitiesData?.activities?.find(act => act._id === id)
-			})
+				selectedActivity: activitiesData?.activities?.find(act => act._id === id),
+			});
 		}
 	};
 

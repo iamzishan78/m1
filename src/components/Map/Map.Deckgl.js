@@ -25,18 +25,18 @@ import { viewStateController } from 'components/MRTTable/Common/GridView/ViewCon
 import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
+import { layerFiltersController } from 'controllers/layerFiltersController';
+import { layerController } from 'controllers/layerStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { mapStateController } from 'controllers/mapStateController';
+import { navController } from 'controllers/navStateController';
+import { popupController } from 'controllers/popupStateController';
+
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
-
-import { detailCardController } from 'hookstate/detailCardController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { navController } from 'hookstate/navStateController';
-import { popupController } from 'hookstate/popupStateController';
 
 import { baseTenantsMaps } from 'utils/data';
 import { convertToTitleCase, formatLayerForMap } from 'utils/helper';

@@ -5,11 +5,11 @@ import { debounce, set, get, isNumber } from 'lodash';
 
 import { mergeArrays } from 'components/Shared/functions';
 
-import { GET_DB_AGGS, GET_DB_DATA_TOTAL, GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { drawController } from 'controllers/drawStateController';
+import { layerFiltersController } from 'controllers/layerFiltersController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
-import { drawController } from 'hookstate/drawStateController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { GET_DB_AGGS, GET_DB_DATA_TOTAL, GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { copy } from 'utils/helper';
 

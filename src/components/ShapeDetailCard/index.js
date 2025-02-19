@@ -11,11 +11,11 @@ import PropTypes from 'prop-types'; // Import PropTypes
 import { ExpandableCardContext } from 'components/ExpandableCard/ExpandableCardContext';
 import { agreementLayers } from 'components/Shared/functions/shapeLayer';
 
-import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { popupController } from 'controllers/popupStateController';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { popupController } from 'hookstate/popupStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 
 import { formatLayerForMap } from 'utils/helper';
 

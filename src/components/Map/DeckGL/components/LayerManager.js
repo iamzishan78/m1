@@ -7,9 +7,9 @@ import { debounce } from 'lodash';
 import { deepEqual } from 'components/Shared/functions';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
 
-import { drawController } from 'hookstate/drawStateController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { layerController } from 'hookstate/layerStateController';
+import { drawController } from 'controllers/drawStateController';
+import { layerFiltersController } from 'controllers/layerFiltersController';
+import { layerController } from 'controllers/layerStateController';
 
 const updateState = debounce((zoom, bbox, center) => {
 	layerController.updateState({

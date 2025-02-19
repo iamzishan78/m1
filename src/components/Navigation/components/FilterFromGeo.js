@@ -5,8 +5,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { useLazyQuery } from '@apollo/client';
 
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { navController } from 'hookstate/navStateController';
+import { layerFiltersController } from 'controllers/layerFiltersController';
+import { navController } from 'controllers/navStateController';
 
 import { AppContext } from '../../../AppContext';
 import { NavigationContext } from '../NavigationContext';

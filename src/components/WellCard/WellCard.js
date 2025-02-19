@@ -16,8 +16,8 @@ import Typography from '@material-ui/core/Typography';
 
 import { useLazyQuery } from '@apollo/client';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { popupController } from 'controllers/popupStateController';
 
 import { WellCardContext } from './WellCardContext';
 import { ExpandableCardContext } from '../ExpandableCard/ExpandableCardContext';

@@ -14,11 +14,11 @@ import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } from 'components/MRTTable/utils/data';
 
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+import { layerFiltersController } from 'controllers/layerFiltersController';
+import { layerController } from 'controllers/layerStateController';
+import { tableController, tableESState } from 'controllers/tableController';
 
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { layerController } from 'hookstate/layerStateController';
-import { tableController, tableESState } from 'hookstate/tableController';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { customLayersFieldAccessors } from './consts';
 import CustomAutocomplete from './CustomAutocomplete';

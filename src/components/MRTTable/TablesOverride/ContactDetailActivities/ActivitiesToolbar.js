@@ -5,9 +5,9 @@ import { useLazyQuery } from '@apollo/client';
 
 import ActivitiesSlideout from 'components/Activities/components/ActivitiesSlideout';
 
-import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
+import { slidoutStateController } from 'controllers/slidoutStateController';
 
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 
 import { AppContext } from 'AppContext';
 

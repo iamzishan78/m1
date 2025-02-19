@@ -40,11 +40,11 @@ import Loader from 'components/Loaders';
 import CommentsWithIcon from 'components/Shared/CommentsWithIcon';
 import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
 
+import { detailCardController } from 'controllers/detailCardController';
+
 import { CREATE_AGREEMENT_PROVISION } from 'graphQL/useMutationCreateAgreementProvision';
 import { GET_PROVISION_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetProvisionAutoCompleteList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-
-import { detailCardController } from 'hookstate/detailCardController';
 
 import ResponsibleParty from './ResponsibleParty';
 import { AppContext } from '../../../AppContext';

@@ -9,9 +9,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { useMutation } from '@apollo/client';
 
-import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+import { layerController } from 'controllers/layerStateController';
 
-import { layerController } from 'hookstate/layerStateController';
+import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 
 import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
 

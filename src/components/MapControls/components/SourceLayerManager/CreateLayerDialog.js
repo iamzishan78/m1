@@ -12,10 +12,10 @@ import Typography from '@material-ui/core/Typography';
 
 import { useMutation } from '@apollo/client';
 
-import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';
+import { layerController } from 'controllers/layerStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
 
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';
 
 import { showErrorMessage } from 'actions';
 

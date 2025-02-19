@@ -12,7 +12,7 @@ import DateField from 'components/Shared/components/Fields/DateField';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 const useStyles = makeStyles(() => ({
 	text: {

@@ -12,7 +12,7 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
 
 const getDealNameFieldHeight = title => {
 	const lineLength = Math.ceil(title.length / 53);
@@ -150,7 +150,7 @@ const DialogHeader = ({ handleClickDialogClose, openConfirmationDialog }) => {
 									notchedOutline: classes.notchedOutline,
 								},
 							}}
-						// onBlur={() => setTitleFocus(false)}
+							// onBlur={() => setTitleFocus(false)}
 						/>
 						{/* <TextareaAutosize aria-label="empty textarea" placeholder="Empty" style={{ width: 200 }} /> */}
 					</FormControl>

@@ -7,10 +7,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useMutation } from '@apollo/client';
 import { useLazyQuery } from '@apollo/client';
 
+import { globalStateController } from 'controllers/globalStateController';
+
 import { CREATE_NOTE } from 'graphQL/useMutationNote';
 import { GET_USER_NOTES } from 'graphQL/useQueryGetNote';
-
-import { globalStateController } from 'hookstate/globalStateController';
 
 import { ProfileContext } from '../../Profile/ProfileContext';
 

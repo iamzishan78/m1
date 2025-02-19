@@ -34,13 +34,13 @@ import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
+import { tableGlobalController } from 'controllers/tableController';
+
 import { CREATEDESCRIPTORFILE } from 'graphQL/useMutationCreateDescriptorFile';
 import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
 import { GET_DOCUMENTS } from 'graphQL/useQueryDocuments';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { AppContext } from 'AppContext';
 

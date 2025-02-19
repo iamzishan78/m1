@@ -3,7 +3,6 @@ import React, { useEffect, useContext, useState, memo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles';
 import AspectRatioOutlinedIcon from '@material-ui/icons/AspectRatioOutlined';
-import SyncSharpIcon from '@mui/icons-material/SyncSharp';
 import CancelIcon from '@material-ui/icons/Cancel';
 import EditIcon from '@material-ui/icons/Edit';
 import LanguageIcon from '@material-ui/icons/Language';
@@ -12,11 +11,13 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 
-import { drawController } from 'hookstate/drawStateController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { popupController } from 'hookstate/popupStateController';
+import SyncSharpIcon from '@mui/icons-material/SyncSharp';
+
+import { drawController } from 'controllers/drawStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { mapStateController } from 'controllers/mapStateController';
+import { popupController } from 'controllers/popupStateController';
 
 import { clearMapAndCloseShapeActionsPopup } from './commonHelper';
 import { AppContext } from '../../AppContext';

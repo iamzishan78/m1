@@ -21,9 +21,9 @@ import payeeForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/Paye
 import paymentForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PaymentGrid/payment_form_schema';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { paymentState, sideDialogController } from 'hookstate/sideDialogController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { detailCardController } from 'controllers/detailCardController';
+import { paymentState, sideDialogController } from 'controllers/sideDialogController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import { checkFormRequireField } from 'utils/helper';
 

@@ -2,7 +2,7 @@ import { hookstate, useHookstate } from '@hookstate/core';
 
 import { copy } from 'components/Shared/functions';
 
-import { hookStateController } from 'hookstate/hookStateController';
+import { hookStateController } from 'controllers/hookStateController';
 
 export const initialState = {
 	documentNumber: '',

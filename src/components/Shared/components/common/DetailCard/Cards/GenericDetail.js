@@ -1,23 +1,22 @@
 import React, { useContext, useState, useEffect, useMemo, memo } from 'react';
-
-import { AppContext } from 'AppContext';
-
 import { useParams } from 'react-router-dom';
+
 import { useLazyQuery } from '@apollo/client';
 
 // import RightDialog from './RightDialog';
 // import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
+import ConfirmationDialog from 'components/ContactDetailCard/components/ConfirmationDialog';
+import { replaceUnderscoreAndCapitalize } from 'components/MRTTable/utils/helper';
 import DetailLayout from 'components/Shared/components/common/DetailCard/DetailLayout';
 // import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
-import ConfirmationDialog from 'components/ContactDetailCard/components/ConfirmationDialog';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { globalStateController } from 'hookstate/globalStateController';
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 import { GET_RECORD_FROM_RUN_TIME_MODEL } from 'graphQL/useQueryRunTimeModel';
 
-import { replaceUnderscoreAndCapitalize } from 'components/MRTTable/utils/helper';
+import { AppContext } from 'AppContext';
 
 function GenericDetailCard(props) {
 	const [stateApp, setStateApp] = useContext(AppContext);

@@ -22,9 +22,9 @@ import { NavigationContext } from 'components/Navigation/NavigationContext';
 //Components
 import * as LayerFiltersComponents from 'components/Shared/SidePanel/compoennts/Filters';
 
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { layerController } from 'hookstate/layerStateController';
-import { navController } from 'hookstate/navStateController';
+import { layerFiltersController } from 'controllers/layerFiltersController';
+import { layerController } from 'controllers/layerStateController';
+import { navController } from 'controllers/navStateController';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import { customLayersFieldAccessors } from './consts';

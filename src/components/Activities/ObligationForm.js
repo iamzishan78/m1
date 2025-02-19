@@ -14,12 +14,12 @@ import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
 import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTextfield';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
+import { tableGlobalController } from 'controllers/tableController';
+
 import { DELETEACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { AppContext } from 'AppContext';
 
@@ -173,8 +173,12 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	const [stateApp] = useContext(AppContext);
 	const [users, setUsers] = useState([]);
 
-	const { title, formMode, selectedActivity } = slidoutStateController.useState(['title', 'formMode', 'selectedActivity'])
-	const activityName = title
+	const { title, formMode, selectedActivity } = slidoutStateController.useState([
+		'title',
+		'formMode',
+		'selectedActivity',
+	]);
+	const activityName = title;
 	const {
 		activityType,
 		startDate,
@@ -278,7 +282,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 			} else if (formMode === 'delete') {
 				deleteActivity();
 			}
-			slidoutStateController.updateState({ formMode: '' })
+			slidoutStateController.updateState({ formMode: '' });
 			slidoutStateController.hideSlideout();
 		}
 	}, [formMode]);
@@ -288,7 +292,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 
 		clearFields();
 		setSelectedActivityId(null);
-		slidoutStateController.updateState({ selectedActivity: null })
+		slidoutStateController.updateState({ selectedActivity: null });
 		slidoutStateController.hideSlideout();
 	};
 
@@ -323,21 +327,21 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	return (
 		<div>
 			<div className={classes.inputFieldRoot}>
-				<SimpleTextField disabled title="Obligation Type" value={activityType.get()} setValue={() => { }} />
+				<SimpleTextField disabled title="Obligation Type" value={activityType.get()} setValue={() => {}} />
 
 				<FormControl variant="outlined" fullWidth size="small">
 					<Grid container className={classes.gridStyle}>
-						<DateField disabled={true} title="Start Date" date={startDate.get()} setDate={() => { }} />
-						<DateField disabled={true} title="End Date" date={endDate.get()} setDate={() => { }} />
+						<DateField disabled={true} title="Start Date" date={startDate.get()} setDate={() => {}} />
+						<DateField disabled={true} title="End Date" date={endDate.get()} setDate={() => {}} />
 					</Grid>
 				</FormControl>
 
-				<SimpleTextField disabled title="Frequecy" value={frequency.get()} setValue={() => { }} />
+				<SimpleTextField disabled title="Frequecy" value={frequency.get()} setValue={() => {}} />
 				{activityType.get() !== 'Payment' && (
-					<SimpleTextField disabled title="Applicable" value={applicable.get()} setValue={() => { }} />
+					<SimpleTextField disabled title="Applicable" value={applicable.get()} setValue={() => {}} />
 				)}
-				<SimpleTextField disabled title="Value" value={obligationValue.get()} setValue={() => { }} />
-				<SimpleTextField disabled title="Responsible Party" value={responsibleParty.get()} setValue={() => { }} />
+				<SimpleTextField disabled title="Value" value={obligationValue.get()} setValue={() => {}} />
+				<SimpleTextField disabled title="Responsible Party" value={responsibleParty.get()} setValue={() => {}} />
 
 				<OwnerField
 					disabled={true}

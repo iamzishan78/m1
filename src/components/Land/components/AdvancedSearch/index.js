@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Box, TextField } from '@mui/material';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import IndexAutoCompleteFilter from './IndexAutoCompleteFilter';
 import Result from './Result';

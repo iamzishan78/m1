@@ -24,11 +24,11 @@ import {
 } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
+import { generateDataFunc, getLayerKey, getWellColor } from 'controllers/helpers';
+
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { GET_PROJECTED_LAYERS, LAYERS_BY_ID } from 'graphQL/useQueryAllLayerSettingsByUser';
-
-import { generateDataFunc, getLayerKey, getWellColor } from 'hookstate/helpers';
 
 import { baseMapLayers, heatLayers } from 'LayerConfig';
 

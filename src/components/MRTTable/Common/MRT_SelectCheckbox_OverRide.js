@@ -2,7 +2,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Radio from '@mui/material/Radio';
 import Tooltip from '@mui/material/Tooltip';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'controllers/tableController';
 
 function MRT_SelectCheckbox_OverRide({ row, selectAll, table, tableKey }) {
 	const tableState = tableController(tableKey).useState(['rowSelection']);

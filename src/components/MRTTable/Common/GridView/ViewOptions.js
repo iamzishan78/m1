@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import LeftDialog from 'components/Shared/LeftDialog';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import ViewItem from './components/ViewItem';
 

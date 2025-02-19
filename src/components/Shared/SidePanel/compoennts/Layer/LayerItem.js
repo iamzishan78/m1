@@ -13,10 +13,10 @@ import DragIndicator from '@material-ui/icons/DragIndicator';
 
 import { useMutation } from '@apollo/client';
 
-import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
+import { layerController } from 'controllers/layerStateController.js';
+import { mapControlsController } from 'controllers/mapControlsController.js';
 
-import { layerController } from 'hookstate/layerStateController.js';
-import { mapControlsController } from 'hookstate/mapControlsController.js';
+import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 
 import { copy } from 'utils/helper';
 

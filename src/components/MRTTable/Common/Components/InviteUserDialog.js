@@ -12,9 +12,9 @@ import { useMutation } from '@apollo/client';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
-import { ADD_USER, UPDATE_USER } from 'graphQL/userManagement';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { ADD_USER, UPDATE_USER } from 'graphQL/userManagement';
 
 import { Modals } from 'styles/Modal';
 

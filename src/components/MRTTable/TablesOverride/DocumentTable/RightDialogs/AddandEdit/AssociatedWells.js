@@ -30,10 +30,10 @@ import WellSearchApiFieldES from 'components/Shared/Forms/Fields/WellSearchApiFi
 // Hooks
 
 // Mutations
+import { globalStateController } from 'controllers/globalStateController';
+
 import { ADD_WELL_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddWellToFileDescriptor';
 import { DELETEWELLFROMFILEDESCRIPTOR } from 'graphQL/useMutationDeleteWellFromFileDescriptor';
-
-import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => ({
 	rootPadding: {

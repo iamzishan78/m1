@@ -18,10 +18,10 @@ import { useMutation } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 
-import { MERGE_CONTACTS } from 'graphQL/useMutationMergeContact';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { MERGE_CONTACTS } from 'graphQL/useMutationMergeContact';
 
 import { Modals } from 'styles/Modal';
 

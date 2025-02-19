@@ -11,7 +11,7 @@ import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/Auto
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 
-import { sideDialogController } from 'hookstate/sideDialogController';
+import { sideDialogController } from 'controllers/sideDialogController';
 
 import AutoCompleteNewOption from './Fields/AutoCompleteNewOption';
 import DatePicker from './Fields/DatePicker';

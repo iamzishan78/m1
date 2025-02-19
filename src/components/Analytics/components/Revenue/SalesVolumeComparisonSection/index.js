@@ -4,9 +4,9 @@ import { useLazyQuery } from '@apollo/client';
 
 import MRTTable from 'components/MRTTable';
 
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+import { tableController } from 'controllers/tableController';
 
-import { tableController } from 'hookstate/tableController';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import AnalyticsCharts from './AnalyticsCharts';
 

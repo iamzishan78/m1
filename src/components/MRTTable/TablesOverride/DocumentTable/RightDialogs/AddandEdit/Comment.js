@@ -23,6 +23,8 @@ import moment from 'moment';
 
 import CommentField from 'components/Shared/components/Fields/CommentField';
 
+import { globalStateController } from 'controllers/globalStateController';
+
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
@@ -30,8 +32,6 @@ import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
-
-import { globalStateController } from 'hookstate/globalStateController';
 
 import { updatePinComments } from 'store/actions/commonActions';
 
@@ -405,21 +405,21 @@ export default function CommentComponent(props) {
 	const newCommentCleaner = value =>
 		value.trim()[value.trim().length - 1] === '.'
 			? value
-				.split('\n')
-				.map(line => {
-					if (line.trim() !== '.') {
-						return line.trim();
-					}
-				})
-				.join('\n')
+					.split('\n')
+					.map(line => {
+						if (line.trim() !== '.') {
+							return line.trim();
+						}
+					})
+					.join('\n')
 			: `${value
-				.split('\n')
-				.map(line => {
-					if (line.trim() !== '.') {
-						return line.trim();
-					}
-				})
-				.join('\n')}`;
+					.split('\n')
+					.map(line => {
+						if (line.trim() !== '.') {
+							return line.trim();
+						}
+					})
+					.join('\n')}`;
 
 	const updateComment = value => {
 		setLoadingComments(true);
@@ -742,12 +742,13 @@ export default function CommentComponent(props) {
 															editCommentId !== eachComment._id &&
 															eachComment?.commentType?.commentType !== 'unitCreation' && (
 																<div
-																	className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
+																	className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${
+																		!(
 																			eachComment?.user?.email === getUser?.email &&
 																			showCommentActionId === eachComment._id &&
 																			editCommentId !== eachComment._id
 																		) && classes.hideMenuIcon
-																		}`}
+																	}`}
 																>
 																	<ActionMenu
 																		eachComment={eachComment}
@@ -846,7 +847,7 @@ export default function CommentComponent(props) {
 							<Grid item style={{ maxWidth: '55px' }}>
 								<IconButton
 									className={classes.commentView}
-								// style={{ top: "3px" }}
+									// style={{ top: "3px" }}
 								>
 									{profileImage ? (
 										<Avatar src={profileImage} size="38" round />

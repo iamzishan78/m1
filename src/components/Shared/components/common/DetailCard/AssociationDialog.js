@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
 
 import {
 	Button,
@@ -15,17 +14,19 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { tableGlobalController } from 'hookstate/tableController';
-import { detailCardController } from 'hookstate/detailCardController';
-
-import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { isEmpty } from 'lodash';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import { globalStateController } from 'hookstate/globalStateController';
-import { ADD_ASSOCIATED_MODEL_DATA } from 'graphQL/useMutationAssociatedModelData';
-import { isEmpty } from 'lodash';
 import { formatDate } from 'components/Shared/functions';
+import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableGlobalController } from 'controllers/tableController';
+
+import { ADD_ASSOCIATED_MODEL_DATA } from 'graphQL/useMutationAssociatedModelData';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {

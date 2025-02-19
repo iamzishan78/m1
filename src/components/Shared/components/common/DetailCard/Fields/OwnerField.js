@@ -12,9 +12,9 @@ import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/C
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 
-import { CONTACT_ENTITY } from 'graphQL/useQueryContactEntity';
+import { detailCardController } from 'controllers/detailCardController';
 
-import { detailCardController } from 'hookstate/detailCardController';
+import { CONTACT_ENTITY } from 'graphQL/useQueryContactEntity';
 
 const useStyles = makeStyles({
 	dateRoot: {

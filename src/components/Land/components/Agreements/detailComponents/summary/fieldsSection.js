@@ -33,10 +33,10 @@ import NumberField from 'components/Shared/components/Fields/NumberField';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { globalStateController } from 'controllers/globalStateController';
+import { popupController } from 'controllers/popupStateController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
 import { KEYBOARD_KEYS, TO_FIXED } from 'utils/consts';
 import { copy } from 'utils/helper';

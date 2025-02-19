@@ -7,7 +7,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { activityType } from 'components/MRTTable/utils/enums';
 import { formatDate } from 'components/Shared/functions';
 
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
 
 import { getTruncateText } from '../utils/helper';
 

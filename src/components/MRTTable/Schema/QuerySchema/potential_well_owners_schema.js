@@ -8,10 +8,10 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import PotentialWellOwnersToolbar from 'components/MRTTable/TablesOverride/PotentialWellOwnersTable/PotentialWellOwnersToolbar';
 import { getPolygonString } from 'components/Shared/functions';
 
-import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
 
 const PotentialWellOwnersMeta = {
 	query: SHAPE_WELL_OWNERS,

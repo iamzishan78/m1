@@ -9,7 +9,7 @@ import ArrowDropDownIcon from '@material-ui/lab/es/internal/svg-icons/ArrowDropD
 
 import isEmpty from 'lodash/isEmpty';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import { colorPallete } from 'utils/consts';
 

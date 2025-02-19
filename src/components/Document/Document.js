@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useLazyQuery } from '@apollo/client';
+
 import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery } from '@apollo/client';
 
 import MRTTable from 'components/MRTTable';
 
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 

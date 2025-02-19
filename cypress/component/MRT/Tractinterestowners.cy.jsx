@@ -17,7 +17,7 @@ describe('Tract Interest Owners Table', () => {
 	beforeEach(() => {
 		cy.interceptAndWait(['getDbData', 'shapeowners_flat'], () => {
 			// Mounting the MRTTable component with predefined props
-			// eslint-disable-next-line no-magic-numbers
+
 			cy.viewport(1600, 1200).mount(
 				<MRTTable
 					name="TractInterestOwnerTable"

@@ -5,18 +5,18 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { useLazyQuery } from '@apollo/client';
 
+import { getActivityFilters } from 'components/Activities/components/ActivitiesDashboard';
 import ActivitiesDashboardFilter from 'components/Activities/components/ActivitiesDashboardFilter';
 import ActivityAnalytics from 'components/Activities/components/ActivityAnalytics';
 import MRTTable from 'components/MRTTable';
 
-import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
+import { tableController } from 'controllers/tableController';
 
-import { tableController } from 'hookstate/tableController';
+import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
 import { getDateFilters } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
-import { getActivityFilters } from 'components/Activities/components/ActivitiesDashboard';
 
 const useStyles = makeStyles(() => ({
 	root: {

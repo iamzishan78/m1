@@ -21,12 +21,12 @@ import PropTypes from 'prop-types';
 
 import { getDateWithoutTime } from 'components/Shared/functions';
 
+import { jobController } from 'controllers/jobStateController';
+
 import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
 import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
 import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
 import { GET_JOB_UPLOAD_URI } from 'graphQL/useQueryGetJobUploadUri';
-
-import { jobController } from 'hookstate/jobStateController';
 
 import { showErrorMessage } from 'actions';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'controllers/tableController';
 
 import FilterModeMenuItems from '../Common/FilterModeMenuItems';
 import { viewStateController } from '../Common/GridView/ViewController';

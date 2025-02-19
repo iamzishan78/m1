@@ -15,7 +15,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
-import { popupController } from 'hookstate/popupStateController';
+import { popupController } from 'controllers/popupStateController';
 
 import { QuadContext } from './QuadContext';
 import useQueryQuadChart from '../../graphQL/useQueryQuadChart';

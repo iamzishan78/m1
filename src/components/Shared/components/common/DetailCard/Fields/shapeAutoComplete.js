@@ -10,9 +10,9 @@ import PropTypes from 'prop-types';
 
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 
-import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
+import { detailCardController } from 'controllers/detailCardController';
 
-import { detailCardController } from 'hookstate/detailCardController';
+import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
 
 const useStyles = makeStyles({
 	inputRoot: {

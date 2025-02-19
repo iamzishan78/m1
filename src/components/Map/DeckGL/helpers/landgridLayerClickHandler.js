@@ -1,7 +1,7 @@
 import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
 
-import { drawController } from 'hookstate/drawStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { drawController } from 'controllers/drawStateController';
+import { popupController } from 'controllers/popupStateController';
 
 const onAbstactLayerClick = (feature, action) => {
 	if (!feature) {

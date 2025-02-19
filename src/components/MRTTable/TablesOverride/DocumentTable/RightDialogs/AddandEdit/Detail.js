@@ -23,13 +23,13 @@ import GenericDateField from 'components/Shared/components/Fields/GenericDateFIe
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
+
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
 import { UPDATE_DOCUMENT, UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { CREATED_STATUS, ONE_MB } from 'utils/consts';
 import { convertFile } from 'utils/tesseractHelper';

@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import { ConvertOwnerToContactContainer } from 'store/containers/entity';
 

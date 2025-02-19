@@ -10,10 +10,10 @@ import MRTTable from 'components/MRTTable';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { layerFiltersController } from 'controllers/layerFiltersController';
+import { layerController } from 'controllers/layerStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import { AppContext } from '../../AppContext';
 import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from './components/data';

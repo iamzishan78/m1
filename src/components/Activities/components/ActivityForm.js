@@ -20,9 +20,9 @@ import SearchableSelectField from 'components/Shared/Slideout/FieldComponents/se
 import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTextfield';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'controllers/globalStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import { activityFormState } from './activityFormStateController';
 import { AppContext } from '../../../AppContext';
@@ -199,8 +199,12 @@ export default function ActivityForm({ setSelectedActivityId }) {
 
 	const [openDeals, setOpenDeals] = useState([]);
 
-	const { selectedActivity, title, formMode } = slidoutStateController.useState(['title', 'formMode', 'selectedActivity']);
-	const activityName = title
+	const { selectedActivity, title, formMode } = slidoutStateController.useState([
+		'title',
+		'formMode',
+		'selectedActivity',
+	]);
+	const activityName = title;
 	const { activityType, outcome, startDate, endDate, owner, dealId, status, notes, startTime, endTime } =
 		useHookstate(activityFormState);
 	const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
@@ -254,8 +258,8 @@ export default function ActivityForm({ setSelectedActivityId }) {
 		setSelectedActivityId(null);
 		slidoutStateController.updateState({
 			selectedActivity: null,
-			newComments: []
-		})
+			newComments: [],
+		});
 		slidoutStateController.hideSlideout();
 	};
 
@@ -435,7 +439,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	};
 
 	const updateActivity = async () => {
-		globalStateController.updateState({ universalLoader: true })
+		globalStateController.updateState({ universalLoader: true });
 		const dateTime = mergeDateAndTime(startDate.get(), startTime.get());
 		const endDateTime = mergeDateAndTime(endDate.get(), endTime.get());
 
@@ -481,7 +485,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			} else if (formMode === 'delete') {
 				deleteActivity();
 			}
-			slidoutStateController.updateState({ formMode: '' })
+			slidoutStateController.updateState({ formMode: '' });
 			slidoutStateController.hideSlideout();
 		}
 	}, [formMode]);

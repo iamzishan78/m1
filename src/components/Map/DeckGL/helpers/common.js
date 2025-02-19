@@ -7,9 +7,9 @@ import { colorBasedAttributes } from 'components/MapControls/components/Layer/La
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { deckGlLandGridIdentifiers, ifDefaultLayers } from 'components/Shared/functions/shapeLayer';
 
-import { getLayerKey } from 'hookstate/helpers';
-import { layerController } from 'hookstate/layerStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { getLayerKey } from 'controllers/helpers';
+import { layerController } from 'controllers/layerStateController';
+import { popupController } from 'controllers/popupStateController';
 
 const MAX_COLOR_VALUE_HEX = 0xfffff;
 const COLOR_MULTIPLIER = 1000000;

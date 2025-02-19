@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { navController } from 'hookstate/navStateController';
+import { navController } from 'controllers/navStateController';
 
 import { NavigationContext } from '../NavigationContext';
 import { statesAbbNames, statesNames } from './Utils/USAStates&Abb';

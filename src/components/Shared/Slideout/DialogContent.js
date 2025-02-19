@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Contacts from 'components/FlowDrawer/Contacts';
 
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
 
 import CommentComponent from '../CommentComponent';
 import Documents from '../Documents';

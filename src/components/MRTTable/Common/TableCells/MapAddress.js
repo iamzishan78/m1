@@ -1,6 +1,8 @@
 import React from 'react';
+
 import { Tooltip, IconButton } from '@material-ui/core';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
+
 import { getAddressUrl } from 'utils/helper';
 
 const MapAddress = ({ owner, id }) => {

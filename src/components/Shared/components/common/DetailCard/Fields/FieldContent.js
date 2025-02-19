@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import TextField from '@material-ui/core/TextField';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { AppContext } from 'AppContext';
-import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
-import { textFieldLabels, getHrefValue, LinkTypes } from 'components/ContactDetailCard/components/FieldContent/helper';
-import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
+import TextField from '@material-ui/core/TextField';
+
 import { get } from 'lodash';
+
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
-import { globalStateController } from 'hookstate/globalStateController';
+import { textFieldLabels, getHrefValue, LinkTypes } from 'components/ContactDetailCard/components/FieldContent/helper';
+import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
+import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
-import { detailCardController } from 'hookstate/detailCardController';
+
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
+
+import { AppContext } from 'AppContext';
 
 export default function FieldContent({
 	children,
@@ -79,8 +84,9 @@ export default function FieldContent({
 				fieldName = key;
 				break;
 			}
-			if (document.getElementById('fieldContentInput' + fieldName))
+			if (document.getElementById('fieldContentInput' + fieldName)) {
 				document.getElementById('fieldContentInput' + fieldName).focus();
+			}
 		}
 	}, [edit, editContent, fieldsCount]);
 
@@ -101,8 +107,12 @@ export default function FieldContent({
 				) {
 					textArray = [[textArray.join(', '), showContent[key]].join(' ')];
 				} else if (key === 'contactOwner' || key === 'contactOwnerId') {
-					if (key === 'contactOwner') textArray.push(showContent[key] || '');
-				} else textArray.push(showContent[key]);
+					if (key === 'contactOwner') {
+						textArray.push(showContent[key] || '');
+					}
+				} else {
+					textArray.push(showContent[key]);
+				}
 			}
 		}
 
@@ -114,7 +124,9 @@ export default function FieldContent({
 		e.preventDefault();
 		if (isCopy) {
 			navigator.clipboard.writeText(getOrganizedContent() || '');
-		} else setEdit(!edit ? e.currentTarget : null);
+		} else {
+			setEdit(!edit ? e.currentTarget : null);
+		}
 	};
 
 	const keyDownHandler = (event, fieldNames) => {
@@ -138,7 +150,9 @@ export default function FieldContent({
 		fieldNames.forEach(field => (fields[field] = content[field]));
 		// Check if editContent exists and has more than one property, return if true
 		// if editContent has more than one property we don't need to close popup on blur
-		if (Object.keys(editContent || {})?.length > 1) return;
+		if (Object.keys(editContent || {})?.length > 1) {
+			return;
+		}
 
 		// Reset edit state and update editContent with field values
 		setEdit(null); // It closes popup on blur
@@ -151,7 +165,9 @@ export default function FieldContent({
 			const value = val ? val : editContent[field];
 			if (value !== null && value !== undefined) {
 				const trimmedValue = typeof value === 'string' ? value.trim() : value;
-				if (trimmedValue !== content[field]) differences = true;
+				if (trimmedValue !== content[field]) {
+					differences = true;
+				}
 			}
 		}
 

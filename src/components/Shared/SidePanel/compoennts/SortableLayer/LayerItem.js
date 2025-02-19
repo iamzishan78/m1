@@ -18,9 +18,9 @@ import PropTypes from 'prop-types';
 // Internal imports
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { mapStateController } from 'controllers/mapStateController';
 
 import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';

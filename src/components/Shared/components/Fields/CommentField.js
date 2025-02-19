@@ -6,11 +6,12 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import MentionsUser from '../../MentionsUser';
 
 import $ from 'jquery';
 
 import CommentType from 'components/Shared/components/Comment/CommentType';
+
+import MentionsUser from '../../MentionsUser';
 
 const filter = createFilterOptions();
 
