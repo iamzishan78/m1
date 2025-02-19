@@ -16,7 +16,6 @@ import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } fr
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { tableESState } from 'hookstate/initialStates';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { layerController } from 'hookstate/layerStateController';
@@ -341,7 +340,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		});
 
 		// making datasets fields in the below code block
-		let datasets = globalStateController.getValue('datasets');
+		let datasets = layerController.getValue('datasets');
 		datasets = datasets?.filter(dataset => dataset.sourceName !== 'M1 Platform');
 
 		let datasetsShapeNames =

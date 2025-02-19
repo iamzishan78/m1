@@ -23,7 +23,6 @@ import { copy } from 'components/Shared/functions';
 import { ADDLAYER } from 'graphQL/useMutationAddLayer';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 
-import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
@@ -61,7 +60,7 @@ function NewLayerManager() {
 	const [source, setSource] = useState();
 	const [selectCategory, setCategory] = useState();
 
-	const { globalStateValues } = globalStateController.useState(['datasets'], 'globalStateValues');
+	const { datasets, layerStateValues } = layerController.useState(['datasets'], 'layerStateValues');
 
 	const handleClose = () => {
 		mapControlsController.updateState({ manageLayer: false });
@@ -121,17 +120,16 @@ function NewLayerManager() {
 	}, [source, selectCategory, getShapeFileSchema]);
 
 	const _datasets = useMemo(() => {
-		const datasets = globalStateValues.datasets;
-		return datasets || [];
-	}, [globalStateValues.datasets]);
+		return layerStateValues.datasets || [];
+	}, [datasets]);
 
 	const layerCategories = useMemo(() => {
-		const dataset = globalStateValues.datasets.find(dataset => dataset.name === source?.name);
+		const dataset = layerStateValues.datasets.find(dataset => dataset.name === source?.name);
 		if (source?.name === 'M1 Platform') {
 			dataset.categories = dataset?.categories.filter(category => category.isNewLayerCreationAllowed);
 		}
 		return dataset?.categories || [];
-	}, [source, globalStateValues.datasets]);
+	}, [source, datasets]);
 
 	return (
 		<ClickAwayListener>

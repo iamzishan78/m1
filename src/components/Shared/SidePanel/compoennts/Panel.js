@@ -233,12 +233,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	);
 	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars'], 'mapStateValues');
 	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
-	const { globalStateValues } = globalStateController.useState(['filters', 'datasets', 'user'], 'globalStateValues');
+	const { globalStateValues } = globalStateController.useState(['filters', 'user'], 'globalStateValues');
 	const { checkedBaseLayers, checkedHeats, layerStateValues } = layerController.useState(
-		['layers', 'checkedBaseLayers', 'checkedHeats', 'layerSettingsLoading'],
+		['layers', 'datasets', 'checkedBaseLayers', 'checkedHeats', 'layerSettingsLoading'],
 		'layerStateValues'
 	);
-	const layers = layerController.getValue('layers');
 
 	const [totalHitMapCount, setTotalHitMapCount] = useState(null);
 	const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
@@ -258,7 +257,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		(selectedView?.filters?.filter(filter => {
 			const fileId = filter?.dataSourceName?.substring(0, filter?.dataSourceName?.indexOf('_'));
 			const layerIdentifier = filter?.dataSourceName?.substring(filter?.dataSourceName?.indexOf('_') + 1);
-			const layer = layers.find(l => l.file === fileId && l.layerIdentifier === layerIdentifier);
+			const layer = layerStateValues.layers.find(l => l.file === fileId && l.layerIdentifier === layerIdentifier);
 			const dataSourceExists = filter?.dataSourceName && (customLayersFieldAccessors[filter?.dataSourceName] || layer);
 			return (filter?.filterValues || ['empty', 'notEmpty'.includes(filter?.filterType)]) && dataSourceExists;
 		})?.length || 0);
@@ -479,7 +478,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 												icon={action.icon}
 												{...a11yProps(index)}
 												onClick={() =>
-													globalStateValues.datasets &&
+													layerStateValues.datasets &&
 													mapControlsController.updateState({ selectedControl: action.action })
 												}
 											/>

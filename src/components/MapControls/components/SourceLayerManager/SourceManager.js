@@ -226,8 +226,11 @@ function SourceManager(props) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 
-	const { globalStateValues } = globalStateController.useState(['datasets', 'user'], 'globalStateValues');
-	const { layers, layerStateValues } = layerController.useState(['projectedLayers', 'layers'], 'layerStateValues');
+	const { globalStateValues } = globalStateController.useState(['user'], 'globalStateValues');
+	const { layers, layerStateValues } = layerController.useState(
+		['projectedLayers', 'layers', 'datasets'],
+		'layerStateValues'
+	);
 	const [isOpenUserSources, setIsOpenUserSources] = React.useState(true);
 	const [openDataSets, setOpenDataSets] = React.useState({});
 	const [currentLayers, setCurrentLayers] = React.useState([]);
@@ -374,9 +377,9 @@ function SourceManager(props) {
 		const settings = {};
 		const datasetIds = sources
 			.map(source => {
-				const datasetIndex = globalStateValues.datasets.findIndex(d => d._id === source._id);
+				const datasetIndex = layerStateValues.datasets.findIndex(d => d._id === source._id);
 				source.visibility = value;
-				globalStateValues.datasets[datasetIndex] = source;
+				layerStateValues.datasets[datasetIndex] = source;
 
 				settings[source._id] = value;
 				return source._id;
@@ -457,8 +460,8 @@ function SourceManager(props) {
 			category.name = name;
 			category.layerName = name;
 		}
-		const index = globalStateValues.datasets.findIndex(dataset => dataset._id === actionItem.dataset._id);
-		globalStateValues.datasets[index] = actionItem.dataset;
+		const index = layerStateValues.datasets.findIndex(dataset => dataset._id === actionItem.dataset._id);
+		layerStateValues.datasets[index] = actionItem.dataset;
 
 		updateDataset({ variables: { dataset: actionItem.dataset } });
 	};
@@ -533,7 +536,7 @@ function SourceManager(props) {
 											onClick={event => {
 												event.stopPropagation();
 												changeUserSources(
-													globalStateValues.datasets.filter(d => d.file),
+													layerStateValues.datasets.filter(d => d.file),
 													false
 												);
 											}}
@@ -544,7 +547,7 @@ function SourceManager(props) {
 										{isOpenUserSources ? <ExpandLess /> : <ExpandMore />}
 									</StyledListItem2>
 									<Collapse in={isOpenUserSources} timeout="auto" unmountOnExit>
-										{globalStateValues.datasets
+										{layerStateValues.datasets
 											?.filter(dataset => {
 												const isDatasetLayer = dataset.categories.find(
 													category =>

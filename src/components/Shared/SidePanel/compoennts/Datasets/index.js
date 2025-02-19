@@ -149,7 +149,7 @@ function Datasets({ headerButton, search }) {
 					});
 				}
 			});
-			globalStateController.updateState({ datasets });
+			layerController.updateState({ datasets });
 			datasets = datasets.filter(dataset => {
 				return dataset.visibility;
 			});
@@ -191,7 +191,7 @@ function Datasets({ headerButton, search }) {
 
 	const handleRemove = (dataset, value) => {
 		datasets.find(d => d._id === dataset._id).visibility = value;
-		globalStateController.updateState({ datasets });
+		layerController.updateState({ datasets });
 		const layersSettingsToUpdate = [];
 
 		layerController.getValue('layers').forEach((clayer, layerIndex) => {

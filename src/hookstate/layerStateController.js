@@ -783,6 +783,7 @@ const layerStateControllerHandler = state => {
 		baseLayerController.setState({
 			...baseLayerController.getValues([
 				'layers',
+				'datasets',
 				'projectedLayers',
 				'baseMapLayers',
 				'checkedBaseLayers',

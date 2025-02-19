@@ -73,6 +73,7 @@ export const tableGlobalState = hookstate({
 
 export const layerStateInitialState = {
 	layers: [],
+	datasets: null,
 	deckLayer: null,
 	layerSettingsLoading: false,
 	projectedLayers: [],
