@@ -692,38 +692,38 @@ export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost'];
 export const NavigationFeatures = [
 	{
 		name: 'Dashboard',
-		featureFlag: 'dashboardModule'
+		featureFlag: 'dashboardModule',
 	},
 	{
 		name: 'Map',
-		featureFlag: 'mapModule'
+		featureFlag: 'mapModule',
 	},
 	{
 		name: 'Contacts',
-		featureFlag: 'ContactsSubMenu'
+		featureFlag: 'ContactsSubMenu',
 	},
 	{
 		name: 'Flow',
-		featureFlag: 'flowModule'
+		featureFlag: 'flowModule',
 	},
 	{
 		name: 'Assets',
-		featureFlag: 'landModule'
+		featureFlag: 'landModule',
 	},
 	{
 		name: 'Revenue',
-		featureFlag: 'revenueModule'
+		featureFlag: 'revenueModule',
 	},
 	{
 		name: 'Files',
-		featureFlag: 'filesModule'
+		featureFlag: 'filesModule',
 	},
 	{
 		name: 'Calendar',
-		featureFlag: 'calendarModule'
+		featureFlag: 'calendarModule',
 	},
 	{
 		name: 'Analytics',
-		featureFlag: 'analyticsModule'
+		featureFlag: 'analyticsModule',
 	},
 ];

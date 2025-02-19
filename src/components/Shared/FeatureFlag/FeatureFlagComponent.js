@@ -8,10 +8,10 @@ export function FeatureFlag({ children, feature, noAccess, noCheck }) {
 
 	const allowedFeature = user?.features?.find(f => f.name === feature);
 	const userAccess =
-		!!allowedFeature && user?.featureSettings?.[feature] !== undefined ? user?.featureSettings?.[feature] : true;
+		!!allowedFeature && (user?.featureSettings?.[feature] !== undefined ? user?.featureSettings?.[feature] : true);
 
 	return (
-		<>{( (allowedFeature && !noAccess && userAccess) || (!allowedFeature && noAccess) || noCheck) && <> {children}</>}</>
+		<>{((allowedFeature && !noAccess && userAccess) || (!allowedFeature && noAccess) || noCheck) && <> {children}</>}</>
 	);
 }
 
