@@ -100,7 +100,7 @@ function ViewOptions({ moduleName, buttonRef }) {
 		'isViewOpen',
 		'fetchViewSettings',
 	]);
-	const { isTable, allViews, isViewOpen, fetchViewSettings } = viewStateValues;
+	const { allViews, isViewOpen, fetchViewSettings } = viewStateValues;
 
 	const [selectedTab, setSelectedTab] = useState('views');
 	const [filterViews, setfilterViews] = useState(allViews);
@@ -110,15 +110,8 @@ function ViewOptions({ moduleName, buttonRef }) {
 		if (selectedTab === 'views') {
 			setfilterViews(allViews);
 		} else if (selectedTab === 'favorites') {
-			let data = null;
-
-			if (isTable) {
-				data = allViews.filter(view => view.favouriteBy?.includes(getUser?._id));
-			} else {
-				data = allViews.filter(view => view.isFavourite === true);
-			}
-
-			setfilterViews(data);
+			const favViews = allViews.filter(view => view.favouriteBy?.includes(getUser?._id));
+			setfilterViews(favViews);
 		} else {
 			setfilterViews([]);
 		}
