@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Switch, Route, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
+import Integrations from 'components/Integrations';
+
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
 import { AppContext } from 'AppContext';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
@@ -24,6 +26,7 @@ const Components = {
 	Reindex,
 	BulkDataEditing,
 	BulkDataEditingDetail,
+	Integrations,
 };
 
 function isM1neralAddress(email) {
@@ -70,6 +73,7 @@ export default function Admin() {
 		if (!isM1neralAddress(stateApp.user.email)) {
 			delete allPaths['FLATTENING'];
 			delete allPaths['REINDEX'];
+			delete allPaths['INTEGRATION'];
 		}
 		const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.CONTACTSUBMENU);
 		// const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);
@@ -91,6 +95,12 @@ export default function Admin() {
 
 		Object.keys(allPaths).forEach(path => {
 			if (allPaths[path].featureFlag === 'AlWAYSSHOW') {
+				allAllowedPaths[path] = allPaths[path];
+			}
+		});
+
+		Object.keys(allPaths).forEach(path => {
+			if (allPaths[path].featureFlag === 'DIALPAD_INTEGRATION') {
 				allAllowedPaths[path] = allPaths[path];
 			}
 		});

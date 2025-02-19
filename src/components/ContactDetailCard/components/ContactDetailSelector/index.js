@@ -280,8 +280,8 @@ function MapGridCard(props) {
 												filtersChange={() => {}}
 												appliedFilters={[
 													{
-														field: 'contactName.keyword',
-														value: props.contactData?.name,
+														field: 'contactId.keyword',
+														value: props.contactData?._id,
 													},
 												]}
 												filterToggle={() => {}}

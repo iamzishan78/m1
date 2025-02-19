@@ -17,9 +17,9 @@ import Drawer from 'components/Transact/components/Drawer';
 import moment from 'moment';
 
 import DealTasksProgressZone from 'components/ContactDetailCard/components/DealTasksProgressZone';
-import DealComments from 'components/Transact/components/DealComments';
 import DealTasksDetails from '../DealTasksDetails';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import CommentComponent from 'components/Shared/CommentComponent';
 import { useDispatch, useSelector } from 'react-redux';
 import { ADDDEAL, CREATE_DEAL_DEFAULT_SETTINGS } from 'graphQL/useMutationAddDeal';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -1843,13 +1843,15 @@ function AddDealDialog(props) {
 								</div>
 							)}
 							{['Deal', 'Map'].includes(stateApp.transactBarView) && (
-								<div style={{ marginTop: 2 }}>
-									<DealComments
-										setNewCommentId={setNewCommentId}
-										targetLabel="deal"
-										targetSourceId={stateApp.activeDeal?.cardId}
-									/>
-								</div>
+								<div style={{ marginTop: 2, height: '40vh', width: '25vw' }}>
+								<CommentComponent
+									setNewCommentId={setNewCommentId}
+									targetLabel="deal"
+									targetSourceId={stateApp.activeDeal?.cardId}
+									activityLog={stateApp?.activeDeal?.activity}
+									showCommentType
+								/>
+							</div>
 							)}
 						</>
 					)}

@@ -21,6 +21,7 @@ import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import { NumberFormatComma } from "components/Shared/Forms/Formatting/NumberFormatComma";
 import TextSmsIcon from "components/Shared/svgIcons/textsms";
 import VoiceMailIcon from "components/Shared/svgIcons/voicemail";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -91,6 +92,9 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 
   const showGenericPhones = React.useMemo(() => {
     return user.features?.find(f => f.name === "showGenericPhones")
+  }, [user]);
+  const dialpadFeature = React.useMemo(() => {
+    return user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION)
   }, [user]);
 
   const [contactInterest, setContactInterest] = useState()
@@ -276,9 +280,20 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 
                                 <InputAdornment position="end">
                                   <Tooltip title={"Call"} placement="top">
-                                    <IconButton id="call-icon" href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>
-                                      <AddIcCallIcon htmlColor="#757575" />
-                                    </IconButton>
+                                  <IconButton
+																				id="call-icon"
+																				href={contactData?.dialpadIds?.length && dialpadFeature ? '' : `tel: ${contactData[field.key]}`}
+																				className={classes.emailAdornment}
+																				onClick={() => {
+																					contactData?.dialpadIds?.length && dialpadFeature &&
+																						handleQuickActionActivity({
+																							phoneNumber: contactData[field.key],
+																							type: 'dialpad',
+																						});
+																				}}
+																			>
+																				<AddIcCallIcon htmlColor="#757575" />
+																		</IconButton>
                                   </Tooltip>
                                 </InputAdornment>
                                 </>

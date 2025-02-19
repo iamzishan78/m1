@@ -461,6 +461,7 @@ export default function DetailComponents(props) {
                     isApproval={true}
                     ownerTitle="Approver"
                     ownerPlaceHolder="Assign Approver"
+                    showCommentType
                   />
                 </div>
               )}
