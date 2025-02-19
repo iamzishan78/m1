@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
 import { MenuItem, Select } from '@material-ui/core';
-import { detailCardController } from 'hookstate/detailCardController';
+import { makeStyles } from '@material-ui/core/styles';
+
+import PropTypes from 'prop-types';
+
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
+
+import { detailCardController } from 'hookstate/detailCardController';
 
 const useStyles = makeStyles({
 	dateRoot: {
@@ -35,10 +40,10 @@ function SimpleSelectField({ fieldData, field }) {
 
 	const { callApi } = useUpdate();
 
-	const [value, setValue] = useState(fieldData?.get({ noproxy: true }) || '');
+	const [value, setValue] = useState(fieldData || '');
 
 	useEffect(() => {
-		setValue(fieldData?.get({ noproxy: true }) || '');
+		setValue(fieldData || '');
 	}, [fieldData]);
 
 	return (
@@ -54,13 +59,28 @@ function SimpleSelectField({ fieldData, field }) {
 				callApi(field.key, e.target.value);
 			}}
 		>
-			{field.options.map((opt, index) => (
-				<MenuItem key={index} value={typeof opt === 'object' ? opt.value : opt}>
+			{field.options.map(opt => (
+				<MenuItem key={opt?.value ?? opt} value={typeof opt === 'object' ? opt.value : opt}>
 					{typeof opt === 'object' ? opt.label : opt}
 				</MenuItem>
 			))}
 		</Select>
 	);
 }
+
+SimpleSelectField.propTypes = {
+	fieldData: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
+	field: PropTypes.shape({
+		key: PropTypes.string.isRequired,
+		title: PropTypes.string.isRequired,
+		options: PropTypes.arrayOf(
+			PropTypes.shape({
+				label: PropTypes.string.isRequired,
+				value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]).isRequired,
+			})
+		).isRequired,
+		disabled: PropTypes.bool,
+	}).isRequired,
+};
 
 export default SimpleSelectField;

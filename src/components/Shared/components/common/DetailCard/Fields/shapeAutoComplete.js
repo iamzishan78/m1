@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid, TextField } from '@material-ui/core';
-import loadashFilter from 'lodash/filter';
+import { makeStyles } from '@material-ui/core/styles';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery } from '@apollo/client';
+import loadashFilter from 'lodash/filter';
+import PropTypes from 'prop-types';
+
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
+
+import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
+
 import { detailCardController } from 'hookstate/detailCardController';
 
 const useStyles = makeStyles({
@@ -35,7 +40,7 @@ const ShapeAutoComplete = ({ fieldData, fieldKey, shapeType, ...other }) => {
 	const [loading, setLoading] = useState(false); // Track if the API request is in progress
 
 	const { callApi } = useUpdate();
-	const value = fieldData?.get({ noproxy: true }) || '';
+	const value = fieldData || '';
 	const [search, setSearch] = useState(value);
 
 	const onInputChange = (event, value) => {
@@ -58,7 +63,7 @@ const ShapeAutoComplete = ({ fieldData, fieldKey, shapeType, ...other }) => {
 
 	useEffect(() => {
 		if (dataTypes && dataTypes[Object.keys(dataTypes)[0]]) {
-			setOptions(types => {
+			setOptions(() => {
 				let options = dataTypes[Object.keys(dataTypes)[0]];
 				if (other?.manualOptions) {
 					options = options.concat(other?.manualOptions);
@@ -93,15 +98,19 @@ const ShapeAutoComplete = ({ fieldData, fieldKey, shapeType, ...other }) => {
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
-			getOptionSelected={(option, value) => {
+			getOptionSelected={option => {
 				return option?._id === search;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
-					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				if (option._id === 'newEntity') {
+					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -154,6 +163,14 @@ const ShapeAutoComplete = ({ fieldData, fieldKey, shapeType, ...other }) => {
 			{...other}
 		/>
 	);
+};
+
+ShapeAutoComplete.propTypes = {
+	fieldData: PropTypes.string,
+	fieldKey: PropTypes.string.isRequired,
+	shapeType: PropTypes.string.isRequired,
+	manualOptions: PropTypes.arrayOf(PropTypes.string),
+	variant: PropTypes.string,
 };
 
 export default ShapeAutoComplete;

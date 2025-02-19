@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { detailCardController } from 'hookstate/detailCardController';
-import * as Pages from 'components/Shared/components/common/DetailCard/pages';
-import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
+
 import { isEqual } from 'lodash';
+import PropTypes from 'prop-types';
+
+import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
+import * as Pages from 'components/Shared/components/common/DetailCard/pages';
+
+import { detailCardController } from 'hookstate/detailCardController';
 
 const SummaryDropdown = ({ fieldData, field, summaryData, isMetaField }) => {
 	const {
@@ -11,23 +15,30 @@ const SummaryDropdown = ({ fieldData, field, summaryData, isMetaField }) => {
 	const { useUpdate } = Pages[page];
 	const { callApi } = useUpdate();
 
-	const [value, setValue] = useState(fieldData?.get({ noproxy: true }) || '');
+	const [value, setValue] = useState(fieldData || '');
 
 	const handleChange = currValue => {
-		if (currValue === fieldData?.get({ noproxy: true })) return;
+		if (currValue === fieldData) {
+			return;
+		}
 
-		if (!isMetaField) return callApi(field.key, currValue);
+		if (!isMetaField) {
+			callApi(field.key, currValue);
+			return;
+		}
 
 		const oldCustomData = summaryData.custom_data || {};
 		const customData = {
 			...oldCustomData,
 			[field.key.replaceAll('custom_data.', '')]: currValue,
 		};
-		if (!isEqual(customData, oldCustomData)) callApi('custom_data', customData, field.key);
+		if (!isEqual(customData, oldCustomData)) {
+			callApi('custom_data', customData, field.key);
+		}
 	};
 
 	useEffect(() => {
-		setValue(fieldData?.get({ noproxy: true }) || '');
+		setValue(fieldData || '');
 	}, [fieldData]);
 
 	return (
@@ -48,6 +59,25 @@ const SummaryDropdown = ({ fieldData, field, summaryData, isMetaField }) => {
 			loading={loadingField && loadingField === field.key}
 		/>
 	);
+};
+
+SummaryDropdown.propTypes = {
+	fieldData: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
+	field: PropTypes.shape({
+		key: PropTypes.string.isRequired,
+		title: PropTypes.string.isRequired,
+		dropdownOptions: PropTypes.arrayOf(
+			PropTypes.shape({
+				label: PropTypes.string.isRequired,
+				value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]).isRequired,
+			})
+		).isRequired,
+		disabled: PropTypes.bool,
+	}).isRequired,
+	summaryData: PropTypes.shape({
+		custom_data: PropTypes.object,
+	}),
+	isMetaField: PropTypes.bool,
 };
 
 export default SummaryDropdown;

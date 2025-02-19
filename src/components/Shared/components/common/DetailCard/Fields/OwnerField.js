@@ -1,15 +1,20 @@
 import React, { useEffect } from 'react';
-import { get } from 'lodash';
-import { TextField, CircularProgress } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
+
+import { TextField, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+
 import { useLazyQuery } from '@apollo/client';
-import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
-import { detailCardController } from 'hookstate/detailCardController';
-import * as Pages from 'components/Shared/components/common/DetailCard/pages';
-import { CONTACT_ENTITY } from 'graphQL/useQueryContactEntity';
+import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';
+import * as Pages from 'components/Shared/components/common/DetailCard/pages';
+import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
+
+import { CONTACT_ENTITY } from 'graphQL/useQueryContactEntity';
+
+import { detailCardController } from 'hookstate/detailCardController';
 
 const useStyles = makeStyles({
 	dateRoot: {
@@ -48,7 +53,7 @@ function OwnerField({ fieldData, field }) {
 
 	const { useUpdate } = Pages[page];
 	const { callApi } = useUpdate();
-	const prevValue = fieldData?.get({ noproxy: true });
+	const prevValue = fieldData;
 
 	const [getContactEntity, { data: contactEntityData }] = useLazyQuery(CONTACT_ENTITY);
 
@@ -72,8 +77,11 @@ function OwnerField({ fieldData, field }) {
 			nameAutValue={prevValue?.contactId ? prevValue?.name : ''}
 			className={classes.field}
 			setNameAutValue={value => {
-				if (value) contactEntity(value?._id);
-				else callApi(field.key, null);
+				if (value) {
+					contactEntity(value?._id);
+				} else {
+					callApi(field.key, null);
+				}
 			}}
 			renderInput={params => (
 				<TextField
@@ -113,5 +121,16 @@ function OwnerField({ fieldData, field }) {
 		/>
 	);
 }
+
+OwnerField.propTypes = {
+	fieldData: PropTypes.shape({
+		contactId: PropTypes.string,
+		name: PropTypes.string,
+		_id: PropTypes.string,
+	}),
+	field: PropTypes.shape({
+		key: PropTypes.string.isRequired,
+	}).isRequired,
+};
 
 export default OwnerField;
