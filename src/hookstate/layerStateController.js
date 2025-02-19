@@ -738,13 +738,13 @@ const layerStateControllerHandler = state => {
 		}
 
 		const visible = dbLayer.layerSettings.showable && dbLayer.layerSettings.visiable !== false;
-		const isDrawing = drawController.getValue('isDrawing');
+		const { isDrawing, editDraw } = drawController.getValues(['isDrawing', 'editDraw']);
 
 		let updatedProps = {
 			pickable,
 			visible,
 			showable: dbLayer.layerSettings.showable,
-			opacity: isDrawing ? 0.1 : 1,
+			opacity: isDrawing || editDraw ? 0.1 : 1,
 		};
 
 		const labelProps =

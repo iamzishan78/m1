@@ -555,6 +555,7 @@ function ExpandableCard(props) {
 			showShapeActionsPopup: true,
 			editDraw: true,
 			shapeEditMode: 'fullEdit',
+			isEditingShape: true,
 		});
 
 		popupController.setState({

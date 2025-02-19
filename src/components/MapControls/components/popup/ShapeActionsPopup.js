@@ -71,6 +71,7 @@ const ShapeActionsPopup = props => {
 		'shapeActionsFilterSelected',
 		'selectedAction',
 		'shapeToExtend',
+		'isEditingShape',
 	]);
 	const {
 		featureToEdit,
@@ -82,6 +83,7 @@ const ShapeActionsPopup = props => {
 		shapeActionsFilterSelected,
 		selectedAction,
 		shapeToExtend,
+		isEditingShape,
 	} = drawState.stateValues;
 
 	const {
@@ -316,7 +318,7 @@ const ShapeActionsPopup = props => {
 		// Delete request for actual AOI
 		deleteCustomLayer({
 			variables: {
-				customLayerId: selectedAoi.id || selectedAoi._id,
+				customLayerId: selectedAoi?.id || selectedAoi?._id,
 				customLayer: {
 					IsDeleted: true,
 				},
@@ -560,34 +562,35 @@ const ShapeActionsPopup = props => {
 									</Tooltip>
 								</>
 							)}
-
-							<Tooltip
-								title="Add Shape to Layer"
-								className={
-									enableEditOnly
-										? classes.disableAction
-										: anchorEl?.getAttribute('id') === 'parcel-button'
-											? classes.selectedAction
-											: ''
-								}
-							>
-								<IconButton
-									size="small"
-									disabled={enableEditOnly}
-									data-testid="add-shape-to-layer"
-									aria-label="Parcel"
-									id="parcel-button"
-									aria-controls="parcel-button"
-									aria-haspopup="true"
-									aria-expanded={isCreateParcelMenu ? 'true' : undefined}
-									ref={addShapeToLayerButton}
-									onClick={event => {
-										setAnchorEl(event.currentTarget);
-									}}
+							{!isEditingShape && (
+								<Tooltip
+									title="Add Shape to Layer"
+									className={
+										enableEditOnly
+											? classes.disableAction
+											: anchorEl?.getAttribute('id') === 'parcel-button'
+												? classes.selectedAction
+												: ''
+									}
 								>
-									<LayerIcon color="secondary" />
-								</IconButton>
-							</Tooltip>
+									<IconButton
+										size="small"
+										disabled={enableEditOnly}
+										data-testid="add-shape-to-layer"
+										aria-label="Parcel"
+										id="parcel-button"
+										aria-controls="parcel-button"
+										aria-haspopup="true"
+										aria-expanded={isCreateParcelMenu ? 'true' : undefined}
+										ref={addShapeToLayerButton}
+										onClick={event => {
+											setAnchorEl(event.currentTarget);
+										}}
+									>
+										<LayerIcon color="secondary" />
+									</IconButton>
+								</Tooltip>
+							)}
 
 							{!drawController.isLine() && !drawController.isPoint() && (
 								<Tooltip
@@ -608,7 +611,7 @@ const ShapeActionsPopup = props => {
 					)}
 
 					<span className={classes.divider} />
-					{currentFeature && !drawController.isLine() && !drawController.isPoint() && (
+					{currentFeature && !drawController.isPoint() && (
 						<Tooltip
 							title="Add shape"
 							className={onlyAddShape || selectedAction === 'edit-aoi' ? classes.disableAction : ''}
@@ -619,6 +622,11 @@ const ShapeActionsPopup = props => {
 								disabled={onlyAddShape}
 								data-testid="add-shape"
 								onClick={() => {
+									// Set line mode for line shape
+									if (drawController.isLine()) {
+										window.drawRef?.changeMode('draw_line_string');
+										return;
+									}
 									window.drawRef?.changeMode('static');
 									drawController.updateState({ addShape: true });
 								}}

@@ -81,7 +81,7 @@ const drawStateControllerHandler = state => {
 
 		drawShapeLayerToggle(lastSelectedDrawMode === 'draw_polygon' ? 'visible' : 'none');
 
-		if (reDrawShape && currentFeature) {
+		if ((reDrawShape || drawController.isPoint()) && currentFeature) {
 			currentFeature.geometry = feature.geometry;
 		} else if (currentFeature && !reDrawShape) {
 			const newFeature = union(feature, currentFeature);
@@ -164,6 +164,7 @@ const drawStateControllerHandler = state => {
 			showAddShapePopup: false,
 			selectedPolygonString: '',
 			showDataCard: false,
+			isEditingShape: false,
 		});
 		layerFiltersController.updateState({ polygonFilter: null });
 
@@ -378,8 +379,9 @@ const drawStateControllerHandler = state => {
 
 	/* ------------------------ ShapeActionsPopup Actions ----------------------- */
 
-	const isLine = () => drawController.getValue('currentFeature')?.geometry?.type === 'LineString';
-	const isPoint = () => drawController.getValue('currentFeature')?.geometry?.type === 'Point';
+	const isLine = () =>
+		['LineString', 'MultiLineString'].includes(drawController.getValue('currentFeature')?.geometry?.type);
+	const isPoint = () => ['Point', 'MultiPoint'].includes(drawController.getValue('currentFeature')?.geometry?.type);
 
 	const updateSelectedLayerFeature = (dispatch, customLayer) => {
 		let feature = copy(customLayer.shapeJson);
@@ -437,6 +439,9 @@ const drawStateControllerHandler = state => {
 			window.drawRef?.changeMode('direct_select', {
 				featureId: selectedFeature.id,
 			});
+		} else if (currentFeature?.geometry?.type === 'Point') {
+			// Set point mode for point shape
+			window.drawRef.changeMode('draw_point');
 		} else {
 			window.drawRef?.changeMode('static');
 		}
@@ -763,14 +768,13 @@ const drawStateControllerHandler = state => {
 		feature.id = assetShape._id;
 		feature.properties.id = assetShape._id;
 		feature.layer = { id: assetShape.layer };
-		const key = 'selectedShape';
-		feature = { ...feature.properties, ...feature };
+		feature = { ...feature.properties, feature };
 
 		actionClose(dispatch);
 		findBoundsMap([feature], window.mapRef);
 		drawBoundary(feature);
 		popupController.updateState({
-			[key]: feature,
+			selectedShape: feature,
 			expandedCard: true,
 			popupOpen: false,
 		});
