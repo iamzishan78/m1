@@ -112,6 +112,7 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 			fieldConfig={{
 				variant: 'outlined',
 				margin: 'dense',
+				size: 'small',
 				type: field.type,
 				multiline: field.multiline,
 				disabled: field.disabled,
