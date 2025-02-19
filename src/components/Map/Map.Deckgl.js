@@ -405,22 +405,22 @@ function Map({
 		});
 
 		if (assetRecord?.getRecordFromRunTimeModel?.asset?.assetShape) {
-			const assetShape = assetRecord?.getRecordFromRunTimeModel?.asset?.assetShape;
+			const asset = assetRecord?.getRecordFromRunTimeModel?.asset;
+			const assetShape = asset?.assetShape;
 			let feature = copy(assetShape.shapeJson);
 
-			feature.id = assetShape._id;
-			feature.properties.id = assetShape._id;
-			feature.layer = { id: assetShape.layer };
-			const key = 'selectedShape';
-			feature = { ...feature.properties, ...feature };
+			feature.id = asset._id;
+			feature.properties.id = asset._id;
+			feature = { ...feature.properties, ...feature, feature };
 
 			const interval = setInterval(() => {
 				if (window.mapRef) {
 					findBoundsMap([feature], window.mapRef);
 					if (feature?.geometry?.type === 'Point') drawWellBoundary(feature?.geometry?.coordinates);
 					else drawBoundary(feature);
+					layerController.updateState({ clickedFeature: { object: { id: paramId } } });
 					popupController.updateState({
-						[key]: feature,
+						selectedShape: feature,
 						expandedCard: true,
 						popupOpen: false,
 					});

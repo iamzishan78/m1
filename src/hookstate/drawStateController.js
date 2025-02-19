@@ -767,8 +767,7 @@ const drawStateControllerHandler = state => {
 
 		feature.id = assetShape._id;
 		feature.properties.id = assetShape._id;
-		feature.layer = { id: assetShape.layer };
-		feature = { ...feature.properties, feature };
+		feature = { ...feature.properties, ...feature, feature };
 
 		actionClose(dispatch);
 		findBoundsMap([feature], window.mapRef);
@@ -813,6 +812,11 @@ const drawStateControllerHandler = state => {
 		const featureId = hat();
 		const layer = currentAsset?.tableName;
 
+		const layers = globalStateController.getValue('layers');
+		const featureLayer = layers.find(l => {
+			return l.layerSettings?.showable && l.layerSettings?.visiable && l.identifier.startsWith(currentAsset?.name);
+		});
+
 		const newShapeFeature = {
 			id: featureId,
 			type: 'Feature',
@@ -828,6 +832,8 @@ const drawStateControllerHandler = state => {
 				shapeCenter: calculateShapeCenter(abstractShape.geometry),
 				id: featureId,
 			},
+			layer: { id: featureLayer?.identifier, type: 'custom' },
+			identifier: featureLayer?.identifier,
 		};
 
 		const mapAssetShapeData = {
