@@ -49,24 +49,13 @@ const useStyles = makeStyles(() => ({
 			display: 'flex',
 			alignItems: 'center',
 			justifyContent: 'space-between',
-			// Hide the quick actions
-			'& #voicemail-icon, & #textsms-icon, & #call-icon, & #mail-icon': {
-				visibility: 'hidden',
-				opacity: 0,
-				transition: 'visibility 0.3s, opacity 0.3s ease-in-out',
-			},
-			// Show the quick actions on hover
-			'&:hover #voicemail-icon, &:hover #textsms-icon, &:hover #call-icon, &:hover #mail-icon': {
-				visibility: 'visible',
-				opacity: 1,
-			},
 		},
 	},
 }));
 
 export default function SummaryFields({ contactData, handleQuickActionActivity }) {
 	const classes = useStyles();
-	const { control, reset } = useForm();
+	const { control, reset, watch } = useForm();
 	const [activeLoadingField, setLoading] = useState();
 	const [isFormSet, setFormState] = useState(false);
 
@@ -143,6 +132,20 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			.catch(() => setLoading(null));
 	};
 
+	const isChanged = (key, value) => {
+		const _value = value ? (typeof value === 'string' ? Number(value.replace(/,/g, '')) : value) : 0;
+		if (key.includes('nraSum')) {
+			return get(contactData, 'evaluatedContactInterests.nraSum')?.toFixed(2) !== _value?.toFixed(2);
+		} else if (key.includes('offerPriceSum')) {
+			return get(contactData, 'evaluatedContactInterests.offerPriceSum')?.toFixed(2) !== _value?.toFixed(2);
+		} else if (key.includes('maxOfferPriceSum')) {
+			return get(contactData, 'evaluatedContactInterests.maxOfferPriceSum')?.toFixed(2) !== _value?.toFixed(2);
+		} else if (key.includes('closedPriceSum')) {
+			return get(contactData, 'evaluatedContactInterests.closedPriceSum')?.toFixed(2) !== _value?.toFixed(2); // allow user to override closedPriceSum value
+		}
+		return false;
+	};
+
 	return (
 		<Grid
 			container
@@ -168,6 +171,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 							{field.type !== 'autocomplete' ? (
 								<CustomTextField
 									control={control}
+									watch={watch}
 									fieldConfig={{
 										size: 'small',
 										type: 'text',
@@ -203,6 +207,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 														? NumberFormatComma
 														: undefined,
 										},
+										isValueOverridden: value => isChanged(field.key, value),
 										resetOveriddenValue: () => {
 											const key = `evaluatedContactInterests.${field.key.split('.')[1]}`;
 

@@ -26,10 +26,21 @@ const sx = {
 			color: 'grey',
 		},
 	},
-	emailAdornment: {
+	adornmentIcon: {
 		cursor: 'pointer',
-		padding: '0px', // Remove extra padding
-		margin: '0 2px', // Adjust spacing between icons
+		padding: '8px',
+	},
+	inputFieldContainer: {
+		position: 'relative',
+		'#adornment-icon': {
+			visibility: 'hidden',
+			opacity: 0,
+			transition: 'visibility 0.3s, opacity 0.3s ease-in-out',
+		},
+		'&:hover #adornment-icon': {
+			visibility: 'visible',
+			opacity: 1,
+		},
 	},
 };
 
@@ -70,12 +81,12 @@ const adornmentConfig = {
 		],
 	},
 	loading: {
-		component: <CircularProgress size={22} color="secondary" />,
+		component: <CircularProgress size={22} color="primary" />,
 	},
 };
 
 // Function to render adornments
-function renderAdornment(type, value, handleAction, dialpadFeature, dialpadIds) {
+function renderAdornment({ value, type, handleAction, dialpadFeature, dialpadIds }) {
 	const config = adornmentConfig[type];
 	if (!config) {
 		return null;
@@ -90,7 +101,8 @@ function renderAdornment(type, value, handleAction, dialpadFeature, dialpadIds) 
 			<InputAdornment position="end" key={iconConfig.tooltip}>
 				<Tooltip title={iconConfig.tooltip} placement="top">
 					<IconButton
-						className={sx.emailAdornment}
+						id={'adornment-icon'}
+						style={sx.adornmentIcon}
 						href={iconConfig.href?.(value, dialpadFeature, dialpadIds)}
 						onClick={() => iconConfig.action(value, handleAction, dialpadFeature, dialpadIds)}
 					>
@@ -104,7 +116,7 @@ function renderAdornment(type, value, handleAction, dialpadFeature, dialpadIds) 
 	return (
 		<InputAdornment position="end">
 			<Tooltip title={config.tooltip} placement="top">
-				<IconButton className={sx.emailAdornment} href={config.action(value)}>
+				<IconButton id="adornment-icon" className={sx.adornmentIcon} href={config.action(value)}>
 					{config.icon}
 				</IconButton>
 			</Tooltip>
@@ -169,7 +181,7 @@ function CustomTextField({
 		if (watchTextFieldValue && isValueOverridden) {
 			setBaseValueChanged(isValueOverridden(watchTextFieldValue));
 		}
-	}, [watchTextFieldValue, isValueOverridden]);
+	}, [watchTextFieldValue]);
 
 	// URL Tooltip handling
 	const handleTooltipOpen = textFieldValue => {
@@ -185,7 +197,7 @@ function CustomTextField({
 	const renderTextField = ({ field } = {}) => {
 		const textFieldValue = field ? field.value : value;
 		return (
-			<div style={{ position: 'relative' }}>
+			<Box sx={sx.inputFieldContainer}>
 				<TextField
 					type={type}
 					size={size}
@@ -228,7 +240,9 @@ function CustomTextField({
 								}}
 							/>
 						) : endAdornmentProps?.type ? (
-							<InputAdornment position="end">{renderAdornment(textFieldValue, endAdornmentProps)}</InputAdornment>
+							<InputAdornment position="end">
+								{renderAdornment({ value: textFieldValue, ...endAdornmentProps })}
+							</InputAdornment>
 						) : (
 							InputProps.endAdornment
 						),
@@ -267,7 +281,7 @@ function CustomTextField({
 						containerStyles={{ top: margin === 'dense' ? '8px' : margin === 'normal' ? '16px' : '0' }}
 					/>
 				)}
-			</div>
+			</Box>
 		);
 	};
 
