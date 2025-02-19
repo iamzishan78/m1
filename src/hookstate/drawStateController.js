@@ -382,6 +382,8 @@ const drawStateControllerHandler = state => {
 	const isLine = () =>
 		['LineString', 'MultiLineString'].includes(drawController.getValue('currentFeature')?.geometry?.type);
 	const isPoint = () => ['Point', 'MultiPoint'].includes(drawController.getValue('currentFeature')?.geometry?.type);
+	const isPolygon = () =>
+		['Polygon', 'MultiPolygon'].includes(drawController.getValue('currentFeature')?.geometry?.type);
 
 	const updateSelectedLayerFeature = (dispatch, customLayer) => {
 		let feature = copy(customLayer.shapeJson);
@@ -1095,6 +1097,7 @@ const drawStateControllerHandler = state => {
 		/* --- ShapeActionsPopup Actions -- */
 		isLine,
 		isPoint,
+		isPolygon,
 		updateSelectedLayerFeature,
 		clearFilter,
 		actionEdit,

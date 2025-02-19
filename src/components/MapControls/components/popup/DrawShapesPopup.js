@@ -57,13 +57,13 @@ const DrawShapesPopup = props => {
 				title: 'Point',
 				mode: 'draw_point',
 				icon: <Point />,
-				disable: drawStateValues.multiSelectLandGrids,
+				disable: drawStateValues.multiSelectLandGrids || drawController.isPolygon(),
 			},
 			{
 				title: 'Line',
 				mode: 'draw_line_string',
 				icon: <Line />,
-				disable: drawStateValues.multiSelectLandGrids,
+				disable: drawStateValues.multiSelectLandGrids || drawController.isPolygon(),
 			},
 		],
 		[zoom, drawState.multiSelectLandGrids]
