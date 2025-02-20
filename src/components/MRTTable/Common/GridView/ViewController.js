@@ -12,6 +12,10 @@ class ViewStateController extends StateController {
 	}
 
 	initialize({ Icon, label, client, allViews, isTable = false, styleOverride = null, defaultViewOverride = null }) {
+		//Do not initialize the MapView if it is already initialized.
+		const isInitialized = this.getValue('isInitialized');
+		if (!isTable && isInitialized) {return;}
+
 		const userId = globalStateController.getValue('user').mongoId;
 		const userDefaultView = allViews?.find(view => view?.defaultDisplayBy?.includes(userId));
 		const defaultView = allViews?.find(view => view?.type === 'Default');
@@ -28,6 +32,7 @@ class ViewStateController extends StateController {
 			allViews,
 			isTable,
 			selectedView,
+			isInitialized: true,
 			icon: { jsxEl: Icon },
 			...(styleOverride && { styleOverride }),
 		});
@@ -220,6 +225,7 @@ export const viewInitialState = {
 		color: {},
 	},
 	isLoading: false,
+	isInitialized: false,
 	shouldSyncView: true,
 };
 
