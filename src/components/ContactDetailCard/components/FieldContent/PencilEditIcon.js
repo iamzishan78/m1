@@ -1,17 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-import { Grid } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
+import { Grid, IconButton } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import CheckSharpIcon from '@material-ui/icons/CheckSharp';
 import ClearSharpIcon from '@material-ui/icons/ClearSharp';
 import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
 
+import AddIcCallIcon from '@mui/icons-material/AddIcCall';
+
+import PropTypes from 'prop-types';
+
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import CopyIcon from 'components/Shared/svgIcons/CopyIcon';
 import TextSmsIcon from 'components/Shared/svgIcons/textsms';
 import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
+
+import { globalStateController } from 'hookstate/globalStateController';
 
 import EditionPopover from '../EditionPopover';
 
@@ -29,6 +35,9 @@ function PencilEditIcon({
 }) {
 	const classes = useStyles();
 	const [copied, setCopied] = useState(false); // Add new state for updating copy icon tooltip value
+	const { globalState } = globalStateController.useState(['contactData', 'user'], 'globalState');
+
+	const feature = globalState?.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION);
 
 	// Destructure the first key-value pair from `editContent`
 	const [editFieldKey, editFieldValue] = Object.entries(editContent || {})?.[0] || [];
@@ -66,8 +75,8 @@ function PencilEditIcon({
 						</Button>
 					</Grid>
 
-					{content.map((textF, i) => (
-						<Grid key={i} item xs={12} style={{ marginBottom: '8px' }}>
+					{content.map(textF => (
+						<Grid key={textF} item xs={12} style={{ marginBottom: '8px' }}>
 							{textF}
 						</Grid>
 					))}
@@ -120,10 +129,39 @@ function PencilEditIcon({
 							<TextSmsIcon id="textSmsIcon" className={classes.pencilIcon} />
 						</IconButton>
 					</Tooltip>
+					<Tooltip title={'Call'} placement="top">
+						<IconButton
+							size="small"
+							href={globalState?.contactData?.dialpadIds?.length && feature ? '' : `tel: ${editFieldValue}`}
+							className={classes.emailAdornment}
+							onClick={() => {
+								globalState?.contactData?.dialpadIds?.length &&
+									feature &&
+									handleQuickActionActivity({
+										phoneNumber: editFieldValue,
+										type: 'dialpad',
+									});
+							}}
+						>
+							<AddIcCallIcon htmlColor="#757575" id={'dialpad'} />
+						</IconButton>
+					</Tooltip>
 				</>
 			)}
 		</React.Fragment>
 	);
 }
+PencilEditIcon.propTypes = {
+	onClick: PropTypes.func.isRequired,
+	anchorEl: PropTypes.object,
+	setAnchorEl: PropTypes.func.isRequired,
+	content: PropTypes.array.isRequired,
+	handleUpdating: PropTypes.func.isRequired,
+	isCopy: PropTypes.bool,
+	editContent: PropTypes.object.isRequired,
+	setEditContent: PropTypes.func.isRequired,
+	row: PropTypes.object,
+	handleQuickActionActivity: PropTypes.func.isRequired,
+};
 
 export default PencilEditIcon;

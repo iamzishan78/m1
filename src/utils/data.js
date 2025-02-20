@@ -567,6 +567,13 @@ export const AdminManagementRoutes = {
 		noCheck: true,
 		showSettingString: false,
 	},
+	INTEGRATION: {
+		featureFlag: 'DIALPAD_INTEGRATION',
+		title: 'Integrations',
+		link: '/admin/integrations',
+		component: 'Integrations',
+		showSettingString: false,
+	},
 	// CUSTOMIZATIONS: {
 	//   featureFlag: "CONTACTSUBMENU",
 	//   title: "Customization",
@@ -727,6 +734,8 @@ export const bypassTenants = [
 	'm1cypress',
 	'm1staging',
 	'wildbasin',
+	'covenant',
+	'sansaba',
 	// "m1Production",
 	// "m1Development",
 	// "GHR",

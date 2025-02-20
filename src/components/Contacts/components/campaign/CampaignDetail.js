@@ -388,6 +388,7 @@ const CampaignDetail = ({ viewDoc }) => {
 							onUpdate={data => updateCampaignInformation('description', data.description)}
 							isOwner={false}
 							isSource={false}
+							showCommentType
 						/>
 					</div>
 				)}

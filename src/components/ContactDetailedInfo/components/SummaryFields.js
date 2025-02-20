@@ -2,8 +2,7 @@ import React, { useEffect, useState, Fragment, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
-import { Grid, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
+import { Grid, TextField, InputAdornment, CircularProgress, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Autorenew as AutorenewIcon } from '@material-ui/icons';
@@ -13,10 +12,11 @@ import AddIcCallIcon from '@mui/icons-material/AddIcCall';
 
 import { useMutation } from '@apollo/client';
 import { get, set, isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 
 import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
-import { SUMMARY_FIELDS, featureFlagChanges } from 'components/ContactDetailedInfo/helper';
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { SUMMARY_FIELDS, featureFlagChanges, contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { NumberFormatComma } from 'components/Shared/Forms/Formatting/NumberFormatComma';
 import TextSmsIcon from 'components/Shared/svgIcons/textsms';
@@ -95,8 +95,19 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 	const showGenericPhones = React.useMemo(() => {
 		return user.features?.find(f => f.name === 'showGenericPhones');
 	}, [user]);
+	const dialpadFeature = React.useMemo(() => {
+		return user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION);
+	}, [user]);
 
 	const [contactInterest, setContactInterest] = useState();
+
+	const getCommaValue = value => {
+		if (value && !value.includes('.')) {
+			return vf_number(Number(value.replace(/,/g, '')));
+		} else {
+			return value;
+		}
+	};
 
 	useEffect(() => {
 		if (!isEmpty(contactData)) {
@@ -116,14 +127,6 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			setFormState(true);
 		}
 	}, [contactData, reset, isFormSet]);
-
-	const getCommaValue = value => {
-		if (value && !value.includes('.')) {
-			return vf_number(Number(value.replace(/,/g, '')));
-		} else {
-			return value;
-		}
-	};
 
 	const updateFieldData = (key, value) => {
 		if (contactData[key] === value) {
@@ -154,10 +157,10 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			refetchQueries: ['getContact'],
 			awaitRefetchQueries: false,
 		})
-			.then(result => {
+			.then(() => {
 				setLoading(null);
 			})
-			.catch(error => {
+			.catch(() => {
 				setLoading(null);
 			});
 	};
@@ -188,7 +191,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			{SUMMARY_FIELDS(contactData).map((field, key) => (
 				<Grid
 					item
-					key={key}
+					key={field.key}
 					style={{ position: 'relative', width: '100%', marginRight: '30px', maxWidth: '44%', flexBasis: '7%' }}
 				>
 					<Grid container className={classes.gridStyle}>
@@ -204,10 +207,8 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 								render={params => {
 									const isValueOveridden = isChanged(field.key, params.value);
 
-									// eslint-disable-next-line react-hooks/rules-of-hooks
 									const initialized = useRef(false);
 
-									// eslint-disable-next-line react-hooks/rules-of-hooks
 									useEffect(() => {
 										if (initialized.current) {
 											return;
@@ -345,8 +346,20 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 																		<Tooltip title={'Call'} placement="top">
 																			<IconButton
 																				id="call-icon"
-																				href={`tel: ${contactData[field.key]}`}
+																				href={
+																					contactData?.dialpadIds?.length && dialpadFeature
+																						? ''
+																						: `tel: ${contactData[field.key]}`
+																				}
 																				className={classes.emailAdornment}
+																				onClick={() => {
+																					contactData?.dialpadIds?.length &&
+																						dialpadFeature &&
+																						handleQuickActionActivity({
+																							phoneNumber: contactData[field.key],
+																							type: 'dialpad',
+																						});
+																				}}
 																			>
 																				<AddIcCallIcon htmlColor="#757575" />
 																			</IconButton>
@@ -407,3 +420,8 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 		</Grid>
 	);
 }
+
+SummaryFields.propTypes = {
+	contactData: PropTypes.object.isRequired,
+	handleQuickActionActivity: PropTypes.func.isRequired,
+};

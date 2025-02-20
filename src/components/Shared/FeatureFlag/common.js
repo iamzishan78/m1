@@ -25,6 +25,7 @@ export const FEATURES = {
 	USERTAGSLAYER: 'showUserTagsLayer',
 	SEARCHLAYER: 'showSearchLayer',
 	DATA: 'dataModule',
+	DIALPAD_INTEGRATION: 'DialPadIntegration',
 };
 
 export const ROUTES = {
