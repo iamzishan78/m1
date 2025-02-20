@@ -210,7 +210,7 @@ function WellCard() {
   ) {
     return selectedWellVal ? (
       !stateExpandableCard.expanded ? (
-        <div style={{ height: wellCardHeight, padding: "9px" }} data-testid="well-card">
+        <div  style={{ height: "100%", padding: "9px" }} data-testid="well-card">
           <Card>
             <CardActions
               classes={{
@@ -530,7 +530,7 @@ function WellCard() {
   } else {
     return selectedWellVal ? (
       !stateValues.expandedCard ? (
-        <div style={{ height: wellCardHeight, paddingBottom: "9px" }}>
+        <div>
           <Card className={classes.card} data-testid="well-card" >
             <CardActions
               classes={{
