@@ -32,6 +32,7 @@ import MapPositions from 'components/Shared/SidePanel/compoennts/MapPositions';
 import FilterAltIcon from 'components/Shared/svgIcons/FilterAltIcon';
 
 // Contexts
+
 import { globalStateController } from 'controllers/globalStateController';
 import { layerController } from 'controllers/layerStateController';
 import { mapControlsController } from 'controllers/mapControlsController';
@@ -40,10 +41,11 @@ import { navController } from 'controllers/navStateController';
 
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 
-// actions
 import { setActiveModule } from 'store/actions/commonActions';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
+
+// actions
 
 import AddGroup from './AddGroup';
 import Layer from './Layer';
@@ -252,8 +254,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	const [tab, setTab] = useState(0);
 
 	const totalFilterCount =
-		navStateValues.geographyFilterCount +
-		navStateValues.wellFilterCount +
+		(navStateValues.geographyFilterCount || 0) +
+		(navStateValues.wellFilterCount || 0) +
 		(selectedView?.filters?.filter(filter => {
 			const fileId = filter?.dataSourceName?.substring(0, filter?.dataSourceName?.indexOf('_'));
 			const layerIdentifier = filter?.dataSourceName?.substring(filter?.dataSourceName?.indexOf('_') + 1);

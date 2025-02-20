@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import Slideout from 'components/MRTTable/Common/Slideout';
 import WellIcon from 'components/Shared/svgIcons/well';
 
+
 import { globalStateController } from 'controllers/globalStateController';
 import { slidoutStateController } from 'controllers/slidoutStateController';
 import { tableGlobalController } from 'controllers/tableController';
@@ -27,7 +28,6 @@ import OCRText from './OCRText';
 
 function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	const [wellsCount, setWellsCount] = useState(0);
-	const slideOutState = slidoutStateController.useState(['views', 'view', 'activeTabs']);
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user;
 
@@ -158,8 +158,8 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 		handleClose();
 	};
 	useEffect(() => {
-		slideOutState.views.set(views);
-		slideOutState.view.set(views[0]);
+		slidoutStateController.updateState({ views: views });
+		slidoutStateController.updateState({ view: views[0] });
 	}, [selectedDocument, wellsCount]);
 
 	return <Slideout show={true} deleteFunc={deleteFunc} />;

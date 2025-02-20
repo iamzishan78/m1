@@ -287,7 +287,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					const layerDataSourceName = tableESState[key].getValue('layerDataSourceName');
 					return layerDataSourceName === dataSourceName;
 				});
-				const tableStateFilters = tableESState[tableKey].getValue('filters');
+
+				const tableStateFilters = tableESState[tableKey]?.getValue('filters');
 
 				const formattedFilter = getFormattedFilterBasedOnType(
 					selectedField?.type || filterType,
