@@ -9,7 +9,6 @@ import PropTypes from 'prop-types';
 
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import DateField from 'components/Shared/components/Fields/DateField';
-import NumberField from 'components/Shared/components/Fields/NumberField';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 
 import { globalStateController } from 'controllers/globalStateController';
@@ -97,8 +96,31 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 								}}
 							/>
 						)}
-						{(field.type === 'number' ||
-							field.type === 'date' ||
+						{field.type === 'number' && (
+							<CustomTextField
+								id={`field-${fieldKey}`}
+								control={control}
+								fieldConfig={{
+									margin: 'dense',
+									variant: 'outlined',
+									type: 'number',
+									disabled: field?.disabled,
+									customStyleClass: classes.text,
+								}}
+								fieldAttributes={{
+									name: field.key,
+									defaultValue: get(data, `${fieldKey}`, ''),
+									InputProps: {
+										...field.InputProps,
+										endAdornment,
+									},
+								}}
+								fieldEvents={{
+									onBlur: value => offClickHandler(fieldKey, value),
+								}}
+							/>
+						)}
+						{(field.type === 'date' ||
 							field.type === 'dropdown' ||
 							field.type === 'multiselect' ||
 							field.type === 'select') && (
@@ -109,26 +131,6 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 								render={params => {
 									return (
 										<Fragment>
-											{field.type === 'number' && (
-												<NumberField
-													{...params.field}
-													id={`field-${fieldKey}`}
-													index={index}
-													fieldKey={fieldKey}
-													field={field}
-													defaultValue={get(data, `${fieldKey}`, '')}
-													offClickHandler={(key, value) => {
-														offClickHandler(key, value);
-													}}
-													InputProps={{
-														...field.InputProps,
-														endAdornment,
-													}}
-													props={{
-														className: classes.text,
-													}}
-												/>
-											)}
 											{field.type === 'date' && (
 												<DateField
 													{...params.field}
