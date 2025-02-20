@@ -473,7 +473,7 @@ const SideNavigation = ({ openDrawer, handleListItemClick, handleDrawerClose, ha
 									...stateApp,
 									contactFromMap: false,
 								}));
-								handleListItemClick('/data/wells');
+								handleListItemClick('/data/contactTable');
 							}}
 							key="data"
 						>

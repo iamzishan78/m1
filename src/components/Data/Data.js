@@ -36,9 +36,9 @@ export default function Data() {
 
 	const sidePanelOptions = React.useMemo(() => {
 		const options = {};
-		Object.keys(allowedPaths).forEach(key => {
-			if (!allowedPaths[key].isExcluded) {
-				options[key] = allowedPaths[key];
+		Object.values(allowedPaths).forEach(allowedPath => {
+			if (!allowedPath.isExcluded) {
+				options[allowedPath.value] = allowedPath;
 			}
 		});
 		return options;
@@ -49,12 +49,9 @@ export default function Data() {
 
 		const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.DATA);
 		const allAllowedPaths = {};
-		if (feature?.JSON) {
-			const data = JSON.parse(feature.JSON);
+		if (feature) {
 			Object.keys(allPaths).forEach(path => {
-				if (data.options.includes(allPaths[path].value)) {
-					allAllowedPaths[path] = allPaths[path];
-				}
+				allAllowedPaths[path] = allPaths[path];
 			});
 		}
 
@@ -71,14 +68,14 @@ export default function Data() {
 					activeModule={activeModule}
 					actions={sidePanelOptions}
 				>
-					{Object.keys(allowedPaths).map(option => {
+					{Object.values(allowedPaths).map(option => {
 						return (
-							<Switch key={option}>
+							<Switch key={option.link}>
 								<Route
 									exact
-									path={allowedPaths[option].link}
+									path={option.link}
 									component={() => {
-										return <Content type={option} />;
+										return <Content path={option} />;
 									}}
 								/>
 							</Switch>

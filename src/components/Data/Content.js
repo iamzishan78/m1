@@ -6,28 +6,7 @@ import PropTypes from 'prop-types';
 
 import MRTTable from 'components/MRTTable';
 
-import ShapeFile from './ShapeFile';
-
-const typeMaapping = {
-	PlatformWells: 'WellsTable',
-	Agreements: 'AgreementTable',
-	Units: 'UnitTable',
-	Tracts: 'TractsTable',
-	MyWells: 'MyWellsTable',
-	ShapeFile: 'shapeFile',
-};
-
-const Content = ({ type }) => {
-	const mappedType = typeMaapping[type];
-
-	if (!mappedType) {
-		return null;
-	}
-
-	if (mappedType === 'shapeFile') {
-		return <ShapeFile />;
-	}
-
+const Content = ({ path }) => {
 	return (
 		<Box
 			sx={{
@@ -35,7 +14,7 @@ const Content = ({ type }) => {
 			}}
 		>
 			<MRTTable
-				name={mappedType}
+				name={path.value}
 				overrideMeta={{
 					maxTableHeight: 'calc(100vh - 290px)',
 				}}
@@ -45,7 +24,7 @@ const Content = ({ type }) => {
 };
 
 Content.propTypes = {
-	type: PropTypes.string.isRequired,
+	path: PropTypes.object.isRequired,
 };
 
 export default Content;
