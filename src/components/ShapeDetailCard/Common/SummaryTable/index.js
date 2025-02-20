@@ -22,7 +22,6 @@ import StateField from 'components/Revenue/components/Properties/DetailComponent
 import { summaryTableStyles } from 'components/ShapeDetailCard/style';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
 import DateField from 'components/Shared/components/Fields/DateField';
-import NumberField from 'components/Shared/components/Fields/NumberField';
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
@@ -547,16 +546,24 @@ export default function SummaryTableInfo({
 											</>
 										)}
 										{data.type === 'number' && (
-											<NumberField
+											<CustomTextField
 												id={`field-${data.key}`}
-												index={index}
-												field={data}
-												fieldKey={data.key}
-												defaultValue={get(tableTempProperties, `${data.key}`, '')}
-												offClickHandler={(key, value) => {
-													set(tableTempProperties, key, value);
-													setTableTempProperties(tableTempProperties);
-													updateProperties(null, key, value);
+												fieldConfig={{
+													size: 'small',
+													variant: 'outlined',
+													margin: 'dense',
+													disabled: data.disabled,
+													type: 'number',
+												}}
+												fieldAttributes={{
+													defaultValue: get(tableTempProperties, `${data.key}`, ''),
+												}}
+												fieldEvents={{
+													onBlur: value => {
+														set(tableTempProperties, data.key, value);
+														setTableTempProperties(tableTempProperties);
+														updateProperties(null, data.key, value);
+													},
 												}}
 											/>
 										)}

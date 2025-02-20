@@ -80,6 +80,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 								fieldConfig={{
 									margin: 'dense',
 									variant: 'outlined',
+									size: 'small',
 									disabled: field?.disabled,
 									customStyleClass: classes.text,
 								}}
@@ -103,6 +104,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 								fieldConfig={{
 									margin: 'dense',
 									variant: 'outlined',
+									size: 'small',
 									type: 'number',
 									disabled: field?.disabled,
 									customStyleClass: classes.text,
