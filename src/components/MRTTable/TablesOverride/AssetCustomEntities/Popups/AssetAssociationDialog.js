@@ -93,7 +93,7 @@ function AssetAssociationDialog() {
 		});
 		reset({
 			associatedModels: '',
-			fields: defaultFields,
+			fields: [],
 		});
 	};
 
@@ -234,15 +234,23 @@ function AssetAssociationDialog() {
 														}
 														return (
 															<div style={{ display: 'flex', flexWrap: 'wrap' }}>
-																<Chip key={selected._id} label={selected.modelName} style={{ margin: 2 }} />
+																<Chip key={selected._id} label={selected.name} style={{ margin: 2 }} />
 															</div>
 														);
+													},
+													MenuProps: {
+														PaperProps: {
+															style: {
+																maxHeight: 300,
+																overflowY: 'auto',
+															},
+														},
 													},
 												}}
 											>
 												{modelsOptions?.map(option => (
 													<MenuItem key={option._id} value={option}>
-														{option.label}
+														{option.name}
 													</MenuItem>
 												))}
 											</TextField>
@@ -250,7 +258,7 @@ function AssetAssociationDialog() {
 									/>
 								</Grid>
 							</Grid>
-							{fields?.length > 1 && (
+							{fields?.length > 0 && (
 								<>
 									<Grid item>
 										<h3>Associated Model Keys</h3>
