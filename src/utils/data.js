@@ -172,7 +172,7 @@ export const contactManagementRoutes = {
 
 export const analyticsManagementRoutes = {
 	ACTIVITY: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'CRM',
 		customTitle: 'Activity Dashboard',
 		link: '/analytics',
@@ -183,7 +183,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: false,
 	},
 	LEADS: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Land',
 		link: '/analytics/land',
 		component: 'Land',
@@ -193,7 +193,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: false,
 	},
 	PROSPECTS: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Revenue',
 		link: '/analytics/revenues',
 		component: 'Revenue',
@@ -205,7 +205,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: true,
 	},
 	RIGS: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Rigs by Region ',
 		link: '/analytics/rigs',
 		component: 'RigsCard',
@@ -215,7 +215,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: true,
 	},
 	PERMITS: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Permits by State/County',
 		link: '/analytics/permits',
 		component: 'PermitsCard',
@@ -225,7 +225,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: true,
 	},
 	PRODUCTION: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Production by State/County',
 		link: '/analytics/production',
 		component: 'ProdCard',
@@ -235,7 +235,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: true,
 	},
 	ADVANCED_SEARCH: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Advanced Search',
 		link: '/analytics/advancedSearch',
 		component: 'AdvancedSearch',
@@ -245,7 +245,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: true,
 	},
 	REVENUE_PROPERTY_DETAILS: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Revenue',
 		link: '/analytics/property/details/:id',
 		component: 'RevenuePropertyDetails',
