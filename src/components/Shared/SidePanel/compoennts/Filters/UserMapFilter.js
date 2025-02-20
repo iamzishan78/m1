@@ -316,14 +316,12 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					}
 				}
 
-				if (!tableKey) {
-					viewStateController('MapView').updateState({
-						selectedView: {
-							...selectedMapView,
-							filters: mapViewFilters,
-						},
-					});
-				}
+				viewStateController('MapView').updateState({
+					selectedView: {
+						...selectedMapView,
+						filters: mapViewFilters,
+					},
+				});
 				layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
 			}
 		}
