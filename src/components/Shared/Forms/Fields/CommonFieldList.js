@@ -106,12 +106,12 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 								key={fieldKey}
 								control={control}
 								name={fieldKey}
-								render={({ field }) => {
+								render={params => {
 									return (
 										<Fragment>
 											{field.type === 'number' && (
 												<NumberField
-													{...field}
+													{...params.field}
 													id={`field-${fieldKey}`}
 													index={index}
 													fieldKey={fieldKey}
@@ -131,7 +131,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 											)}
 											{field.type === 'date' && (
 												<DateField
-													{...field}
+													{...params.field}
 													id={`field-${fieldKey}`}
 													index={index}
 													field={field}
@@ -173,7 +173,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 											)}
 											{field.type === 'select' && (
 												<Select
-													{...field}
+													{...params.field}
 													id={`field-${fieldKey}`}
 													variant="outlined"
 													fullWidth
