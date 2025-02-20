@@ -195,6 +195,8 @@ const CustomAutocomplete = ({
 		);
 	}
 
+	if (defaultValue?.label) {field.value = defaultValue.label;}
+
 	return (
 		<Autocomplete
 			{...field}
