@@ -29,7 +29,6 @@ import CountyField from 'components/Revenue/components/Properties/DetailComponen
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
 import DateField from 'components/Shared/components/Fields/DateField';
-import NumberField from 'components/Shared/components/Fields/NumberField';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 
@@ -243,8 +242,33 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 											}}
 										/>
 									)}
-									{(field.type === 'number' ||
-										field.type === 'date' ||
+									{field.type === 'number' && (
+										<CustomTextField
+											id={`field-${field.key}`}
+											control={control}
+											fieldConfig={{
+												disabled: field?.disabled,
+												fullWidth: true,
+												variant: 'outlined',
+												margin: 'dense',
+												type: 'number',
+											}}
+											fieldAttributes={{
+												name: field.key,
+												defaultValue: get(agreementDetails, `${field.key}`, ''),
+												InputProps: {
+													...field.InputProps,
+													endAdornment,
+												},
+											}}
+											fieldEvents={{
+												onBlur: value => {
+													offClickHandler(field.key, value);
+												},
+											}}
+										/>
+									)}
+									{(field.type === 'date' ||
 										field.type === 'dropdown' ||
 										field.type === 'multiselect' ||
 										field.type === 'select') && (
@@ -254,23 +278,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 											render={({ field: fieldProps }) => {
 												return (
 													<Fragment>
-														{field.type === 'number' && (
-															<NumberField
-																{...fieldProps}
-																id={`field-${field.key}`}
-																index={index}
-																field={field}
-																fieldKey={field.key}
-																defaultValue={get(agreementDetails, `${field.key}`, '')}
-																offClickHandler={(key, value) => {
-																	offClickHandler(key, value);
-																}}
-																InputProps={{
-																	...field.InputProps,
-																	endAdornment,
-																}}
-															/>
-														)}
 														{field.type === 'date' && (
 															<DateField
 																{...fieldProps}
