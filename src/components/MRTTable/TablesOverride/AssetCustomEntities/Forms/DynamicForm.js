@@ -1,7 +1,16 @@
 import React from 'react';
 import { useFieldArray, Controller, useWatch } from 'react-hook-form';
 
-import { TextField, MenuItem, Button, Grid, IconButton, Checkbox, FormControlLabel } from '@material-ui/core';
+import {
+	TextField,
+	MenuItem,
+	Button,
+	Grid,
+	IconButton,
+	Checkbox,
+	FormControlLabel,
+	FormHelperText,
+} from '@material-ui/core';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -12,7 +21,7 @@ import { removeSpaces } from 'components/MRTTable/utils/helper';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
-const DynamicForm = ({ control, setValue }) => {
+const DynamicForm = ({ control, setValue, errors, clearErrors }) => {
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: 'fields',
@@ -51,24 +60,30 @@ const DynamicForm = ({ control, setValue }) => {
 									control={control}
 									name={`fields[${index}].label`}
 									render={({ field }) => (
-										<TextField
-											size="small"
-											type="text"
-											variant="outlined"
-											value={field.value}
-											inputRef={field.ref}
-											onWheel={e => e.target.blur()}
-											onChange={e => {
-												field.onChange(e.target.value);
-												const mappedKey = removeSpaces(e.target.value);
-												setValue(`fields[${index}].mappingKey`, mappedKey);
-											}}
-											label="Label"
-											placeholder="Label"
-											fullWidth
-											defaultValue=""
-											disabled={!isCreateAssetMode}
-										/>
+										<>
+											<TextField
+												size="small"
+												type="text"
+												variant="outlined"
+												value={field.value}
+												inputRef={field.ref}
+												onWheel={e => e.target.blur()}
+												onChange={e => {
+													field.onChange(e.target.value);
+													const mappedKey = removeSpaces(e.target.value);
+													setValue(`fields[${index}].mappingKey`, mappedKey);
+
+													clearErrors(`fields.${index}.mappingKey`);
+												}}
+												label="Label"
+												placeholder="Label"
+												fullWidth
+												defaultValue=""
+												error={errors?.[index]?.['label']}
+												disabled={!isCreateAssetMode}
+											/>
+											<FormHelperText error>{errors?.[index]?.['label']?.message || ' '}</FormHelperText>
+										</>
 									)}
 								/>
 							</Grid>
@@ -77,24 +92,28 @@ const DynamicForm = ({ control, setValue }) => {
 									control={control}
 									name={`fields[${index}].mappingKey`}
 									render={({ field }) => (
-										<TextField
-											size="small"
-											type="text"
-											variant="outlined"
-											value={field.value}
-											inputRef={field.ref}
-											onWheel={e => e.target.blur()}
-											InputLabelProps={{ shrink: !!field.value }} // Ensure the label shrinks when there's a value
-											onChange={e => {
-												const mappedKey = removeSpaces(e.target.value);
-												field.onChange(mappedKey);
-											}}
-											label="Key"
-											placeholder="Key"
-											fullWidth
-											defaultValue=""
-											disabled={!isCreateAssetMode}
-										/>
+										<>
+											<TextField
+												size="small"
+												type="text"
+												variant="outlined"
+												value={field.value}
+												inputRef={field.ref}
+												onWheel={e => e.target.blur()}
+												InputLabelProps={{ shrink: !!field.value }} // Ensure the label shrinks when there's a value
+												onChange={e => {
+													const mappedKey = removeSpaces(e.target.value);
+													field.onChange(mappedKey);
+												}}
+												label="Key"
+												placeholder="Key"
+												fullWidth
+												defaultValue=""
+												error={errors?.[index]?.['mappingKey']}
+												disabled={!isCreateAssetMode}
+											/>
+											<FormHelperText error>{errors?.[index]?.['mappingKey']?.message || ' '}</FormHelperText>
+										</>
 									)}
 								/>
 							</Grid>
@@ -103,29 +122,33 @@ const DynamicForm = ({ control, setValue }) => {
 									control={control}
 									name={`fields[${index}].keyType`}
 									render={({ field }) => (
-										<TextField
-											select
-											size="small"
-											type="text"
-											variant="outlined"
-											value={field.value}
-											inputRef={field.ref}
-											onWheel={e => e.target.blur()}
-											onChange={e => {
-												field.onChange(e.target.value);
-											}}
-											label="Key type"
-											placeholder="Key type"
-											fullWidth
-											defaultValue=""
-											disabled={!isCreateAssetMode}
-										>
-											{entityKeyTypes.map(option => (
-												<MenuItem key={option.value} value={option.value}>
-													{option.label}
-												</MenuItem>
-											))}
-										</TextField>
+										<>
+											<TextField
+												select
+												size="small"
+												type="text"
+												variant="outlined"
+												value={field.value}
+												inputRef={field.ref}
+												onWheel={e => e.target.blur()}
+												onChange={e => {
+													field.onChange(e.target.value);
+												}}
+												label="Key type"
+												placeholder="Key type"
+												fullWidth
+												defaultValue=""
+												error={errors?.[index]?.['keyType']}
+												disabled={!isCreateAssetMode}
+											>
+												{entityKeyTypes.map(option => (
+													<MenuItem key={option.value} value={option.value}>
+														{option.label}
+													</MenuItem>
+												))}
+											</TextField>
+											<FormHelperText error>{errors?.[index]?.['keyType']?.message || ' '}</FormHelperText>
+										</>
 									)}
 								/>
 							</Grid>
@@ -168,7 +191,10 @@ const DynamicForm = ({ control, setValue }) => {
 											control={
 												<Checkbox
 													checked={!!field.value}
-													onChange={e => field.onChange(e.target.checked)}
+													onChange={e => {
+														field.onChange(e.target.checked);
+														setValue(`fields[${index}].isRequired`, e.target.checked);
+													}}
 													color="primary"
 													disabled={hasControlColumnSelected && !field.value} // Disable if another control column is selected
 												/>
@@ -230,6 +256,7 @@ const DynamicForm = ({ control, setValue }) => {
 													checked={!!field.value}
 													onChange={e => field.onChange(e.target.checked)}
 													color="primary"
+													disabled={isControlColumns[index]?.isControlColumn} // Disable when Control Column is selected
 												/>
 											}
 											label="Required"

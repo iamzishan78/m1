@@ -12,6 +12,7 @@ import {
 	RadioGroup,
 	FormControlLabel,
 	Radio,
+	FormHelperText,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
@@ -28,6 +29,27 @@ import { showInfoMessage } from 'actions';
 
 import { useStyles } from './styles';
 import DynamicForm from '../Forms/DynamicForm';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const zodValidationSchema = z.object({
+	asset_name: z.string().nonempty('Table name is required'),
+	creation_place: z.string().nonempty('Creation place is required'),
+	shape_type: z.string().nonempty('Shape type is required'),
+	fields: z.array(
+		z.object({
+			_id: z.string(),
+			mappingKey: z.string().nonempty('Key is required'),
+			keyType: z.string().nonempty('Key type is required'),
+			label: z.string().nonempty('Label is required'),
+			isSummaryField: z.boolean(),
+			isControlColumn: z.boolean(),
+			isGridDisplayed: z.boolean(),
+			isDialogDisplayed: z.boolean(),
+			isRequired: z.boolean(),
+		})
+	),
+});
 
 function CustomAssetEntityDialog() {
 	const classes = useStyles();
@@ -47,7 +69,16 @@ function CustomAssetEntityDialog() {
 			isRequired: false,
 		},
 	];
-	const { control, handleSubmit, watch, reset, setValue } = useForm({
+	const {
+		control,
+		handleSubmit,
+		watch,
+		reset,
+		setValue,
+		formState: { errors },
+		clearErrors,
+	} = useForm({
+		resolver: zodResolver(zodValidationSchema),
 		defaultValues: {
 			asset_name: '',
 			fields: defaultFields,
@@ -57,7 +88,6 @@ function CustomAssetEntityDialog() {
 	});
 
 	const fields = useWatch({ control, name: 'fields' });
-	const name = watch('asset_name', ''); // Watch the "asset_name" field
 	const creationPlace = watch('creation_place', ''); // Watch the "creation_place" field
 
 	const { stateValues } = tableGlobalController.useState(['AssetCustomEntityDialog', 'selectedAsset']);
@@ -86,7 +116,7 @@ function CustomAssetEntityDialog() {
 			asset_name: selectedAsset?.name || '',
 			fields: selectedAsset?.modelKeys || defaultFields,
 			creation_place: selectedAsset?.creationPlace || '',
-			shape_type: selectedAsset?.shapeType || '',
+			shape_type: selectedAsset?.shapeType || 'Polygon',
 		});
 	}, [selectedAsset, reset]);
 
@@ -130,8 +160,6 @@ function CustomAssetEntityDialog() {
 		});
 	};
 
-	const hasAtLeastOneKey = fields.some(field => field.mappingKey && field.keyType && field.label);
-
 	return (
 		<Dialog fullWidth maxWidth="lg" open={isOpen} onClose={handleClose}>
 			<form onSubmit={handleSubmit(onSubmit)}>
@@ -158,22 +186,26 @@ function CustomAssetEntityDialog() {
 											control={control}
 											name="asset_name"
 											render={({ field }) => (
-												<TextField
-													size="small"
-													type="text"
-													variant="outlined"
-													value={field.value}
-													inputRef={field.ref}
-													onWheel={e => e.target.blur()}
-													onChange={e => {
-														field.onChange(e.target.value);
-													}}
-													label="Table Name"
-													placeholder="Table Name"
-													fullWidth
-													defaultValue=""
-													disabled={!isCreateMode}
-												/>
+												<>
+													<TextField
+														size="small"
+														type="text"
+														variant="outlined"
+														value={field.value}
+														inputRef={field.ref}
+														onWheel={e => e.target.blur()}
+														onChange={e => {
+															field.onChange(e.target.value);
+														}}
+														label="Table Name"
+														placeholder="Table Name"
+														fullWidth
+														defaultValue=""
+														error={errors['asset_name']}
+														disabled={!isCreateMode}
+													/>
+													<FormHelperText error>{errors['asset_name']?.message || ' '}</FormHelperText>
+												</>
 											)}
 										/>
 									</Grid>
@@ -182,29 +214,33 @@ function CustomAssetEntityDialog() {
 											control={control}
 											name={'creation_place'}
 											render={({ field }) => (
-												<TextField
-													select
-													size="small"
-													type="text"
-													variant="outlined"
-													value={field.value}
-													inputRef={field.ref}
-													onWheel={e => e.target.blur()}
-													onChange={e => {
-														field.onChange(e.target.value);
-													}}
-													label="Creationn Place"
-													placeholder="creation place"
-													fullWidth
-													defaultValue=""
-													disabled={!isCreateMode}
-												>
-													{entityCreationOptions.map(option => (
-														<MenuItem key={option.value} value={option.value}>
-															{option.label}
-														</MenuItem>
-													))}
-												</TextField>
+												<>
+													<TextField
+														select
+														size="small"
+														type="text"
+														variant="outlined"
+														value={field.value}
+														inputRef={field.ref}
+														onWheel={e => e.target.blur()}
+														onChange={e => {
+															field.onChange(e.target.value);
+														}}
+														label="Creation Place"
+														placeholder="creation place"
+														fullWidth
+														defaultValue=""
+														error={errors['creation_place']}
+														disabled={!isCreateMode}
+													>
+														{entityCreationOptions.map(option => (
+															<MenuItem key={option.value} value={option.value}>
+																{option.label}
+															</MenuItem>
+														))}
+													</TextField>
+													<FormHelperText error>{errors['creation_place']?.message || ' '}</FormHelperText>
+												</>
 											)}
 										/>
 									</Grid>
@@ -215,13 +251,7 @@ function CustomAssetEntityDialog() {
 												control={control}
 												name={'shape_type'}
 												render={({ field }) => (
-													<RadioGroup
-														row
-														value={field.value}
-														onChange={e => {
-															field.onChange(e.target.value);
-														}}
-													>
+													<RadioGroup row {...field}>
 														{entityShapeOptions.map((option, index) => (
 															<FormControlLabel
 																disabled={!isCreateMode}
@@ -240,7 +270,12 @@ function CustomAssetEntityDialog() {
 								<Grid item>
 									<h3>Add Model Keys for this Entity in this table </h3>
 								</Grid>
-								<DynamicForm control={control} setValue={setValue} />
+								<DynamicForm
+									control={control}
+									setValue={setValue}
+									errors={errors['fields']}
+									clearErrors={clearErrors}
+								/>
 							</div>
 
 							<div
@@ -254,10 +289,9 @@ function CustomAssetEntityDialog() {
 									</Button>
 									<Button
 										type="submit"
-										className={hasAtLeastOneKey && name ? classes.btnColor : ''}
+										className={classes.btnColor}
 										style={{ margin: '25px 25px 25px 5px' }}
 										variant="outlined"
-										disabled={hasAtLeastOneKey && name ? false : true}
 									>
 										{isCreateMode ? 'Create Asset' : 'Update Asset'}
 									</Button>
