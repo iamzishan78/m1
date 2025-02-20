@@ -571,26 +571,28 @@ function Map({
 	}, [removeLayerFromMap]);
 
 	useEffect(() => {
-		// USE EFFECT FOR BASEMAP LAYER HANDLING
+		// USE EFFECT FOR LAND GRID INITIAL STATE HANDLING
 		const mapLayers = copy(layerStateValues.layers);
-		if (!layerStateValues.baseMapLayers?.length || !map) {
+		if (!layerStateValues.baseMapLayers || !layerStateValues.baseMapLayers.length === 0 || !map) {
 			return;
 		}
 
-		const getBaseMapIndex = name => layerStateValues.baseMapLayers.findIndex(layer => layer.name === name);
-
 		const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
+		const baseMapLandIndex = layerStateValues.baseMapLayers.findIndex(layer => layer.name === 'Land Grid');
 		const landLayerVisible = landLayer?.layerSettings?.visiable && landLayer?.layerSettings?.showable;
 
-		const layersToToggle = ['Land Grid', 'Roads', 'Map Labels'];
-		const indicesToToggle = layersToToggle.map(getBaseMapIndex).filter(index => index !== -1);
-
-		layerController.memoizedStateUpdate(
-			'checkedBaseLayers',
-			landLayerVisible
-				? [...new Set([...layerStateValues.checkedBaseLayers, ...indicesToToggle])]
-				: layerStateValues.checkedBaseLayers.filter(index => !indicesToToggle.includes(index))
-		);
+		if (!landLayerVisible && layerStateValues.checkedBaseLayers.includes(baseMapLandIndex)) {
+			layerController.memoizedStateUpdate(
+				'checkedBaseLayers',
+				layerStateValues.checkedBaseLayers.filter(l => l !== baseMapLandIndex)
+			);
+		}
+		if (landLayerVisible && !layerStateValues.checkedBaseLayers.includes(baseMapLandIndex)) {
+			layerController.memoizedStateUpdate('checkedBaseLayers', [
+				...layerStateValues.checkedBaseLayers,
+				baseMapLandIndex,
+			]);
+		}
 	}, [map, baseMapLayers, layersState]);
 
 	useEffect(() => {

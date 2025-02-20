@@ -123,7 +123,7 @@ export class StateController {
 	memoizedStateUpdate(key, value) {
 		const oldValue = store.get(this.focusState[key]);
 
-		if (isEqual(oldValue && value)) {
+		if (isEqual(oldValue, value)) {
 			return;
 		}
 

@@ -126,6 +126,7 @@ export default function SidePanel() {
 								: layer;
 						});
 						layerController.updateState({ layers: mappedLayers });
+
 						// Handle DeckGL layers
 						['AbstractGeo', 'Pls'].forEach(identifier =>
 							layerController.handleDeckLayer({
@@ -148,16 +149,16 @@ export default function SidePanel() {
 							},
 						});
 					}
-				} else {
-					const currentIndex = layerStateValues.checkedBaseLayers.indexOf(index);
-					let newChecked = [...layerStateValues.checkedBaseLayers];
-					if (currentIndex === -1) {
-						newChecked.push(index);
-					} else {
-						newChecked.splice(currentIndex, 1);
-					}
-					layerController.memoizedStateUpdate('checkedBaseLayers', newChecked);
 				}
+
+				const currentIndex = layerStateValues.checkedBaseLayers.indexOf(index);
+				let newChecked = [...layerStateValues.checkedBaseLayers];
+				if (currentIndex === -1) {
+					newChecked.push(index);
+				} else {
+					newChecked.splice(currentIndex, 1);
+				}
+				layerController.memoizedStateUpdate('checkedBaseLayers', newChecked);
 			});
 		}
 	}, [panelType, baseMapLayers, checkedBaseLayers]);

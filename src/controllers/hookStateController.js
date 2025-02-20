@@ -223,7 +223,7 @@ export const hookStateController = (state, initialState) => ({
 	memoizedStateUpdate: (key, value) => {
 		const oldValue = state[key].get({ noproxy: true });
 
-		if (isEqual(oldValue && value)) {
+		if (isEqual(oldValue, value)) {
 			return;
 		}
 
