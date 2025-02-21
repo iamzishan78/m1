@@ -182,6 +182,12 @@ const layerFilterInitialState = {
 	Basins: {
 		layerName: 'Basins',
 	},
+	DynamicAsset: {
+		variables: {
+			isDynamicAsset: true,
+			filters: [],
+		},
+	},
 };
 
 class LayerFiltersController extends StateController {

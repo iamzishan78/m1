@@ -148,7 +148,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			sort,
 			filters,
 			parent: tableStateValues.tableKey,
-			isDynamicAsset: !!fetchDynamicSchema?.tableName,
+			isDynamicAsset: !!fetchDynamicSchema?.name,
 		};
 
 		// Update layer filters if filter layer type is defined
@@ -355,11 +355,11 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 					pit: tableMeta.data?.pit,
 					...tableMeta.pagination,
 					before:
-						tableMeta.data.rows && tableMeta.pagination?.pageIndex < previousPagination.current.pageIndex
+						tableMeta.data.rows && tableMeta.pagination?.pageIndex < previousPagination?.current?.pageIndex
 							? tableMeta.data.rows[0]?.sort
 							: null,
 					after:
-						tableMeta.data.rows && tableMeta.pagination?.pageIndex > previousPagination.current.pageIndex
+						tableMeta.data.rows && tableMeta.pagination?.pageIndex > previousPagination?.current?.pageIndex
 							? tableMeta.data.rows[tableMeta.data.rows.length - 1]?.sort
 							: null,
 					pageIndex: tableMeta.pagination?.pageIndex,

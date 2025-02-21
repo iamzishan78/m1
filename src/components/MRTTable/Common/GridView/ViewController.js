@@ -14,7 +14,9 @@ class ViewStateController extends StateController {
 	initialize({ Icon, label, client, allViews, isTable = false, styleOverride = null, defaultViewOverride = null }) {
 		//Do not initialize the MapView if it is already initialized.
 		const isInitialized = this.getValue('isInitialized');
-		if (!isTable && isInitialized) {return;}
+		if (!isTable && isInitialized) {
+			return;
+		}
 
 		const userId = globalStateController.getValue('user').mongoId;
 		const userDefaultView = allViews?.find(view => view?.defaultDisplayBy?.includes(userId));

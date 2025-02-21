@@ -39,7 +39,7 @@ const MainGridRightContainer = () => {
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	const handleClick = event => setAnchorEl(event.currentTarget);
-	const handleClose = event => setAnchorEl(null);
+	const handleClose = () => setAnchorEl(null);
 
 	if (shrinkRightColumn) {
 		return null;
@@ -55,10 +55,10 @@ const MainGridRightContainer = () => {
 				setCollapse={() => detailCardController.togglePullout()}
 				targetSourceId={currentAssetRecord?._id}
 				showDescription={false}
-				targetLabel={currentAsset?.tableName}
-				ownerTitle={`${currentAsset?.tableName} Owner`}
+				targetLabel={currentAsset?.name}
+				ownerTitle={`${currentAsset?.name} Owner`}
 				commentsWidth="23vw"
-				pageLink={`/land/customAsset/${removeSpaces(currentAsset?.tableName)}/details/${currentAssetRecord?._id}/documents`}
+				pageLink={`/land/customAsset/${currentAsset?.tableName}/details/${currentAssetRecord?._id}/documents`}
 				viewAllDocuments={!expandedCard}
 				menuComponent={
 					<IconButton className={classes.menuIcon} onClick={handleClick}>
@@ -67,7 +67,7 @@ const MainGridRightContainer = () => {
 				}
 				data={currentAssetRecord}
 				onUpdate={({ owner }) => {
-					callApi('owner', owner);
+					callApi({ key: 'owner', value: owner });
 				}}
 				activityLog={currentAssetRecord?.activityLog || {}}
 				isSource={false}
@@ -90,12 +90,12 @@ const MainGridRightContainer = () => {
 			>
 				<MenuItem
 					className={classes.userMenuItem}
-					onClick={e => {
+					onClick={() => {
 						handleClose();
 						handleExpandClick('deleteConfirmation');
 					}}
 				>
-					{`Delete ${currentAsset?.tableName}`}
+					{`Delete ${currentAsset?.name}`}
 				</MenuItem>
 			</Menu>
 		</>

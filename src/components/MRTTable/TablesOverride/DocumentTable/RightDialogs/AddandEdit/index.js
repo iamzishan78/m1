@@ -12,7 +12,6 @@ import PropTypes from 'prop-types';
 import Slideout from 'components/MRTTable/Common/Slideout';
 import WellIcon from 'components/Shared/svgIcons/well';
 
-
 import { globalStateController } from 'controllers/globalStateController';
 import { slidoutStateController } from 'controllers/slidoutStateController';
 import { tableGlobalController } from 'controllers/tableController';

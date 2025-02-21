@@ -28,6 +28,7 @@ const useStyles = makeStyles({
 });
 
 const filter = createFilterOptions();
+
 const ShapeAutoComplete = ({ fieldData, fieldKey, shapeType, ...other }) => {
 	const classes = useStyles();
 
@@ -143,10 +144,10 @@ const ShapeAutoComplete = ({ fieldData, fieldKey, shapeType, ...other }) => {
 			}}
 			onChange={(event, newValue) => {
 				if (newValue) {
-					callApi(fieldKey, newValue.name);
+					callApi({ key: fieldKey, value: newValue.name });
 				} else {
 					setSearch('');
-					callApi(fieldKey, '');
+					callApi({ key: fieldKey, value: '' });
 				}
 			}}
 			renderInput={params => (

@@ -25,7 +25,7 @@ export default function AssetManagement() {
 	const CustomAssetOverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [{ field: 'assetId', value: selectedAsset?._id }],
-			tableHeading: `${selectedAsset?.tableName}`,
+			tableHeading: `${selectedAsset?.name}`,
 		}),
 		[selectedAsset]
 	);

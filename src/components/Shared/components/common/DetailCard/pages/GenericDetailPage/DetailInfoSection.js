@@ -241,6 +241,7 @@ export default function DetailInfo() {
 					{tabs.map(tab => {
 						return (
 							<span
+								key={tab}
 								className={`${classes.tab} ${selectedTab === tab ? classes.selectedTab : ''}`}
 								onClick={() => setSelectedTab(tab)}
 							>
@@ -252,16 +253,6 @@ export default function DetailInfo() {
 
 				<Box display="flex" justifyContent="flex-end">
 					<ToggleEmptyFieldButton />
-					{/* <h4
-						className={classes.viewAll}
-						onClick={() => {
-							history.push(
-								`/land/customAsset/${removeSpaces(currentAsset?.tableName)}/details/${currentAssetRecord?._id}/detailedInformation`
-							);
-						}}
-					>
-						View All
-					</h4> */}
 				</Box>
 			</Grid>
 

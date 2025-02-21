@@ -1,54 +1,47 @@
-import React, { memo, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { memo } from 'react';
 
 import Button from '@material-ui/core/Button';
 
-import { useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 
-import { removeSpaces } from 'components/MRTTable/utils/helper';
-
-import { tableController } from 'controllers/tableController';
-
-import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
+import { tableController, tableGlobalController } from 'controllers/tableController';
+import AddCustomAssetDialog from 'components/Shared/components/common/DetailCard/RightDialogs/AddCustomAssetDialog';
 
 function DynamicAssetGridToolBar({ tableKey }) {
-	const history = useHistory();
-	const [tableName, setTableName] = useState('');
-
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState(['fetchDynamicSchema']);
 	const tableStateValues = tableState.stateValues;
 
-	useEffect(() => {
-		setTableName(tableStateValues.fetchDynamicSchema.tableName);
-	}, [tableStateValues.fetchDynamicSchema.tableName]);
+	const { name, tableName } = tableStateValues.fetchDynamicSchema || {};
 
-	const [addAndUpdateInRunTimeModel] = useMutation(ADD_RECORD_IN_RUN_TIME_MODEL, {
-		onCompleted: data => {
-			const addedRecord = data?.addRecordInRunTimeModel?.asset || {};
-			if (addedRecord && addedRecord?._id) {
-				const model = removeSpaces(tableName);
-				history.push(`/land/customAsset/${model}/details/${addedRecord?._id}`);
-			}
-		},
-		fetchPolicy: 'no-cache',
-		awaitRefetchQueries: true,
-	});
+	const { stateValues } = tableGlobalController.useState(['dialog']);
+	const { type, isOpen } = stateValues.dialog || {};
 
 	const handleClick = () => {
-		addAndUpdateInRunTimeModel({
-			variables: {
+		tableGlobalController.updateState({
+			dialog: {
+				type: 'addCustomAsset',
 				tableName,
-				record: {},
+				isOpen: true,
+			},
+		});
+	};
+
+	const onClose = () => {
+		tableGlobalController.updateState({
+			dialog: {
+				type: 'addCustomAsset',
+				isOpen: false,
 			},
 		});
 	};
 	return (
 		<>
 			<Button variant="contained" color="primary" onClick={handleClick}>
-				{`+ ADD ${tableName}`}
+				{`+ ADD ${name}`}
 			</Button>
+
+			{type === 'addCustomAsset' && isOpen && <AddCustomAssetDialog onClose={onClose} />}
 		</>
 	);
 }

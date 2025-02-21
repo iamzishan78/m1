@@ -38,17 +38,27 @@ const BottomContainer = () => {
 					props: {
 						overrideMeta: {
 							esIndex: model.associationflatModel,
-							assetName: currentAsset?.tableName,
+							assetName: currentAsset?.name,
 							associatedAssetName: model.modelName,
 							maxTableHeight: tableHeight,
 							CustomToolBar: AssetAssociationToolbar,
 							defaultFilters: [{ field: `${associationKey}._id.keyword`, value: currentAssetRecord?._id }],
 							fetchDynamicSchema: {
-								variables: { tableName: currentAsset?.tableName },
+								variables: { name: currentAsset?.name },
+								name: currentAsset?.name,
 								tableName: currentAsset?.tableName,
 								isAssociatedModel: true,
 								associatedModel: model.modelName,
 								associationKey: mrtDataMappingKey,
+							},
+							deletedKeys: {
+								mainRecord: { key: '_id' },
+								assetTableName: {
+									value: currentAsset.tableName,
+								},
+								associatedAssetName: {
+									value: model.modelName,
+								},
 							},
 						},
 					},
@@ -65,7 +75,7 @@ const BottomContainer = () => {
 				index: 0,
 				value: 'assetInformation',
 				Icon: ContactInformationIcon,
-				label: `${currentAsset?.tableName} Info`,
+				label: `${currentAsset?.name} Info`,
 				showCounts: false,
 				component: <DetailInfo />,
 			},

@@ -163,6 +163,7 @@ const initialStates = {
 	billingPartiesDialog: billingPartiesState,
 	costAllocationDialog: costAllocationState,
 	paymentDialog: paymentState,
+	customAssetDialog: {},
 };
 
 export const sideDialogState = {};

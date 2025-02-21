@@ -3,8 +3,6 @@ import gql from 'graphql-tag';
 export const REMOVECOMMONGRIDFUNCTIONALITY = gql`
 	mutation gridGenericRemove(
 		$tableKey: String
-		$mainAssetName: String
-		$associatedAssetName: String
 		$deletedData: MRTDeletionInput
 		$userId: String
 		$ESVariables: JSON
@@ -13,8 +11,6 @@ export const REMOVECOMMONGRIDFUNCTIONALITY = gql`
 	) {
 		gridGenericRemove(
 			tableKey: $tableKey
-			mainAssetName: $mainAssetName
-			associatedAssetName: $associatedAssetName
 			deletedData: $deletedData
 			userId: $userId
 			ESVariables: $ESVariables

@@ -33,6 +33,7 @@ function AssetAssociationDialog() {
 			isControlColumn: false,
 			isGridDisplayed: true,
 			isDialogDisplayed: true,
+			isRequired: false,
 		},
 	];
 
@@ -92,7 +93,7 @@ function AssetAssociationDialog() {
 		});
 		reset({
 			associatedModels: '',
-			fields: defaultFields,
+			fields: [],
 		});
 	};
 
@@ -126,7 +127,7 @@ function AssetAssociationDialog() {
 
 		upsertAssociatedModels({
 			variables: {
-				tableName: selectedAsset.tableName,
+				name: selectedAsset.name,
 				associatedModels: resultantModels, // Use the updated array
 			},
 		}).then(res => {
@@ -166,7 +167,7 @@ function AssetAssociationDialog() {
 					<div className={classes.header}>
 						<Grid container justify="space-between" direction="row" display="flex">
 							<Grid item>
-								<h3>Associate Models to {selectedAsset?.tableName}</h3>
+								<h3>Associate Models to {selectedAsset?.name}</h3>
 							</Grid>
 							<Grid item xs={6} className={classes.dialogActions}>
 								<IconButton onClick={handleClose}>
@@ -233,15 +234,23 @@ function AssetAssociationDialog() {
 														}
 														return (
 															<div style={{ display: 'flex', flexWrap: 'wrap' }}>
-																<Chip key={selected._id} label={selected.modelName} style={{ margin: 2 }} />
+																<Chip key={selected._id} label={selected.name} style={{ margin: 2 }} />
 															</div>
 														);
+													},
+													MenuProps: {
+														PaperProps: {
+															style: {
+																maxHeight: 300,
+																overflowY: 'auto',
+															},
+														},
 													},
 												}}
 											>
 												{modelsOptions?.map(option => (
 													<MenuItem key={option._id} value={option}>
-														{option.label}
+														{option.name}
 													</MenuItem>
 												))}
 											</TextField>
@@ -249,7 +258,7 @@ function AssetAssociationDialog() {
 									/>
 								</Grid>
 							</Grid>
-							{fields?.length > 1 && (
+							{fields?.length > 0 && (
 								<>
 									<Grid item>
 										<h3>Associated Model Keys</h3>

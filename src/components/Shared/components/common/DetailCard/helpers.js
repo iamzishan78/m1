@@ -8,7 +8,7 @@ export const getAssetFields = (asset, isSummaryField = false) => {
 };
 
 export const getNonEmptyFields = (assetData, fields) => {
-	return fields.filter(
+	return fields?.filter(
 		field =>
 			assetData?.[field?.mappingKey] !== null &&
 			assetData?.[field?.mappingKey] !== undefined &&

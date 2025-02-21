@@ -270,6 +270,28 @@ export const CommonSchema = {
 			return <>{vf_currency_to_fixed(value, CURRENCY_TO_FIXED)}</>;
 		},
 	},
+	BOOLEAN_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		filterSelectOptions: [
+			{ label: 'Yes', value: 'true' },
+			{ label: 'No', value: 'false' },
+		],
+		type: 'boolean',
+		Cell: ({ row, column }) => {
+			const value = row.getValue(column.id);
+			if (!value) {
+				return null;
+			}
+
+			const isTrue = [true, 'true', 'True'].includes(value);
+			return <>{isTrue ? 'Yes' : 'No'}</>;
+		},
+	},
 	SELECT_STRING_COLUMN: {
 		size: 250,
 		isPinned: false,

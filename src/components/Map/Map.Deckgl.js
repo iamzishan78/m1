@@ -25,7 +25,6 @@ import { viewStateController } from 'components/MRTTable/Common/GridView/ViewCon
 import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
-import { detailCardController } from 'controllers/detailCardController';
 import { globalStateController } from 'controllers/globalStateController';
 import { layerFiltersController } from 'controllers/layerFiltersController';
 import { layerController } from 'controllers/layerStateController';
@@ -49,6 +48,7 @@ import { SRMode } from './MapBoxDrawRotate/index';
 import { AppContext } from '../../AppContext';
 import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
+import { GET_RECORD_FROM_RUN_TIME_MODEL } from 'graphQL/useQueryRunTimeModel';
 import { copy } from '../Shared/functions';
 import ZoomFault from './components/ZoomFault';
 import { extractUniqueFilters } from './DeckGL/helpers/common';
@@ -155,9 +155,6 @@ function Map({
 		['wellListFromSearch', 'baseMapLayers', 'checkedBaseLayers', 'layers'],
 		'layerStateValues'
 	);
-	const {
-		stateValues: { currentAssetRecord },
-	} = detailCardController.useState(['currentAssetRecord'], 'stateValues');
 
 	const [stateApp, setStateApp] = useContext(AppContext);
 
@@ -401,6 +398,41 @@ function Map({
 				id: paramId,
 			},
 		});
+
+		const { data: assetRecord } = await client.query({
+			query: GET_RECORD_FROM_RUN_TIME_MODEL,
+			variables: {
+				_id: paramId,
+				tableName: type,
+			},
+		});
+
+		if (assetRecord?.getRecordFromRunTimeModel?.asset?.assetShape) {
+			const asset = assetRecord?.getRecordFromRunTimeModel?.asset;
+			const assetShape = asset?.assetShape;
+			let feature = copy(assetShape.shapeJson);
+
+			feature.id = asset._id;
+			feature.properties.id = asset._id;
+			feature = { ...feature.properties, ...feature, feature };
+
+			const interval = setInterval(() => {
+				if (window.mapRef) {
+					findBoundsMap([feature], window.mapRef);
+					if (feature?.geometry?.type === 'Point') drawWellBoundary(feature?.geometry?.coordinates);
+					else drawBoundary(feature);
+					layerController.updateState({ clickedFeature: { object: { id: paramId } } });
+					popupController.updateState({
+						selectedShape: feature,
+						expandedCard: true,
+						popupOpen: false,
+					});
+					clearInterval(interval);
+				}
+			}, 100);
+			return;
+		}
+
 		if (layer?.customLayer) {
 			let layers = layerStateValues.layers;
 			if (!layers || layers?.length === 0) {
@@ -467,12 +499,11 @@ function Map({
 
 	useEffect(() => {
 		const clickedFeature = layerController.getValue('clickedFeature');
-		const isGenericAsset = currentAssetRecord?.assetShape?.isGenericAssetShape;
 		if (paramId && clickedFeature?.object?.id !== paramId) {
 			try {
 				if (type === 'wells') {
 					getElasticWell(paramId);
-				} else if (!isGenericAsset) {
+				} else {
 					getCustomLayer(paramId);
 				}
 			} catch {

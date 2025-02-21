@@ -5,10 +5,11 @@ import PropTypes from 'prop-types';
 
 import { copy } from 'utils/helper';
 
+import BooleanField from './Fields/BooleanField';
 import DateField from './Fields/DateField';
 import OwnerField from './Fields/OwnerField';
-import ShapeAutoComplete from './Fields/shapeAutoComplete';
-import SimpleSelectField from './Fields/SimpleSelectFIeld';
+import ShapeAutoComplete from './Fields/ShapeAutoComplete';
+import SimpleSelectField from './Fields/SimpleSelectField';
 import SummaryAutoComplete from './Fields/SummaryAutoComplete';
 import SummaryDropdown from './Fields/SummaryDropdown';
 import SummaryTextField from './Fields/SummaryTextField';
@@ -49,22 +50,10 @@ const GenericFields = ({ field: fieldObj, summaryDataValues }) => {
 			);
 
 		case 'date':
-			return (
-				<DateField
-					fieldData={get(summaryDataValues, field.key)}
-					field={field}
-					// Add date-specific props here
-				/>
-			);
+			return <DateField fieldData={get(summaryDataValues, field.key)} field={field} />;
 
 		case 'simpleSelect':
-			return (
-				<SimpleSelectField
-					fieldData={get(summaryDataValues, field.key)}
-					field={field}
-					// Add simple select-specific props here
-				/>
-			);
+			return <SimpleSelectField fieldData={get(summaryDataValues, field.key)} field={field} />;
 
 		case 'owner':
 			return <OwnerField fieldData={get(summaryDataValues, field.key)} field={field} />;
@@ -93,10 +82,17 @@ const GenericFields = ({ field: fieldObj, summaryDataValues }) => {
 				/>
 			);
 
-		// Add more cases for other field types
+		case 'boolean':
+			return <BooleanField fieldData={get(summaryDataValues, field.key)} field={field} />;
+
+		case 'json':
+			return <div>JSON Field Type is not supported yet</div>;
+
+		case 'array':
+			return <div>Array Field Type is not supported yet</div>;
 
 		default:
-			return <div>{`Unsupported Field Type : ${field.type}`}</div>;
+			return <div>{`Unsupported Field Type: ${field.type}`}</div>;
 	}
 };
 
@@ -104,9 +100,27 @@ GenericFields.propTypes = {
 	field: PropTypes.shape({
 		_id: PropTypes.string,
 		category: PropTypes.string,
-		key: PropTypes.string.isRequired,
 		mappingKey: PropTypes.string,
-		keyType: PropTypes.string,
+		key: PropTypes.string.isRequired,
+		keyType: PropTypes.oneOf([
+			'text',
+			'string',
+			'textarea',
+			'email',
+			'currency',
+			'number',
+			'autocomplete',
+			'date',
+			'simpleSelect',
+			'owner',
+			'user',
+			'dropdown',
+			'multiselect',
+			'shapeautocomplete',
+			'json',
+			'boolean',
+			'array',
+		]),
 		type: PropTypes.string,
 		options: PropTypes.array,
 		payload: PropTypes.object,

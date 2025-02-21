@@ -31,6 +31,7 @@ const useStyles = makeStyles({
 		},
 	},
 });
+
 function SimpleSelectField({ fieldData, field }) {
 	const classes = useStyles();
 	const {
@@ -56,7 +57,7 @@ function SimpleSelectField({ fieldData, field }) {
 			fullWidth
 			onChange={e => {
 				setValue(e.target.value);
-				callApi(field.key, e.target.value);
+				callApi({ key: field.key, value: e.target.value, field, previousValue: fieldData, resetFn: setValue });
 			}}
 		>
 			{field.options.map(opt => (

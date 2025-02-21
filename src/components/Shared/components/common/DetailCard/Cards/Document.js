@@ -57,11 +57,11 @@ export default function DocumentsCard() {
 	return (
 		<>
 			{currentAssetRecord ? (
-				<div variant="outlined" style={{ height: '100%', marginTop: '10px' }}>
+				<div style={{ height: '100%', marginTop: '10px' }}>
 					{/* Height as 100% and marginTop as 30px*/}
 					<ViewDocuments
 						contactId={id ?? paramId}
-						relatedObjectType={currentAsset?.tableName}
+						relatedObjectType={currentAsset?.name}
 						user_id={stateApp.user.email}
 						openDeleteConfirmDialog={openDeleteConfirmDialog}
 						handleClose={handleDeleteCancel}

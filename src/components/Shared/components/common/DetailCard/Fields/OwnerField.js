@@ -68,7 +68,7 @@ function OwnerField({ fieldData, field }) {
 	useEffect(() => {
 		const entity = get(contactEntityData, 'contactEntity.entity');
 		if (entity?._id) {
-			callApi(field.key, entity?._id);
+			callApi({ key: field.key, value: entity?._id, field, previousValue: prevValue?._id });
 		}
 	}, [contactEntityData, callApi, field.key]);
 
@@ -77,11 +77,8 @@ function OwnerField({ fieldData, field }) {
 			nameAutValue={prevValue?.contactId ? prevValue?.name : ''}
 			className={classes.field}
 			setNameAutValue={value => {
-				if (value) {
-					contactEntity(value?._id);
-				} else {
-					callApi(field.key, null);
-				}
+				if (value) contactEntity(value?._id);
+				else callApi({ key: field.key, value: null, field, previousValue: prevValue?._id });
 			}}
 			renderInput={params => (
 				<TextField

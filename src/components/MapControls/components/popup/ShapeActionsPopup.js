@@ -35,7 +35,7 @@ import { globalStateController } from 'controllers/globalStateController';
 import { layerController } from 'controllers/layerStateController';
 import { mapControlsController } from 'controllers/mapControlsController';
 
-import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
+import { ADD_RECORD_IN_RUN_TIME_MODEL, UPDATE_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
@@ -48,6 +48,9 @@ import ShapeTypeMenu from './ShapeTypeMenu';
 import CheckCircle from '../../../Shared/svgIcons/check-circle';
 import FilterAltIcon from '../../../Shared/svgIcons/FilterAltIcon';
 import { drawBoundary, clearSelectedAbstracts } from '../DrawShapes/drawShapesHelpers';
+import { tableGlobalController } from 'controllers/tableController';
+import AddCustomAssetDialog from 'components/Shared/components/common/DetailCard/RightDialogs/AddCustomAssetDialog';
+import { detailCardController } from 'controllers/detailCardController';
 
 const ShapeActionsPopup = props => {
 	const dispatch = useDispatch();
@@ -55,6 +58,8 @@ const ShapeActionsPopup = props => {
 	const { classes, children, onlyAddShape } = props;
 
 	const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
+	const { stateValues } = tableGlobalController.useState(['dialog']);
+	const { type, isOpen } = stateValues.dialog || {};
 
 	const drawState = drawController.useState([
 		'currentFeature',
@@ -66,6 +71,7 @@ const ShapeActionsPopup = props => {
 		'shapeActionsFilterSelected',
 		'selectedAction',
 		'shapeToExtend',
+		'isEditingShape',
 	]);
 	const {
 		featureToEdit,
@@ -77,7 +83,16 @@ const ShapeActionsPopup = props => {
 		shapeActionsFilterSelected,
 		selectedAction,
 		shapeToExtend,
+		isEditingShape,
 	} = drawState.stateValues;
+
+	const {
+		stateValues: { currentAssetRecord },
+	} = detailCardController.useState(['currentAssetRecord'], 'stateValues');
+
+	const {
+		globalStateValues: { currentAsset },
+	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
 
 	const [isDeleteModal, setDeleteModal] = useState(false);
 	const [error, setError] = useState(false);
@@ -143,6 +158,11 @@ const ShapeActionsPopup = props => {
 	});
 
 	const [addRecordInRunTimeModel] = useMutation(ADD_RECORD_IN_RUN_TIME_MODEL, {
+		fetchPolicy: 'no-cache',
+		awaitRefetchQueries: true,
+	});
+
+	const [updateRecordInRunTimeModel] = useMutation(UPDATE_RECORD_IN_RUN_TIME_MODEL, {
 		fetchPolicy: 'no-cache',
 		awaitRefetchQueries: true,
 	});
@@ -265,10 +285,31 @@ const ShapeActionsPopup = props => {
 	);
 
 	const saveAndOpenMapAssetShapeDetail = useCallback(
-		(...props) =>
-			drawController.saveAndOpenMapAssetShapeDetail(addRecordInRunTimeModel, dispatch, history, abstractData, ...props),
+		({ currentAsset, customAssetData }) => {
+			drawController.saveAndOpenMapAssetShapeDetail({
+				addRecordInRunTimeModel,
+				dispatch,
+				history,
+				abstractData,
+				currentAsset,
+				customAssetData,
+			});
+		},
 		[addRecordInRunTimeModel, dispatch, history, abstractData]
 	);
+
+	const updateAndOpenMapAssetShape = useCallback(() => {
+		if (currentAssetRecord) {
+			drawController.confirmShapeEditing({
+				dispatch,
+				history,
+				updateRecordInRunTimeModel,
+				currentAssetRecord,
+				currentAsset,
+				isEditCustomAsset: true,
+			});
+		}
+	}, [addRecordInRunTimeModel, dispatch, history, abstractData, currentAssetRecord]);
 
 	const deleteAOI = () => {
 		// Turning off the confirmation modal
@@ -277,7 +318,7 @@ const ShapeActionsPopup = props => {
 		// Delete request for actual AOI
 		deleteCustomLayer({
 			variables: {
-				customLayerId: selectedAoi.id || selectedAoi._id,
+				customLayerId: selectedAoi?.id || selectedAoi?._id,
 				customLayer: {
 					IsDeleted: true,
 				},
@@ -324,61 +365,75 @@ const ShapeActionsPopup = props => {
 			>
 				<MenuItem disabled>Shape Layer Type</MenuItem>
 
-				<FeatureFlag feature={FEATURES.AGREEMENT_LAYER}>
-					<MenuItem
-						id="agreementItem"
-						onClick={event => {
-							clearSelectedAbstracts();
-							setAgreementAnchorEl(event.currentTarget);
-						}}
-					>
-						Agreement
-					</MenuItem>
-				</FeatureFlag>
+				{!drawController.isLine() && !drawController.isPoint() && (
+					<>
+						<FeatureFlag feature={FEATURES.AGREEMENT_LAYER}>
+							<MenuItem
+								id="agreementItem"
+								onClick={event => {
+									clearSelectedAbstracts();
+									setAgreementAnchorEl(event.currentTarget);
+								}}
+							>
+								Agreement
+							</MenuItem>
+						</FeatureFlag>
 
-				<MenuItem
-					id="tractItem"
-					onClick={e => {
-						if (showAddShapePopup) {
-							setTractAnchorEl(e.currentTarget);
-						} else {
-							clearSelectedAbstracts();
-							saveAndOpenParcelDetail(upsertCustomLayer, dispatch, history);
-						}
-					}}
-				>
-					Tract
-				</MenuItem>
+						<MenuItem
+							id="tractItem"
+							onClick={e => {
+								if (showAddShapePopup) {
+									setTractAnchorEl(e.currentTarget);
+								} else {
+									clearSelectedAbstracts();
+									saveAndOpenParcelDetail(upsertCustomLayer, dispatch, history);
+								}
+							}}
+						>
+							Tract
+						</MenuItem>
 
-				<MenuItem
-					id="unitBoundaryItem"
-					onClick={e => {
-						if (showAddShapePopup) {
-							setUnitAnchorEl(e.currentTarget);
-						} else {
-							clearSelectedAbstracts();
-							saveAndOpenShapeDetail('unit');
-						}
-					}}
-				>
-					Unit Boundary
-				</MenuItem>
+						<MenuItem
+							id="unitBoundaryItem"
+							onClick={e => {
+								if (showAddShapePopup) {
+									setUnitAnchorEl(e.currentTarget);
+								} else {
+									clearSelectedAbstracts();
+									saveAndOpenShapeDetail('unit');
+								}
+							}}
+						>
+							Unit Boundary
+						</MenuItem>
+					</>
+				)}
 
 				{/* Dynamic related map assets */}
-				{mapCreationAsset.map(option => (
-					<MenuItem
-						key={option._id}
-						value={option.tableName}
-						onClick={e => {
-							e.stopPropagation();
-							globalStateController.updateState({ currentAsset: option });
-							clearSelectedAbstracts();
-							saveAndOpenMapAssetShapeDetail(option);
-						}}
-					>
-						{option.tableName}
-					</MenuItem>
-				))}
+				{mapCreationAsset
+					?.filter(asset => asset?.shapeType === currentFeature?.geometry?.type)
+					?.map(option => (
+						<MenuItem
+							key={option._id}
+							value={option.name}
+							onClick={e => {
+								e.stopPropagation();
+								globalStateController.updateState({
+									currentAsset: option,
+								});
+								setAnchorEl(null);
+								tableGlobalController.updateState({
+									dialog: {
+										type: 'addCustomAsset',
+										tableName: option?.tableName,
+										isOpen: true,
+									},
+								});
+							}}
+						>
+							{option.name}
+						</MenuItem>
+					))}
 			</Menu>
 
 			<Menu
@@ -449,7 +504,7 @@ const ShapeActionsPopup = props => {
 					{drawController.isLine() ? 'Calc. Dist' : isAoi ? 'AOI Area' : 'Calc. Area'}
 				</span>{' '}
 				{calculateLandArea(currentFeature)}
-				<span className={`${classes.actions} ${drawController.isLine() ? classes.gray : ''}`}>
+				<span className={`${classes.actions}`}>
 					{isShapeResizeMode ? (
 						<ShapeEditActions
 							shapeEdit={shapeEdit}
@@ -458,92 +513,105 @@ const ShapeActionsPopup = props => {
 						/>
 					) : (
 						<>
-							<FeatureFlag feature={FEATURES.MAPSHAPEEXPORT}>
-								<Tooltip title="Bulk Actions" className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
+							{!drawController.isLine() && !drawController.isPoint() && (
+								<>
+									<FeatureFlag feature={FEATURES.MAPSHAPEEXPORT}>
+										<Tooltip
+											title="Bulk Actions"
+											className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}
+										>
+											<IconButton
+												size="small"
+												disabled={onlyAddShape ? true : enableEditOnly}
+												aria-label="Parcel"
+												id="convert-button"
+												aria-controls="convert-button"
+												aria-haspopup="true"
+												onClick={event => {
+													setAnchorConvertEl(event.currentTarget);
+													setShowConvertMenu(true);
+												}}
+											>
+												<OfflineBoltIcon />
+											</IconButton>
+										</Tooltip>
+									</FeatureFlag>
+
+									<Tooltip title="Grid" className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
+										<IconButton
+											disabled={onlyAddShape ? true : enableEditOnly}
+											size="small"
+											onClick={() => drawController.actionShowWellsAndOwners(dispatch)}
+											aria-label="Grid"
+											data-testid="filter-on-grid"
+										>
+											<GridOnIcon className={mapControlsStateValues.mapGridCardActivated ? 'selected' : ''} />
+										</IconButton>
+									</Tooltip>
+
+									<Tooltip title="Filter" className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
+										<IconButton
+											size="small"
+											disabled={onlyAddShape ? true : enableEditOnly}
+											onClick={drawController.actionFilter}
+											aria-label="Filter"
+											data-testid="filter-on-map"
+										>
+											<FilterAltIcon className={shapeActionsFilterSelected ? 'selected' : ''} />
+										</IconButton>
+									</Tooltip>
+								</>
+							)}
+							{!isEditingShape && (
+								<Tooltip
+									title="Add Shape to Layer"
+									className={
+										enableEditOnly
+											? classes.disableAction
+											: anchorEl?.getAttribute('id') === 'parcel-button'
+												? classes.selectedAction
+												: ''
+									}
+								>
+									<IconButton
+										size="small"
+										disabled={enableEditOnly}
+										data-testid="add-shape-to-layer"
+										aria-label="Parcel"
+										id="parcel-button"
+										aria-controls="parcel-button"
+										aria-haspopup="true"
+										aria-expanded={isCreateParcelMenu ? 'true' : undefined}
+										ref={addShapeToLayerButton}
+										onClick={event => {
+											setAnchorEl(event.currentTarget);
+										}}
+									>
+										<LayerIcon color="secondary" />
+									</IconButton>
+								</Tooltip>
+							)}
+
+							{!drawController.isLine() && !drawController.isPoint() && (
+								<Tooltip
+									title="Area of Interest"
+									className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}
+								>
 									<IconButton
 										size="small"
 										disabled={onlyAddShape ? true : enableEditOnly}
-										aria-label="Parcel"
-										id="convert-button"
-										aria-controls="convert-button"
-										aria-haspopup="true"
-										onClick={event => {
-											setAnchorConvertEl(event.currentTarget);
-											setShowConvertMenu(true);
-										}}
+										onClick={drawController.actionAOI}
+										aria-label="Area of Interest"
 									>
-										<OfflineBoltIcon />
+										<span style={{ color: 'white' }}>AOI</span>
 									</IconButton>
 								</Tooltip>
-							</FeatureFlag>
-
-							<Tooltip title="Grid" className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
-								<IconButton
-									disabled={onlyAddShape ? true : enableEditOnly}
-									size="small"
-									onClick={() => drawController.actionShowWellsAndOwners(dispatch)}
-									aria-label="Grid"
-									data-testid="filter-on-grid"
-								>
-									<GridOnIcon className={mapControlsStateValues.mapGridCardActivated ? 'selected' : ''} />
-								</IconButton>
-							</Tooltip>
-
-							<Tooltip title="Filter" className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
-								<IconButton
-									size="small"
-									disabled={onlyAddShape ? true : enableEditOnly}
-									onClick={drawController.actionFilter}
-									aria-label="Filter"
-									data-testid="filter-on-map"
-								>
-									<FilterAltIcon className={shapeActionsFilterSelected ? 'selected' : ''} />
-								</IconButton>
-							</Tooltip>
-
-							<Tooltip
-								title="Add Shape to Layer"
-								className={
-									enableEditOnly
-										? classes.disableAction
-										: anchorEl?.getAttribute('id') === 'parcel-button'
-											? classes.selectedAction
-											: ''
-								}
-							>
-								<IconButton
-									size="small"
-									disabled={enableEditOnly}
-									data-testid="add-shape-to-layer"
-									aria-label="Parcel"
-									id="parcel-button"
-									aria-controls="parcel-button"
-									aria-haspopup="true"
-									aria-expanded={isCreateParcelMenu ? 'true' : undefined}
-									ref={addShapeToLayerButton}
-									onClick={event => {
-										setAnchorEl(event.currentTarget);
-									}}
-								>
-									<LayerIcon color="secondary" />
-								</IconButton>
-							</Tooltip>
-
-							<Tooltip title="Area of Interest" className={onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
-								<IconButton
-									size="small"
-									disabled={onlyAddShape ? true : enableEditOnly}
-									onClick={drawController.actionAOI}
-									aria-label="Area of Interest"
-								>
-									<span style={{ color: 'white' }}>AOI</span>
-								</IconButton>
-							</Tooltip>
+							)}
 						</>
 					)}
 
 					<span className={classes.divider} />
-					{currentFeature && (
+					{currentFeature && !drawController.isPoint() && (
 						<Tooltip
 							title="Add shape"
 							className={onlyAddShape || selectedAction === 'edit-aoi' ? classes.disableAction : ''}
@@ -554,6 +622,11 @@ const ShapeActionsPopup = props => {
 								disabled={onlyAddShape}
 								data-testid="add-shape"
 								onClick={() => {
+									// Set line mode for line shape
+									if (drawController.isLine()) {
+										window.drawRef?.changeMode('draw_line_string');
+										return;
+									}
 									window.drawRef?.changeMode('static');
 									drawController.updateState({ addShape: true });
 								}}
@@ -620,7 +693,8 @@ const ShapeActionsPopup = props => {
 											shapeEditMode === 'redraw' ||
 											shapeEditMode === 'fullEdit'
 										) {
-											drawController.confirmShapeEditing(updateCustomLayer, dispatch, history);
+											if (currentAssetRecord) updateAndOpenMapAssetShape();
+											else drawController.confirmShapeEditing({ updateCustomLayer, dispatch, history });
 										}
 									}}
 								>
@@ -676,6 +750,20 @@ const ShapeActionsPopup = props => {
 						setExportCSVModal(false);
 						dispatch(resetShapeOwnerAction());
 					}}
+				/>
+			)}
+
+			{type === 'addCustomAsset' && isOpen && (
+				<AddCustomAssetDialog
+					onClose={() => {
+						tableGlobalController.updateState({
+							dialog: {
+								type: 'addCustomAsset',
+								isOpen: false,
+							},
+						});
+					}}
+					onClickAddHandler={saveAndOpenMapAssetShapeDetail}
 				/>
 			)}
 		</>

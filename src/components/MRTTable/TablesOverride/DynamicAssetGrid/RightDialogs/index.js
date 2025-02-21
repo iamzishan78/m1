@@ -57,7 +57,7 @@ function DynamicAssetTableDialogs() {
 					columns={rest.columns}
 					onClose={handleCloseDialog}
 					onSubmit={onSubmit}
-					tableName={rest.tableName}
+					name={rest.name}
 				/>
 			)}
 		</>

@@ -39,6 +39,8 @@ const Header = () => {
 		if (controlColumnKey && currentAssetRecord) {
 			return currentAssetRecord[controlColumnKey];
 		}
+
+		return null;
 	};
 
 	if (!currentAssetRecord) {
@@ -72,7 +74,7 @@ const Header = () => {
 						<Tags
 							width="100%"
 							targetSourceId={currentAssetRecord?._id}
-							targetLabel={currentAsset?.tableName}
+							targetLabel={currentAsset?.name}
 							publicLeftBottom
 							onlyTags
 						/>

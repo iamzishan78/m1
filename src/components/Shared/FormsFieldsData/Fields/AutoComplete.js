@@ -112,7 +112,8 @@ function AutoCompleteComponent({ control, item, watch, error }) {
 						}
 						value={options.find(option => option.value === value?.toString()) || null}
 						onChange={(e, option) => {
-							onChange ? onChange(option?.value) : onInputChange(option ? option.value : null);
+							onChange?.(option?.value);
+							onInputChange(option ? option.value : null);
 						}}
 						renderInput={params => (
 							<TextField
@@ -128,6 +129,7 @@ function AutoCompleteComponent({ control, item, watch, error }) {
 								onBlur={onBlur}
 								inputRef={ref}
 								error={required && !watchAutoComplete && error}
+								helperText={error?.message}
 							/>
 						)}
 					/>

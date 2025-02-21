@@ -102,13 +102,13 @@ export default function ShapeCardProvider({ type }) {
 										dataCustomLayer={dataCustomLayer}
 									/>
 								)}
+
+								{popupVals?.selectedShape?.isGenericAssetShape && <GenericDetailCard />}
 							</Suspense>
 						</CardContent>
 					</Card>
 				</div>
 			)}
-
-			{popupVals?.selectedShape?.isGenericAssetShape && <GenericDetailCard />}
 		</>
 	);
 }

@@ -28,9 +28,9 @@ const AssetCustomEntitiesMeta = {
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'tableName.keyword',
-			accessorFn: row => row?.tableName,
-			id: 'tableName',
+			name: 'name.keyword',
+			accessorFn: row => row?.name,
+			id: 'name',
 			header: 'Asset Name',
 		},
 		{
@@ -39,6 +39,13 @@ const AssetCustomEntitiesMeta = {
 			accessorFn: row => row?.creationPlace,
 			id: 'creationPlace',
 			header: 'Creation Place',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'shapeType.keyword',
+			accessorFn: row => row?.shapeType,
+			id: 'shapeType',
+			header: 'Shape Type',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,

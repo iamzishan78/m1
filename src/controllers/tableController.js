@@ -13,7 +13,7 @@ import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectChec
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
-import { formatGridViewToMRT, removeSpaces } from 'components/MRTTable/utils/helper';
+import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 import CustomTypography from 'components/Shared/FormsFieldsData/Fields/CustomTypography';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
@@ -213,38 +213,49 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 				key = `${key}.name`;
 			}
 
-			const model = removeSpaces(modelName);
-
-			return {
-				...CommonSchema.STRING_COLUMN,
-				name: ['string', 'user'].includes(item.keyType) ? `${key}.keyword` : key,
+			const commonProperties = {
+				name: key,
 				accessorKey: key,
 				id: key,
 				header: item?.label,
 				type: item?.keyType,
 				size: 350,
 				isPinned: !!item?.isControlColumn,
-				Cell: ({ renderedCellValue, row }) => {
-					if (item?.isControlColumn) {
-						const id = fetchDynamicSchema.isAssociatedModel
-							? row?.original?.[fetchDynamicSchema?.associationKey]?._id
-							: row.getValue('_id');
-						return (
-							<ColumnWithLink
-								value={renderedCellValue}
-								link={`/land/customAsset/${model}/details/${id}`}
-								onClick={e => {
-									e.stopPropagation();
-									detailCardController.setBottomSelectedTab(0);
-								}}
-							/>
-						);
-					} else {
-						let value = item.keyType === 'date' ? formatDate(renderedCellValue) : renderedCellValue;
-						return <>{value}</>;
-					}
-				},
 			};
+
+			switch (item.keyType) {
+				case 'boolean':
+					return {
+						...CommonSchema.BOOLEAN_COLUMN,
+						...commonProperties,
+					};
+
+				default:
+					return {
+						...CommonSchema.STRING_COLUMN,
+						...commonProperties,
+						Cell: ({ renderedCellValue, row }) => {
+							if (item?.isControlColumn) {
+								const id = fetchDynamicSchema.isAssociatedModel
+									? row?.original?.[fetchDynamicSchema?.associationKey]?._id
+									: row.getValue('_id');
+								return (
+									<ColumnWithLink
+										value={renderedCellValue}
+										link={`/land/customAsset/${modelName}/details/${id}`}
+										onClick={e => {
+											e.stopPropagation();
+											detailCardController.setBottomSelectedTab(0);
+										}}
+									/>
+								);
+							} else {
+								let value = item.keyType === 'date' ? formatDate(renderedCellValue) : renderedCellValue;
+								return <>{value}</>;
+							}
+						},
+					};
+			}
 		});
 
 	// Filter dummy columns

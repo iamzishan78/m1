@@ -45,6 +45,7 @@ const useStyles = makeStyles(theme => ({
 	dealOwnerLabel: {
 		fontWeight: 'bold',
 		fontSize: '15px',
+		overflowWrap: 'break-word',
 	},
 }));
 

@@ -18,11 +18,12 @@ const SummaryUsersList = ({ fieldData, field }) => {
 		let updatedvalue = user?.value || '';
 
 		if (!user) {
-			callApi(field.key, null);
+			callApi({ key: field.key, value: null, field, previousValue: fieldData?._id, resetFn: setValue });
+			if (!field?.isRequired) setValue(updatedvalue);
 		} else if (user?.value !== fieldData?._id) {
-			callApi(field.key, user?.value);
+			callApi({ key: field.key, value: user?.value, field, previousValue: fieldData?._id, resetFn: setValue });
+			setValue(updatedvalue);
 		}
-		setValue(updatedvalue);
 	};
 
 	useEffect(() => {
