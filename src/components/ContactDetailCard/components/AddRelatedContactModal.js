@@ -50,7 +50,7 @@ export default function AddRelatedContactModal(props) {
 		fetchPolicy: 'no-cache',
 	});
 	const [addContact, { data: response, loading: isSubmitting }] = useMutation(ADD_RELATED_CONTACT, {
-		refetchQueries: ['getContactSummary'],
+		refetchQueries: ['getContactSummary', 'getContact'],
 		onCompleted: () => {
 			tableGlobalController.refetch();
 		},
@@ -102,7 +102,7 @@ export default function AddRelatedContactModal(props) {
 				relatedObject: props.relatedObject,
 				userId,
 			},
-			refetchQueries: ['getContactSummary'],
+			refetchQueries: ['getContactSummary', 'getContact'],
 			awaitRefetchQueries: true,
 		});
 	};

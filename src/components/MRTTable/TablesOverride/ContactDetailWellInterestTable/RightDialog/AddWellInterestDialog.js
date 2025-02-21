@@ -114,7 +114,7 @@ function AddWellInterestDialog(props) {
 			handleClose();
 			refetchTable();
 		},
-		refetchQueries: ['getContactWells', 'getContactWellCardDetail', 'getDbData'],
+		refetchQueries: ['getContactWells', 'getContactWellCardDetail', 'getDbData', 'getContactSummary', 'getContact'],
 		awaitRefetchQueries: true,
 	});
 	const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, {
@@ -284,7 +284,7 @@ function AddWellInterestDialog(props) {
 						nra: formRoyaltyAcres,
 					},
 				},
-				refetchQueries: ['getContactWells', 'getContactWellCardDetail', 'getDbData', 'getContactSummary'],
+				refetchQueries: ['getContactWells', 'getContactWellCardDetail', 'getDbData', 'getContactSummary', 'getContact'],
 				awaitRefetchQueries: true,
 			});
 		}
