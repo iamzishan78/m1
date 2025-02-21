@@ -244,7 +244,7 @@ function AssociationDialog() {
 				</Button>
 				<Button
 					className={classes.secondary}
-					disabled={!selectedOption}
+					disabled={isEmpty(selectedOption)}
 					onClick={addAssociatedDataHandler}
 					color="secondary"
 					style={{ marginBottom: '40px', marginRight: '20px', bottom: 0 }}
