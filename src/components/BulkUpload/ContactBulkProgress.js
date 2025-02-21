@@ -155,6 +155,7 @@ const ContactBulkProgress = () => {
         // Determine message for different job types
         if (name === 'idiCore') {
           message = lastMessage;
+          refetchHelper(['getContactPurchaseData']);
         }
         else if (type === 'contacts') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Contacts creation completed" : "Contacts creation failed";
