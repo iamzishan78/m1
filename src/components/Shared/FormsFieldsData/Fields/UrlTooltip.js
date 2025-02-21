@@ -22,6 +22,7 @@ const UrlTooltip = ({ value, handleMouseEnter, handleMouseLeave, containerStyles
 				borderRadius: '4px',
 				zIndex: 1,
 				boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+				fontSize: 'medium',
 				...containerStyles,
 			}}
 			onMouseEnter={handleMouseEnter}

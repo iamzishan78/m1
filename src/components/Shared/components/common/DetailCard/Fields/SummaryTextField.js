@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-
-import { TextField, InputAdornment, CircularProgress } from '@material-ui/core';
+import PropTypes from 'prop-types';
+import { InputAdornment, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Autorenew as AutorenewIcon } from '@material-ui/icons';
 
 import { isEqual } from 'lodash';
+import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
@@ -81,16 +82,11 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 			callApi({ key: 'custom_data', value: customData, originalKey: field.key, field, fieldData, resetFn: setValue });
 	};
 
-	const handleBlur = event => {
-		let currValue = event.target.value;
-		if (currValue && field.type === 'number' && !isNaN(Number(currValue))) {
-			currValue = Number(currValue);
-		}
+	const handleBlur = currValue => {
 		upDateField(currValue);
 	};
 
-	const handleChange = ({ target }) => {
-		let updatedvalue = target.value;
+	const handleChange = updatedvalue => {
 		if (updatedvalue && field.type === 'number' && !isNaN(Number(updatedvalue))) {
 			setValue(updatedvalue);
 		} else {
@@ -110,49 +106,68 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 	}, [fieldData]);
 
 	return (
-		<TextField
-			id={`field-${field.key}`}
-			variant="outlined"
-			margin="dense"
-			type={field.type}
-			multiline={field.multiline}
+		<CustomTextField
 			rows={field.rows}
-			fullWidth
-			InputLabelProps={{
-				shrink: true,
+			id={`field-${field.key}`}
+			fieldEvents={{
+				onChange: handleChange,
+				onKeyUp: handleKeyUp,
+				onBlur: handleBlur,
 			}}
-			onBlur={handleBlur}
-			onChange={handleChange}
-			onKeyUp={handleKeyUp}
-			disabled={field.disabled}
-			// className={`${field.isOverRideable ? 'baseValueChanged' : ''}`}
-			className={`${classes.field} ${field.isOverRideable && isChangedValue ? classes.baseValueChanged : null}`}
-			value={value}
-			InputProps={{
-				inputComponent: field.type === 'currency' ? CurrencyFormatCustom : undefined,
-				startAdornment:
-					field.type === 'currency' && !value ? <InputAdornment position="start">$</InputAdornment> : undefined,
-				endAdornment:
-					loadingField && loadingField === field?.key ? (
-						<CircularProgress size={22} color="secondary" />
-					) : (
-						<>
-							{field.isOverRideable && isChangedValue && (
-								<AutorenewIcon
-									className={classes.hoverPointer}
-									htmlColor="#757575"
-									onClick={() => {
-										const renewValue = renewFunction(field.key);
-										setValue(renewValue || 0);
-										upDateField(renewValue || 0);
-									}}
-								/>
-							)}
-						</>
-					),
+			fieldConfig={{
+				variant: 'outlined',
+				margin: 'dense',
+				size: 'small',
+				type: field.type,
+				multiline: field.multiline,
+				disabled: field.disabled,
+				customStyleClass: `${classes.field} ${field.isOverRideable && isChangedValue ? classes.baseValueChanged : null}`,
+			}}
+			fieldAttributes={{
+				value: value,
+				InputLabelProps: {
+					shrink: true,
+				},
+				InputProps: {
+					inputComponent: field.type === 'currency' ? CurrencyFormatCustom : undefined,
+					startAdornment:
+						field.type === 'currency' && !value ? <InputAdornment position="start">$</InputAdornment> : undefined,
+					endAdornment:
+						loadingField && loadingField === field?.key ? (
+							<CircularProgress size={22} color="secondary" />
+						) : (
+							<>
+								{field.isOverRideable && isChangedValue && (
+									<AutorenewIcon
+										className={classes.hoverPointer}
+										htmlColor="#757575"
+										onClick={() => {
+											const renewValue = renewFunction(field.key);
+											setValue(renewValue || 0);
+											upDateField(renewValue || 0);
+										}}
+									/>
+								)}
+							</>
+						),
+				},
 			}}
 		/>
 	);
+};
+
+SummaryTextField.propTypes = {
+	fieldData: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	field: PropTypes.shape({
+		key: PropTypes.string.isRequired,
+		type: PropTypes.string.isRequired,
+		rows: PropTypes.number,
+		multiline: PropTypes.bool,
+		disabled: PropTypes.bool,
+		isOverRideable: PropTypes.bool,
+	}).isRequired,
+	summaryData: PropTypes.object,
+	isMetaField: PropTypes.bool,
 };
 
 export default SummaryTextField;
