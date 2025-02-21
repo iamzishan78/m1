@@ -3,14 +3,16 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, CircularProgress, Skeleton, TextField, Typography } from '@mui/material';
 
 import { useApolloClient, useMutation, useQuery } from '@apollo/client';
-import { useHookstate } from '@hookstate/core';
 import { isEqual } from 'lodash';
 import PropTypes from 'prop-types';
+
+import { slidoutStateController } from 'controllers/slidoutStateController';
 
 import { UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
 import { GET_FILE_OCR_TEXT, VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 
 import { convertFile } from 'utils/tesseractHelper';
+
 
 const EditableLine = ({ text, onUpdate }) => {
 	const [isEditing, setIsEditing] = useState(false);
@@ -64,6 +66,7 @@ const EditableLine = ({ text, onUpdate }) => {
 
 const OCRText = ({ selectedDocument }) => {
 	const [generatingOCR, setGeneratingOCR] = useState(false);
+	const { lines } = slidoutStateController.useState(['isChanged', 'lines']);
 
 	const client = useApolloClient();
 
@@ -76,9 +79,6 @@ const OCRText = ({ selectedDocument }) => {
 		onCompleted: () => setGeneratingOCR(false),
 		onError: () => setGeneratingOCR(false),
 	});
-
-	const isChanged = useHookstate(false);
-	const lines = useHookstate([]);
 
 	const parsePDFText = async () => {
 		setGeneratingOCR(true);
@@ -105,7 +105,7 @@ const OCRText = ({ selectedDocument }) => {
 	};
 
 	const updateLine = (index, newText) => {
-		const updatedLines = [...lines.get({ noproxy: true })];
+		const updatedLines = [...lines];
 
 		if (updatedLines[index] === newText) {
 			return;
@@ -113,23 +113,30 @@ const OCRText = ({ selectedDocument }) => {
 
 		updatedLines[index] = { ...updatedLines[index], text: newText };
 
-		isChanged.set(!isEqual(updatedLines, data?.getFileOCRText?.data));
-
-		lines.set(updatedLines);
+		slidoutStateController.updateState({
+			isChanged: !isEqual(updatedLines, data?.getFileOCRText?.data),
+			lines: updatedLines,
+		});
 	};
 
 	useEffect(() => {
+		slidoutStateController.updateState({ isChanged: false, lines: [] });
+
 		return () => {
-			if (!data?.getFileOCRText?.data || !lines.get()?.length || !isChanged.get()) {
+			const { isChanged, lines } = slidoutStateController.getValues(['isChanged', 'lines']);
+
+			if (!lines?.length || !isChanged) {
 				return;
 			}
 
-			updatePDFText({ variables: { fileId: selectedDocument?._id, lineTexts: lines.get({ noproxy: true }) } });
+			updatePDFText({ variables: { fileId: selectedDocument?._id, lineTexts: lines } });
 		};
 	}, []);
 
 	useEffect(() => {
-		lines.set(data?.getFileOCRText?.data || []);
+		slidoutStateController.updateState({
+			lines: data?.getFileOCRText?.data || [],
+		});
 	}, [data]);
 
 	if (loading) {
@@ -153,7 +160,7 @@ const OCRText = ({ selectedDocument }) => {
 		);
 	}
 
-	if (!lines.get()?.length) {
+	if (!lines?.length) {
 		return (
 			<Box sx={{ textAlign: 'center', marginTop: '20px' }}>
 				<Typography sx={{ textAlign: 'center', marginTop: '20px', fontStyle: 'italic', color: 'gray' }}>
@@ -188,7 +195,7 @@ const OCRText = ({ selectedDocument }) => {
 				fontFamily: 'serif',
 			}}
 		>
-			{lines.get({ noproxy: true })?.map((line, index) => (
+			{lines?.map((line, index) => (
 				<EditableLine key={line._id} text={line.text} onUpdate={newText => updateLine(index, newText)} />
 			))}
 		</Box>
