@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 
-import { detailCardController } from 'hookstate/detailCardController';
+import { detailCardController } from 'controllers/detailCardController';
 
 const BooleanField = ({ fieldData, field }) => {
 	const {

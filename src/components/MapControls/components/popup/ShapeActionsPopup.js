@@ -48,9 +48,9 @@ import ShapeTypeMenu from './ShapeTypeMenu';
 import CheckCircle from '../../../Shared/svgIcons/check-circle';
 import FilterAltIcon from '../../../Shared/svgIcons/FilterAltIcon';
 import { drawBoundary, clearSelectedAbstracts } from '../DrawShapes/drawShapesHelpers';
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'controllers/tableController';
 import AddCustomAssetDialog from 'components/Shared/components/common/DetailCard/RightDialogs/AddCustomAssetDialog';
-import { detailCardController } from 'hookstate/detailCardController';
+import { detailCardController } from 'controllers/detailCardController';
 
 const ShapeActionsPopup = props => {
 	const dispatch = useDispatch();

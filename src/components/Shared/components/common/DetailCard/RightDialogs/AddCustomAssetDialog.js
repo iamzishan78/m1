@@ -4,8 +4,8 @@ import { DialogTitle, DialogActions, DialogContent, Grid, makeStyles, Button, Ic
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { sideDialogController } from 'hookstate/sideDialogController';
+import { globalStateController } from 'controllers/globalStateController';
+import { sideDialogController } from 'controllers/sideDialogController';
 
 import { useMutation } from '@apollo/client';
 import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
@@ -15,7 +15,7 @@ import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import { customAssetForm } from 'components/Shared/FormsFieldsData/RightDialogsSchema/CustomAssetGrid/custom_asset_form_schema';
 import { customAssetFormValidationSchema } from 'components/Shared/FormsFieldsData/RightDialogsSchema/CustomAssetGrid/custom_asset_form_validation_schema';
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'controllers/tableController';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {
