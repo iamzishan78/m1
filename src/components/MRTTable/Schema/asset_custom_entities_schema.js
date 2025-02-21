@@ -63,8 +63,8 @@ const AssetCustomEntitiesMeta = {
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'associatedModels.label.keyword',
-			accessorKey: 'associatedModels.label',
+			name: 'associatedModels.name.keyword',
+			accessorKey: 'associatedModels.name',
 			header: 'Associated Models',
 			Cell: ({ row }) => <Chips list={row?.original?.associatedModels} />,
 		},

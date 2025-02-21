@@ -28,10 +28,10 @@ const BottomContainer = () => {
 				const mrtDataMappingKey = model?.useDescriptorKey ? 'relatedObject' : 'descriptorObject';
 				return {
 					index: index + 1,
-					value: model.modelName,
+					value: model.tableName,
 					associatedModel: model,
 					Icon: UnitIcon,
-					label: `Related ${model.modelName}`,
+					label: `Related ${model.name}`,
 					showCounts: true,
 					isMRTTable: true,
 					tableKey: 'DynamicAssoicationTable',
@@ -39,7 +39,7 @@ const BottomContainer = () => {
 						overrideMeta: {
 							esIndex: model.associationflatModel,
 							assetName: currentAsset?.name,
-							associatedAssetName: model.modelName,
+							associatedAssetName: model.name,
 							maxTableHeight: tableHeight,
 							CustomToolBar: AssetAssociationToolbar,
 							defaultFilters: [{ field: `${associationKey}._id.keyword`, value: currentAssetRecord?._id }],
@@ -48,7 +48,7 @@ const BottomContainer = () => {
 								name: currentAsset?.name,
 								tableName: currentAsset?.tableName,
 								isAssociatedModel: true,
-								associatedModel: model.modelName,
+								associatedModel: model.tableName,
 								associationKey: mrtDataMappingKey,
 							},
 							deletedKeys: {
@@ -57,7 +57,7 @@ const BottomContainer = () => {
 									value: currentAsset.tableName,
 								},
 								associatedAssetName: {
-									value: model.modelName,
+									value: model.tableName,
 								},
 							},
 						},

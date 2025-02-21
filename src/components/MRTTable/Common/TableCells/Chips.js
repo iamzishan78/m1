@@ -14,8 +14,8 @@ const Chips = ({ list }) => {
 							backgroundColor: '#f0f0f0',
 						}}
 						disabled
-						key={item.label || item}
-						label={item.label || item}
+						key={item.label || item.name || item}
+						label={item.label || item.name || item}
 					/>
 				))}
 		</div>

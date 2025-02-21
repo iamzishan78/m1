@@ -59,11 +59,14 @@ function AssetAssociationDialog() {
 	const [getAllModels, { data: allModels }] = useLazyQuery(GET_ALL_MODELS, {
 		fetchPolicy: 'no-cache',
 		onCompleted: () => {
-			const models = allModels?.getAllModels?.models || [];
+			let models = allModels?.getAllModels?.models || [];
+
+			// Filter Selected Asset
+			models = models.filter(model => model.tableName !== selectedAsset?.tableName);
 
 			// Filter already associated models
-			const currentAsssociations = selectedAsset?.associatedModels?.map(model => model.modelName);
-			const options = models.filter(model => !currentAsssociations?.includes(model.modelName));
+			const currentAsssociations = selectedAsset?.associatedModels?.map(model => model.tableName);
+			const options = models.filter(model => !currentAsssociations?.includes(model.tableName));
 
 			setModelsOptions(options);
 		},
@@ -188,7 +191,7 @@ function AssetAssociationDialog() {
 										{selectedAsset.associatedModels.map(model => (
 											<Chip
 												key={model._id}
-												label={model.modelName}
+												label={model.name}
 												onClick={() => handleChipClick(model)} // Handle chip click
 												style={{ margin: 2, cursor: 'pointer' }}
 											/>

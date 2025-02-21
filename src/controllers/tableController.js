@@ -216,7 +216,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 	let associatedModel = {};
 	if (fetchDynamicSchema.isAssociatedModel) {
 		associatedModel = customAsset.associatedModels.find(
-			model => model.modelName === fetchDynamicSchema.associatedModel
+			model => model.tableName === fetchDynamicSchema.associatedModel
 		);
 		columns = associatedModel?.modelKeys || [];
 	}
