@@ -230,7 +230,7 @@ export default function RelatedFile(props) {
 		fetchPolicy: 'no-cache',
 	});
 	const [addFile] = useMutation(CREATEDESCRIPTORFILE, {
-		refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'shapeSummaryDetails', 'getDbData'], // refetch table data on adding new documents
+		refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'shapeSummaryDetails', 'getDbData', 'getContact'], // refetch table data on adding new documents
 		awaitRefetchQueries: true,
 	});
 
@@ -375,7 +375,7 @@ export default function RelatedFile(props) {
 				relatedObjectType: props.relatedObjectType,
 			},
 			// add queries to refetch
-			refetchQueries: ['getParcelFiles', 'getDbData'],
+			refetchQueries: ['getParcelFiles', 'getDbData', 'getContact'],
 			awaitRefetchQueries: true,
 		}).then(() => {
 			props.setShowDocumentSlider('');
