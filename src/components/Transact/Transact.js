@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef, useMemo } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 import { get } from "lodash";
@@ -175,6 +175,7 @@ const CARD_FIELD_MAPPER = {
   offerPrice: { label: "Offer Price", format: (value) => vf_currency(value) },
   closedPrice: { label: "Closed Price", format: (value) => vf_currency(value) },
   totalNRA: { label: "Total NRA", format: (value) => vf_number(value) },
+  totalNMA: { label: "Total NMA", format: (value) => vf_number(value) },
 };
 
 const Transact = () => {

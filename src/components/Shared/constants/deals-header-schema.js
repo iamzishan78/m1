@@ -41,6 +41,10 @@ const DealsHeadCells = [
       label: "Total NRA",
     },
     {
+      name: "totalNMA",
+      label: "Total NMA",
+    },
+    {
       name: "pipelineName",
       label: "Flowline",
     },

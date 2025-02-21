@@ -84,6 +84,10 @@ const TransactDealsHeadCells = (flowLineType = 'deal') => {
         name: "totalNRA",
         label: "Total NRA",
       },
+      {
+        name: "totalNMA",
+        label: "Total NMA",
+      },
 
       // show user Information who created
       {
