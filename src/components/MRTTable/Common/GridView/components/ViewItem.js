@@ -57,7 +57,8 @@ function ViewItem({ moduleName, view }) {
 	const [subMenuAchorEl, setSubMenuAchorEl] = useState(null);
 	const [allowEdit, setAllowEdit] = useState(false);
 	const ViewController = viewStateController(moduleName);
-	const [viewName, setViewName] = useState(view?.name ? view.name : 'Standard View - Copy');
+	const selectedView = ViewController.getValue('selectedView');
+	const [viewName, setViewName] = useState(view?.name ? view.name : `${selectedView.name} - Copy`);
 
 	const userId = globalStateController.getValue('user').mongoId;
 

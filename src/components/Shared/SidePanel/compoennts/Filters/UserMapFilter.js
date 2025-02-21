@@ -257,7 +257,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			variables: {
 				search,
 				filterAggs: {
-					field: fieldName?.value,
+					field: fieldName?.value || fieldName,
 					query: searchText ? `*${searchText}*` : '',
 					size: 50,
 				},
