@@ -155,6 +155,31 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 					);
 				}
 
+				if (item?.type === 'number') {
+					return (
+						<CustomTextField
+							fieldAttributes={{
+								name: key,
+								defaultValue: value,
+								InputProps: { disableUnderline: true },
+							}}
+							fieldEvents={{
+								onBlur: updatedValue => {
+									if (value !== updatedValue) {
+										onCustomKeyChange(client, row?.original, updatedValue, item);
+									}
+								},
+							}}
+							fieldConfig={{
+								size: 'small',
+								variant: 'standard',
+								fullWidth: true,
+								type: 'number',
+							}}
+						/>
+					);
+				}
+
 				if (item?.type === 'date') {
 					return <>{formatDate(value)}</>;
 				}
