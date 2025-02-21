@@ -232,7 +232,7 @@ function AssetAssociationDialog() {
 												SelectProps={{
 													renderValue: selected => {
 														// If there's no selection, show a placeholder
-														if (!selected || !selected.modelName) {
+														if (!selected || !selected.name) {
 															return '';
 														}
 														return (
