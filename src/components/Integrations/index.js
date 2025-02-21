@@ -7,13 +7,13 @@ import { Autocomplete, TextField } from '@mui/material';
 
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 
+import { adminOperationsController } from 'controllers/adminOperationsController';
+import { jobController } from 'controllers/jobStateController';
+
 import { ADD_EXTERNAL_TOOL } from 'graphQL/useMutationAddExternalTool';
 import { SYNC_DIALPAD } from 'graphQL/useMutationSyncDialpad';
 import { ALL_EXTERNAL_TOOLS } from 'graphQL/useQueryAllExternalTools';
 import { EXTERNAL_TOOL_EXISTS } from 'graphQL/useQueryExternalToolExists';
-
-import { adminOperationsController } from 'hookstate/adminOperationsController';
-import { jobController } from 'hookstate/jobStateController';
 
 import { getURL } from 'utils/helper';
 

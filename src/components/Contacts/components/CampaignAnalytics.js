@@ -9,9 +9,9 @@ import PropTypes from 'prop-types';
 
 import vf_number, { vf_number_to_precision } from 'components/Shared/valueformatters/vf_number';
 
-import { GET_CAMPAIGN_ANALYTICS } from 'graphQL/useQueryCampaignAnalytics';
+import { tableController } from 'controllers/tableController';
 
-import { tableController } from 'hookstate/tableController';
+import { GET_CAMPAIGN_ANALYTICS } from 'graphQL/useQueryCampaignAnalytics';
 
 import { getActivityAnalyticsFilters } from 'utils/helper';
 

@@ -10,9 +10,9 @@ import PropTypes from 'prop-types';
 
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 
-import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
+import { detailCardController } from 'controllers/detailCardController';
 
-import { detailCardController } from 'hookstate/detailCardController';
+import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
 
 const useStyles = makeStyles({
 	inputRoot: {
@@ -41,7 +41,7 @@ const ShapeAutoComplete = ({ fieldData, fieldKey, shapeType, ...other }) => {
 	const [loading, setLoading] = useState(false); // Track if the API request is in progress
 
 	const { callApi } = useUpdate();
-	const value = fieldData?.get({ noproxy: true }) || '';
+	const value = fieldData || '';
 	const [search, setSearch] = useState(value);
 
 	const onInputChange = (event, value) => {
@@ -167,10 +167,11 @@ const ShapeAutoComplete = ({ fieldData, fieldKey, shapeType, ...other }) => {
 };
 
 ShapeAutoComplete.propTypes = {
-	fieldData: PropTypes.object.isRequired,
+	fieldData: PropTypes.string,
 	fieldKey: PropTypes.string.isRequired,
 	shapeType: PropTypes.string.isRequired,
-	manualOptions: PropTypes.arrayOf(PropTypes.string), // Optional manual options
+	manualOptions: PropTypes.arrayOf(PropTypes.string),
+	variant: PropTypes.string,
 };
 
 export default ShapeAutoComplete;

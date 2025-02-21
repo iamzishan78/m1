@@ -19,9 +19,9 @@ import { useMutation } from '@apollo/client';
 
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
-import { UPLOADRECIPIENTS } from 'graphQL/useMutationUploadStorefrontRecipientsList';
+import { globalStateController } from 'controllers/globalStateController';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { UPLOADRECIPIENTS } from 'graphQL/useMutationUploadStorefrontRecipientsList';
 
 import { Modals } from 'styles/Modal';
 
@@ -85,7 +85,7 @@ export default function SendMailersDialogContent(props) {
 	}, [props.rows]);
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	useEffect(() => {
 		if (props?.campaign?.name !== '') {

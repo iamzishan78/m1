@@ -2,10 +2,11 @@ import { useEffect } from 'react';
 
 import { useMutation } from '@apollo/client';
 
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
+
 import { UPDATE_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { globalStateController } from 'hookstate/globalStateController';
 import { useDispatch } from 'react-redux';
 import { showInfoMessage } from 'actions';
 

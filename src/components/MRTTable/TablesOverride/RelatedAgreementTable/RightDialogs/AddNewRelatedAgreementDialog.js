@@ -14,11 +14,11 @@ import { agreementTypes } from 'components/Land/components/Agreements/detailComp
 import AutoCompleteESField from 'components/Shared/Forms/Fields/AutoCompleteESField';
 import ArrowForwardIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
+import { tableGlobalController } from 'controllers/tableController';
+
 import { UPSERT_RELATED_AGREEMENT_DESSCRIPTOR } from 'graphQL/useMutationsRelatedAgreement';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-
-import { tableGlobalController } from 'hookstate/tableController';
 
 const agreementParams = [
 	{ key: 'agreementNumber', label: 'Agreement Number' },

@@ -4,9 +4,9 @@ import { useMutation } from '@apollo/client';
 
 import Loader from 'components/Loaders';
 
-import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 
 import CreateUpdateRecordInRunTimeModal from './CreateUpdateRecordInRunTimeModal';
 

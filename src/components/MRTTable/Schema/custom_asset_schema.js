@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
+
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
 import AssetEntityToolbar from '../TablesOverride/AssetCustomEntities/Toolbars/AssetEntity';
 
 const esIndex = 'customentitiesmodelkeys_flat';

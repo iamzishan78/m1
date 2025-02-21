@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 
 import MRTTable from 'components/MRTTable';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'controllers/tableController';
 
 export default function AssetManagement() {
 	const { stateValues } = tableGlobalController.useState(['selectedAsset']);

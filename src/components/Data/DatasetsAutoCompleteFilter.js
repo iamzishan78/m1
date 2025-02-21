@@ -7,9 +7,9 @@ import PropTypes from 'prop-types';
 
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 
-import { GET_DATASETS } from 'graphQL/useQueryDataset';
+import { globalStateController } from 'controllers/globalStateController';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { GET_DATASETS } from 'graphQL/useQueryDataset';
 
 const DatasetsAutoCompleteFilter = ({ sx, multiple, value, setValue }) => {
 	const [options, setOptions] = useState([]);

@@ -4,9 +4,9 @@ import { isEqual } from 'lodash';
 
 import { drawBoundary, drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
-import { drawController } from 'hookstate/drawStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { drawController } from 'controllers/drawStateController';
+import { layerController } from 'controllers/layerStateController';
+import { popupController } from 'controllers/popupStateController';
 
 import { getClickedFeature } from './common';
 import M1neralGeojsonLayer from './M1neralGeojsonLayer';

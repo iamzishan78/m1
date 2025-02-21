@@ -7,9 +7,9 @@ import { colorBasedAttributes } from 'components/MapControls/components/Layer/La
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { deckGlLandGridIdentifiers, ifDefaultLayers } from 'components/Shared/functions/shapeLayer';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { getLayerKey } from 'hookstate/helpers';
-import { popupController } from 'hookstate/popupStateController';
+import { getLayerKey } from 'controllers/helpers';
+import { layerController } from 'controllers/layerStateController';
+import { popupController } from 'controllers/popupStateController';
 
 const MAX_COLOR_VALUE_HEX = 0xfffff;
 const COLOR_MULTIPLIER = 1000000;
@@ -495,26 +495,26 @@ export const generateFileFilters = ({
 	// Added fileAlternateName to support the case where the file name is different from the layer name
 	const fileAlternateName = `${fileLayer?.fileName} - ${fileLayer.layerGeometry}`;
 	// Altered query accordingly
-	if (fileLayer.layerShapeName) {
+	if (fileLayer.layerIdentifier) {
 		mustQuery = [
 			{ 'properties.layerShapeName': fileAlternateName },
-			{ 'properties.layerShapeName': fileLayer.layerShapeName },
+			{ 'properties.layerShapeName': fileLayer.layerIdentifier },
 		];
 	}
 
 	const advanceSearch = getAdvancedSearch(fileLayer.layerGeometry, mustQuery);
 
-	const filters = [{ field: 'fileId', value: [fileLayer.file, fileLayer.originalFile].filter(Boolean) }];
+	const filters = [{ field: 'fileId', value: fileLayer.file }];
 
 	return {
 		variables: {
 			index: 'shapefile_flat',
 			pagination,
-			...extendFilters.variables,
-			search: extendFilters.variables.search || {
+			...(extendFilters?.variables || {}),
+			search: extendFilters?.variables?.search || {
 				advanceSearch,
 			},
-			filters: extractUniqueFilters([...filters, ...(extendFilters.variables?.filters || [])]),
+			filters: extractUniqueFilters([...filters, ...(extendFilters?.variables?.filters || [])]),
 		},
 	};
 };
@@ -828,7 +828,7 @@ export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true }
 	let clickedFeature = null;
 	let layer = null;
 
-	const layers = globalStateController.getValue('layers');
+	const layers = layerController.getValue('layers');
 
 	layers
 		.filter(l => l.layerSettings?.showable && l.layerSettings?.visiable)

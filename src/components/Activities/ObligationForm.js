@@ -14,13 +14,12 @@ import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
 import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTextfield';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
+import { tableGlobalController } from 'controllers/tableController';
+
 import { DELETEACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-
-import { slidoutState } from 'hookstate/initialStates';
-import { globalState } from 'hookstate/initialStates';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { AppContext } from 'AppContext';
 
@@ -173,10 +172,13 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	const classes = useStyles();
 	const [stateApp] = useContext(AppContext);
 	const [users, setUsers] = useState([]);
-	const { selectedActivity } = slidoutState;
 
-	const activityName = useHookstate(slidoutState.title).get({ noproxy: true });
-	const formMode = useHookstate(slidoutState.formMode);
+	const { title, formMode, selectedActivity } = slidoutStateController.useState([
+		'title',
+		'formMode',
+		'selectedActivity',
+	]);
+	const activityName = title;
 	const {
 		activityType,
 		startDate,
@@ -222,7 +224,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
 		onCompleted: () => {
 			onModalClose();
-			globalState.universalLoader.set(false);
+			globalStateController.updateState({ universalLoader: false });
 			tableGlobalController.refetch();
 		},
 		refetchQueries: ['getAllActivities', 'getDbData'],
@@ -236,16 +238,16 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	];
 
 	const deleteActivity = async () => {
-		globalState.universalLoader.set(true);
+		globalStateController.updateState({ universalLoader: true });
 		await deleteActivityMutation({
 			variables: {
-				id: selectedActivity.get()._id,
+				id: selectedActivity._id,
 			},
 		});
 	};
 
 	useEffect(() => {
-		const activity = selectedActivity.get();
+		const activity = selectedActivity;
 		if (activity) {
 			activityType.set(activity.type);
 			frequency.set(activity.frequency);
@@ -274,24 +276,23 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	}, []);
 
 	useEffect(() => {
-		if (formMode.get()) {
-			if (formMode.get() === 'update') {
+		if (formMode) {
+			if (formMode === 'update') {
 				updateActivity();
-			} else if (formMode.get() === 'delete') {
+			} else if (formMode === 'delete') {
 				deleteActivity();
 			}
-
-			formMode.set('');
+			slidoutStateController.updateState({ formMode: '' });
 			slidoutStateController.hideSlideout();
 		}
-	}, [formMode.get()]);
+	}, [formMode]);
 
 	const onModalClose = () => {
 		window.history.pushState('', '', '/calendar/obligations');
 
 		clearFields();
 		setSelectedActivityId(null);
-		slidoutState.selectedActivity.set(null);
+		slidoutStateController.updateState({ selectedActivity: null });
 		slidoutStateController.hideSlideout();
 	};
 
@@ -307,19 +308,19 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	};
 
 	const updateActivity = async () => {
-		globalState.universalLoader.set(true);
+		globalStateController.updateState({ universalLoader: true });
 
 		updateActivityMutation({
 			variables: {
 				activity: {
-					_id: selectedActivity.get()?._id,
+					_id: selectedActivity?._id,
 					...(status.get() ? { status: status.get() } : {}),
 					notes: notes.get(),
 					user: stateApp.user._id,
 				},
 			},
 		}).then(result => {
-			globalState.universalLoader.set(false);
+			globalStateController.updateState({ universalLoader: false });
 		});
 	};
 

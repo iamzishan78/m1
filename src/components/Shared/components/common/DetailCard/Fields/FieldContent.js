@@ -12,8 +12,8 @@ import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { globalStateController } from 'hookstate/globalStateController';
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import { AppContext } from 'AppContext';
 

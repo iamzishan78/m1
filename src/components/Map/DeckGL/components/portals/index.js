@@ -12,11 +12,11 @@ import ShapeDetailCard from 'components/ShapeDetailCard';
 import UdLayerCardProvider from 'components/UdLayerCard/UdLayerCardProvider';
 import WellCardProvider from 'components/WellCard/WellCardProvider';
 
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { globalStateController } from 'controllers/globalStateController';
+import { layerController } from 'controllers/layerStateController';
+import { popupController } from 'controllers/popupStateController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
 import PermitClick from './PermitClick';
 import WellClick from './WellClick';
@@ -123,11 +123,11 @@ function Portals({ hideShape }) {
 			<WellClick />
 			<PermitClick />
 
-			{popupVals.selectedWell && popupVals.expandedCard && (
+			{popupVals?.selectedWell?.id && popupVals.expandedCard && (
 				<div /* className={classes.draggable} */>
 					<ExpandableCardProvider
 						expanded
-						handleCloseExpandableCard={popupController.reset}
+						handleCloseExpandableCard={() => popupController.reset()}
 						component={<WellCardProvider />}
 						title={popupVals.selectedWell.wellName}
 						subTitle={popupVals.selectedWell.api}
@@ -147,7 +147,7 @@ function Portals({ hideShape }) {
 				<div /* className={classes.draggable} */>
 					<ExpandableCardProvider
 						expanded
-						handleCloseExpandableCard={popupController.reset}
+						handleCloseExpandableCard={() => popupController.reset()}
 						component={<ShapeDetailCard type={popupVals?.selectedShape?.type || popupVals?.selectedShape?.sdType} />}
 						title={popupVals?.selectedShape?.shapeLabel}
 						subTitle={commonShapeSubTitle}
@@ -168,7 +168,7 @@ function Portals({ hideShape }) {
 				<PortalD id="popupContainer">
 					{!popupVals.expandedCard && (
 						<ExpandableCardProvider
-							handleCloseExpandableCard={popupController.reset}
+							handleCloseExpandableCard={() => popupController.reset()}
 							component={<PermitCardProvider />}
 							title={popupVals.selectedPermit.Lease}
 							subTitle={popupVals.selectedPermit.ApiNumber}
@@ -195,11 +195,11 @@ function Portals({ hideShape }) {
 			<Portal container={container.current}>
 				{popupVals.popupOpen === true ? (
 					<div>
-						{popupVals.selectedWell && (
+						{popupVals?.selectedWell?.id && (
 							<PortalD id="popupContainer">
 								{!popupVals.expandedCard && (
 									<ExpandableCardProvider
-										handleCloseExpandableCard={popupController.reset}
+										handleCloseExpandableCard={() => popupController.reset()}
 										component={<WellCardProvider />}
 										title={popupVals.selectedWell.wellName}
 										subTitle={popupVals.selectedWell.api}
@@ -223,7 +223,7 @@ function Portals({ hideShape }) {
 							<PortalD id="popupContainer">
 								<UdLayerCardProvider
 									parent="map"
-									handleCloseExpandableCard={popupController.reset}
+									handleCloseExpandableCard={() => popupController.reset()}
 									selectedUserDefinedLayer={popupVals.selectedUserDefinedLayer}
 									zIndex={3000}
 									cardWidth="350px"
@@ -238,7 +238,7 @@ function Portals({ hideShape }) {
 							<PortalD id="popupContainer">
 								<LayerSelectionPopup
 									parent="map"
-									handleCloseExpandableCard={popupController.reset}
+									handleCloseExpandableCard={() => popupController.reset()}
 									selectionLayers={popupVals.selectionLayers}
 									coordinate={popupVals.coordinate}
 									zIndex={3000}

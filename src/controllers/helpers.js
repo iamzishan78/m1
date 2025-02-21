@@ -20,7 +20,7 @@ import { formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'controllers/tableController';
 
 import { SMALL_TIMEOUT } from 'utils/consts';
 
@@ -100,7 +100,7 @@ export const handleMRTSchema = ({
 	defaultFlterMode,
 	search,
 	globalFilter,
-	layerIdentifier,
+	layerDataSourceName,
 	isClientSide,
 	excludeFields,
 }) => {
@@ -114,7 +114,7 @@ export const handleMRTSchema = ({
 	const selectedMapView = viewStateController('MapView').getValue('selectedView');
 	const selectedMapViewFilters = selectedMapView?.filters || [];
 
-	const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
+	const dataSourceViews = selectedMapViewFilters?.filter(view => layerDataSourceName === view.dataSourceName);
 	const mapViewFilters =
 		dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
 		[];
@@ -189,7 +189,7 @@ export const handleMRTSchema = ({
 					name: schemaColumn.accessorKey || schemaColumn.id,
 					schemaColumn,
 					controller: tableController,
-					layerIdentifier,
+					layerDataSourceName,
 				});
 			}
 
@@ -302,7 +302,7 @@ export const handleMRTSchema = ({
 				name: schemaColumn.accessorKey || schemaColumn.id,
 				schemaColumn,
 				controller: tableController,
-				layerIdentifier,
+				layerDataSourceName,
 			});
 		}
 
@@ -310,7 +310,7 @@ export const handleMRTSchema = ({
 		const columnMapView = mapViewFilters.find(
 			filter => filter?.field?.replace('.keyword', '') === schemaColumn?.name?.replace('.keyword', '')
 		);
-		if (!columnMapView || customLayersFieldAccessors[layerIdentifier]) {
+		if (!columnMapView || customLayersFieldAccessors[layerDataSourceName]) {
 			return schemaColumn;
 		}
 
@@ -413,4 +413,78 @@ export const getLayerKey = (identifier, array) => {
 
 	// Return the corresponding value or undefined if no match is found
 	return key ? key : undefined;
+};
+
+export const getWellColor = w => {
+	// Check if the well status is of Permit type
+	const isWellPermitStatus = ['PERMIT', 'PERMIT - NEW DRILL', 'PERMIT - EXISTING WELL'].includes(
+		w?.properties?.wellStatus
+	);
+
+	// Switch on whether wellStatus or wellType
+	const switchType = isWellPermitStatus ? w.properties.wellStatus : w.properties.wellType;
+	switch (switchType) {
+		// rgb(2, 207, 53)
+		case 'OIL':
+		case 'OIL AND GAS':
+			return [2, 207, 53]; // green
+
+		// rgb(230, 15, 15)
+		case 'GAS':
+			return [230, 15, 15]; // red
+
+		// rgb(74, 211, 242)
+		case 'WATER':
+			return [74, 211, 242]; // blue
+
+		// rgb(251, 152, 40)
+		case 'PERMIT':
+		case 'PERMIT - NEW DRILL':
+		case 'PERMIT - EXISTING WELL':
+			return [251, 152, 40]; // orange
+
+		// rgba(30, 26, 26, 0.55)
+		case 'PERMITTED':
+			return [251, 152, 40]; // orange
+
+		// rgb(192, 0, 0)
+		default:
+			return [58, 58, 58]; // default dark for permitted
+	}
+};
+
+export const generateDataFunc = () => {
+	async function* getData(initalData) {
+		let data = initalData;
+		let pausePromise;
+		// Expose a function to externally pause the generator
+
+		while (true) {
+			if (pausePromise) {
+				// Pause until the external promise is resolved
+				// eslint-disable-next-line no-await-in-loop
+				await pausePromise;
+			}
+			if (data) {
+				let dataToReturn = data;
+				data = null;
+				yield dataToReturn;
+			} else {
+				// No new data, pause until the external promise is resolved
+
+				pausePromise = new Promise(resolve => {
+					// Expose a function to externally pause the generator
+					getData.feedData = d => {
+						data = d;
+						pausePromise = null; // Reset the promise after resolving
+						resolve();
+					};
+				});
+				// eslint-disable-next-line no-await-in-loop
+				await pausePromise;
+			}
+		}
+	}
+
+	return getData;
 };

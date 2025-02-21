@@ -11,10 +11,10 @@ import { CommonSchema, editFieldProps, validateRequiredString } from 'components
 import { copy, formatDate } from 'components/Shared/functions';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { UPDATE_CHECK_DETAIL, UPDATE_CHECK_DETAILS } from 'graphQL/useMutationUpdateCheckDetail';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { UPDATE_CHECK_DETAIL, UPDATE_CHECK_DETAILS } from 'graphQL/useMutationUpdateCheckDetail';
 
 import { TO_FIXED } from 'utils/consts';
 

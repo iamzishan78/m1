@@ -1,7 +1,10 @@
 import React, { memo } from 'react';
+
 import { ButtonGroup, Button } from '@material-ui/core';
-import { tableGlobalController } from 'hookstate/tableController';
+
 import AssociationDialog from 'components/Shared/components/common/DetailCard/AssociationDialog';
+
+import { tableGlobalController } from 'controllers/tableController';
 
 function AssetAssociationToolbar() {
 	const associatedDataHandler = () => {

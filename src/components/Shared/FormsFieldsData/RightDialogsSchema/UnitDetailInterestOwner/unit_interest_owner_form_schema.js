@@ -6,10 +6,10 @@ import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 
+import { sideDialogController } from 'controllers/sideDialogController';
+
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-
-import { sideDialogController } from 'hookstate/sideDialogController';
 
 import { calculateStandardNraForUnit } from 'utils/calculatedNraHelper';
 

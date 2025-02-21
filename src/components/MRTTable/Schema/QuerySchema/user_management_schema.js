@@ -1,9 +1,9 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import UserManagementToolbar from 'components/MRTTable/TablesOverride/UserManagementTable/UserManagementToolbar';
 
-import { GET_ALL_USERS } from 'graphQL/userManagement';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { GET_ALL_USERS } from 'graphQL/userManagement';
 
 import { UserRole, RolePrivilege } from 'utils/data';
 

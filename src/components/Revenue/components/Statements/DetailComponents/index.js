@@ -33,12 +33,12 @@ import NavHeader from 'components/Revenue/components/Common/NavHeader';
 import DocViewer from 'components/Shared/DocViewer';
 import Tags from 'components/Shared/Tagger';
 
+import { globalStateController } from 'controllers/globalStateController';
+
 import { REMOVE_CHECKS } from 'graphQL/useMutationRemoveChecks';
 import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
 import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
 import { GETCHECK } from 'graphQL/useQueryCheck';
-
-import { globalStateController } from 'hookstate/globalStateController';
 
 import MetaField from 'utils/MetaField';
 

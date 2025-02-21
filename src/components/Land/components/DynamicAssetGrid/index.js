@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import MRTTable from 'components/MRTTable';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 import { AppContext } from 'AppContext';
 

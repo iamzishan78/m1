@@ -5,8 +5,8 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { globalStateController } from 'hookstate/globalStateController';
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import CommonSummaryFieldsComponent from '../../CommonSummaryFields';
 import { getAssetFields, getNonEmptyFields } from '../../helpers';

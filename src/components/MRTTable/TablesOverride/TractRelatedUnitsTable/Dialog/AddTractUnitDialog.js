@@ -14,9 +14,9 @@ import { useMutation } from '@apollo/client';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
 
-import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
 
 const useStyles = makeStyles(() => ({
 	dialogFooter: {

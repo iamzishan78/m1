@@ -6,11 +6,11 @@ import queryString from 'query-string';
 
 import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { mapStateController } from 'controllers/mapStateController';
+
 import { BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
 import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapStateController } from 'hookstate/mapStateController';
 
 import { setUserAction } from 'store/actions/appActions';
 import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';

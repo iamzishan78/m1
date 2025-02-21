@@ -11,9 +11,9 @@ import PropTypes from 'prop-types';
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { generateRandomColor } from 'components/MapControls/commonHelper';
 
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+import { getLayerKey } from 'controllers/helpers';
 
-import { getLayerKey } from 'hookstate/helpers';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { ColorPickerStyledBox } from '../Common';
 import { colorBasedAttributes } from './ColorBasedAttributes';
@@ -160,13 +160,13 @@ const AttrsValuesDropdown = ({
 			};
 		});
 
-		setAttributeBasedColors(prevColors => ({
-			...prevColors,
+		setAttributeBasedColors({
+			...attributeBasedColors,
 			[selectedValue.label]: options.reduce((acc, { label, color }) => {
 				acc[label] = color;
 				return acc;
 			}, {}),
-		}));
+		});
 
 		return options;
 	}, [filtersData, fillColor]);

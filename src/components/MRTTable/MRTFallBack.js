@@ -3,7 +3,7 @@ import React, { useMemo, memo } from 'react';
 // Importing React, useMemo for memoization, and memo for optimizing the component by preventing unnecessary re-renders.
 import MRTTable from 'components/MRTTable';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'controllers/tableController';
 // Importing tableController from hookstate to manage and control the state of the table.
 // Importing the MRTTable component to render the table.
 
@@ -28,7 +28,7 @@ function MRTFallback({ tableKey, error, resetErrorBoundary }) {
 	const tableState = tableController(tableKey).useCompleteState();
 	// Retrieving the complete state of the table using the tableController and the provided tableKey.
 
-	const tableStateValues = tableState?.get({ noproxy: true });
+	const tableStateValues = tableState;
 	// Extracting the table state values without proxy for direct manipulation.
 
 	const schema = tableStateValues.TableSchema;

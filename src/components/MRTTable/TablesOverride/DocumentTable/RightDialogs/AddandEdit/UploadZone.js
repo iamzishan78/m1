@@ -146,7 +146,7 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 								<br />
 								<span style={{ marginTop: '8px', fontSize: '14px' }}>
 									{' '}
-									{`This must be an external URL such as http://example.com`}{' '}
+									{'This must be an external URL such as http://example.com'}{' '}
 								</span>
 							</div>
 						)}

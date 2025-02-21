@@ -1,8 +1,4 @@
-import { hookstate, useHookstate } from '@hookstate/core';
-
-import { copy } from 'components/Shared/functions';
-
-import { hookStateController } from 'hookstate/hookStateController';
+import { StateController } from 'controllers/stateController';
 
 export const initialState = {
 	documentNumber: '',
@@ -17,23 +13,26 @@ export const initialState = {
 	url: null,
 };
 
-export const createViewFormState = hookstate({});
+export const createViewFormState = {}; // Stores states for different tableKeys
 
-export const useCreateViewFormState = () => useHookstate(createViewFormState);
+class CreateViewStateController extends StateController {
+	constructor(initialState) {
+		super(initialState, CreateViewStateController.name);
+		this.autoBind(this);
+	}
 
-const createViewControllerHandler = state => ({
-	initialize: (tableKey, FieldsValue) => {
-		state.merge({
+	initialize(tableKey, FieldsValue) {
+		this.updateState({
 			tableKey,
-			...initialState,
-			...FieldsValue,
+			FieldsValue,
 		});
-	},
-});
+	}
+}
 
-export const createViewStateController = TableKey => {
-	return {
-		...createViewControllerHandler(createViewFormState[TableKey]),
-		...hookStateController(createViewFormState[TableKey], copy(initialState)),
-	};
+// Ensures each tableKey has a unique state instance
+export const createViewStateController = tableKey => {
+	if (!createViewFormState[tableKey]) {
+		createViewFormState[tableKey] = new CreateViewStateController(initialState);
+	}
+	return createViewFormState[tableKey];
 };

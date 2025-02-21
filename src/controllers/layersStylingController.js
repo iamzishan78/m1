@@ -1,12 +1,19 @@
-import { hookStateController } from 'hookstate/hookStateController';
-
-import { layerStyling, layerStylingInitialState } from './initialStates';
 import _ from 'lodash';
+import { v4 as uuid } from 'uuid';
+
 import { ALPHA_INDEX, ifRgbaConvt, TWO } from 'components/MapControls/components/Layer/Common';
 import { copy } from 'components/Shared/functions';
 
-const layerStylingControllerHandler = state => ({
-	handleLayerChange: layer => {
+import { StateController } from './stateController';
+
+class LayerStylingStateController extends StateController {
+	constructor(initialState) {
+		super(initialState, LayerStylingStateController.name);
+		this.autoBind(this);
+	}
+
+	handleLayerChange(layer) {
+		const stateValues = this.getAllValues();
 		const {
 			width,
 			fillColor,
@@ -28,9 +35,8 @@ const layerStylingControllerHandler = state => ({
 			layerClickability,
 			strokeColor,
 			strokeWidth,
-		} = state.get({
-			noproxy: true,
-		});
+			layerName,
+		} = stateValues;
 
 		if (
 			(layer &&
@@ -370,8 +376,9 @@ const layerStylingControllerHandler = state => ({
 			layerPaintProps: currentLayer.layerPaintProps,
 			layerSettings: currentLayer.layerSettings,
 		};
-	},
-	initializeLayerStyling: layer => {
+	}
+
+	initializeLayerStyling(layer) {
 		const layerType = layer.layerPaintProps[0]?.paintType;
 		const initialLayerLabelVisibility =
 			layer.layerPaintProps[0]?.labelProps?.visibility === 'none' ? 'none' : 'visible';
@@ -424,7 +431,7 @@ const layerStylingControllerHandler = state => ({
 				: 1;
 		}
 
-		layerStylingController.updateState({
+		this.updateState({
 			width: initialWidth,
 			layerName: null,
 			fillColor: initialFillColor,
@@ -451,92 +458,92 @@ const layerStylingControllerHandler = state => ({
 			strokeWidth: initialWidth || initialStrokeWidth,
 			layerInitialized: true,
 		});
-	},
-	setWidth: newWidth => {
-		state.width.set(newWidth);
-	},
+	}
 
-	setLayerName: newLayerName => {
-		state.layerName.set(newLayerName);
-	},
+	setWidth(newWidth) {
+		this.updateState({ width: newWidth });
+	}
 
-	setFillColor: newFillColor => {
-		state.fillColor.set(newFillColor);
-	},
+	setLayerName(newLayerName) {
+		this.updateState({ layerName: newLayerName });
+	}
 
-	setFillStyle: newFillStyle => {
-		state.fillStyle.set(newFillStyle);
-	},
+	setFillColor(newFillColor) {
+		this.updateState({ fillColor: newFillColor });
+	}
 
-	setLineStyle: newLineStyle => {
-		state.lineStyle.set(newLineStyle);
-	},
+	setFillStyle(newFillStyle) {
+		this.updateState({ fillStyle: newFillStyle });
+	}
 
-	setEnableFillColor: isEnabled => {
-		state.enablefillColor.set(isEnabled);
-	},
+	setLineStyle(newLineStyle) {
+		this.updateState({ lineStyle: newLineStyle });
+	}
 
-	setEnableStrokeColor: isEnabled => {
-		state.enableStrokeColor.set(isEnabled);
-	},
+	setEnableFillColor(isEnabled) {
+		this.updateState({ enablefillColor: isEnabled });
+	}
 
-	setEnableStrokeStyle: isEnabled => {
-		state.enableStrokeStyle.set(isEnabled);
-	},
-	setEnableColorStyle: isEnabled => {
-		state.enableColorStyle.set(isEnabled);
-	},
+	setEnableStrokeColor(isEnabled) {
+		this.updateState({ enableStrokeColor: isEnabled });
+	}
 
-	setSelectedValue: newSelectedValue => {
-		state.selectedValue.set(newSelectedValue);
-	},
+	setEnableStrokeStyle(isEnabled) {
+		this.updateState({ enableStrokeStyle: isEnabled });
+	}
 
-	setSelectedStrokeValue: newSelectedStrokeValue => {
-		state.selectedStrokeValue.set(newSelectedStrokeValue);
-	},
+	setEnableColorStyle(isEnabled) {
+		this.updateState({ enableColorStyle: isEnabled });
+	}
 
-	setSelectedFillStyle: newSelectedFillStyle => {
-		state.selectedFillStyle.set(newSelectedFillStyle);
-	},
+	setSelectedValue(newSelectedValue) {
+		this.updateState({ selectedValue: newSelectedValue });
+	}
 
-	setSelectedLineStyle: newSelectedLineStyle => {
-		state.selectedLineStyle.set(newSelectedLineStyle);
-	},
+	setSelectedStrokeValue(newSelectedStrokeValue) {
+		this.updateState({ selectedStrokeValue: newSelectedStrokeValue });
+	}
 
-	setAttributeBasedColors: newAttributeBasedColors => {
-		state.attributeBasedColors.set(newAttributeBasedColors);
-	},
+	setSelectedFillStyle(newSelectedFillStyle) {
+		this.updateState({ selectedFillStyle: newSelectedFillStyle });
+	}
 
-	setAttributeBasedStrokeColors: newAttributeBasedStrokeColors => {
-		state.attributeBasedStrokeColors.set(newAttributeBasedStrokeColors);
-	},
+	setSelectedLineStyle(newSelectedLineStyle) {
+		this.updateState({ selectedLineStyle: newSelectedLineStyle });
+	}
 
-	setAttributeBasedStyles: newAttributeBasedStyles => {
-		state.attributeBasedStyles.set(newAttributeBasedStyles);
-	},
+	setAttributeBasedColors(newAttributeBasedColors) {
+		this.updateState({ attributeBasedColors: newAttributeBasedColors });
+	}
 
-	setAttributeBasedLineStyles: newAttributeBasedLineStyles => {
-		state.attributeBasedLineStyles.set(newAttributeBasedLineStyles);
-	},
+	setAttributeBasedStrokeColors(newAttributeBasedStrokeColors) {
+		this.updateState({ attributeBasedStrokeColors: newAttributeBasedStrokeColors });
+	}
 
-	setLayerLabelVisibility: newVisibility => {
-		state.layerLabelVisibility.set(newVisibility);
-	},
+	setAttributeBasedStyles(newAttributeBasedStyles) {
+		this.updateState({ attributeBasedStyles: newAttributeBasedStyles });
+	}
 
-	setLayerClickability: newClickability => {
-		state.layerClickability.set(newClickability);
-	},
+	setAttributeBasedLineStyles(newAttributeBasedLineStyles) {
+		this.updateState({ attributeBasedLineStyles: newAttributeBasedLineStyles });
+	}
 
-	setStrokeColor: newStrokeColor => {
-		state.strokeColor.set(newStrokeColor);
-	},
+	setLayerLabelVisibility(newVisibility) {
+		this.updateState({ layerLabelVisibility: newVisibility });
+	}
 
-	setStrokeWidth: newStrokeWidth => {
-		state.strokeWidth.set(newStrokeWidth);
-	},
-});
+	setLayerClickability(newClickability) {
+		this.updateState({ layerClickability: newClickability });
+	}
 
-export const layerStylingController = {
-	...layerStylingControllerHandler(layerStyling),
-	...hookStateController(layerStyling, layerStylingInitialState),
-};
+	setStrokeColor(newStrokeColor) {
+		this.updateState({ strokeColor: newStrokeColor });
+	}
+
+	setStrokeWidth(newStrokeWidth) {
+		this.updateState({ strokeWidth: newStrokeWidth });
+	}
+}
+
+// Export instance of LayerStylingStateController
+export const layerStylingController = new LayerStylingStateController({});

@@ -1,6 +1,8 @@
-import { Chip } from '@material-ui/core';
-import PropTypes from 'prop-types';
 import * as React from 'react';
+
+import { Chip } from '@material-ui/core';
+
+import PropTypes from 'prop-types';
 
 const Chips = ({ list }) => {
 	return (

@@ -1,15 +1,14 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 
 import RootRef from '@material-ui/core/RootRef';
 
-import { AppContext } from 'AppContext';
+import PropTypes from 'prop-types';
 
 import LayerItem from './LayerItem';
 import { deepEqualObjects } from '../../../functions';
 
 function Layer({ layerMap, type, handleToggle }) {
-	const [stateApp, setStateApp] = useContext(AppContext);
 	return (
 		<>
 			{layerMap &&
@@ -31,17 +30,23 @@ function Layer({ layerMap, type, handleToggle }) {
 											type={type}
 											layer={layer}
 											handleToggle={handleToggle}
-											stateApp={stateApp}
-											setStateApp={setStateApp}
 										/>
 									</RootRef>
 								)}
 							</Draggable>
 						);
 					}
+
+					return null;
 				})}
 		</>
 	);
 }
+
+Layer.propTypes = {
+	layerMap: PropTypes.array,
+	type: PropTypes.string.isRequired,
+	handleToggle: PropTypes.func,
+};
 
 export default React.memo(Layer, deepEqualObjects);

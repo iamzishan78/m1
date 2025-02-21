@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import { entityKeyTypes } from 'components/MRTTable/utils/data';
 import { removeSpaces } from 'components/MRTTable/utils/helper';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'controllers/tableController';
 
 const DynamicForm = ({ control, setValue, errors, clearErrors }) => {
 	const { fields, append, remove } = useFieldArray({

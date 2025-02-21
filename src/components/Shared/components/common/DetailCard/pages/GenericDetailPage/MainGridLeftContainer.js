@@ -1,11 +1,13 @@
 import React, { useContext, memo, useEffect, useState } from 'react';
 
+import CommonSummaryFieldsComponent from 'components/Shared/components/common/DetailCard/CommonSummaryFields';
+import DocViewer from 'components/Shared/DocViewer';
+
+import { globalStateController } from 'controllers/globalStateController';
+
 import { AppContext } from 'AppContext';
-import { globalStateController } from 'hookstate/globalStateController';
 
 import { getAssetFields } from '../../helpers';
-import DocViewer from 'components/Shared/DocViewer';
-import CommonSummaryFieldsComponent from 'components/Shared/components/common/DetailCard/CommonSummaryFields';
 
 const MainGridLeftContainer = () => {
 	const [stateApp] = useContext(AppContext);
@@ -25,7 +27,7 @@ const MainGridLeftContainer = () => {
 		return fileExtension;
 	};
 
-	if (stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name))
+	if (stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name)) {
 		return (
 			<DocViewer
 				divCondition={true}
@@ -36,6 +38,7 @@ const MainGridLeftContainer = () => {
 				}}
 			/>
 		);
+	}
 
 	return <CommonSummaryFieldsComponent formFields={formFields} />;
 };

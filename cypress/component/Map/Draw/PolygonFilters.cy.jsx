@@ -3,7 +3,7 @@ import * as turf from '@turf/turf';
 
 import MapProvider from 'components/Map/MapProvider';
 
-import { drawController } from 'hookstate/drawStateController';
+import { drawController } from 'controllers/drawStateController';
 
 import { basic_timeouts } from '../../../cypressUtils/data';
 

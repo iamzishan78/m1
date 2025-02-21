@@ -14,9 +14,9 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useLazyQuery } from '@apollo/client';
 import debounce from 'lodash/debounce';
 
-import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
+import { slidoutStateController } from 'controllers/slidoutStateController';
 
-import { slidoutState } from 'hookstate/initialStates';
+import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
 
 import { AppContext } from 'AppContext';
 
@@ -114,9 +114,11 @@ const ActivitySearch = () => {
 			}));
 		} else if (id) {
 			window.history.pushState('', '', `/calendar/activities/${id}`);
-			slidoutState.selectedActivityId.set(id);
-			slidoutState.show.set(true);
-			slidoutState.selectedActivity.set(activitiesData?.activities?.find(act => act._id === id));
+			slidoutStateController.updateState({
+				selectedActivityId: id,
+				show: true,
+				selectedActivity: activitiesData?.activities?.find(act => act._id === id),
+			});
 		}
 	};
 

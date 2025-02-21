@@ -11,10 +11,10 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import TractIcon from 'components/Shared/svgIcons/tract';
 
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
 import { copy } from 'utils/helper';
 

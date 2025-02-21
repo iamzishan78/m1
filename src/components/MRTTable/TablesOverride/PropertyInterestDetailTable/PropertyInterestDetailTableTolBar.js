@@ -4,8 +4,8 @@ import { Button, ButtonGroup } from '@material-ui/core';
 
 import PropertyInterestDetaillDialog from 'components/MRTTable/TablesOverride/PropertyInterestDetailTable/RightDialogs';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { detailCardController } from 'controllers/detailCardController';
+import { tableGlobalController } from 'controllers/tableController';
 
 function PropertyInterestDetailTable({ table, tableKey }) {
 	const { stateValues } = detailCardController.useState(['summaryData']);

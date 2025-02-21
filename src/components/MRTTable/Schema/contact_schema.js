@@ -18,9 +18,9 @@ import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/Cont
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import Contact from 'components/Shared/svgIcons/contact';
 
-import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
 
 import { copy } from 'utils/helper';
 

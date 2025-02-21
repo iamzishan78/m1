@@ -7,7 +7,7 @@ import { Button, Grid } from '@material-ui/core';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { jobController } from 'hookstate/jobStateController';
+import { jobController } from 'controllers/jobStateController';
 
 import { showErrorMessage } from '../../../actions';
 import { NavigationContext } from '../../Navigation/NavigationContext';

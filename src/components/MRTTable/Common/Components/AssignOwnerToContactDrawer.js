@@ -27,6 +27,9 @@ import FieldBulkAutoComplete from 'components/Shared/FieldBulkAutoComplete';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
 import { copy } from 'components/Shared/functions';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { tableGlobalController } from 'controllers/tableController';
+
 import { ASSIGN_OWNER_TO_CONTACT } from 'graphQL/useMutationAssignOwnerToContact';
 import { BULKUPSERTTAG } from 'graphQL/useMutationBulkUpsertTagOnContacts';
 import { UPSERT_ENTITY_CAMPAIGNS } from 'graphQL/useMutationCampaign';
@@ -37,12 +40,7 @@ import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
 import { PUBLICTAGSQUERY } from 'graphQL/useQueryPublicTags';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { Modals } from 'styles/Modal';
-
-import { resetESTableToggle } from 'hookstate';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
@@ -274,7 +272,7 @@ export default function AssignOwnerToContactDrawer({
 	...rest
 }) {
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const classes = useStyles();
 	const modalClass = Modals();
@@ -424,7 +422,6 @@ export default function AssignOwnerToContactDrawer({
 		}).then(
 			res => {
 				// Toggle the reset state for the table to refresh its data
-				resetESTableToggle.set(!resetESTableToggle.get());
 
 				// Check if the response data is present and updateShapes was successful
 				if (res.data && res.data.updateShapes) {
@@ -471,7 +468,6 @@ export default function AssignOwnerToContactDrawer({
 				awaitRefetchQueries: true,
 			}).then(
 				res => {
-					resetESTableToggle.set(!resetESTableToggle.get());
 					if (res.data && res.data.assignOwnerToContact) {
 						const { success, message } = res.data.assignOwnerToContact;
 						if (success) {
@@ -506,7 +502,6 @@ export default function AssignOwnerToContactDrawer({
 				awaitRefetchQueries: true,
 			}).then(
 				res => {
-					resetESTableToggle.set(!resetESTableToggle.get());
 					if (res.data && res.data.bulkUpsertTagOnContacts) {
 						const { success, message } = res.data.bulkUpsertTagOnContacts;
 
@@ -536,7 +531,6 @@ export default function AssignOwnerToContactDrawer({
 				},
 			}).then(
 				res => {
-					resetESTableToggle.set(!resetESTableToggle.get());
 					if (res.data && res.data.addRelatedContacts) {
 						const { success, message } = res.data.addRelatedContacts;
 
@@ -603,7 +597,6 @@ export default function AssignOwnerToContactDrawer({
 							}).then(
 								res => {
 									if (res.data && res.data.upsertEntityCampaigns) {
-										resetESTableToggle.set(!resetESTableToggle.get());
 										const success = res.data.upsertEntityCampaigns.success;
 										if (success) {
 											Loader.successToast('contact-creation', 'Updated');
@@ -645,7 +638,6 @@ export default function AssignOwnerToContactDrawer({
 								awaitRefetchQueries: true,
 							}).then(
 								res => {
-									resetESTableToggle.set(!resetESTableToggle.get());
 									if (res.data && res.data.updateParcelOwners) {
 										const success = res.data.updateParcelOwners.success;
 										if (success) {
@@ -690,7 +682,6 @@ export default function AssignOwnerToContactDrawer({
 								awaitRefetchQueries: true,
 							}).then(
 								res => {
-									resetESTableToggle.set(!resetESTableToggle.get());
 									if (res.data && res.data.updateShapeOwners) {
 										const success = res.data.updateShapeOwners.success;
 										if (success) {
@@ -729,7 +720,6 @@ export default function AssignOwnerToContactDrawer({
 						awaitRefetchQueries: true,
 					}).then(
 						res => {
-							resetESTableToggle.set(!resetESTableToggle.get());
 							if (res.data && res.data.updateBulkContact) {
 								const success = res.data.updateBulkContact.some(res => res.success);
 								if (success) {

@@ -5,10 +5,10 @@ import { Button, ButtonGroup } from '@material-ui/core';
 import { useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 
-import { ADD_MULTI_WELLINTEREST_TO_SHAPE } from 'graphQL/useMutationAddMultiWellInterestToShape';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { ADD_MULTI_WELLINTEREST_TO_SHAPE } from 'graphQL/useMutationAddMultiWellInterestToShape';
 
 function PotentialWellToolbar({ tableKey, table }) {
 	const [addMultiWellInterestToShape] = useMutation(ADD_MULTI_WELLINTEREST_TO_SHAPE, {

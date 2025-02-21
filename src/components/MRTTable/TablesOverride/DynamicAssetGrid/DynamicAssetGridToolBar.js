@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 
 import PropTypes from 'prop-types';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 import AddCustomAssetDialog from 'components/Shared/components/common/DetailCard/RightDialogs/AddCustomAssetDialog';
 
 function DynamicAssetGridToolBar({ tableKey }) {

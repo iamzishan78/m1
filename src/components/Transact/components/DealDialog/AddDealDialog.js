@@ -30,6 +30,12 @@ import DealDialogHeader from 'components/Transact/components/DealDialog/DealDial
 import Drawer from 'components/Transact/components/Drawer';
 import { TransactContext } from 'components/Transact/TransactContext';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { layerFiltersController } from 'controllers/layerFiltersController';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { mapStateController } from 'controllers/mapStateController';
+import { tableGlobalController } from 'controllers/tableController';
+
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { ADDDEAL, CREATE_DEAL_DEFAULT_SETTINGS } from 'graphQL/useMutationAddDeal';
 import { REMOVEDEALDESCRIPTOR } from 'graphQL/useMutationRemoveDealDescriptor';
@@ -45,12 +51,6 @@ import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
 import { GET_DEAL_SETTINGS } from 'graphQL/useQueryGetDealSettings';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';

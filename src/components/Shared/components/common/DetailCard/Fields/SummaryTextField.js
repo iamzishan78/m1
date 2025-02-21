@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
+
 import { TextField, InputAdornment, CircularProgress } from '@material-ui/core';
-import { Autorenew as AutorenewIcon } from '@material-ui/icons';
-import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { makeStyles } from '@material-ui/core/styles';
-import { detailCardController } from 'hookstate/detailCardController';
-import * as Pages from 'components/Shared/components/common/DetailCard/pages';
+import { Autorenew as AutorenewIcon } from '@material-ui/icons';
+
 import { isEqual } from 'lodash';
+
+import * as Pages from 'components/Shared/components/common/DetailCard/pages';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
+
+import { detailCardController } from 'controllers/detailCardController';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -61,7 +65,9 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 	const isChangedValue = isChanged ? isChanged(field.key, value) : null;
 
 	const upDateField = currValue => {
-		if (currValue === fieldData) return;
+		if (currValue === fieldData) {
+			return;
+		}
 
 		if (!isMetaField)
 			return callApi({ key: field.key, value: currValue, field, previousValue: fieldData, resetFn: setValue });

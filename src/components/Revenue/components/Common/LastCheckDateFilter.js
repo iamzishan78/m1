@@ -13,9 +13,9 @@ import CustomDates from 'components/Revenue/components/Common/CustomDates';
 import { copy, deepEqual } from 'components/Shared/functions';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 
-import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
+import { tableController } from 'controllers/tableController';
 
-import { tableController } from 'hookstate/tableController';
+import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(() => ({
 	actionBar: {

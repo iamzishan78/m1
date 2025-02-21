@@ -11,10 +11,10 @@ import get from 'lodash/get';
 
 import AutoCompleteAddNewField from 'components/Common/AutoCompleteWithAddNew';
 
+import { tableGlobalController } from 'controllers/tableController';
+
 import { ADD_RELATED_CONTACT } from 'graphQL/useMutationRelatedContact';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
-
-import { tableGlobalController } from 'hookstate/tableController';
 
 import RightDialog from './RightDialog';
 import { AppContext } from '../../../AppContext';

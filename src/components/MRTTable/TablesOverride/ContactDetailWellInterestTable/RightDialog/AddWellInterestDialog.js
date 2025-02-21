@@ -29,6 +29,9 @@ import parse from 'autosuggest-highlight/parse';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import { CurrencyFormatCustom, NumberFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
+
+import { tableGlobalController } from 'controllers/tableController';
 
 import { ADDWELLINTEREST } from 'graphQL/useMutationAddWellInterest';
 import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
@@ -37,12 +40,9 @@ import { INTERESTOWNERTYPESQUERY } from 'graphQL/useQueryInterestOwnerTypes';
 import { INTERESTTYPESQUERY } from 'graphQL/useQueryInterestTypes';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { INTEREST_TO_FIXED } from 'utils/consts';
 
 import { AppContext } from 'AppContext';
-import { CurrencyFormatCustom, NumberFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
 const useStyles = makeStyles(() => ({
 	dialogFooter: {

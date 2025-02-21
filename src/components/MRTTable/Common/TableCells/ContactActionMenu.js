@@ -18,7 +18,7 @@ import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
 import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import { UserSession } from 'utils/user';
 

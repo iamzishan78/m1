@@ -1,4 +1,5 @@
-import React, { useContext, useEffect } from 'react';
+/* eslint-disable react/prop-types */
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
@@ -8,19 +9,16 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { useMutation } from '@apollo/client';
 
-import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+import { layerController } from 'controllers/layerStateController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
+import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 
 import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
 
-import { AppContext } from '../../../AppContext';
 import { UPDATELAYER } from '../../../graphQL/useMutationUpdateLayer';
 
 export default function DeleteConfirmationDialog(props) {
 	const dispatch = useDispatch();
-	const [, setStateApp] = useContext(AppContext);
 	const [updateLayer, { data: layerDeleted }] = useMutation(UPDATELAYER);
 	const [updateManyLayer, { data: layersDeleted }] = useMutation(UPDATE_MANY_LAYER);
 
@@ -29,7 +27,7 @@ export default function DeleteConfirmationDialog(props) {
 			if (layerDeleted.updateLayer.success) {
 				dispatch(showSuccessMessage('The layer was successfully removed'));
 				dispatch(setMainMapState({ removeLayerFromMap: [props.layer] }));
-				setStateApp(state => ({
+				window.setStateApp(state => ({
 					...state,
 					universalCircularLoaderAct: false,
 				}));
@@ -37,14 +35,13 @@ export default function DeleteConfirmationDialog(props) {
 				const layer = layerController.getLayerFromMongoId(layerDeleted.updateLayer.layer._id);
 				layerController.removeLayer(layer);
 			} else {
-				setStateApp(state => ({
+				window.setStateApp(state => ({
 					...state,
 					universalCircularLoaderAct: false,
 				}));
 				dispatch(showErrorMessage('Error occurred'));
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layerDeleted]);
 
 	useEffect(() => {
@@ -52,7 +49,7 @@ export default function DeleteConfirmationDialog(props) {
 			if (layersDeleted.updateManyLayer.success) {
 				dispatch(showSuccessMessage('The Group was successfully removed'));
 				dispatch(setMainMapState({ removeLayerFromMap: props.layer.layers }));
-				setStateApp(state => ({
+				window.setStateApp(state => ({
 					...state,
 					universalCircularLoaderAct: false,
 				}));
@@ -62,18 +59,17 @@ export default function DeleteConfirmationDialog(props) {
 					layerController.removeLayer(layer);
 				});
 			} else {
-				setStateApp(state => ({
+				window.setStateApp(state => ({
 					...state,
 					universalCircularLoaderAct: false,
 				}));
 				dispatch(showErrorMessage('Error occurred'));
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layersDeleted]);
 
 	const handleAccept = async () => {
-		setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
+		window.setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
 		// Determine the appropriate mutation to call
 		let layersToRemove = [];
 		if (props.layer.type === 'group') {
@@ -96,15 +92,13 @@ export default function DeleteConfirmationDialog(props) {
 			layersToRemove = [props.layer.layerId];
 		}
 
-		const projectedLayers = layerController.getValue('projectedLayers');
+		const { projectedLayers, layers } = layerController.getValues(['projectedLayers', 'layers']);
 		layerController.updateState({
 			projectedLayers: projectedLayers.filter(layer => !layersToRemove.includes(layer.layerId)),
+			layers: layers.filter(layer => !layersToRemove.includes(layer.layerId)),
 		});
 
-		const layers = globalStateController.getValue('layers');
-		globalStateController.updateState({ layers: layers.filter(layer => !layersToRemove.includes(layer.layerId)) });
-
-		setStateApp(state => ({ ...state, universalCircularLoaderAct: false }));
+		window.setStateApp(state => ({ ...state, universalCircularLoaderAct: false }));
 	};
 
 	return (

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { detailCardController } from 'hookstate/detailCardController';
+
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
+
+import { detailCardController } from 'controllers/detailCardController';
 
 const SummaryUsersList = ({ fieldData, field }) => {
 	const {

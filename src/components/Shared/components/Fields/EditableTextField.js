@@ -2,15 +2,13 @@ import React, { useEffect, useState } from 'react';
 
 import { TextField, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
-import { truncate } from 'components/Shared/functions';
 import NameWithTooltip from '../../SidePanel/compoennts/Common/NameWithTooltip';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	heading: ({ type }) => ({
 		marginTop: type === 'group' ? '8px' : '6px',
 	}),
@@ -32,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 		position: 'relative',
 	}),
 	expandIcon: {
-		margin: '9px 0px 0px 9px',
+		margin: '5px 9px 0px 9px',
 	},
 	textFieldInput: {
 		height: '40px',
@@ -58,15 +56,13 @@ function EditableTextField({
 		}
 	}, [openEditField]);
 
-	useEffect(() => {
-		//  console.log(isEdit)
-	}, [isEdit]);
 	return (
 		<Grid
 			id={'editable-field-' + item.sourceName}
 			container
 			onMouseOver={() => !isEdit.mode && setEdit({ ...isEdit, able: true })}
 			onMouseLeave={() => setEdit({ ...isEdit, able: false })}
+			style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}
 		>
 			<Grid
 				item
@@ -84,7 +80,7 @@ function EditableTextField({
 					<NameWithTooltip
 						title={name}
 						style={{
-							width: '300px', // Approximate ellipsis width
+							display: 'contents',
 						}}
 						height={'100%'}
 					/>

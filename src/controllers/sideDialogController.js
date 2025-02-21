@@ -1,8 +1,4 @@
-import { hookstate } from '@hookstate/core';
-
-import { copy } from 'components/Shared/functions';
-
-import { hookStateController } from 'hookstate/hookStateController';
+import { StateController } from './stateController';
 
 export const commonIterestOwnerStates = {
 	newOwner: false,
@@ -33,6 +29,12 @@ export const tractInterestOwnerState = {
 	mineral_interest: null,
 	nonExecRightsOnly: null,
 
+	depthFrom: null,
+	depthTo: null,
+	depthBoth: null,
+
+	contactOwners: [],
+
 	operating_rights: null,
 	offer_price_nma: null,
 	max_offer_price_nma: null,
@@ -41,13 +43,33 @@ export const tractInterestOwnerState = {
 	cost_free_high_value: null,
 	cost_bearing_high_value: null,
 	qtr: [null, null, null, null],
+	qtr1: null,
+	qtr2: null,
+	qtr3: null,
+	qtr4: null,
+	uUnitPricing: null,
+	uMaxUnitPricing: null,
+	uUnitPricingNMA: null,
+	uMaxUnitPricingNMA: null,
+	leaseBonusPerAcre: null,
 
 	leaseStatus: null,
-	depthFrom: 'All depths',
-	depthTo: 'All depths',
 	dataSource: null,
 	customLayer: null,
-	relatedObject: null,
+	relatedObject: {},
+	workspaceSettings: {},
+	rerenderJson: {},
+	rowData: {},
+	createBy: null,
+	lastUpdateBy: null,
+	bonus_payment: null,
+	showNraRecalculate: null,
+	showTargetOfferRecalculate: null,
+	netAcresOverRideValue: null,
+	showTargetOfferPriceRecalculate: null,
+	showMaxOfferPriceRecalculate: null,
+	showMaxOfferRecalculate: null,
+	showBonusPaymentRecalculate: null,
 };
 
 export const unitInterestOwnerState = {
@@ -63,6 +85,21 @@ export const unitInterestOwnerState = {
 	dataSource: null,
 	taxYear: null,
 	custom_data: null,
+	uAcres: null,
+	uUnitPricing: null,
+	uMaxUnitPricing: null,
+	workspaceSettings: {},
+	rowData: {},
+	relatedObject: {},
+	rerenderJson: {},
+	createBy: null,
+	lastUpdateBy: null,
+	contactOwners: [],
+	'showTargetPrice/NraRecalculate': null,
+	showNetRoyaltyAcresRecalculate: null,
+	showTargetOfferRecalculate: null,
+	showMaxOfferRecalculate: null,
+	'showMaxPrice/NraRecalculate': null,
 };
 
 export const contactState = {
@@ -80,6 +117,7 @@ export const contactState = {
 	country: null,
 	contactOwner: null,
 	isPurchased: null,
+	ownerType: null,
 };
 
 export const payeeState = {
@@ -130,15 +168,10 @@ const initialStates = {
 
 export const sideDialogState = {};
 
-const sideDialogStateControllerHandler = () => ({});
-
 export const sideDialogController = DialogKey => {
 	if (!sideDialogState[DialogKey]) {
-		sideDialogState[DialogKey] = hookstate(copy(initialStates[DialogKey]));
+		sideDialogState[DialogKey] = new StateController({ ...initialStates[DialogKey], DialogKey });
 	}
 
-	return {
-		...sideDialogStateControllerHandler(sideDialogState[DialogKey]),
-		...hookStateController(sideDialogState[DialogKey], initialStates[DialogKey]),
-	};
+	return sideDialogState[DialogKey];
 };

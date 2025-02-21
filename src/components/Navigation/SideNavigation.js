@@ -31,12 +31,12 @@ import { workspaceTenantName } from 'components/Shared/functions';
 import Analytics from 'components/Shared/svgIcons/analytics';
 import LandScapeIcon from 'components/Shared/svgIcons/LandscapeBlackIcon';
 
+import { mapControlsController } from 'controllers/mapControlsController';
+import { navController } from 'controllers/navStateController';
+
 import { GET_NOTIFICATIONS } from 'graphQL/useQueryGetNotifications';
 import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 import { GET_WORKSPACE_SETTINGS } from 'graphQL/useQueryWorkspaceSettings';
-
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { navController } from 'hookstate/navStateController';
 
 import { AppContext } from 'AppContext';
 
@@ -473,7 +473,7 @@ const SideNavigation = ({ openDrawer, handleListItemClick, handleDrawerClose, ha
 									...stateApp,
 									contactFromMap: false,
 								}));
-								handleListItemClick('/data/wells');
+								handleListItemClick('/data/contactTable');
 							}}
 							key="data"
 						>

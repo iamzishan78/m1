@@ -4,11 +4,11 @@ import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
-import { detailCardController } from 'hookstate/detailCardController';
+import { detailCardController } from 'controllers/detailCardController';
+import { popupController } from 'controllers/popupStateController';
 
 import * as Pages from './pages';
 import TabRender from './TabRender';
-import { popupController } from 'hookstate/popupStateController';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -103,7 +103,9 @@ const Content = () => {
 		isTabbed: tabs && tabs.length > 1,
 	});
 
-	if (!Pages[page]) return null;
+	if (!Pages[page]) {
+		return null;
+	}
 
 	const { Header, MainGridRightContainer } = Pages[page];
 

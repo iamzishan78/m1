@@ -3,10 +3,11 @@ import React, { memo } from 'react';
 import { Button, ButtonGroup } from '@material-ui/core';
 
 import MetaFieldList from 'components/MRTTable/Common/MetaData/MetaFieldList';
-import MetaField from 'utils/MetaField';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController } from 'controllers/tableController';
+
+import MetaField from 'utils/MetaField';
 
 function AgreementToolBar({ table, tableKey }) {
 	const Controller = tableController(tableKey);

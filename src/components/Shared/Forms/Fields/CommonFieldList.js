@@ -9,10 +9,9 @@ import PropTypes from 'prop-types';
 
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import DateField from 'components/Shared/components/Fields/DateField';
-import NumberField from 'components/Shared/components/Fields/NumberField';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 const useStyles = makeStyles(() => ({
 	text: {
@@ -81,6 +80,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 								fieldConfig={{
 									margin: 'dense',
 									variant: 'outlined',
+									size: 'small',
 									disabled: field?.disabled,
 									customStyleClass: classes.text,
 								}}
@@ -97,8 +97,32 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 								}}
 							/>
 						)}
-						{(field.type === 'number' ||
-							field.type === 'date' ||
+						{field.type === 'number' && (
+							<CustomTextField
+								id={`field-${fieldKey}`}
+								control={control}
+								fieldConfig={{
+									margin: 'dense',
+									variant: 'outlined',
+									size: 'small',
+									type: 'number',
+									disabled: field?.disabled,
+									customStyleClass: classes.text,
+								}}
+								fieldAttributes={{
+									name: field.key,
+									defaultValue: get(data, `${fieldKey}`, ''),
+									InputProps: {
+										...field.InputProps,
+										endAdornment,
+									},
+								}}
+								fieldEvents={{
+									onBlur: value => offClickHandler(fieldKey, value),
+								}}
+							/>
+						)}
+						{(field.type === 'date' ||
 							field.type === 'dropdown' ||
 							field.type === 'multiselect' ||
 							field.type === 'select') && (
@@ -106,32 +130,12 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 								key={fieldKey}
 								control={control}
 								name={fieldKey}
-								render={({ field }) => {
+								render={params => {
 									return (
 										<Fragment>
-											{field.type === 'number' && (
-												<NumberField
-													{...field}
-													id={`field-${fieldKey}`}
-													index={index}
-													fieldKey={fieldKey}
-													field={field}
-													defaultValue={get(data, `${fieldKey}`, '')}
-													offClickHandler={(key, value) => {
-														offClickHandler(key, value);
-													}}
-													InputProps={{
-														...field.InputProps,
-														endAdornment,
-													}}
-													props={{
-														className: classes.text,
-													}}
-												/>
-											)}
 											{field.type === 'date' && (
 												<DateField
-													{...field}
+													{...params.field}
 													id={`field-${fieldKey}`}
 													index={index}
 													field={field}
@@ -173,7 +177,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 											)}
 											{field.type === 'select' && (
 												<Select
-													{...field}
+													{...params.field}
 													id={`field-${fieldKey}`}
 													variant="outlined"
 													fullWidth

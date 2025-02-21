@@ -23,13 +23,13 @@ import GenericDateField from 'components/Shared/components/Fields/GenericDateFIe
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
+
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
 import { UPDATE_DOCUMENT, UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { CREATED_STATUS, ONE_MB } from 'utils/consts';
 import { convertFile } from 'utils/tesseractHelper';
@@ -197,7 +197,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	const dispatch = useDispatch();
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const client = useApolloClient();
 
@@ -218,7 +218,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 
 	const formController = createViewStateController(tableKey);
 	const formState = formController.useCompleteState();
-	const formStateValues = formState?.get({ noproxy: true });
+	const formStateValues = formState;
 
 	const tableState = tableController(tableKey).useState(['TableSchema', 'columnVisibility']);
 	const tableStateValues = tableState.stateValues;
@@ -368,7 +368,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 
 	useEffect(() => {
 		const value = url?.isValid ? url?.value : null;
-		formState?.url?.set(value);
+		formController.updateState({ url: value });
 	}, [url]);
 
 	const uploadFile = () => {
@@ -441,7 +441,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							multiline
 							value={formStateValues?.documentNumber}
 							onChange={e => {
-								formState?.documentNumber?.set(e.target.value);
+								formController.updateState({ documentNumber: e.target.value });
 							}}
 						/>
 					</ListItem>
@@ -453,7 +453,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							multiline
 							value={formStateValues?.documentName}
 							onChange={e => {
-								formState?.documentName?.set(e.target.value);
+								formController.updateState({ documentName: e.target.value });
 							}}
 						/>
 					</ListItem>
@@ -469,7 +469,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								} else if (value?.name) {
 									documentType = value.name;
 								}
-								formState?.documentType?.set(documentType);
+								formController.updateState({ documentType });
 							}}
 							value={formStateValues?.documentType}
 						/>
@@ -479,7 +479,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						<GenericDateField
 							value={formStateValues?.dateTime}
 							onChange={value => {
-								formState?.dateTime?.set(value);
+								formController.updateState({ dateTime: value });
 							}}
 						/>
 					</ListItem>
@@ -497,7 +497,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								multiline
 								value={formStateValues?.book}
 								onChange={e => {
-									formState?.book?.set(e.target.value);
+									formController.updateState({ book: e.target.value });
 								}}
 							/>
 						</div>
@@ -514,7 +514,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								multiline
 								value={formStateValues?.page}
 								onChange={e => {
-									formState?.page?.set(e.target.value);
+									formController.updateState({ page: e.target.value });
 								}}
 							/>
 						</div>
@@ -526,7 +526,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								multiline
 								value={formStateValues?.instrument}
 								onChange={e => {
-									formState?.instrument?.set(e.target.value);
+									formController.updateState({ instrument: e.target.value });
 								}}
 							/>
 						</div>

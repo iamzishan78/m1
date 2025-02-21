@@ -18,9 +18,9 @@ import {
 } from 'components/Shared/functions/shapeLayer';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { getLayerKey } from 'hookstate/helpers';
-import { popupController } from 'hookstate/popupStateController';
+import { getLayerKey } from 'controllers/helpers';
+import { layerController } from 'controllers/layerStateController';
+import { popupController } from 'controllers/popupStateController';
 
 import { copy } from 'utils/helper';
 
@@ -30,7 +30,7 @@ import udLayerClickHandler from './udLayerClickHandler';
 
 const onWellClick = (object, layerId) => {
 	if (!object) {
-		return null;
+		return false;
 	}
 
 	const feature = copy(object);
@@ -72,7 +72,7 @@ const onWellClick = (object, layerId) => {
 
 const onDataLayerClick = (object, layerId, layer) => {
 	if (!object || !layer) {
-		return null;
+		return false;
 	}
 
 	const feature = copy(object);
@@ -88,7 +88,7 @@ const onDataLayerClick = (object, layerId, layer) => {
 
 const onPointClick = (object, layerId, layer) => {
 	if (!object || !layer) {
-		return null;
+		return false;
 	}
 
 	const feature = copy(object);
@@ -108,7 +108,7 @@ const onPointClick = (object, layerId, layer) => {
 
 const onFileLayerClick = (object, layerId, layer) => {
 	if (!object || !layer) {
-		return null;
+		return false;
 	}
 
 	const feature = copy(object);
@@ -168,7 +168,7 @@ const onFileLayerClick = (object, layerId, layer) => {
 
 const onLandGridClick = (object, layerId, layer) => {
 	if (!object || !layer) {
-		return null;
+		return false;
 	}
 
 	const feature = copy(object);
@@ -184,7 +184,7 @@ const onLandGridClick = (object, layerId, layer) => {
 
 const onFeatureClick = (feature, layer) => {
 	if (!layer) {
-		const layers = globalStateController.getValue('layers');
+		const layers = layerController.getValue('layers');
 
 		layer = layers.find(l => {
 			return l.layerSettings?.showable && l.layerSettings?.visiable && feature.layer.id.startsWith(l.identifier);

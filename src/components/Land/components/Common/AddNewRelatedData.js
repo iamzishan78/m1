@@ -21,9 +21,9 @@ import payeeForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/Paye
 import paymentForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PaymentGrid/payment_form_schema';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { sideDialogController } from 'hookstate/sideDialogController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { detailCardController } from 'controllers/detailCardController';
+import { paymentState, sideDialogController } from 'controllers/sideDialogController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import { checkFormRequireField } from 'utils/helper';
 
@@ -160,6 +160,8 @@ const useStyles = makeStyles({
 });
 
 export default function AddNewRelatedData({ title, addNewData, formName }) {
+	const Controller = sideDialogController(formName);
+	const formState = Controller.useCompleteState();
 	const classes = useStyles();
 	let [loader, setLoader] = useState(false);
 	const { control, reset, getValues, setValue, watch } = useForm();
@@ -169,9 +171,7 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 	});
 	const [error, setError] = useState(false);
 
-	const Controller = sideDialogController(formName);
 	const paymentMultiGrid = tableGlobalController.getValue('paymentMultiGrid');
-	const formState = Controller.useCompleteState();
 
 	// Memoize form schema to avoid unnecessary re-renders
 	const formSchema = useMemo(() => {
@@ -246,9 +246,15 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 	useEffect(() => {
 		if (!isEmpty(paymentMultiGrid?.paymentData) && formName === 'paymentDialog') {
 			const rowData = paymentMultiGrid?.paymentData;
-			rowData.assignedTo = rowData?.assignedTo?._id || '';
-			Controller.updateState(rowData);
-			reset(rowData);
+			const filteredData = Object.keys(rowData).reduce((acc, key) => {
+				if (key in paymentState) {
+					acc[key] = rowData[key];
+				}
+				return acc;
+			}, {});
+			filteredData.assignedTo = rowData?.assignedTo?._id || '';
+			Controller.updateState(filteredData);
+			reset(filteredData);
 		}
 	}, [paymentMultiGrid?.paymentData]);
 

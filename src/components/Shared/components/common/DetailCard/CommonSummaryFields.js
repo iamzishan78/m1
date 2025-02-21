@@ -1,18 +1,19 @@
 import React, { Fragment, useEffect, useState } from 'react';
 
-import { useLazyQuery } from '@apollo/client';
-
-import AddIcon from '@material-ui/icons/Add';
 import { Button, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import AddIcon from '@material-ui/icons/Add';
+
+import { useLazyQuery } from '@apollo/client';
+
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
+import { popupController } from 'controllers/popupStateController';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { detailCardController } from 'hookstate/detailCardController';
-
 import MetaField from 'utils/MetaField';
-import { popupController } from 'hookstate/popupStateController';
+
 import GenericFields from './GenericFields';
 
 const useStyles = makeStyles(theme => ({
@@ -63,13 +64,17 @@ export default function CommonSummaryFieldsComponent({ metaDataCategory, formFie
 	const [fields, setFields] = useState([]);
 
 	useEffect(() => {
-		if (!formFields) return;
+		if (!formFields) {
+			return;
+		}
 
 		setFields(formFields);
 	}, [formFields, setFields]);
 
 	useEffect(() => {
-		if (!metaDataCategory) return;
+		if (!metaDataCategory) {
+			return;
+		}
 
 		getMetaData({
 			variables: {
@@ -80,7 +85,9 @@ export default function CommonSummaryFieldsComponent({ metaDataCategory, formFie
 	}, [metaDataCategory, user, getMetaData, globalStateValues?.user?.mongoId]);
 
 	useEffect(() => {
-		if (!metaDataRes?.getMetaData?.metaData) return;
+		if (!metaDataRes?.getMetaData?.metaData) {
+			return;
+		}
 
 		setFields(fields => [...fields, ...metaDataRes?.getMetaData?.metaData]);
 	}, [metaDataRes, currentAsset]);

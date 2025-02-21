@@ -7,9 +7,9 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import WellOwnersToolbar from 'components/MRTTable/TablesOverride/WellOwners/Toolbar';
 
-import { WELLOWNERSQUERY } from 'graphQL/useQueryWellOwners';
+import { tableController } from 'controllers/tableController';
 
-import { tableController } from 'hookstate/tableController';
+import { WELLOWNERSQUERY } from 'graphQL/useQueryWellOwners';
 
 const WellOwnersMeta = {
 	query: WELLOWNERSQUERY,

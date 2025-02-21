@@ -12,7 +12,7 @@ import { getAllData } from 'components/MRTTable/utils/GetAllData';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import RequestPageIcon from 'components/Shared/svgIcons/request_page';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 export const excludeFilters = (tableKey, total) => {
 	const rowSelection = tableController(tableKey).getValue('rowSelection');

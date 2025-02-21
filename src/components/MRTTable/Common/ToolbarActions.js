@@ -12,18 +12,15 @@ import PropTypes from 'prop-types';
 import GridView from 'components/MRTTable/Common/GridView';
 import TabHeader from 'components/MRTTable/Common/TabHeader';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 import { excludeFilters } from './CommonToolBarActions';
 import TableHeader from './TableHeader';
 
 function ToolbarActions({ table, tableKey, children }) {
-	const tableState = tableController(tableKey).useCompleteState();
-	const tableStateValues = tableState?.get({ noproxy: true });
-	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
-
+	const tableStateValues = tableController(tableKey).useCompleteState();
+	const { user: getUser } = globalStateController.useState(['user']);
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomeRowsSelected =
 		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;

@@ -21,9 +21,9 @@ import MRTTable from 'components/MRTTable';
 import ActivitiesToolbar from 'components/MRTTable/TablesOverride/ContactDetailActivities/ActivitiesToolbar';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
-import { CONTACT_SUMMARY } from 'graphQL/useQueryContactSummary';
+import { tableController } from 'controllers/tableController';
 
-import { tableController } from 'hookstate/tableController';
+import { CONTACT_SUMMARY } from 'graphQL/useQueryContactSummary';
 
 import { AppContext } from 'AppContext';
 

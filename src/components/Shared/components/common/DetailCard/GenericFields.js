@@ -125,7 +125,7 @@ GenericFields.propTypes = {
 		options: PropTypes.array,
 		payload: PropTypes.object,
 		shapeType: PropTypes.string,
-	}),
+	}).isRequired,
 	summaryDataValues: PropTypes.object.isRequired,
 };
 

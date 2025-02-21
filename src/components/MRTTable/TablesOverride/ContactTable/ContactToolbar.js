@@ -17,7 +17,7 @@ import {
 } from 'components/MRTTable/Common/CommonToolBarActions';
 import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 import ContactTableDialogs from './RightDialogs';
 

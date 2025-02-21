@@ -2,7 +2,7 @@ import React from 'react';
 
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 const PotentialShapeOwnersToolbar = ({ table, tableKey }) => {
 	const Controller = tableController(tableKey);

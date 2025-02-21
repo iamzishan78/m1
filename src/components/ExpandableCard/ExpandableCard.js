@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
 import {
 	Avatar,
 	Box,
@@ -34,12 +35,11 @@ import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/Confirma
 import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
 import { modifyExandableCardStyle } from 'components/Shared/functions/shapeLayer';
 
-import { drawController } from 'hookstate/drawStateController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { drawController } from 'controllers/drawStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { popupController } from 'controllers/popupStateController';
 
 import { showInfoMessage } from 'actions';
-import { layerRefs } from 'hookstate';
 
 import ReportBugModal from './components/ReportBugModal';
 import { ExpandableCardContext } from './ExpandableCardContext';
@@ -524,7 +524,7 @@ function ExpandableCard(props) {
 
 			for (let i = 0; i < selectedAbstracts.length; i++) {
 				const id = selectedAbstracts[i].properties.Id;
-				const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+				const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
 				if (sourceId) {
 					window.mapRef?.setFeatureState({ source: sourceId, id }, { click: false });
 				}
@@ -708,9 +708,9 @@ function ExpandableCard(props) {
 								targetLabel !== 'parcel' &&
 								!selectedShape && (
 									<CommentsWithIcon
-										objectId={targetSourceId.toLowerCase()}
-										targetLabel={props.targetLabel}
-										iconZiseSmall={!stateExpandableCard.expanded}
+										objectId={targetSourceId?.toLowerCase()}
+										targetLabel={props?.targetLabel}
+										iconZiseSmall={!stateExpandableCard?.expanded}
 									/>
 								)}
 
@@ -720,16 +720,16 @@ function ExpandableCard(props) {
 								!selectedShape &&
 								targetLabel !== 'recent_submitted_permits' && (
 									<TaggerWithIcon
-										objectId={targetSourceId.toLowerCase()}
-										targetLabel={props.targetLabel}
+										objectId={targetSourceId?.toLowerCase()}
+										targetLabel={props?.targetLabel}
 										iconZiseSmall={!stateExpandableCard.expanded}
 									/>
 								)}
 
 							{targetLabel === 'contact' && parent !== 'table' && (
 								<LinkWithIcon
-									objectId={targetSourceId.toLowerCase()}
-									targetLabel={props.targetLabel}
+									objectId={targetSourceId?.toLowerCase()}
+									targetLabel={props?.targetLabel}
 									iconZiseSmall={!stateExpandableCard.expanded}
 								/>
 							)}

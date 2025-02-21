@@ -22,14 +22,14 @@ import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/UnitDetailInterestOwner/unit_interest_owner_form_schema';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { sideDialogController, unitInterestOwnerState } from 'controllers/sideDialogController';
+import { tableGlobalController } from 'controllers/tableController';
+
 import { ADD_OWNER_TOA_SHAPE } from 'graphQL/useMutationAddOwnerToAShape';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { sideDialogController, unitInterestOwnerState } from 'hookstate/sideDialogController';
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
 
@@ -109,11 +109,11 @@ export default function AddUnitOwnerDialogContent({
 	const dispatch = useDispatch();
 
 	const formState = sideDialogController('unitInterestDialog').useCompleteState();
-	const formStateValues = formState?.get({ noproxy: true });
+	const formStateValues = formState;
 	const [metafields, setMetaFields] = useState([]);
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 	const { control, reset, setValue, getValues, watch } = useForm();
@@ -194,8 +194,6 @@ export default function AddUnitOwnerDialogContent({
 	}, [mutationData, updateData]);
 
 	const handleUpdateContact = ownerToAdd => {
-		console.log(selectedRow);
-		console.log(ownerToAdd);
 		if (
 			((ownerToAdd.contactStatus || selectedRow?.contactStatus) &&
 				selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
@@ -233,7 +231,10 @@ export default function AddUnitOwnerDialogContent({
 			...unitOwnerFormValue,
 		});
 
-		const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
+		let updatedFormStateValues = sideDialogController('unitInterestDialog').getAllValues();
+
+		const ownerType =
+			updatedFormStateValues.ownerType && (updatedFormStateValues.ownerType.value || updatedFormStateValues.ownerType);
 
 		if (formStateValues?.newOwner) {
 			sideDialogController('unitInterestDialog').updateState({
@@ -243,15 +244,18 @@ export default function AddUnitOwnerDialogContent({
 				},
 			});
 		} else {
-			handleUpdateContact(formStateValues);
+			handleUpdateContact(updatedFormStateValues);
 		}
+
+		updatedFormStateValues = sideDialogController('unitInterestDialog').getAllValues();
+
 		if (selectedRow) {
 			// Update shape owner object for autocompletes
 			const shapeOwner = extractValueRecursively({
 				_id: selectedRow?._id,
-				...formStateValues,
-				deals: formStateValues?.deals || [],
-				relatedObject: formStateValues.relatedObject,
+				...updatedFormStateValues,
+				deals: updatedFormStateValues?.deals || [],
+				relatedObject: updatedFormStateValues.relatedObject,
 				createBy: getUser?._id,
 				lastUpdateBy: getUser?._id,
 				shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
@@ -266,12 +270,11 @@ export default function AddUnitOwnerDialogContent({
 				awaitRefetchQueries: true,
 			});
 		} else {
-			console.log(props);
 			// Update shape owner object for autocompletes
 			const shapeOwner = extractValueRecursively({
-				...formStateValues,
-				deals: formStateValues?.deals || [],
-				relatedObject: formStateValues.relatedObject,
+				...updatedFormStateValues,
+				deals: updatedFormStateValues?.deals || [],
+				relatedObject: updatedFormStateValues.relatedObject,
 				createBy: getUser?._id,
 				lastUpdateBy: getUser?._id,
 				shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),

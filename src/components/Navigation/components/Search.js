@@ -30,11 +30,11 @@ import TractIcon from 'components/Shared/svgIcons/tract';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
 
-import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { layerController } from 'controllers/layerStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { popupController } from 'controllers/popupStateController';
 
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { popupController } from 'hookstate/popupStateController';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { AppContext } from '../../../AppContext';
 import { ADDSEARCHHISTORY } from '../../../graphQL/useMutationAddSearchHistory';

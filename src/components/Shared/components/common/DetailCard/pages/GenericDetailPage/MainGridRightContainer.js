@@ -3,12 +3,13 @@ import React, { useState, memo } from 'react';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
+import { removeSpaces } from 'components/MRTTable/utils/helper';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
+import { popupController } from 'controllers/popupStateController';
 
 import useStyles from './useStyles';
 

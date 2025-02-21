@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
+
 import { Box } from '@material-ui/core';
-import { tableController } from 'hookstate/tableController';
-import { LOD_YEAR, LOD_YEAR_OPTIONS } from 'utils/consts';
+
 import SelectFilter from 'components/Shared/ui/SelectFilter';
+
+import { tableController } from 'controllers/tableController';
+
+import { LOD_YEAR, LOD_YEAR_OPTIONS } from 'utils/consts';
 
 const WellOwnersToolbar = ({ tableKey }) => {
 	const [year, setYear] = useState(`${LOD_YEAR}`);

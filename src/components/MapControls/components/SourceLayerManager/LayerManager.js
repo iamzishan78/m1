@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import PropTypes from 'prop-types';
 
-import { layerController } from 'hookstate/layerStateController';
+import { layerController } from 'controllers/layerStateController';
 
 import CategorySection from './CategorySection';
 

@@ -16,12 +16,12 @@ import MRTTable from 'components/MRTTable';
 import TabPanels from 'components/Shared/TabPanels';
 import Tags from 'components/Shared/Tagger';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { jobController } from 'hookstate/jobStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { popupController } from 'hookstate/popupStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'controllers/globalStateController';
+import { jobController } from 'controllers/jobStateController';
+import { layerController } from 'controllers/layerStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { popupController } from 'controllers/popupStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 import { copy, formatLayerForMap } from 'utils/helper';
 

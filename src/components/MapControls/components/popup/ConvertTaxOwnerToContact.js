@@ -19,8 +19,8 @@ import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import Tags from 'components/Shared/Tagger';
 
-import { drawController } from 'hookstate/drawStateController';
-import { globalStateController } from 'hookstate/globalStateController';
+import { drawController } from 'controllers/drawStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import { getMapFilters } from 'utils/helper';
 

@@ -7,10 +7,9 @@ import { debounce } from 'lodash';
 import { deepEqual } from 'components/Shared/functions';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
 
-import { drawController } from 'hookstate/drawStateController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { layerController } from 'hookstate/layerStateController';
+import { drawController } from 'controllers/drawStateController';
+import { layerFiltersController } from 'controllers/layerFiltersController';
+import { layerController } from 'controllers/layerStateController';
 
 const updateState = debounce((zoom, bbox, center) => {
 	layerController.updateState({
@@ -42,11 +41,8 @@ function LayerManager() {
 	const [isReady, setIsReady] = useState(false);
 
 	const { bbox, recalculate } = layerController.useState(['bbox', 'recalculate']);
-	const { layers, deckLayer, globalStateValues } = globalStateController.useState(
-		['layers', 'deckLayer'],
-		'globalStateValues'
-	);
 	const { polygonFilter, polygonsFilter } = layerFiltersController.useState(['polygonFilter', 'polygonsFilter']);
+	const { layers, deckLayer, layerStateValues } = layerController.useState(['layers', 'deckLayer'], 'layerStateValues');
 
 	const {
 		stateValues: { isDrawing },
@@ -69,14 +65,14 @@ function LayerManager() {
 	}, [client, history]);
 
 	useEffect(() => {
-		if (globalStateValues?.layers?.length > 0 && !isReady) {
+		if (layerStateValues?.layers?.length > 0 && !isReady) {
 			setIsReady(true);
 		}
 	}, [layers]);
 
 	useEffect(() => {
-		if (globalStateValues?.deckLayer && globalStateValues?.layers?.length === 0) {
-			layerController.handleDeckLayer(globalStateValues?.deckLayer);
+		if (layerStateValues?.deckLayer && layerStateValues?.layers?.length === 0) {
+			layerController.handleDeckLayer(layerStateValues?.deckLayer);
 		}
 	}, [deckLayer]);
 

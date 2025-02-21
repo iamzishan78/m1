@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/styles';
 import MRTTable from 'components/MRTTable';
 import RelatedAgreementToolbar from 'components/MRTTable/TablesOverride/RelatedAgreementTable/RelatedAgreementToolbar';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 import { useStyles as customStyles } from '../style';
 
