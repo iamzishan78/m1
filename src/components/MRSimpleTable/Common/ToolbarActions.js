@@ -2,11 +2,9 @@ import React from 'react';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
-import {
-	simpleTableController,
-	simpleTableGlobalController,
-} from 'hookstate/simpleTableController';
+import { simpleTableController, simpleTableGlobalController } from 'hookstate/simpleTableController';
 import { globalStateController } from 'hookstate/globalStateController';
+import TableHeader from 'components/MRTTable/Common/TableHeader';
 import _ from 'lodash';
 import TabHeader from './TabHeader';
 
@@ -27,6 +25,7 @@ function ToolbarActions({ table, tableKey, children }) {
 		'isDeleteAllowed',
 		'isExportAllowed',
 		'tabLabels',
+		'defaultHeader',
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -51,10 +50,10 @@ function ToolbarActions({ table, tableKey, children }) {
 			acc[key] =
 				selectedRows?.length > 0
 					? selectedRows.map(item => {
-						let val = _.get(item, originalKey);
-						if (func) val = func(val);
-						return val;
-					})
+							let val = _.get(item, originalKey);
+							if (func) val = func(val);
+							return val;
+						})
 					: null;
 			return acc;
 		}, {});
@@ -69,6 +68,7 @@ function ToolbarActions({ table, tableKey, children }) {
 
 		table.resetRowSelection();
 	};
+	console.log(tableStateValues);
 
 	return (
 		<div
@@ -81,6 +81,8 @@ function ToolbarActions({ table, tableKey, children }) {
 				marginBottom: 'auto',
 			}}
 		>
+			{tableStateValues.defaultHeader && <TableHeader {...tableStateValues.defaultHeader} />}
+
 			<div style={{ marginTop: 'auto', marginBottom: 'auto' }}>
 				<TabHeader labels={tableStateValues.tabLabels} />
 			</div>
