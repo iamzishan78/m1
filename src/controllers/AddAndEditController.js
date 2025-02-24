@@ -24,7 +24,7 @@ class CreateViewStateController extends StateController {
 	initialize(tableKey, FieldsValue) {
 		this.updateState({
 			tableKey,
-			FieldsValue,
+			...FieldsValue,
 		});
 	}
 }
