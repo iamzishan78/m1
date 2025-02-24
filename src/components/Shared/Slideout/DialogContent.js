@@ -51,7 +51,7 @@ function DialogContent(props) {
 			>
 				<Component />
 				<div>
-					<CommentComponent targetLabel={'activity'} targetSourceId={parentId} />
+					<CommentComponent targetLabel={'activity'} targetSourceId={parentId} showCommentType />
 				</div>
 			</div>
 		);
