@@ -6,7 +6,6 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { useHookstate } from '@hookstate/core';
 import get from 'lodash/get';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -21,11 +20,11 @@ import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
 import SearchableSelectField from 'components/Shared/Slideout/FieldComponents/searchableSelectField';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
+import { formStateController } from 'controllers/formStateController';
 import { globalStateController } from 'controllers/globalStateController';
 import { slidoutStateController } from 'controllers/slidoutStateController';
 import { tableGlobalController } from 'controllers/tableController';
 
-import { activityFormState } from './activityFormStateController';
 import { AppContext } from '../../../AppContext';
 import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
 import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
@@ -207,7 +206,18 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	]);
 	const activityName = title;
 	const { activityType, outcome, startDate, endDate, owner, dealId, status, notes, startTime, endTime } =
-		useHookstate(activityFormState);
+		formStateController.useState([
+			'activityType',
+			'outcome',
+			'startDate',
+			'endDate',
+			'owner',
+			'dealId',
+			'status',
+			'notes',
+			'startTime',
+			'endTime',
+		]);
 	const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
 	const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
 
@@ -232,22 +242,26 @@ export default function ActivityForm({ setSelectedActivityId }) {
 
 	const clearFields = () => {
 		slidoutStateController.updateNewEntity(true);
-		notes.set('');
-		owner.set({
-			name: stateApp.user.fullname || stateApp.user.email,
-			id: stateApp.user.mongoId,
+
+		formStateController.updateState({
+			notes: '',
+			owner: {
+				name: stateApp.user.fullname || stateApp.user.email,
+				id: stateApp.user.mongoId,
+			},
+			dealId: null,
+			activityType: '',
+			outcome: '',
+			status: false,
+			startDate: getCurrentDate(),
+			endDate: getCurrentDate(),
+			startTime: '08:00',
+			endTime: '08:00',
 		});
-		setNameAutValue({ name: '', _id: null });
-		dealId.set(null);
-		activityType.set('');
+
 		slidoutStateController.updateTitle('');
-		status.set(false);
-		startDate.set(getCurrentDate());
-		endDate.set(getCurrentDate());
-		startTime.set('08:00');
-		endTime.set('08:00');
+		setNameAutValue({ name: '', _id: null });
 		setNameAutInputValue('');
-		outcome.set('');
 	};
 
 	const onModalClose = () => {
@@ -305,7 +319,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	const [getOpenDeals, { data: dealsData }] = useLazyQuery(OPENDEALS, {
 		fetchPolicy: 'cache-and-network',
 	});
-	const dealValue = openDeals.find(deal => deal._id === dealId.get()) || null;
+	const dealValue = openDeals.find(deal => deal._id === dealId) || null;
 
 	const typeOptions = [
 		{ label: 'Call', value: 'call' },
@@ -349,49 +363,57 @@ export default function ActivityForm({ setSelectedActivityId }) {
 
 	useEffect(() => {
 		const activity = selectedActivity;
+
 		if (activity) {
 			slidoutStateController.updateNewEntity(false);
-			notes.set(activity.notes);
-			owner.set({
-				name: activity?.ownerName,
-				id: activity?.ownerId,
-			});
-			dealId.set(activity.dealId);
-			activityType.set(activity.type);
 			slidoutStateController.updateParent('Activity');
 			slidoutStateController.updateTitle(activity.name);
 			if (!activityName) {
 				slidoutStateController.updateTitle(activity.name);
 			}
+			formStateController.updateState({
+				notes: activity.notes,
+				owner: {
+					name: activity?.ownerName,
+					id: activity?.ownerId,
+				},
+				dealId: activity.dealId,
+				activityType: activity.type,
+				status: activity.isClosed,
+				outcome: activity.outcome,
+				startTime: moment.parseZone(activity.start).format('HH:mm'),
+				endTime: moment.parseZone(activity.end).format('HH:mm'),
+				startDate: moment.parseZone(activity.start).format('YYYY-MM-DD'),
+				endDate: moment.parseZone(activity.end).format('YYYY-MM-DD'),
+			});
 
-			status.set(activity.isClosed);
 			setNameAutValue({
 				name: activity.contactName,
 				_id: activity.contactId,
 			});
+
 			outcomeFieldRef.current?.updateDefaultValue(activity.outcome);
-			outcome.set(activity.outcome);
-			startTime.set(moment.parseZone(activity.start).format('HH:mm'));
-			endDate.set(moment.parseZone(activity.end).format('yyyy-MM-DD'));
-			startDate.set(moment.parseZone(activity.start).format('yyyy-MM-DD'));
-			endTime.set(moment.parseZone(activity.end).format('HH:mm'));
 		} else {
 			slidoutStateController.updateNewEntity(true);
-			setNameAutValue({ name: activityName, _id: null });
-			status.set(status.get() || false);
-			notes.set(notes.get());
-			owner.set({
-				name: owner.get()?.name || stateApp.user.fullname || stateApp.user.email,
-				id: owner.get()?.id || stateApp.user.mongoId,
-			});
-			dealId.set(dealId.get());
-			activityType.set(activityType.get());
 			slidoutStateController.updateParent('Activity');
 			slidoutStateController.updateTitle(activityName);
-			startDate.set(startDate.get() || getCurrentDate());
-			endDate.set(endDate.get() || getCurrentDate());
-			startTime.set('08:00');
-			endTime.set('08:00');
+
+			formStateController.updateState({
+				notes: notes || '',
+				owner: {
+					name: owner?.name || stateApp.user.fullname || stateApp.user.email,
+					id: owner?.id || stateApp.user.mongoId,
+				},
+				dealId: dealId || null,
+				activityType: activityType || '',
+				status: status || false,
+				startDate: startDate || getCurrentDate(),
+				endDate: endDate || getCurrentDate(),
+				startTime: '08:00',
+				endTime: '08:00',
+			});
+
+			setNameAutValue({ name: activityName, _id: null });
 		}
 	}, []);
 
@@ -413,24 +435,24 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			return;
 		}
 		globalStateController.updateState({ universalLoader: true });
-		const dateTime = mergeDateAndTime(startDate.get(), startTime.get());
-		const endDateTime = mergeDateAndTime(endDate.get(), endTime.get());
+		const dateTime = mergeDateAndTime(startDate, startTime);
+		const endDateTime = mergeDateAndTime(endDate, endTime);
 
 		await addActivityMutation({
 			variables: {
 				activity: {
-					type: activityType.get(),
+					type: activityType,
 					name: activityName,
-					notes: notes.get(),
-					outcome: outcome.get(),
-					ownerId: owner.get()?.id,
-					ownerName: owner.get()?.name,
+					notes: notes,
+					outcome: outcome,
+					ownerId: owner?.id,
+					ownerName: owner?.name,
 					contactId: nameAutValue._id,
 					contactName: nameAutValue.name,
-					dealId: dealId.get(),
+					dealId: dealId,
 					dateTime: new Date(dateTime).toUTCString(),
 					endDateTime: new Date(endDateTime).toUTCString(),
-					isClosed: status.get(),
+					isClosed: status,
 					user: stateApp.user._id,
 					createdBy: stateApp?.user?._id,
 					comments: slidoutStateController.getValue('newComments'),
@@ -441,25 +463,25 @@ export default function ActivityForm({ setSelectedActivityId }) {
 
 	const updateActivity = async () => {
 		globalStateController.updateState({ universalLoader: true });
-		const dateTime = mergeDateAndTime(startDate.get(), startTime.get());
-		const endDateTime = mergeDateAndTime(endDate.get(), endTime.get());
+		const dateTime = mergeDateAndTime(startDate, startTime);
+		const endDateTime = mergeDateAndTime(endDate, endTime);
 
 		updateActivityMutation({
 			variables: {
 				activity: {
 					_id: selectedActivity?._id,
-					type: activityType.get(),
+					type: activityType,
 					name: activityName,
 					dateTime: new Date(dateTime).toUTCString(),
 					endDateTime: new Date(endDateTime).toUTCString(),
-					notes: notes.get(),
-					outcome: outcome.get(),
-					ownerId: owner.get()?.id,
-					ownerName: owner.get()?.name,
+					notes: notes,
+					outcome: outcome,
+					ownerId: owner?.id,
+					ownerName: owner?.name,
 					contactId: nameAutValue?._id,
 					contactName: nameAutValue?.name,
-					dealId: dealId.get(),
-					isClosed: status.get(),
+					dealId: dealId,
+					isClosed: status,
 					user: stateApp.user._id,
 				},
 			},
@@ -508,9 +530,9 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			/>
 			<SingleSelectField
 				title="Type"
-				value={activityType.get()}
+				value={activityType}
 				options={typeOptions}
-				onChange={value => activityType.set(value)}
+				onChange={value => formStateController.updateState({ activityType: value })}
 			/>
 
 			<FormControl variant="outlined" fullWidth size="small" style={{ marginTop: '10px' }}>
@@ -528,10 +550,10 @@ export default function ActivityForm({ setSelectedActivityId }) {
 								size: 50,
 							}}
 							onChange={data => {
-								outcome.set(data.name);
+								formStateController.updateState({ outcome: data.name });
 							}}
 							defaultOptions={outcomeOptions}
-							value={outcome.get()}
+							value={outcome}
 							inputProps={{ variant: 'outlined', size: 'small' }}
 						/>
 					</Grid>
@@ -541,15 +563,13 @@ export default function ActivityForm({ setSelectedActivityId }) {
 				<Grid container className={classes.gridStyle} style={{ marginTop: '10px' }}>
 					<DateField
 						title="Start Date"
-						date={startDate.get()}
-						time={startTime.get()}
+						date={startDate}
+						time={startTime}
 						setDate={value => {
-							startDate.set(value);
-							endDate.set(value);
+							formStateController.updateState({ startDate: value, endDate: value });
 						}}
 						setTime={value => {
-							startTime.set(value);
-							endTime.set(value);
+							formStateController.updateState({ startTime: value, endTime: value });
 						}}
 						isTime={true}
 					/>
@@ -557,10 +577,10 @@ export default function ActivityForm({ setSelectedActivityId }) {
 				<Grid container className={classes.gridStyle} style={{ marginTop: '10px' }}>
 					<DateField
 						title="End Date"
-						date={endDate.get()}
-						time={endTime.get()}
-						setDate={value => endDate.set(value)}
-						setTime={value => endTime.set(value)}
+						date={endDate}
+						time={endTime}
+						setDate={value => formStateController.updateState({ endDate: value })}
+						setTime={value => formStateController.updateState({ endTime: value })}
 						isTime={true}
 					/>
 				</Grid>
@@ -571,18 +591,18 @@ export default function ActivityForm({ setSelectedActivityId }) {
 				users={users}
 				setOwnerId={value => {
 					const foundText = users.find(item => item.value === value)?.text || '';
-					owner.set({ id: value, name: foundText });
+					formStateController.updateState({ owner: { id: value, name: foundText } });
 				}}
-				ownerId={owner.get()?.id}
+				ownerId={owner?.id}
 			/>
 
 			<SearchableSelectField
 				title="Associated Deal"
 				options={openDeals}
 				value={dealValue}
-				selectedFieldId={dealId.get()}
+				selectedFieldId={dealId}
 				onChange={value => {
-					dealId.set(value?._id);
+					formStateController.updateState({ dealId: value?._id });
 				}}
 			/>
 			<FormControl variant="outlined" fullWidth size="small">
@@ -636,8 +656,8 @@ export default function ActivityForm({ setSelectedActivityId }) {
 							disableClearable
 							className={classes.fieldWidth}
 							options={activityStatusOptions}
-							onChange={(e, option) => status.set(option.value)}
-							value={activityStatusOptions.find(option => option.value === status.get())}
+							onChange={(e, option) => formStateController.updateState({ status: option.value })}
+							value={activityStatusOptions.find(option => option.value === status)}
 							getOptionLabel={option => option.label}
 							renderInput={params => (
 								<TextField {...params} margin="dense" variant="outlined" label="Activity Status" />
@@ -647,7 +667,10 @@ export default function ActivityForm({ setSelectedActivityId }) {
 				</Grid>
 			</FormControl>
 
-			<DescriptionField description={notes.get()} setDescription={value => notes.set(value)} />
+			<DescriptionField
+				description={notes}
+				setDescription={value => formStateController.updateState({ notes: value })}
+			/>
 		</div>
 	);
 }

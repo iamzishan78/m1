@@ -4,7 +4,6 @@ import { FormControl, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { useHookstate } from '@hookstate/core';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
@@ -14,6 +13,8 @@ import DescriptionField from 'components/Shared/Slideout/FieldComponents/Descrip
 import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
+
+import { formStateController } from 'controllers/formStateController';
 import { globalStateController } from 'controllers/globalStateController';
 import { slidoutStateController } from 'controllers/slidoutStateController';
 import { tableGlobalController } from 'controllers/tableController';
@@ -22,8 +23,6 @@ import { DELETEACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 import { AppContext } from 'AppContext';
-
-import { obligationFormState } from './obligationFormStateController';
 
 const commonTextFieldProps = {
 	fieldConfig: {
@@ -211,10 +210,20 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		obligationValue,
 		responsibleParty,
 		owner,
-		assignedOwner,
 		status,
 		notes,
-	} = useHookstate(obligationFormState);
+	} = formStateController.useState([
+		'activityType',
+		'startDate',
+		'endDate',
+		'frequency',
+		'applicable',
+		'obligationValue',
+		'responsibleParty',
+		'owner',
+		'status',
+		'notes',
+	]);
 
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
 		fetchPolicy: 'cache-and-network',
@@ -234,6 +243,28 @@ export default function ObligationForm({ setSelectedActivityId }) {
 			);
 		}
 	}, [userLists]);
+
+	const clearFields = () => {
+		formStateController.updateState({
+			notes: '',
+			activityType: '',
+			status: false,
+			startDate: getCurrentDate(),
+			endDate: getCurrentDate(),
+			applicable: '',
+		});
+
+		slidoutStateController.updateTitle('');
+	};
+
+	const onModalClose = () => {
+		window.history.pushState('', '', '/calendar/obligations');
+
+		clearFields();
+		setSelectedActivityId(null);
+		slidoutStateController.updateState({ selectedActivity: null });
+		slidoutStateController.hideSlideout();
+	};
 
 	const [updateActivityMutation] = useMutation(UPDATEACTIVITY, {
 		onCompleted: () => {
@@ -272,18 +303,21 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	useEffect(() => {
 		const activity = selectedActivity;
 		if (activity) {
-			activityType.set(activity.type);
-			frequency.set(activity.frequency);
-			applicable.set(activity.applicable);
-			obligationValue.set(activity.value);
-			responsibleParty.set(activity.responsibleParty);
-			assignedOwner.set(activity.assignedOwner);
-			status.set(activity.status);
-			notes.set(activity.notes);
-
-			owner.set({
-				name: activity?.ownerName,
-				id: activity?.ownerId,
+			formStateController.updateState({
+				activityType: activity.type,
+				frequency: activity.frequency,
+				applicable: activity.applicable,
+				obligationValue: activity.value,
+				responsibleParty: activity.responsibleParty,
+				assignedOwner: activity.assignedOwner,
+				status: activity.status,
+				notes: activity.notes,
+				owner: {
+					name: activity?.ownerName,
+					id: activity?.ownerId,
+				},
+				startDate: moment.parseZone(activity.start).format('YYYY-MM-DD'),
+				endDate: moment.parseZone(activity.end).format('YYYY-MM-DD'),
 			});
 
 			slidoutStateController.updateTitle(activity.name);
@@ -292,11 +326,26 @@ export default function ObligationForm({ setSelectedActivityId }) {
 			}
 
 			outcomeFieldRef.current?.updateDefaultValue(activity.outcome);
-			endDate.set(moment.parseZone(activity.end).format('yyyy-MM-DD'));
-			startDate.set(moment.parseZone(activity.start).format('yyyy-MM-DD'));
 			slidoutStateController.updateParent('Obligation');
 		}
 	}, []);
+
+	const updateActivity = async () => {
+		globalStateController.updateState({ universalLoader: true });
+
+		updateActivityMutation({
+			variables: {
+				activity: {
+					_id: selectedActivity?._id,
+					...(status ? { status: status } : {}),
+					notes: notes,
+					user: stateApp.user._id,
+				},
+			},
+		}).then(() => {
+			globalStateController.updateState({ universalLoader: false });
+		});
+	};
 
 	useEffect(() => {
 		if (formMode) {
@@ -310,43 +359,6 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		}
 	}, [formMode]);
 
-	const onModalClose = () => {
-		window.history.pushState('', '', '/calendar/obligations');
-
-		clearFields();
-		setSelectedActivityId(null);
-		slidoutStateController.updateState({ selectedActivity: null });
-		slidoutStateController.hideSlideout();
-	};
-
-	const clearFields = () => {
-		notes.set('');
-
-		activityType.set('');
-		slidoutStateController.updateTitle('');
-		status.set(false);
-		startDate.set(getCurrentDate());
-		endDate.set(getCurrentDate());
-		applicable.set('');
-	};
-
-	const updateActivity = async () => {
-		globalStateController.updateState({ universalLoader: true });
-
-		updateActivityMutation({
-			variables: {
-				activity: {
-					_id: selectedActivity?._id,
-					...(status.get() ? { status: status.get() } : {}),
-					notes: notes.get(),
-					user: stateApp.user._id,
-				},
-			},
-		}).then(result => {
-			globalStateController.updateState({ universalLoader: false });
-		});
-	};
-
 	return (
 		<div>
 			<div className={classes.inputFieldRoot}>
@@ -354,15 +366,15 @@ export default function ObligationForm({ setSelectedActivityId }) {
 					{...commonTextFieldProps}
 					fieldAttributes={{
 						...commonTextFieldProps.fieldAttributes,
-						value: activityType.get(),
+						value: activityType,
 						title: 'Obligation Type',
 					}}
 				/>
 
 				<FormControl variant="outlined" fullWidth size="small">
 					<Grid container className={classes.gridStyle}>
-						<DateField disabled={true} title="Start Date" date={startDate.get()} setDate={() => {}} />
-						<DateField disabled={true} title="End Date" date={endDate.get()} setDate={() => {}} />
+						<DateField disabled={true} title="Start Date" date={startDate} setDate={() => {}} />
+						<DateField disabled={true} title="End Date" date={endDate} setDate={() => {}} />
 					</Grid>
 				</FormControl>
 
@@ -370,16 +382,16 @@ export default function ObligationForm({ setSelectedActivityId }) {
 					{...commonTextFieldProps}
 					fieldAttributes={{
 						...commonTextFieldProps.fieldAttributes,
-						value: frequency.get(),
+						value: frequency,
 						title: 'Frequecy',
 					}}
 				/>
-				{activityType.get() !== 'Payment' && (
+				{activityType !== 'Payment' && (
 					<CustomTextField
 						{...commonTextFieldProps}
 						fieldAttributes={{
 							...commonTextFieldProps.fieldAttributes,
-							value: applicable.get(),
+							value: applicable,
 							title: 'Applicable',
 						}}
 					/>
@@ -388,7 +400,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 					{...commonTextFieldProps}
 					fieldAttributes={{
 						...commonTextFieldProps.fieldAttributes,
-						value: obligationValue.get(),
+						value: obligationValue,
 						title: 'Value',
 					}}
 				/>
@@ -396,7 +408,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 					{...commonTextFieldProps}
 					fieldAttributes={{
 						...commonTextFieldProps.fieldAttributes,
-						value: responsibleParty.get(),
+						value: responsibleParty,
 						title: 'Responsible Party',
 					}}
 				/>
@@ -407,19 +419,22 @@ export default function ObligationForm({ setSelectedActivityId }) {
 					users={users}
 					setOwnerId={value => {
 						const foundText = users.find(item => item.value === value)?.text || '';
-						owner.set({ id: value, name: foundText });
+						formStateController.updateState({ owner: { id: value, name: foundText } });
 					}}
-					ownerId={owner.get()?.id}
+					ownerId={owner?.id}
 				/>
 
 				<SingleSelectField
 					title="Status"
-					value={status.get()}
+					value={status}
 					options={statusOptions}
-					onChange={value => status.set(value)}
+					onChange={value => formStateController.updateState({ status: value })}
 				/>
 
-				<DescriptionField description={notes.get()} setDescription={value => notes.set(value)} />
+				<DescriptionField
+					description={notes}
+					setDescription={value => formStateController.updateState({ notes: value })}
+				/>
 			</div>
 		</div>
 	);

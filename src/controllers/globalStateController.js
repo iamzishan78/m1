@@ -21,6 +21,7 @@ export const globalInitialState = {
 	tenant: null,
 	selectedIconTpe: 'Chip',
 	onMapLoad: null,
+	editIconState: {},
 };
 
 class GlobalStateController extends StateController {
