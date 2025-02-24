@@ -29,7 +29,6 @@ import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 import { compareObjects } from 'utils/helper';
 
-
 import { detailCardController } from './detailCardController';
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import { StateController } from './stateController';
@@ -903,7 +902,7 @@ class TableESStateControllerHandler extends StateController {
 						filters: [
 							...mapViewsFitlers.filter(
 								({ dataSourceName, fieldName }) =>
-									(fieldName?.value || fieldName).replace('.keyword', '') !== field ||
+									(fieldName?.value || fieldName)?.replace('.keyword', '') !== field ||
 									dataSourceName !== tableState?.layerDataSourceName
 							),
 						],
