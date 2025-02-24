@@ -8,7 +8,14 @@ import { v4 as uuid } from 'uuid';
 
 import getBoundsQuery from 'api/getBoundsQuery';
 
-import { generateFileFilters, makeGeoJSON, getGeoJsonLayerProps } from 'components/Map/DeckGL/helpers/common';
+import {
+	generateFileFilters,
+	makeGeoJSON,
+	getGeoJsonLayerProps,
+	getGridLayerProps,
+	getHeatMapLayerProps,
+	getHexLayerProps,
+} from 'components/Map/DeckGL/helpers/common';
 import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
@@ -226,6 +233,7 @@ const LayerMeta = {
 		geoField: 'geometry',
 		isFilterable: true,
 		isFileDataSource: true,
+		propsFunc: getHexLayerProps,
 		props: {},
 		layer: {
 			id: 'HexagonLayer',
@@ -233,9 +241,40 @@ const LayerMeta = {
 			getProps: layerId => {
 				return {
 					data: deckLayers[layerId].getData([]),
-					getColorWeight: d => [20, 30, 40][Math.floor(Math.random() * 3)],
-					getElevationWeight: d => [20, 30, 40][Math.floor(Math.random() * 3)],
-					getPosition: d => d.geometry.coordinates,
+				};
+			},
+		},
+	},
+	'heatmap layer': {
+		defaultZoom: 10,
+		geoField: 'geometry',
+		isFilterable: true,
+		isFileDataSource: true,
+		propsFunc: getHeatMapLayerProps,
+		props: {},
+		layer: {
+			id: 'HeatmapLayer',
+			type: 'HeatmapLayer',
+			getProps: layerId => {
+				return {
+					data: deckLayers[layerId].getData([]),
+				};
+			},
+		},
+	},
+	'grid layer': {
+		defaultZoom: 10,
+		geoField: 'geometry',
+		isFilterable: true,
+		isFileDataSource: true,
+		props: {},
+		propsFunc: getGridLayerProps,
+		layer: {
+			id: 'GridLayer',
+			type: 'GridLayer',
+			getProps: layerId => {
+				return {
+					data: deckLayers[layerId].getData([]),
 				};
 			},
 		},
@@ -773,7 +812,7 @@ const layerStateControllerHandler = state => {
 			layerSettings: dbLayer.layerSettings,
 			boundingState,
 			geoField: meta.geoField,
-			isFileDataSource,
+			isFileLayer: isFileDataSource,
 			polygonFilter,
 			polygonsFilter,
 			filters: isFileDataSource ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,

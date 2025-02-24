@@ -676,6 +676,57 @@ export const getLayerDashStyle = dbLayer => {
 	};
 };
 
+export function getHexLayerProps(dbLayer, labelProps) {
+	const basedOnField = dbLayer.layerSettings?.selectedAttribute?.value;
+	const aggregation = dbLayer.layerSettings?.aggregation;
+	const props = {};
+
+	console.log(dbLayer);
+
+	if (basedOnField) {
+		props.getColorWeight = d => _.get(d, basedOnField);
+		props.colorAggregation = aggregation;
+	} else {
+		props.getColorValue = points => points.length;
+	}
+	props.getPosition = d => d.geometry.coordinates;
+	props.getElevationValue = points => points.length;
+	props.radius = dbLayer.layerSettings?.binsWidth * 10 || 200;
+	props.elevationScale = dbLayer.layerSettings?.elevationScale || 4;
+
+	return props;
+}
+export function getHeatMapLayerProps(dbLayer, labelProps) {
+	console.log(dbLayer);
+	const aggregation = dbLayer.layerSettings?.aggregation;
+
+	const props = {};
+	props.aggregation = aggregation;
+	props.getPosition = d => d.geometry.coordinates;
+	props.getWeight = d => d.properties.DBH;
+	props.radiusPixels = 25;
+	return props;
+}
+export function getGridLayerProps(dbLayer, labelProps) {
+	const basedOnField = dbLayer.layerSettings?.selectedAttribute?.value;
+	const aggregation = dbLayer.layerSettings?.aggregation;
+
+	const props = {};
+
+	if (basedOnField) {
+		props.getColorWeight = d => _.get(d, basedOnField);
+		props.colorAggregation = aggregation;
+	} else {
+		props.getColorValue = points => points.length;
+	}
+
+	props.getPosition = d => d.geometry.coordinates;
+	props.getElevationValue = points => points.length;
+	props.cellSize = dbLayer.layerSettings?.binsWidth * 10 || 200;
+	props.elevationScale = dbLayer.layerSettings?.elevationScale || 4;
+
+	return props;
+}
 export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	const props = {};
 	// Getting layer interation settings

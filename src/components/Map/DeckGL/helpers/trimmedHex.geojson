@@ -1,0 +1,446 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4413967,
+                    37.77596769
+                ]
+            },
+            "properties": {
+                "TreeID": 141565,
+                "qSpecies": "Myoporum laetum :: Myoporum",
+                "qAddress": "501X Baker St",
+                "SiteOrder": 1,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "1988-07-21 00:00",
+                "Plan": 1988,
+                "Age": 29,
+                "DBH": 21
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.441498,
+                    37.75171022
+                ]
+            },
+            "properties": {
+                "TreeID": 232565,
+                "qSpecies": "Metrosideros excelsa :: New Zealand Xmas Tree",
+                "qAddress": "940 Elizabeth St",
+                "SiteOrder": 1,
+                "qSiteInfo": "Sidewalk: Curb side : Yard",
+                "PlantType": "Tree",
+                "PlantDate": "2017-03-20 00:00",
+                "Plan": 2017,
+                "Age": 0,
+                "DBH": 3
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": {}
+            },
+            "properties": {
+                "TreeID": 119263,
+                "qSpecies": "Pinus radiata :: Monterey Pine",
+                "qAddress": "495X Lakeshore Dr",
+                "SiteOrder": 1,
+                "qSiteInfo": "Median : Yard",
+                "PlantType": "Tree",
+                "PlantDate": "",
+                "Plan": null,
+                "Age": null,
+                "DBH": null
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4707394,
+                    37.76021031
+                ]
+            },
+            "properties": {
+                "TreeID": 207368,
+                "qSpecies": "Ligustrum japonicum :: Japanese Privet",
+                "qAddress": "920 Kirkham St",
+                "SiteOrder": 1,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "",
+                "Plan": null,
+                "Age": null,
+                "DBH": 6
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.3872932,
+                    37.74220867
+                ]
+            },
+            "properties": {
+                "TreeID": 188702,
+                "qSpecies": "Acacia melanoxylon :: Blackwood Acacia",
+                "qAddress": "1501 Evans Ave",
+                "SiteOrder": 2,
+                "qSiteInfo": ":",
+                "PlantType": "Tree",
+                "PlantDate": "",
+                "Plan": null,
+                "Age": null,
+                "DBH": 17
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4414629,
+                    37.77570453
+                ]
+            },
+            "properties": {
+                "TreeID": 141566,
+                "qSpecies": "Myoporum laetum :: Myoporum",
+                "qAddress": "501X Baker St",
+                "SiteOrder": 2,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "",
+                "Plan": null,
+                "Age": null,
+                "DBH": 14
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.3829339,
+                    37.73973386
+                ]
+            },
+            "properties": {
+                "TreeID": 188697,
+                "qSpecies": "Acacia melanoxylon :: Blackwood Acacia",
+                "qAddress": "1301 Evans Ave",
+                "SiteOrder": 13,
+                "qSiteInfo": ":",
+                "PlantType": "Tree",
+                "PlantDate": "",
+                "Plan": null,
+                "Age": null,
+                "DBH": 15
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": {}
+            },
+            "properties": {
+                "TreeID": 122650,
+                "qSpecies": "Acer rubrum :: Red Maple",
+                "qAddress": "300x Hickory St",
+                "SiteOrder": 6,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "2016-11-10 00:00",
+                "Plan": 2016,
+                "Age": 1,
+                "DBH": 3
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4708661,
+                    37.76018051
+                ]
+            },
+            "properties": {
+                "TreeID": 203507,
+                "qSpecies": "Agonis flexuosa :: Peppermint Willow",
+                "qAddress": "920 Kirkham St",
+                "SiteOrder": 2,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "",
+                "Plan": null,
+                "Age": null,
+                "DBH": 23
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": {}
+            },
+            "properties": {
+                "TreeID": 122670,
+                "qSpecies": "Lyonothamnus floribundus subsp. asplenifolius :: Santa Cruz Ironwood",
+                "qAddress": "301x Hickory St",
+                "SiteOrder": 3,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "2016-11-10 00:00",
+                "Plan": 2016,
+                "Age": 1,
+                "DBH": 3
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": {}
+            },
+            "properties": {
+                "TreeID": 122658,
+                "qSpecies": "Acer rubrum :: Red Maple",
+                "qAddress": "300x Hickory St",
+                "SiteOrder": 14,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "2016-11-10 00:00",
+                "Plan": 2016,
+                "Age": 1,
+                "DBH": 3
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": {}
+            },
+            "properties": {
+                "TreeID": 122660,
+                "qSpecies": "Acer rubrum :: Red Maple",
+                "qAddress": "300x Hickory St",
+                "SiteOrder": 16,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "2016-11-10 00:00",
+                "Plan": 2016,
+                "Age": 1,
+                "DBH": 3
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": {}
+            },
+            "properties": {
+                "TreeID": 122648,
+                "qSpecies": "Acer rubrum :: Red Maple",
+                "qAddress": "300x Hickory St",
+                "SiteOrder": 4,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "2016-11-10 00:00",
+                "Plan": 2016,
+                "Age": 1,
+                "DBH": 3
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4172458,
+                    37.77303718
+                ]
+            },
+            "properties": {
+                "TreeID": 196590,
+                "qSpecies": "Pyrus calleryana :: Ornamental Pear",
+                "qAddress": "43 Lafayette St",
+                "SiteOrder": 2,
+                "qSiteInfo": ":",
+                "PlantType": "Tree",
+                "PlantDate": "",
+                "Plan": null,
+                "Age": null,
+                "DBH": 10
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4172809,
+                    37.77305251
+                ]
+            },
+            "properties": {
+                "TreeID": 196591,
+                "qSpecies": "Pyrus calleryana :: Ornamental Pear",
+                "qAddress": "43 Lafayette St",
+                "SiteOrder": 3,
+                "qSiteInfo": ":",
+                "PlantType": "Tree",
+                "PlantDate": "",
+                "Plan": null,
+                "Age": null,
+                "DBH": 13
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": {}
+            },
+            "properties": {
+                "TreeID": 122649,
+                "qSpecies": "Acer rubrum :: Red Maple",
+                "qAddress": "300x Hickory St",
+                "SiteOrder": 5,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "2016-11-10 00:00",
+                "Plan": 2016,
+                "Age": 1,
+                "DBH": 3
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4691091,
+                    37.77448101
+                ]
+            },
+            "properties": {
+                "TreeID": 145278,
+                "qSpecies": "Fraxinus uhdei :: Shamel Ash: Evergreen Ash",
+                "qAddress": "730 11th Ave",
+                "SiteOrder": 1,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "2017-03-20 00:00",
+                "Plan": 2017,
+                "Age": 0,
+                "DBH": 0
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4402315,
+                    37.80468521
+                ]
+            },
+            "properties": {
+                "TreeID": 96369,
+                "qSpecies": "Lophostemon confertus :: Brisbane Box",
+                "qAddress": "168 Cervantes Blvd",
+                "SiteOrder": 1,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "2011-08-09 00:00",
+                "Plan": 2011,
+                "Age": 6,
+                "DBH": 24
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4866885,
+                    37.75995923
+                ]
+            },
+            "properties": {
+                "TreeID": 182260,
+                "qSpecies": "Arbutus 'Marina' :: Hybrid Strawberry Tree",
+                "qAddress": "1471 28th Ave",
+                "SiteOrder": 1,
+                "qSiteInfo": "Sidewalk: Curb side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "",
+                "Plan": null,
+                "Age": null,
+                "DBH": 5
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4169045,
+                    37.77353367
+                ]
+            },
+            "properties": {
+                "TreeID": 251179,
+                "qSpecies": "Podocarpus gracilor :: Fern Pine",
+                "qAddress": "1043 Minna St",
+                "SiteOrder": 2,
+                "qSiteInfo": "Sidewalk: Property side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "",
+                "Plan": null,
+                "Age": null,
+                "DBH": null
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4169045,
+                    37.77353367
+                ]
+            },
+            "properties": {
+                "TreeID": 251178,
+                "qSpecies": "Podocarpus gracilor :: Fern Pine",
+                "qAddress": "1043 Minna St",
+                "SiteOrder": 1,
+                "qSiteInfo": "Sidewalk: Property side : Cutout",
+                "PlantType": "Tree",
+                "PlantDate": "",
+                "Plan": null,
+                "Age": null,
+                "DBH": null
+            }
+        }
+    ]
+}

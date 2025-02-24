@@ -11,6 +11,7 @@ import _ from 'lodash';
 
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
+import { aggregationLayers } from 'components/Shared/functions/shapeLayer';
 import { getLayerColor } from 'components/Shared/SidePanel/compoennts/common';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
@@ -26,6 +27,7 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 import { AppContext } from 'AppContext';
 
 import { ifRgbaConvt, useStyles, WidthPicker } from './Common';
+import AggAutocomplete from './LayerAttributes/AggAutocomplete';
 import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
 import AttrsFillStyleDropdown from './LayerAttributes/AttrsFillStyleDropdown';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
@@ -45,6 +47,7 @@ function LayerStyling() {
 	const {
 		width,
 		fillColor,
+		aggregation,
 		fillStyle,
 		lineStyle,
 		enablefillColor,
@@ -63,9 +66,12 @@ function LayerStyling() {
 		layerClickability,
 		strokeColor,
 		strokeWidth,
+		binsWidth,
+		elevationScale,
 	} = layerStylingStateValues;
 
 	const selectedLayer = mapControlsStateValues.selectedLayer;
+	const isAggLayer = aggregationLayers.includes(selectedLayer?.layerType);
 
 	const layerType = selectedLayer.layerPaintProps?.[0]?.paintType;
 
@@ -81,6 +87,7 @@ function LayerStyling() {
 			: layerType === 'line'
 				? undefined
 				: ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['circle-stroke-color']);
+	const initialAggregation = selectedLayer.layerSettings?.aggregation || 'SUM';
 
 	let initialWidth;
 	if (layerType === 'circle') {
@@ -143,6 +150,8 @@ function LayerStyling() {
 			width ||
 			selectedLayer.layerPaintProps?.[0]?.labelProps?.visibility !== layerLabelVisibility ||
 			parseInt(selectedLayer.layerPaintProps?.[0]?.paintProps?.strokeWidth) !== parseInt(strokeWidth) ||
+			parseInt(selectedLayer.layerSettings?.binsWidth) !== parseInt(binsWidth) ||
+			parseInt(selectedLayer.layerSettings?.elevationScale) !== parseInt(elevationScale) ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
@@ -157,7 +166,8 @@ function LayerStyling() {
 			selectedLayer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label ||
 			selectedLayer.layerSettings?.selectedLineStyle?.label !== selectedLineStyle?.label ||
 			selectedLayer.layerSettings?.fillStyle !== fillStyle ||
-			selectedLayer.layerSettings?.lineStyle !== lineStyle
+			selectedLayer.layerSettings?.lineStyle !== lineStyle ||
+			selectedLayer.layerSettings?.aggregation !== aggregation
 		) {
 			let { currentLayer } = layerStylingController.handleLayerChange(selectedLayer);
 			const currentLayers = [...hookStateAppLayers];
@@ -211,7 +221,10 @@ function LayerStyling() {
 		selectedFillStyle,
 		selectedLineStyle,
 		strokeWidth,
+		binsWidth,
+		elevationScale,
 		fillColor,
+		aggregation,
 		fillStyle,
 		lineStyle,
 		strokeColor,
@@ -228,6 +241,7 @@ function LayerStyling() {
 
 	useEffect(() => {
 		layerStylingController.setFillColor(initialFillColor);
+		layerStylingController.setAggregation(initialAggregation);
 		layerStylingController.setStrokeColor(initialStrokeColor);
 		layerStylingController.setFillStyle(selectedLayer.layerSettings?.fillStyle);
 		layerStylingController.setLineStyle(selectedLayer.layerSettings?.lineStyle);
@@ -236,6 +250,7 @@ function LayerStyling() {
 	useEffect(() => {
 		layerStylingController.setWidth(initialWidth);
 		layerStylingController.setFillColor(initialFillColor);
+		layerStylingController.setAggregation(initialAggregation);
 		layerStylingController.setStrokeColor(initialStrokeColor);
 		layerStylingController.setFillStyle(selectedLayer.layerSettings?.fillStyle);
 		layerStylingController.setLineStyle(selectedLayer.layerSettings?.lineStyle);
@@ -409,49 +424,130 @@ function LayerStyling() {
 							</Grid>
 
 							{/* dropdown for fill style selection */}
-
 							<Grid item xs={12}>
-								<div
-									style={{
-										display: 'flex',
-										justifyContent: 'space-between',
-									}}
-								>
-									<Typography variant="h6">Fill Style</Typography>
-									<FormControlLabel
-										control={
-											<Switch
-												checked={!!enableColorStyle}
-												onChange={() => layerStylingController.setEnableColorStyle(!enableColorStyle)}
-												size="small"
-												data-testid="layer-stroke-toggle"
-											/>
-										}
-									/>
-								</div>
-								{enablefillColor && enableColorStyle && (
-									<>
-										<AttrsAutocomplete
-											options={options}
-											selectedValue={selectedFillStyle}
-											setSelectedValue={layerStylingController.setSelectedFillStyle}
-											typography={'Style based on'}
-										/>
-										<AttrsFillStyleDropdown
-											dropDownOptions={['dots', 'hatch-1x', 'hatch-2x', 'hatch-cross']}
-											selectedValue={selectedFillStyle}
-											selectedLayer={selectedLayer}
-											fillStyle={fillStyle}
-											setFillStyle={layerStylingController.setFillStyle}
-											attributeBasedStyles={attributeBasedStyles}
-											setAttributeBasedStyles={layerStylingController.setAttributeBasedStyles}
-										/>
-									</>
-								)}
+								<Typography variant="h6" style={{ marginBottom: '10px' }}>
+									Layer Aggregation
+								</Typography>
+								<AggAutocomplete aggregation={aggregation} setAggregation={layerStylingController.setAggregation} />
 								<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
 							</Grid>
 
-							{strokeColor && (
+							<Grid item xs={12}>
+								<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
+									Bins Width
+								</Typography>
+								<Box display="flex" alignItems="center" justifyContent="space-between">
+									<Slider
+										value={binsWidth}
+										onChange={(e, val) => layerStylingController.setBinsWidth(val)}
+										aria-labelledby="continuous-slider"
+										className={classes.slider}
+										valueLabelDisplay="auto" // Shows the value above the thumb
+									/>
+									<TextField
+										value={binsWidth !== '' ? Number(binsWidth).toString() : ''}
+										variant="outlined"
+										type="number"
+										onChange={e => {
+											let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
+											if (width > 100) {
+												width = 100;
+											}
+											if (width < 0) {
+												width = 0;
+											}
+											layerStylingController.setBinsWidth(width);
+										}}
+										size="small"
+										className={classes.valueBox}
+										inputProps={{
+											inputMode: 'numeric',
+											pattern: '[0-9]*',
+										}}
+									/>
+								</Box>
+							</Grid>
+
+							<Grid item xs={12}>
+								<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
+									Elevation Scale
+								</Typography>
+								<Box display="flex" alignItems="center" justifyContent="space-between">
+									<Slider
+										value={elevationScale}
+										onChange={(e, val) => layerStylingController.setElevationScale(val)}
+										aria-labelledby="continuous-slider"
+										className={classes.slider}
+										valueLabelDisplay="auto" // Shows the value above the thumb
+									/>
+									<TextField
+										value={elevationScale !== '' ? Number(elevationScale).toString() : ''}
+										variant="outlined"
+										type="number"
+										onChange={e => {
+											let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
+											if (width > 100) {
+												width = 100;
+											}
+											if (width < 0) {
+												width = 0;
+											}
+											layerStylingController.setElevationScale(width);
+										}}
+										size="small"
+										className={classes.valueBox}
+										inputProps={{
+											inputMode: 'numeric',
+											pattern: '[0-9]*',
+										}}
+									/>
+								</Box>
+							</Grid>
+
+							{!isAggLayer && (
+								<Grid item xs={12}>
+									<div
+										style={{
+											display: 'flex',
+											justifyContent: 'space-between',
+										}}
+									>
+										<Typography variant="h6">Fill Style</Typography>
+										<FormControlLabel
+											control={
+												<Switch
+													checked={!!enableColorStyle}
+													onChange={() => layerStylingController.setEnableColorStyle(!enableColorStyle)}
+													size="small"
+													data-testid="layer-stroke-toggle"
+												/>
+											}
+										/>
+									</div>
+									{enablefillColor && enableColorStyle && (
+										<>
+											<AttrsAutocomplete
+												options={options}
+												selectedValue={selectedFillStyle}
+												setSelectedValue={layerStylingController.setSelectedFillStyle}
+												typography={'Style based on'}
+											/>
+											<AttrsFillStyleDropdown
+												dropDownOptions={['dots', 'hatch-1x', 'hatch-2x', 'hatch-cross']}
+												selectedValue={selectedFillStyle}
+												selectedLayer={selectedLayer}
+												fillStyle={fillStyle}
+												setFillStyle={layerStylingController.setFillStyle}
+												attributeBasedStyles={attributeBasedStyles}
+												setAttributeBasedStyles={layerStylingController.setAttributeBasedStyles}
+											/>
+										</>
+									)}
+									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
+								</Grid>
+							)}
+
+							{strokeColor && !isAggLayer && (
 								<Grid item xs={12}>
 									<div
 										style={{
@@ -536,7 +632,7 @@ function LayerStyling() {
 										)}
 									</Grid>
 									<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
-										Stroke Width
+										Bins Width
 									</Typography>
 									<Box display="flex" alignItems="center" justifyContent="space-between">
 										<Slider

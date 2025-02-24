@@ -1,14 +1,17 @@
+import _ from 'lodash';
+
+import { ALPHA_INDEX, ifRgbaConvt, TWO } from 'components/MapControls/components/Layer/Common';
+import { copy } from 'components/Shared/functions';
+
 import { hookStateController } from 'hookstate/hookStateController';
 
 import { layerStyling, layerStylingInitialState } from './initialStates';
-import _ from 'lodash';
-import { ALPHA_INDEX, ifRgbaConvt, TWO } from 'components/MapControls/components/Layer/Common';
-import { copy } from 'components/Shared/functions';
 
 const layerStylingControllerHandler = state => ({
 	handleLayerChange: layer => {
 		const {
 			width,
+			aggregation,
 			fillColor,
 			fillStyle,
 			lineStyle,
@@ -28,6 +31,8 @@ const layerStylingControllerHandler = state => ({
 			layerClickability,
 			strokeColor,
 			strokeWidth,
+			binsWidth,
+			elevationScale,
 		} = state.get({
 			noproxy: true,
 		});
@@ -39,6 +44,7 @@ const layerStylingControllerHandler = state => ({
 			width ||
 			layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
 			parseInt(layer.layerPaintProps[0]?.paintProps?.strokeWidth) !== parseInt(strokeWidth) ||
+			parseInt(layer.layerSettings?.strokeWidth) !== parseInt(strokeWidth) ||
 			layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
 			layer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
 			layer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
@@ -53,7 +59,8 @@ const layerStylingControllerHandler = state => ({
 			layer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label ||
 			layer.layerSettings?.selectedLineStyle?.label !== selectedLineStyle?.label ||
 			layer.layerSettings?.fillStyle !== fillStyle ||
-			layer.layerSettings?.lineStyle !== lineStyle
+			layer.layerSettings?.lineStyle !== lineStyle ||
+			layer.layerSettings?.aggregation !== aggregation
 		) {
 			let currentLayer = { ...layer };
 			let fColor;
@@ -115,6 +122,10 @@ const layerStylingControllerHandler = state => ({
 			layerSettings.selectedLineStyle = selectedLineStyle;
 
 			layerSettings.lineStyle = lineStyle;
+
+			layerSettings.aggregation = aggregation || 'SUM';
+			layerSettings.binsWidth = binsWidth || 20;
+			layerSettings.elevationScale = elevationScale || 4;
 
 			if (
 				currentLayer &&
@@ -398,6 +409,10 @@ const layerStylingControllerHandler = state => ({
 		const initialLayerLineStyle = layer.layerSettings?.selectedLineStyle || null;
 		const DEFAULT_STROKE_WIDTH = 20;
 		const initialStrokeWidth = layer.layerPaintProps[0]?.paintProps?.strokeWidth || DEFAULT_STROKE_WIDTH;
+		const initialBinsWidth = layer.layerSettings?.binsWidth || 20;
+		const initialElevationScale = layer.layerSettings?.elevationScale || 4;
+
+		const initialAggregation = layer.layerSettings?.aggregation || 'SUM';
 
 		const initialFillColor =
 			layerType === 'fill'
@@ -428,6 +443,8 @@ const layerStylingControllerHandler = state => ({
 			width: initialWidth,
 			layerName: null,
 			fillColor: initialFillColor,
+			aggregation: initialAggregation,
+
 			fillStyle: layer.layerSettings?.fillStyle || null,
 			lineStyle: layer.layerSettings?.lineStyle || null,
 
@@ -449,6 +466,8 @@ const layerStylingControllerHandler = state => ({
 			layerClickability: initialLayerClickable,
 			strokeColor: initialStrokeColor,
 			strokeWidth: initialWidth || initialStrokeWidth,
+			binsWidth: initialBinsWidth,
+			elevationScale: initialElevationScale,
 			layerInitialized: true,
 		});
 	},
@@ -462,6 +481,10 @@ const layerStylingControllerHandler = state => ({
 
 	setFillColor: newFillColor => {
 		state.fillColor.set(newFillColor);
+	},
+
+	setAggregation: newAggregation => {
+		state.aggregation.set(newAggregation);
 	},
 
 	setFillStyle: newFillStyle => {
@@ -533,6 +556,12 @@ const layerStylingControllerHandler = state => ({
 
 	setStrokeWidth: newStrokeWidth => {
 		state.strokeWidth.set(newStrokeWidth);
+	},
+	setBinsWidth: newBinsWidth => {
+		state.binsWidth.set(newBinsWidth);
+	},
+	setElevationScale: newElevationScale => {
+		state.elevationScale.set(newElevationScale);
 	},
 });
 

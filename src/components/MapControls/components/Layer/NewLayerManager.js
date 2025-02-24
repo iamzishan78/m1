@@ -188,6 +188,8 @@ function NewLayerManager() {
 									options={[
 										{ label: 'Point', value: 'point' },
 										{ label: 'Hexagon', value: 'hexagon layer' },
+										{ label: 'Heat Maps', value: 'heatmap layer' },
+										{ label: 'Grid', value: 'grid layer' },
 									]}
 									getOptionLabel={option => `${option.label}`}
 									value={selectGeometry}
