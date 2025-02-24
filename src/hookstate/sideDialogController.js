@@ -83,11 +83,28 @@ export const contactState = {
   contactOwner: null,
 }
 
+export const activityState = {
+  activityName: null,
+  activityType: null,
+  outcome: null,
+  startDate: null,
+  startTime: null,
+  endDate: null,
+  endTime: null,
+  notes: null,
+  contactName: null,
+  associatedDeal: null,
+  activityOwner: null,
+  createdBy: null,
+  activityStatus: null,
+}
+
 
 const initialStates = {
   tractInterestDialog: tractInterestOwnerState,
   unitInterestDialog: unitInterestOwnerState,
   contactDialog: contactState,
+  activityDialog: activityState,
 };
 
 export const sideDialogState = {};

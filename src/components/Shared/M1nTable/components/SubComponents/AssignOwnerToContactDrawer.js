@@ -32,6 +32,8 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { globalStateController } from 'hookstate/globalStateController';
 import RelatedContact from "components/MRTTable/Common/Dialog/BulkUpdate/RelatedContact"
 import { ADD_RELATED_CONTACTS } from "graphQL/useMutationRelatedContact";
+import BulkAddActivityForm from 'components/MRTTable/Common/Dialog/BulkUpdate/BulkAddActivityForm';
+import { BULK_ADD_ACTIVITIES } from 'graphQL/useMutationBulkAddActivities';
 
 
 const styles = () => ({
@@ -197,6 +199,10 @@ function SelectedField({ field, setFieldKey, setCampaigns, setContactOwner, cont
       return (
         <RelatedContact setFieldKey={setFieldKey} />
       );
+    case 'Activity':
+      return (
+        <BulkAddActivityForm fieldKey={fieldKey} setFieldKey={setFieldKey} />
+      );
     default:
   }
 
@@ -227,7 +233,6 @@ export default function AssignOwnerToContactDrawer({
   selectedCampaign,
   ...rest
 }) {
-
   const { user } = globalStateController.useState(['user']);
   const getUser = user.get({ noproxy: true });
 
@@ -263,6 +268,7 @@ export default function AssignOwnerToContactDrawer({
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT, options);
   const [updateBulkContact] = useMutation(UPDATEBULKCONTACT, options);
   const [updateBulkTags] = useMutation(BULKUPSERTTAG, options);
+  const [bulkAddActivities] = useMutation(BULK_ADD_ACTIVITIES, options);
   const [upsertContactCampaigns] = useMutation(UPSERT_CONTACT_CAMPAIGNS, {
     onCompleted: () => {
       tableGlobalController.refetch();
@@ -270,7 +276,7 @@ export default function AssignOwnerToContactDrawer({
   });
 
   //add RelatedContacts Api 
-  const [addRelatedContacts, { data: response, loading: isSubmitting }] = useMutation(ADD_RELATED_CONTACTS, {
+  const [addRelatedContacts] = useMutation(ADD_RELATED_CONTACTS, {
     onCompleted: () => {
       tableGlobalController.refetch();
     },
@@ -296,15 +302,15 @@ export default function AssignOwnerToContactDrawer({
     { title: 'Territory', value: 'territory' },
     { title: 'Time Zone', value: 'timeZone' },
     { title: 'Related Contact', value: 'relatedcontact' },
+    { title: 'Activity', value: 'activity' },
   ];
 
   const fieldsToUpdate = rest.header === "UnitTable" 
     ? [ ...unitTableFields]
     : [...otherTableFields];
 
-    console.log("fieldsToUpdate",fieldsToUpdate)
   useEffect(() => {
-    if (!['Industry Type', 'Lead Source', 'Territory', 'Time Zone', 'Tags'].includes(field))
+    if (!['Industry Type', 'Lead Source', 'Territory', 'Time Zone', 'Tags', 'Activity'].includes(field))
       getContactCampaignAction({
         search: fieldKey ? `${fieldKey}*` : '*',
       });
@@ -436,9 +442,36 @@ export default function AssignOwnerToContactDrawer({
           Loader.errorToast('contact-creation', errorMsg);
         }
       );
-
-    }
-    else {
+    } else if (field === 'Activity') {
+      bulkAddActivities({
+				variables: {
+					activity: fieldKey,
+					userId: getUser._id,
+					contacts: rows.map(row => ({ _id: row._id, name: row.name })),
+				},
+				refetchQueries: 'getESSimpleSearch',
+				awaitRefetchQueries: true,
+			}).then(
+				res => {
+					resetESTableToggle.set(!resetESTableToggle.get());
+					if (res.data && res.data.bulkAddActivities) {
+						const { success } = res.data.bulkAddActivities;
+						if (success) {
+							Loader.successToast('contact-creation', 'Contact Activities Added');
+							showSuccessMessage('Contact Activities Added');
+						} else {
+							Loader.errorToast('contact-creation', 'Failed to add activities');
+						}
+					} else {
+						Loader.errorToast('contact-creation', 'Failed to add activities');
+					}
+				},
+				err => {
+					console.log(err);
+					Loader.errorToast('contact-creation', errorMsg);
+				}
+			);
+    } else {
       const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
       if (field === "Campaign Name") {
         switch (rest.header) {
