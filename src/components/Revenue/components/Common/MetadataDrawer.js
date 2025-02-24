@@ -257,7 +257,7 @@ export default function MetadataDrawer(props) {
 				background: '#ffffff',
 				borderRadius: 8,
 				overflow: 'auto',
-				height: '100%',
+				height: props?.height ? props?.height : '100%',
 				width: '100%',
 			}}
 		>
