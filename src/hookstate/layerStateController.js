@@ -241,6 +241,14 @@ const LayerMeta = {
 			getProps: layerId => {
 				return {
 					data: deckLayers[layerId].getData([]),
+					colorRange: [
+						[255, 255, 178], // Light Yellow
+						[254, 217, 118], // Light Orange
+						[254, 178, 76], // Orange
+						[253, 141, 60], // Dark Orange
+						[252, 78, 42], // Red
+						[227, 26, 28], // Dark Red
+					],
 				};
 			},
 		},

@@ -424,85 +424,89 @@ function LayerStyling() {
 							</Grid>
 
 							{/* dropdown for fill style selection */}
-							<Grid item xs={12}>
-								<Typography variant="h6" style={{ marginBottom: '10px' }}>
-									Layer Aggregation
-								</Typography>
-								<AggAutocomplete aggregation={aggregation} setAggregation={layerStylingController.setAggregation} />
-								<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
-							</Grid>
+							{isAggLayer && (
+								<>
+									<Grid item xs={12}>
+										<Typography variant="h6" style={{ marginBottom: '10px' }}>
+											Layer Aggregation
+										</Typography>
+										<AggAutocomplete aggregation={aggregation} setAggregation={layerStylingController.setAggregation} />
+										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
+									</Grid>
 
-							<Grid item xs={12}>
-								<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
-									Bins Width
-								</Typography>
-								<Box display="flex" alignItems="center" justifyContent="space-between">
-									<Slider
-										value={binsWidth}
-										onChange={(e, val) => layerStylingController.setBinsWidth(val)}
-										aria-labelledby="continuous-slider"
-										className={classes.slider}
-										valueLabelDisplay="auto" // Shows the value above the thumb
-									/>
-									<TextField
-										value={binsWidth !== '' ? Number(binsWidth).toString() : ''}
-										variant="outlined"
-										type="number"
-										onChange={e => {
-											let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
-											if (width > 100) {
-												width = 100;
-											}
-											if (width < 0) {
-												width = 0;
-											}
-											layerStylingController.setBinsWidth(width);
-										}}
-										size="small"
-										className={classes.valueBox}
-										inputProps={{
-											inputMode: 'numeric',
-											pattern: '[0-9]*',
-										}}
-									/>
-								</Box>
-							</Grid>
+									<Grid item xs={12}>
+										<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
+											Bins Width
+										</Typography>
+										<Box display="flex" alignItems="center" justifyContent="space-between">
+											<Slider
+												value={binsWidth}
+												onChange={(e, val) => layerStylingController.setBinsWidth(val)}
+												aria-labelledby="continuous-slider"
+												className={classes.slider}
+												valueLabelDisplay="auto" // Shows the value above the thumb
+											/>
+											<TextField
+												value={binsWidth !== '' ? Number(binsWidth).toString() : ''}
+												variant="outlined"
+												type="number"
+												onChange={e => {
+													let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
+													if (width > 100) {
+														width = 100;
+													}
+													if (width < 0) {
+														width = 0;
+													}
+													layerStylingController.setBinsWidth(width);
+												}}
+												size="small"
+												className={classes.valueBox}
+												inputProps={{
+													inputMode: 'numeric',
+													pattern: '[0-9]*',
+												}}
+											/>
+										</Box>
+									</Grid>
 
-							<Grid item xs={12}>
-								<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
-									Elevation Scale
-								</Typography>
-								<Box display="flex" alignItems="center" justifyContent="space-between">
-									<Slider
-										value={elevationScale}
-										onChange={(e, val) => layerStylingController.setElevationScale(val)}
-										aria-labelledby="continuous-slider"
-										className={classes.slider}
-										valueLabelDisplay="auto" // Shows the value above the thumb
-									/>
-									<TextField
-										value={elevationScale !== '' ? Number(elevationScale).toString() : ''}
-										variant="outlined"
-										type="number"
-										onChange={e => {
-											let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
-											if (width > 100) {
-												width = 100;
-											}
-											if (width < 0) {
-												width = 0;
-											}
-											layerStylingController.setElevationScale(width);
-										}}
-										size="small"
-										className={classes.valueBox}
-										inputProps={{
-											inputMode: 'numeric',
-											pattern: '[0-9]*',
-										}}
-									/>
-								</Box>
-							</Grid>
+									<Grid item xs={12}>
+										<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
+											Elevation Scale
+										</Typography>
+										<Box display="flex" alignItems="center" justifyContent="space-between">
+											<Slider
+												value={elevationScale}
+												onChange={(e, val) => layerStylingController.setElevationScale(val)}
+												aria-labelledby="continuous-slider"
+												className={classes.slider}
+												valueLabelDisplay="auto" // Shows the value above the thumb
+											/>
+											<TextField
+												value={elevationScale !== '' ? Number(elevationScale).toString() : ''}
+												variant="outlined"
+												type="number"
+												onChange={e => {
+													let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
+													if (width > 100) {
+														width = 100;
+													}
+													if (width < 0) {
+														width = 0;
+													}
+													layerStylingController.setElevationScale(width);
+												}}
+												size="small"
+												className={classes.valueBox}
+												inputProps={{
+													inputMode: 'numeric',
+													pattern: '[0-9]*',
+												}}
+											/>
+										</Box>
+									</Grid>
+								</>
+							)}
 
 							{!isAggLayer && (
 								<Grid item xs={12}>
