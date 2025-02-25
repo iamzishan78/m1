@@ -97,7 +97,7 @@ export default function UploadZone(props) {
 						relatedObjectId: props.relatedObjectId,
 						relatedObjectType: props.relatedObjectType,
 					},
-					refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'getParcelFilesCount'],
+					refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'getParcelFilesCount', 'getContact'],
 					awaitRefetchQueries: true,
 				}).then(res => {
 					handleUploadFile(res.data);

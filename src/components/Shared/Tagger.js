@@ -302,6 +302,7 @@ export default function Tags(props) {
 						'getWellsIdsFromTagsArray',
 						'getOwnersIdsFromTagsArray',
 						'getDbData',
+						'getContact',
 					],
 					awaitRefetchQueries: true,
 				});

@@ -123,7 +123,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 						userId: userId,
 					},
 				},
-				refetchQueries: ['getContactDeals', 'getContactSummary'],
+				refetchQueries: ['getContactDeals', 'getContactSummary', 'getContact'],
 				awaitRefetchQueries: true,
 			});
 		}
