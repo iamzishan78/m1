@@ -348,7 +348,6 @@ class LayerStateControllerHandler extends StateController {
 
 			if (
 				!isFileDataSource &&
-				!isFileLayer &&
 				!isDynamicLayer &&
 				!deckGlLayerIdentifiers.includes(dbLayer?.identifier) &&
 				!isCustomLayerCopy(dbLayer?.identifier) &&
@@ -713,7 +712,7 @@ class LayerStateControllerHandler extends StateController {
 		);
 		const filterIdentifier = isAgreementLayer
 			? 'Agreements'
-			: isFileLayer
+			: isFileDataSource
 				? dbLayer.layerIdentifier
 				: dbLayer.identifier;
 
@@ -800,7 +799,7 @@ class LayerStateControllerHandler extends StateController {
 		this.updateLayer(dbLayer, updatedProps);
 
 		const getFilters = () => {
-			if (isFileLayer) {
+			if (isFileDataSource) {
 				return generateFileFilters({ fileLayer: dbLayer, extendFilters: filters });
 			}
 
@@ -819,7 +818,7 @@ class LayerStateControllerHandler extends StateController {
 			layerSettings: dbLayer.layerSettings,
 			boundingState,
 			geoField: meta.geoField,
-			isFileLayer,
+			isFileLayer: isFileDataSource,
 			polygonFilter,
 			polygonsFilter,
 			filters: getFilters(),
