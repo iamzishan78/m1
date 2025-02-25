@@ -2,8 +2,8 @@ import React, { memo } from 'react';
 
 import { Button, ButtonGroup } from '@material-ui/core';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import RelatedAgreementTableDialogs from './RightDialogs';
 

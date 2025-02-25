@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import DrawShapes from './components/DrawShapes/DrawShapes';
 import SidePanel from '../Shared/SidePanel/SidePanel';

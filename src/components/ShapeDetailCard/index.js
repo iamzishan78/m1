@@ -13,9 +13,9 @@ import { agreementLayers } from 'components/Shared/functions/shapeLayer';
 
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { popupController } from 'hookstate/popupStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { popupController } from 'stateManagement/popupStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { formatLayerForMap } from 'utils/helper';
 

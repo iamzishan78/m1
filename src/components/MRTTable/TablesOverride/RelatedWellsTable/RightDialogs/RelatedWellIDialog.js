@@ -23,8 +23,8 @@ import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest
 import { UPDATE_SHAPE_WELL_INTEREST } from 'graphQL/useMutationUpdateShapeWellInterest';
 import { WELL_INTEREST_SELECT_OPTIONS } from 'graphQL/useQueryWellInterestSelectOptions';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({
 	dialogFooter: {

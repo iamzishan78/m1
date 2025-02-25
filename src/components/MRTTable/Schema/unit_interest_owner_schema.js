@@ -21,8 +21,8 @@ import UnitIcon from 'components/Shared/svgIcons/unit';
 
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
 

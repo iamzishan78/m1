@@ -18,11 +18,11 @@ import {
 } from 'components/Shared/functions/shapeLayer';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { getLayerKey } from 'hookstate/helpers';
-import { popupController } from 'hookstate/popupStateController';
-
 import { copy } from 'utils/helper';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { getLayerKey } from 'stateManagement/helpers';
+import { popupController } from 'stateManagement/popupStateController';
 
 import landgridLayerClickHandler from './landgridLayerClickHandler';
 import pointClickHandler from './pointClickHandler';

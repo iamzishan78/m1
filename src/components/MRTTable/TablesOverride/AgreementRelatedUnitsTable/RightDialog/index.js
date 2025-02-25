@@ -14,7 +14,7 @@ import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
 import { ADD_RELATED_SHAPE } from 'graphQL/useMutationAddUnitToAgreement';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 // Styles
 const useStyles = makeStyles(theme => ({

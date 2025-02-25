@@ -27,11 +27,10 @@ import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { sideDialogController, unitInterestOwnerState } from 'hookstate/sideDialogController';
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { showErrorMessage, showSuccessMessage } from 'actions';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { sideDialogController, unitInterestOwnerState } from 'stateManagement/sideDialogController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {

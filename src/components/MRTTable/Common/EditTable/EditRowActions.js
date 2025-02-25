@@ -6,7 +6,7 @@ import { Box, IconButton, Tooltip } from '@mui/material';
 import { useApolloClient } from '@apollo/client';
 import PropTypes from 'prop-types';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const EditRowActions = onDelete => {
 	const Component = ({ row }) => {

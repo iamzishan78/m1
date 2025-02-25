@@ -11,7 +11,7 @@ import vf_number, { vf_number_to_precision } from 'components/Shared/valueformat
 
 import { GET_CAMPAIGN_ANALYTICS } from 'graphQL/useQueryCampaignAnalytics';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { getActivityAnalyticsFilters } from 'utils/helper';
 

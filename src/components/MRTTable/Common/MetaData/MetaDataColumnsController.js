@@ -1,6 +1,6 @@
 import { hookstate, useHookstate } from '@hookstate/core';
 
-import { hookStateController } from 'hookstate/hookStateController';
+import { hookStateController } from 'stateManagement/hookStateController';
 
 export const metaDataColumnState = hookstate({});
 

@@ -10,7 +10,7 @@ import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED, TO_FIXED } from 'utils/consts';
 

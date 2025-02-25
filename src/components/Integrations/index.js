@@ -12,8 +12,8 @@ import { SYNC_DIALPAD } from 'graphQL/useMutationSyncDialpad';
 import { ALL_EXTERNAL_TOOLS } from 'graphQL/useQueryAllExternalTools';
 import { EXTERNAL_TOOL_EXISTS } from 'graphQL/useQueryExternalToolExists';
 
-import { adminOperationsController } from 'hookstate/adminOperationsController';
-import { jobController } from 'hookstate/jobStateController';
+import { adminOperationsController } from 'stateManagement/adminOperationsController';
+import { jobController } from 'stateManagement/jobStateController';
 
 import { getURL } from 'utils/helper';
 

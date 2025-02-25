@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import AddUnitTractDialog from 'components/Common/TableAddDialog/AddUnitTractDialog';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({
 	multiSelectionTopBarButtons: {

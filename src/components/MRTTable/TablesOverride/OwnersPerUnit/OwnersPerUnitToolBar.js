@@ -19,9 +19,9 @@ import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown
 import OwnerPerUnitTableDialogs from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { navController } from 'hookstate/navStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { navController } from 'stateManagement/navStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import MetaField from 'utils/MetaField';
 

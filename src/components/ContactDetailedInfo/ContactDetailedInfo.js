@@ -26,7 +26,7 @@ import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import FieldContent from '../ContactDetailCard/components/FieldContent';
 
@@ -458,7 +458,10 @@ export default function DetailInfo(props) {
 																aria-label="Edit Meta"
 																style={{ padding: '6px' }}
 																onClick={() => {
-																	globalStateController.updateState({ showFieldModal: true, selectedMeta: row?.rawMeta });
+																	globalStateController.updateState({
+																		showFieldModal: true,
+																		selectedMeta: row?.rawMeta,
+																	});
 																}}
 															>
 																<EditIcon />
@@ -519,7 +522,10 @@ export default function DetailInfo(props) {
 																	aria-label="Edit Meta"
 																	style={{ padding: '6px' }}
 																	onClick={() => {
-																		globalStateController.updateState({ showFieldModal: true, selectedMeta: row?.rawMeta });
+																		globalStateController.updateState({
+																			showFieldModal: true,
+																			selectedMeta: row?.rawMeta,
+																		});
 																	}}
 																>
 																	<EditIcon />

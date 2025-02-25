@@ -1,8 +1,8 @@
 import { intersect, area } from '@turf/turf';
 import mapboxgl from 'mapbox-gl';
 
-import { layerController } from 'hookstate/layerStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { filterUniqueFeatures, getClickedFeature } from './common';
 

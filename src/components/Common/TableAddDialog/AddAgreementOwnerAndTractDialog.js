@@ -57,10 +57,10 @@ import { GET_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetAutoCompleteList';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_TRACT_ABSTRACT_SHAPE } from 'graphQL/useQueryGetTractAbstractShape';
 
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 import { INTEREST_TO_FIXED, TO_FIXED } from 'utils/consts';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({
 	dialogFooter: {

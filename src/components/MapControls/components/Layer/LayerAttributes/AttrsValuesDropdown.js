@@ -12,7 +12,7 @@ import { generateRandomColor } from 'components/MapControls/commonHelper';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-import { getLayerKey } from 'hookstate/helpers';
+import { getLayerKey } from 'stateManagement/helpers';
 
 import { ColorPickerStyledBox } from '../Common';
 import { colorBasedAttributes } from './ColorBasedAttributes';

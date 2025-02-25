@@ -27,12 +27,11 @@ import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
 import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
 
-import { jobController } from 'hookstate/jobStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { popupController } from 'hookstate/popupStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-
 import { showSuccessMessage, showErrorMessage, showInfoMessage } from 'actions';
+import { jobController } from 'stateManagement/jobStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { popupController } from 'stateManagement/popupStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { detailCardStyles } from '../style';
 import AgreementSummary from './AgreementSummary';
@@ -54,7 +53,7 @@ export default function AgreementDetailCard(props) {
 	const classes = detailCardStyles();
 	const history = useHistory();
 	const showSummary = true;
-	const { dataCustomLayer } = props
+	const { dataCustomLayer } = props;
 
 	const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
 	const [getStandardProvisions, { data: dataStandardProvisions = [] }] = useLazyQuery(GET_STANDARD_PROVISIONS);

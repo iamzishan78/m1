@@ -20,7 +20,7 @@ import Contact from 'components/Shared/svgIcons/contact';
 
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
 

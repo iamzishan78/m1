@@ -28,12 +28,11 @@ import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-
 import { CREATED_STATUS, ONE_MB } from 'utils/consts';
 
 import { showErrorMessage } from 'actions';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { createViewStateController, initialState } from './AddAndEditController';
 import UploadZone from './UploadZone';

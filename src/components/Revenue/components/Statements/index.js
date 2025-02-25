@@ -11,8 +11,8 @@ import { copy } from 'components/Shared/functions';
 
 import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({
 	root: {

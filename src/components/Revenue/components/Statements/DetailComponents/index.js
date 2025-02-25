@@ -38,7 +38,7 @@ import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
 import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
 import { GETCHECK } from 'graphQL/useQueryCheck';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import MetaField from 'utils/MetaField';
 

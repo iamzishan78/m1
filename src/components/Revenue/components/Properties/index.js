@@ -7,8 +7,8 @@ import AnalyticsCards from 'components/Revenue/components/Common/AnalyticsCards'
 import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(theme => ({
 	root: {

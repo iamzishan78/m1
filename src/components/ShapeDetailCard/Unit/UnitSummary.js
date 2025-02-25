@@ -24,7 +24,7 @@ import MetaField from 'utils/MetaField';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { copy } from 'utils/helper';
 

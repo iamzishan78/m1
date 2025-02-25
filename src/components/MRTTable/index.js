@@ -6,8 +6,8 @@ import PropTypes from 'prop-types';
 
 import { copy } from 'components/Shared/functions';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { SCHEMA } from './Schema';
 import Table from './Table';

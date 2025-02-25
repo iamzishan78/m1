@@ -15,8 +15,8 @@ import Agreements from 'components/Shared/svgIcons/agreements';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
 

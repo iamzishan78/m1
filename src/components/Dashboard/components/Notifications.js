@@ -39,7 +39,7 @@ import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { dateIsValid } from 'utils/helper';
 

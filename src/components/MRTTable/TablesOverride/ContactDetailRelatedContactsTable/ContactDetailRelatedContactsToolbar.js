@@ -4,7 +4,7 @@ import { Button } from '@material-ui/core';
 
 import AddRelatedContactModal from 'components/ContactDetailCard/components/AddRelatedContactModal';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 

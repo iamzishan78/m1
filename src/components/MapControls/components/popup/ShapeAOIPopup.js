@@ -7,7 +7,7 @@ import { useMutation } from '@apollo/client';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
-import { drawController } from 'hookstate/drawStateController';
+import { drawController } from 'stateManagement/drawStateController';
 
 const useStyles = makeStyles(theme => ({
 	root: {

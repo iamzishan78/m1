@@ -7,8 +7,8 @@ import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedDa
 
 import { ADD_PAYMENT_PROPERTY_DESCRIPTOR } from 'graphQL/useMutationAddPaymentContactDescriptor';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 // This component is used in the RelatedPayeesTable component for the toolbar
 export const CostAllocationRightDialog = () => {

@@ -15,7 +15,7 @@ import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import MetaField from 'utils/MetaField';
 
@@ -370,7 +370,9 @@ const CodeMappingHeader = ({
 					</FormControl>
 				</Grid>
 			</Grid>
-			{globalStateValues.showFieldModal && <MetaField columns={[]} category={mappingType?.category} esKey={mappingType?.key} />}
+			{globalStateValues.showFieldModal && (
+				<MetaField columns={[]} category={mappingType?.category} esKey={mappingType?.key} />
+			)}
 		</>
 	);
 };

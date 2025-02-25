@@ -18,7 +18,7 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import { jobController } from 'hookstate/jobStateController';
+import { jobController } from 'stateManagement/jobStateController';
 
 import { NavigationContext } from '../Navigation/NavigationContext';
 import Stepper from './components/stepper';

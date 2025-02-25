@@ -1,4 +1,4 @@
-import { layerController } from 'hookstate/layerStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 export const getLayerColor = (layer, type, colors) => {
 	// seting layer color to disabled if selectedAttribute is selected
@@ -23,7 +23,6 @@ export const getLayerColor = (layer, type, colors) => {
 	}
 
 	if (layer) {
-
 		if (layer.layerPaintProps && layer.layerPaintProps[0] && layer.layerPaintProps[0].paintProps) {
 			if (layer.layerPaintProps[0].paintProps['circle-color']) {
 				return layer.layerPaintProps[0].paintProps['circle-color'];
@@ -63,10 +62,7 @@ export const ifLayerHaveData = layer => {
 
 	const { wellListFromSearch } = layerController.getValues(['wellListFromSearch']);
 
-	if (
-		layer.identifier === 'Search' &&
-		!(wellListFromSearch && wellListFromSearch.length > 0)
-	) {
+	if (layer.identifier === 'Search' && !(wellListFromSearch && wellListFromSearch.length > 0)) {
 		return false;
 	}
 	return true;

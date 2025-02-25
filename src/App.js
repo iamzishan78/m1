@@ -15,7 +15,7 @@ import DataProvider from 'components/Data/DataProvider';
 import Land from 'components/Land';
 import RevenueProvider from 'components/Revenue/RevenueProvider';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { UserSession } from 'utils/user';
 

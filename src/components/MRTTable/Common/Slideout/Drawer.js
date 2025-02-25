@@ -3,7 +3,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 const useStyles = makeStyles(theme => ({
 	root: {

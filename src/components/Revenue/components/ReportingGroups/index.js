@@ -6,7 +6,7 @@ import MRTTable from 'components/MRTTable';
 import { deepEqual } from 'components/Shared/functions';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 // actions
 

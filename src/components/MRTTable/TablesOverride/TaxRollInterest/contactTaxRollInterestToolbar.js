@@ -8,7 +8,7 @@ import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
 import { ADD_MULTI_WELLINTEREST_TO_CONTACT } from 'graphQL/useMutationAddMultiWellInterestToContact';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';

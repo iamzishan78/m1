@@ -11,11 +11,11 @@ import useRefetchHelper from 'components/Shared/Hooks/useRefetchHelper';
 import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
 import { GET_JOBS_STATUS } from 'graphQL/useQueryGetJobStatus';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { jobController } from 'hookstate/jobStateController';
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { setReduxKey } from 'store/actions/commonActions';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { jobController } from 'stateManagement/jobStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const ContactBulkProgress = () => {
 	const bulkUpload = useSelector(state => state.common.bulkUpload);

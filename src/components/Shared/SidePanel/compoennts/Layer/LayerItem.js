@@ -14,8 +14,8 @@ import { useMutation } from '@apollo/client';
 
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 
-import { layerController } from 'hookstate/layerStateController.js';
-import { mapControlsController } from 'hookstate/mapControlsController.js';
+import { layerController } from 'stateManagement/layerStateController.js';
+import { mapControlsController } from 'stateManagement/mapControlsController.js';
 
 import { deepEqualObjects } from '../../../functions';
 import ColorControl from '../../../svgIcons/color-control.js';

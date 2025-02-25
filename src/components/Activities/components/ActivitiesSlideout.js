@@ -12,7 +12,7 @@ import Slideout from 'components/Shared/Slideout';
 import { REMOVECOMMONDESCRIPTOR } from 'graphQL/useMutationRemoveCommonDescriptor';
 import { UPSERTCOMMONDESCRIPTOR } from 'graphQL/useMutationUpsertCommonDescriptor';
 
-import { slidoutState } from 'hookstate/initialStates';
+import { slidoutState } from 'stateManagement/initialStates';
 
 import ActivityForm from './ActivityForm';
 import { AppContext } from '../../../AppContext';

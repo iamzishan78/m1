@@ -5,8 +5,8 @@ import { IconButton, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Clear } from '@material-ui/icons';
 
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { navController } from 'hookstate/navStateController';
+import { layerFiltersController } from 'stateManagement/layerFiltersController';
+import { navController } from 'stateManagement/navStateController';
 
 import { NavigationContext } from '../NavigationContext';
 

@@ -9,7 +9,7 @@ import { useLazyQuery } from '@apollo/client';
 import { CONTACT } from 'graphQL/useQueryContact';
 import { CONTACTDEALS } from 'graphQL/useQueryContactDeals';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import DealsDetailCard from './DealsDetailCard';
 

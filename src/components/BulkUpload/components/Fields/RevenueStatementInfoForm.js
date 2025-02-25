@@ -13,7 +13,7 @@ import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEnti
 
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
-import { jobController } from 'hookstate/jobStateController';
+import { jobController } from 'stateManagement/jobStateController';
 
 const useStyles = makeStyles(theme => ({
 	root: {

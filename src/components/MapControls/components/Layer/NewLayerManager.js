@@ -21,8 +21,8 @@ import { v4 as uuid } from 'uuid';
 import { ADDLAYER } from 'graphQL/useMutationAddLayer';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { AppContext } from 'AppContext';
 
@@ -67,9 +67,7 @@ function NewLayerManager() {
 		const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
 		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
 		const layerShapeName = source.name === 'M1 Platform' ? null : selectCategory.name;
-		const identifier =
-			source.name === 'M1 Platform' ? selectCategory.label + uuid() : layerName + uuid();
-
+		const identifier = source.name === 'M1 Platform' ? selectCategory.label + uuid() : layerName + uuid();
 
 		addLayer({
 			variables: {
@@ -85,11 +83,7 @@ function NewLayerManager() {
 					layerName: layerName,
 					layerGeometry: selectCategory.layerGeometry,
 					originalFile: source.originalFile,
-					defaultSettings: getDefaultSettings(
-						selectCategory.layerGeometry,
-						layerName,
-						selectCategory.bbox
-					),
+					defaultSettings: getDefaultSettings(selectCategory.layerGeometry, layerName, selectCategory.bbox),
 					layerSchema: shapeFileSchema?.getShapeFileSchema || [],
 					layerPaintProps: undefined,
 					layerSettings: undefined,

@@ -8,7 +8,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 
 import PropTypes from 'prop-types';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { setFlowState } from 'actions';
 import { AppContext } from 'AppContext';

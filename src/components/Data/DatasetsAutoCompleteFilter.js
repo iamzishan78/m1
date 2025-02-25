@@ -9,7 +9,7 @@ import { setStateIfDeepEqual } from 'components/Shared/functions';
 
 import { GET_DATASETS } from 'graphQL/useQueryDataset';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 const DatasetsAutoCompleteFilter = ({ sx, multiple, value, setValue }) => {
 	const [options, setOptions] = useState([]);

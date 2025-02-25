@@ -17,12 +17,11 @@ import SingleSelectField from 'components/Shared/Slideout/FieldComponents/single
 import { DELETEACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-import { slidoutState } from 'hookstate/initialStates';
-import { globalState } from 'hookstate/initialStates';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { AppContext } from 'AppContext';
+import { slidoutState } from 'stateManagement/initialStates';
+import { globalState } from 'stateManagement/initialStates';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { obligationFormState } from './obligationFormStateController';
 

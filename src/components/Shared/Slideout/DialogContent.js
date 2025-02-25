@@ -7,7 +7,7 @@ import { useHookstate } from '@hookstate/core';
 
 import Contacts from 'components/FlowDrawer/Contacts';
 
-import { slidoutState } from 'hookstate/initialStates';
+import { slidoutState } from 'stateManagement/initialStates';
 
 import CommentComponent from '../CommentComponent';
 import Documents from '../Documents';

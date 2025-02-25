@@ -9,7 +9,7 @@ import WellOwnersToolbar from 'components/MRTTable/TablesOverride/WellOwners/Too
 
 import { WELLOWNERSQUERY } from 'graphQL/useQueryWellOwners';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 const WellOwnersMeta = {
 	query: WELLOWNERSQUERY,

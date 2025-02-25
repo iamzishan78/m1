@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from 'react';
 
 import MRTTable from 'components/MRTTable';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 export function FeatureFlag({ children, feature, noAccess, noCheck }) {
 	const {

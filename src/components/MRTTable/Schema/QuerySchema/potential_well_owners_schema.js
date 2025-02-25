@@ -10,8 +10,8 @@ import { getPolygonString } from 'components/Shared/functions';
 
 import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController } from 'stateManagement/tableController';
 
 const PotentialWellOwnersMeta = {
 	query: SHAPE_WELL_OWNERS,

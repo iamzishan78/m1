@@ -11,7 +11,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import PostAddOutlinedIcon from '@material-ui/icons/PostAddOutlined';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { AppContext } from '../../../AppContext';
 

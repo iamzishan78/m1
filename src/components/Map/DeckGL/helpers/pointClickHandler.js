@@ -1,4 +1,4 @@
-import { popupController } from 'hookstate/popupStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 const pointClickHandler = feature => {
 	popupController.setState({

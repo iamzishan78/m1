@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import MRTTable from 'components/MRTTable';
 import useTabedTablesUnmount from 'components/MRTTable/Hooks/useTabedTablesUnmount';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { campaignInitialData } from './data';
 

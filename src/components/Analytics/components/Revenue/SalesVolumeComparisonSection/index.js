@@ -6,7 +6,7 @@ import MRTTable from 'components/MRTTable';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import AnalyticsCharts from './AnalyticsCharts';
 

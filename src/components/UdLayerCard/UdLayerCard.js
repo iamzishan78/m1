@@ -23,14 +23,13 @@ import { DELETE_SHAPEFILE_FEEATURE } from 'graphQL/useMutationShapeFile';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_SHAPE_FEATURE } from 'graphQL/useQueryGetShapeFeature';
 
-import { drawController } from 'hookstate/drawStateController';
-import { jobController } from 'hookstate/jobStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { popupController } from 'hookstate/popupStateController';
-
-import { layerRefs } from 'hookstate';
+import { layerRefs } from 'stateManagement';
+import { drawController } from 'stateManagement/drawStateController';
+import { jobController } from 'stateManagement/jobStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { mapStateController } from 'stateManagement/mapStateController';
+import { popupController } from 'stateManagement/popupStateController';
 import { history } from 'store';
 
 import { AppContext } from '../../AppContext';

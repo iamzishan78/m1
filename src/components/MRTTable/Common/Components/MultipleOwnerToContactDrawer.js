@@ -36,7 +36,7 @@ import Tags from 'components/Shared/Tagger';
 
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
@@ -171,7 +171,9 @@ const MultipleOwnerToContactDrawer = ({
 			entitiesIds = Ids.map(id => id._id);
 		}
 
-		const autoCalculateOfferPrice = !!globalStateValues?.user?.features?.find(f => f.name === 'autoCalculateOfferPrice');
+		const autoCalculateOfferPrice = !!globalStateValues?.user?.features?.find(
+			f => f.name === 'autoCalculateOfferPrice'
+		);
 
 		let existingContactId = null;
 		let action = actionType;
@@ -448,19 +450,19 @@ const MultipleOwnerToContactDrawer = ({
 							<Grid item>
 								{((tab === TAB.NEW && rows && rows.length > 0) ||
 									(tab === TAB.EXISTING && nameAutValue && nameAutValue.id !== 0)) && (
-										<Button
-											variant="contained"
-											component="span"
-											disabled={
-												(tab === TAB.NEW && rows && rows.length === 0) ||
-												(tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)
-											}
-											style={{ backgroundColor: '#00abed', color: 'white' }}
-											onClick={onConvert}
-										>
-											Convert
-										</Button>
-									)}
+									<Button
+										variant="contained"
+										component="span"
+										disabled={
+											(tab === TAB.NEW && rows && rows.length === 0) ||
+											(tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)
+										}
+										style={{ backgroundColor: '#00abed', color: 'white' }}
+										onClick={onConvert}
+									>
+										Convert
+									</Button>
+								)}
 							</Grid>
 						</Grid>
 					</Box>

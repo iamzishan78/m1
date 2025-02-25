@@ -6,7 +6,7 @@ import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import MRTTable from 'components/MRTTable';
 import useTabedTablesUnmount from 'components/MRTTable/Hooks/useTabedTablesUnmount';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import DatasetsAutoCompleteFilter from './DatasetsAutoCompleteFilter';
 

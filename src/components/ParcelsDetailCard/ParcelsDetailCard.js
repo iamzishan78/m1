@@ -16,16 +16,15 @@ import MRTTable from 'components/MRTTable';
 import TabPanels from 'components/Shared/TabPanels';
 import Tags from 'components/Shared/Tagger';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { jobController } from 'hookstate/jobStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { popupController } from 'hookstate/popupStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-
 import { copy, formatLayerForMap } from 'utils/helper';
 
 import { showSuccessMessage, showErrorMessage } from 'actions';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { jobController } from 'stateManagement/jobStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { popupController } from 'stateManagement/popupStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import ParcelSummary from './ParcelSummary';
 import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
@@ -247,8 +246,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 	useEffect(() => {
 		if (dataCustomLayer && dataCustomLayer.customLayer) {
 			popupController.updateState({
-				selectedShape: formatLayerForMap(dataCustomLayer).feature
-			})
+				selectedShape: formatLayerForMap(dataCustomLayer).feature,
+			});
 			let shape = copy(dataCustomLayer.customLayer.shape);
 			if (typeof shape === 'string') {
 				shape = JSON.parse(shape);

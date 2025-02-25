@@ -9,7 +9,7 @@ import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { PERMITDETAILQUERY } from 'graphQL/useQueryRecentPermitDetails';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
-import { popupController } from 'hookstate/popupStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 const PermitClick = () => {
 	const { id: paramId } = useParams();

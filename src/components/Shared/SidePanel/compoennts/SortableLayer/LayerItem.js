@@ -18,9 +18,9 @@ import { makeStyles } from '@material-ui/styles';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { Badge, IconButton } from '@mui/material';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { mapStateController } from 'stateManagement/mapStateController';
 
 import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';

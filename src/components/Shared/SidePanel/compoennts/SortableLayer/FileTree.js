@@ -11,8 +11,8 @@ import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 import { useStyles } from '../style';
 import LayerItem from './LayerItem';

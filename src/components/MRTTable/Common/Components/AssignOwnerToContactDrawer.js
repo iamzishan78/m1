@@ -37,12 +37,12 @@ import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
 import { PUBLICTAGSQUERY } from 'graphQL/useQueryPublicTags';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { Modals } from 'styles/Modal';
 
-import { resetESTableToggle } from 'hookstate';
+import { resetESTableToggle } from 'stateManagement';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },

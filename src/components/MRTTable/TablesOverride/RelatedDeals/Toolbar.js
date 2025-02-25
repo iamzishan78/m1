@@ -8,7 +8,7 @@ import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown
 
 import { GETPIPELINE } from 'graphQL/useQueryPipeline';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 

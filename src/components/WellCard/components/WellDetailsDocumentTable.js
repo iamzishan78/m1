@@ -12,7 +12,7 @@ import MRTTable from 'components/MRTTable';
 import { GET_PARCELS_FILES } from 'graphQL/useQueryGetParcelFiles';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 // QUERIES
 

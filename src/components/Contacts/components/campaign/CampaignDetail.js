@@ -36,8 +36,8 @@ import Tags from 'components/Shared/Tagger';
 import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
 import { GET_CAMPAIGN } from 'graphQL/useQueryCampaign';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { showInfoMessage } from 'actions';
 

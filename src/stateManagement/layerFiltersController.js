@@ -1,7 +1,7 @@
 import { deepEqual } from 'components/Shared/functions';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
-import { hookStateController } from 'hookstate/hookStateController';
+import { hookStateController } from 'stateManagement/hookStateController';
 
 import { globalStateController } from './globalStateController';
 import { layerFilterInitialState, layerFilters } from './initialStates';

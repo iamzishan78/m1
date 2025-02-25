@@ -30,11 +30,11 @@ import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { sideDialogController, tractInterestOwnerState } from 'hookstate/sideDialogController';
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { UserSession } from 'utils/user';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { sideDialogController, tractInterestOwnerState } from 'stateManagement/sideDialogController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { showErrorMessage, showSuccessMessage } from '../../../../../../src/actions';
 

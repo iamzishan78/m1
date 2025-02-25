@@ -10,7 +10,7 @@ import EditIcon from '@material-ui/icons/Edit';
 
 import { copy } from 'components/Shared/functions';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { BulletPointMeta } from 'utils/BulletPointMeta';
 import { ChipMeta } from 'utils/ChipMeta';

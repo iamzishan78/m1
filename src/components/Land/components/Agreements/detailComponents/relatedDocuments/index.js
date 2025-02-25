@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/styles';
 
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { useStyles as customStyles } from '../style';
 

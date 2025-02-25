@@ -11,7 +11,7 @@ import { useLazyQuery } from '@apollo/client';
 
 import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import FileTree from './FileTree';
 
@@ -95,8 +95,7 @@ const SortableLayer = ({ mongoId, search }) => {
 							});
 						}
 						if (!item.groupId) {
-							const showable =
-								item.layerSettings.showable && !['Agreement', 'Land Grid'].includes(item.identifier);
+							const showable = item.layerSettings.showable && !['Agreement', 'Land Grid'].includes(item.identifier);
 							layerAndGroups.push({
 								...item,
 								visiable: item.layerSettings.visiable,

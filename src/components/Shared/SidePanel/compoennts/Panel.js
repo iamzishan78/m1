@@ -35,11 +35,11 @@ import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 // Contexts
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { navController } from 'hookstate/navStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { mapStateController } from 'stateManagement/mapStateController';
+import { navController } from 'stateManagement/navStateController';
 
 // actions
 import { setActiveModule } from 'store/actions/commonActions';

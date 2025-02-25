@@ -14,7 +14,7 @@ import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 import { REMOVE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 
-import { layerController } from 'hookstate/layerStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 import { Modals } from 'styles/Modal';
 

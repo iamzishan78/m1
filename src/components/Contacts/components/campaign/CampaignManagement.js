@@ -9,7 +9,7 @@ import { formatDate } from 'components/Shared/functions';
 
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { copy, dateFilterToDate } from 'utils/helper';
 

@@ -18,12 +18,11 @@ import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { getLayerKey } from 'hookstate/helpers';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-
 import { AppContext } from 'AppContext';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { getLayerKey } from 'stateManagement/helpers';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { useLayerStyle, useStyles, WidthPicker } from './Common';
 import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';

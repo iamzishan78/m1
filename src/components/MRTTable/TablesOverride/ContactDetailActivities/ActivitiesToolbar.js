@@ -8,7 +8,7 @@ import ActivitiesSlideout from 'components/Activities/components/ActivitiesSlide
 
 import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 
-import { slidoutState } from 'hookstate/initialStates';
+import { slidoutState } from 'stateManagement/initialStates';
 
 import { AppContext } from 'AppContext';
 

@@ -3,7 +3,7 @@ import React, { memo } from 'react';
 import AddUnitOwnerDialogContent from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs/AddUnitOwnerDialogContent';
 import RecalculateSlideout from 'components/Common/RecalculateSlideout';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 function OwnerPerUnitTableDialogs() {
 	const { stateValues } = tableGlobalController.useState(['dialog']);

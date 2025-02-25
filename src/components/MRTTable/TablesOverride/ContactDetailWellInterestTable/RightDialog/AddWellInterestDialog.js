@@ -37,7 +37,7 @@ import { INTERESTOWNERTYPESQUERY } from 'graphQL/useQueryInterestOwnerTypes';
 import { INTERESTTYPESQUERY } from 'graphQL/useQueryInterestTypes';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { INTEREST_TO_FIXED } from 'utils/consts';
 

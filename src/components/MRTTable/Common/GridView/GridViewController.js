@@ -1,8 +1,8 @@
 import { hookstate, useHookstate } from '@hookstate/core';
 import _, { isEqual } from 'lodash';
 
-import { hookStateController } from 'hookstate/hookStateController';
-import { tableController } from 'hookstate/tableController';
+import { hookStateController } from 'stateManagement/hookStateController';
+import { tableController } from 'stateManagement/tableController';
 
 export const gridViewStates = hookstate({});
 

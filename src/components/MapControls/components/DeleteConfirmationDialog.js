@@ -10,7 +10,7 @@ import { useMutation } from '@apollo/client';
 
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 
-import { layerController } from 'hookstate/layerStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
 

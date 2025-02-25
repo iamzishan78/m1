@@ -32,9 +32,9 @@ import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-
 
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { popupController } from 'hookstate/popupStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { AppContext } from '../../../AppContext';
 import { ADDSEARCHHISTORY } from '../../../graphQL/useMutationAddSearchHistory';

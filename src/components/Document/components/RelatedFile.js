@@ -40,7 +40,7 @@ import { GET_DOCUMENTS } from 'graphQL/useQueryDocuments';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 

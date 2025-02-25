@@ -10,8 +10,8 @@ import MRTTable from 'components/MRTTable';
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 
-import { slidoutState } from 'hookstate/initialStates';
-import { tableController } from 'hookstate/tableController';
+import { slidoutState } from 'stateManagement/initialStates';
+import { tableController } from 'stateManagement/tableController';
 
 import { getDateFilters } from 'utils/helper';
 

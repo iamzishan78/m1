@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 
 import MRTTable from 'components/MRTTable';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController } from 'stateManagement/tableController';
 
 const TableKey = 'AcreageDetailsTable';
 

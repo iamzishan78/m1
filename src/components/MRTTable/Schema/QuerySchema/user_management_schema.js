@@ -3,7 +3,7 @@ import UserManagementToolbar from 'components/MRTTable/TablesOverride/UserManage
 
 import { GET_ALL_USERS } from 'graphQL/userManagement';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { UserRole, RolePrivilege } from 'utils/data';
 

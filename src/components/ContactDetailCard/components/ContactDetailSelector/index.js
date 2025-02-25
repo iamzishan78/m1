@@ -23,7 +23,7 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 import { CONTACT_SUMMARY } from 'graphQL/useQueryContactSummary';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 

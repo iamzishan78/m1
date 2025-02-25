@@ -14,9 +14,9 @@ import WellCardProvider from 'components/WellCard/WellCardProvider';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import PermitClick from './PermitClick';
 import WellClick from './WellClick';
@@ -143,29 +143,27 @@ function Portals({ hideShape }) {
 					/>
 				</div>
 			)}
-			{(popupVals.selectedShape?.shapeLabel) &&
-				popupVals.expandedCard &&
-				!hideShape && (
-					<div /* className={classes.draggable} */>
-						<ExpandableCardProvider
-							expanded
-							handleCloseExpandableCard={popupController.reset}
-							component={<ShapeDetailCard type={popupVals?.selectedShape?.type || popupVals?.selectedShape?.sdType} />}
-							title={popupVals?.selectedShape?.shapeLabel}
-							subTitle={commonShapeSubTitle}
-							parent="map"
-							position="relative"
-							cardTop={0}
-							cardLeft={0}
-							zIndex={99}
-							cardWidthExpanded="50vw"
-							cardHeightExpanded="calc(100vh - 64px)"
-							targetSourceId={popupVals.selectedShape?.id}
-							targetLabel={popupVals?.selectedShape?.type || popupVals?.selectedShape?.sdType}
-							deleteCustomLayer={deleteCustomLayer}
-						/>
-					</div>
-				)}
+			{popupVals.selectedShape?.shapeLabel && popupVals.expandedCard && !hideShape && (
+				<div /* className={classes.draggable} */>
+					<ExpandableCardProvider
+						expanded
+						handleCloseExpandableCard={popupController.reset}
+						component={<ShapeDetailCard type={popupVals?.selectedShape?.type || popupVals?.selectedShape?.sdType} />}
+						title={popupVals?.selectedShape?.shapeLabel}
+						subTitle={commonShapeSubTitle}
+						parent="map"
+						position="relative"
+						cardTop={0}
+						cardLeft={0}
+						zIndex={99}
+						cardWidthExpanded="50vw"
+						cardHeightExpanded="calc(100vh - 64px)"
+						targetSourceId={popupVals.selectedShape?.id}
+						targetLabel={popupVals?.selectedShape?.type || popupVals?.selectedShape?.sdType}
+						deleteCustomLayer={deleteCustomLayer}
+					/>
+				</div>
+			)}
 			{popupVals.selectedPermit && popupVals.selectedPermit.hasOwnProperty('Lease') && (
 				<PortalD id="popupContainer">
 					{!popupVals.expandedCard && (

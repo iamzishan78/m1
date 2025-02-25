@@ -46,14 +46,13 @@ import { GET_DEAL_SETTINGS } from 'graphQL/useQueryGetDealSettings';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { showErrorMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerFiltersController } from 'stateManagement/layerFiltersController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { mapStateController } from 'stateManagement/mapStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import DealTasksDetails from '../DealTasksDetails';
 import ExistingDeal from './ExistingDeal';

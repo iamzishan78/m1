@@ -3,12 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@material-ui/core';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
 import { Modals } from 'styles/Modal';
+
+import { detailCardController } from 'stateManagement/detailCardController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const ConvertOwnerToContact = ({
 	getOwnerEntityDetailAction,

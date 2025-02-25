@@ -11,9 +11,9 @@ import WellIcon from 'components/Shared/svgIcons/well';
 
 import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import AssociatedWells from './AssociatedWells';
 import DetailsPanel from './Detail';

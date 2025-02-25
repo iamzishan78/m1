@@ -15,8 +15,8 @@ import { copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { AppContext } from 'AppContext';
 

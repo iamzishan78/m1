@@ -1,6 +1,6 @@
 import React, { memo, useEffect } from 'react';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import AddWellInterestDialog from './AddWellInterestDialog';
 

@@ -19,7 +19,7 @@ import moment from 'moment';
 
 import { GET_PARCELS_FILES_COUNT } from 'graphQL/useQueryGetParcelFiles';
 
-import { popupController } from 'hookstate/popupStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { WellCardContext } from './WellCardContext';
 import { AppContext } from '../../AppContext';

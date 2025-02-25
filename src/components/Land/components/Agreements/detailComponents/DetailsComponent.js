@@ -47,16 +47,15 @@ import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions
 import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { jobController } from 'hookstate/jobStateController';
-import { popupController } from 'hookstate/popupStateController';
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { PaymentFeatureTenants } from 'utils/data';
 import { UserSession } from 'utils/user';
 
 import { setLandReduxKey } from 'actions';
 import { AppContext } from 'AppContext';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { jobController } from 'stateManagement/jobStateController';
+import { popupController } from 'stateManagement/popupStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { DrawerContext } from './DrawerContext';
 import RelatedDocumets from './relatedDocuments';

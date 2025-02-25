@@ -26,7 +26,7 @@ import { ADDACTIVITY, UPDATEACTIVITY, DELETEACTIVITY } from 'graphQL/useMutation
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { OPENDEALS } from 'graphQL/useQueryOpenDeals';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { UserSession } from 'utils/user';
 

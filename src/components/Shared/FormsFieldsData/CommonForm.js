@@ -9,7 +9,7 @@ import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/Auto
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
 
-import { sideDialogController } from 'hookstate/sideDialogController';
+import { sideDialogController } from 'stateManagement/sideDialogController';
 
 import AutoCompleteNewOption from './Fields/AutoCompleteNewOption';
 import DatePicker from './Fields/DatePicker';

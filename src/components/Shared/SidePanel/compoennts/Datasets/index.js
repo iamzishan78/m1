@@ -22,15 +22,14 @@ import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 import { GET_DATASETS } from 'graphQL/useQueryDataset';
 import { USER_MAP_SETTINGS_QUERY } from 'graphQL/useQueryUserMapSettings';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { globalState } from 'hookstate/initialStates';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-
 import { scrollbarStyle } from 'styles/common';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { globalState } from 'stateManagement/initialStates';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import DatasetMenu from './Menu';

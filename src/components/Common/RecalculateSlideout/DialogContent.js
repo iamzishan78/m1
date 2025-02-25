@@ -9,10 +9,10 @@ import { useMutation } from '@apollo/client';
 
 import { RESET_OWNERS_CALCULATED_VALUES } from 'graphQL/useMutationResetOwnersCalculatedValues';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
-import { hookStateApp } from 'hookstate';
+import { hookStateApp } from 'stateManagement';
 
 const useStyles = makeStyles(theme => ({
 	root: {

@@ -6,7 +6,7 @@ import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 
-import { jobController } from 'hookstate/jobStateController';
+import { jobController } from 'stateManagement/jobStateController';
 
 function CircularProgressWithLabel(props) {
 	useEffect(() => {

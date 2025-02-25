@@ -35,8 +35,8 @@ import { GET_NOTIFICATIONS } from 'graphQL/useQueryGetNotifications';
 import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 import { GET_WORKSPACE_SETTINGS } from 'graphQL/useQueryWorkspaceSettings';
 
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { navController } from 'hookstate/navStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { navController } from 'stateManagement/navStateController';
 
 import { AppContext } from 'AppContext';
 

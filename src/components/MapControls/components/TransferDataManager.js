@@ -22,9 +22,8 @@ import { truncate } from 'components/Shared/functions';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import { jobController } from 'hookstate/jobStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-
+import { jobController } from 'stateManagement/jobStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 import { history } from 'store';
 
 import { AppContext } from '../../../AppContext';

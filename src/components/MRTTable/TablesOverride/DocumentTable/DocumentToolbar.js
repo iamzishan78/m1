@@ -6,9 +6,9 @@ import PostAddIcon from '@material-ui/icons/PostAdd';
 import MetaFieldList from 'components/MRTTable/Common/MetaData/MetaFieldList';
 import MetaField from 'utils/MetaField';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import DocumentRightDialogs from './RightDialogs';
 

@@ -14,8 +14,8 @@ import { useMutation } from '@apollo/client';
 
 import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { showErrorMessage } from 'actions';
 

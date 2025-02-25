@@ -1,7 +1,7 @@
 import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
 import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
 
-import { jobController } from 'hookstate/jobStateController';
+import { jobController } from 'stateManagement/jobStateController';
 
 const random_rgb = () => {
 	var o = Math.round,

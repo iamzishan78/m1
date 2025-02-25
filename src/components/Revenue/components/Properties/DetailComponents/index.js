@@ -38,7 +38,7 @@ import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
 import { GET_PROPERTY } from 'graphQL/useQueryGetProperty';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 
-import { detailCardController } from 'hookstate/detailCardController';
+import { detailCardController } from 'stateManagement/detailCardController';
 
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import { ConvertOwnerToContactContainer } from 'store/containers/entity';

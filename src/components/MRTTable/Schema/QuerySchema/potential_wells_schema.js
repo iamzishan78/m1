@@ -11,7 +11,7 @@ import { getPolygonString } from 'components/Shared/functions';
 
 import { SHAPEWELLS } from 'graphQL/useQueryPaginatedShapeWells';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 const PotentialWellsMeta = {
 	query: SHAPEWELLS,
