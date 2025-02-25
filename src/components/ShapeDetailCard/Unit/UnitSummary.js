@@ -215,7 +215,7 @@ export default function UnitSummary(props) {
 							/>
 						</Grid>
 						<Grid item md={12}>
-							<CommentComponent targetLabel={'unit'} targetSourceId={props.id} />
+							<CommentComponent targetLabel={'unit'} targetSourceId={props.id} showCommentType />
 						</Grid>
 					</Grid>
 				</Grid>
