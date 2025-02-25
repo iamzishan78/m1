@@ -152,6 +152,7 @@ function SelectedField({
 		case 'Industry Type':
 		case 'Lead Source':
 		case 'Territory':
+		case 'County':
 			// Renders text field for entering values for industry type, lead source, or territory
 			return (
 				<TextField
@@ -303,6 +304,7 @@ export default function AssignOwnerToContactDrawer({
 		{ title: 'Status', value: 'contactStatus' },
 		{ title: 'Tags', value: 'contactStatus' },
 		{ title: 'Territory', value: 'territory' },
+		{ title: 'County', value: 'county' },
 		{ title: 'Time Zone', value: 'timeZone' },
 		{ title: 'Related Contact', value: 'relatedcontact' },
 		{ title: 'Add New Activity', value: 'activity' },
@@ -311,7 +313,9 @@ export default function AssignOwnerToContactDrawer({
 	const fieldsToUpdate = rest.header === 'UnitTable' ? [...unitTableFields] : [...otherTableFields];
 
 	useEffect(() => {
-		if (!['Industry Type', 'Lead Source', 'Territory', 'Time Zone', 'Tags', 'Add New Activity'].includes(field))
+		if (
+			!['Industry Type', 'Lead Source', 'Territory', 'County', 'Time Zone', 'Tags', 'Add New Activity'].includes(field)
+		)
 			getContactCampaignAction({
 				search: fieldKey ? `${fieldKey}*` : '*',
 			});
