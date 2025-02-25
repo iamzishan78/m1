@@ -282,7 +282,7 @@ function AssetAssociationDialog() {
 								</Button>
 								<Button
 									type="submit"
-									className={hasAtLeastOneKey ? classes.btnColor : ''}
+									className={hasAtLeastOneKey ? classes.btnColor_active : ''}
 									style={{ margin: '25px 25px 25px 5px' }}
 									variant="outlined"
 									disabled={hasAtLeastOneKey ? false : true}

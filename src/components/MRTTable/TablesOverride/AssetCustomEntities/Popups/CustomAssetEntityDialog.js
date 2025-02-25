@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
@@ -16,7 +16,10 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { zodResolver } from '@hookform/resolvers/zod';
+import _ from 'lodash';
+import { z } from 'zod';
 
 import Loader from 'components/Loaders';
 import { entityCreationOptions, entityShapeOptions } from 'components/MRTTable/utils/data';
@@ -24,13 +27,12 @@ import { entityCreationOptions, entityShapeOptions } from 'components/MRTTable/u
 import { tableGlobalController } from 'controllers/tableController';
 
 import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetInfo';
+import { IS_TABLE_NAME_VALID } from 'graphQL/useQueryAllCustomAssetInfo.js';
 
 import { showInfoMessage } from 'actions';
 
 import { useStyles } from './styles';
 import DynamicForm from '../Forms/DynamicForm';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 const zodValidationSchema = z.object({
 	asset_name: z.string().nonempty('Table name is required'),
@@ -53,8 +55,8 @@ const zodValidationSchema = z.object({
 
 function CustomAssetEntityDialog() {
 	const classes = useStyles();
-
 	const dispatch = useDispatch();
+	const [isDisabled, setIsDisabled] = useState(false);
 
 	const defaultFields = [
 		{
@@ -111,6 +113,10 @@ function CustomAssetEntityDialog() {
 		},
 	});
 
+	const [isTableNameValid] = useLazyQuery(IS_TABLE_NAME_VALID, {
+		fetchPolicy: 'no-cache',
+	});
+
 	useEffect(() => {
 		reset({
 			asset_name: selectedAsset?.name || '',
@@ -126,7 +132,35 @@ function CustomAssetEntityDialog() {
 		});
 	};
 
+	const handleTableNameBlur = value => {
+		if (!value) {return;}
+
+		const tableName = value.replace(/\s+/g, '').toLowerCase() || '';
+		isTableNameValid({
+			variables: {
+				tableName,
+			},
+		}).then(({ data }) => {
+			const { success, message } = data.isTableNameValid;
+			setIsDisabled(!success);
+			!success && dispatch(showInfoMessage(message));
+		});
+	};
+
 	const onSubmit = data => {
+		const repeatedKeys = _(data.fields)
+			.filter(fieldObj => fieldObj.mappingKey !== '')
+			.countBy('mappingKey')
+			.pickBy(count => count > 1)
+			.keys()
+			.value();
+
+		if (repeatedKeys.length) {
+			const repeatedKeysMessage = `Cannot create asset. The following keys are repeated: \n"${repeatedKeys.join(', ')}"`;
+			dispatch(showInfoMessage(repeatedKeysMessage));
+			return;
+		}
+
 		if (!hasControlColumnSelected) {
 			dispatch(showInfoMessage('Control column selection is required'));
 			return;
@@ -197,6 +231,7 @@ function CustomAssetEntityDialog() {
 														onChange={e => {
 															field.onChange(e.target.value);
 														}}
+														onBlur={e => handleTableNameBlur(e.target.value)}
 														label="Table Name"
 														placeholder="Table Name"
 														fullWidth
@@ -254,6 +289,7 @@ function CustomAssetEntityDialog() {
 													<RadioGroup row {...field}>
 														{entityShapeOptions.map((option, index) => (
 															<FormControlLabel
+																key={option.label}
 																disabled={!isCreateMode}
 																index={index}
 																value={option.value}
@@ -289,9 +325,10 @@ function CustomAssetEntityDialog() {
 									</Button>
 									<Button
 										type="submit"
-										className={classes.btnColor}
+										className={isDisabled && isCreateMode ? classes.btnColor_disabled : classes.btnColor_active}
 										style={{ margin: '25px 25px 25px 5px' }}
 										variant="outlined"
+										disabled={isCreateMode ? isDisabled : false}
 									>
 										{isCreateMode ? 'Create Asset' : 'Update Asset'}
 									</Button>
