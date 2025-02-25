@@ -196,6 +196,7 @@
 		"start-server-and-test": "^1.15.4"
 	},
 	"lint-staged": {
+		"*.{js,jsx}": "eslint --fix --max-warnings=0",
 		"*.{js,jsx,css,md,html,json}": "prettier --cache --write"
 	}
 }
