@@ -444,11 +444,16 @@ export default function AssignOwnerToContactDrawer({
 				}
 			);
 		} else if (field === 'Add New Activity') {
+			const isOwnerTable = ['TractPerUnitTable', 'OwnersPerUnitTable'].includes(rest.header);
+
 			bulkAddActivities({
 				variables: {
 					activity: fieldKey,
 					userId: getUser._id,
-					contacts: rows.map(row => ({ _id: row._id, name: row.name })),
+					contacts: rows.map(row => ({
+						_id: isOwnerTable ? row.contact._id : row._id,
+						name: row.name,
+					})),
 				},
 				refetchQueries: 'getESSimpleSearch',
 				awaitRefetchQueries: true,
