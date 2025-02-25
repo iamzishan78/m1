@@ -7,8 +7,8 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import PropertyInterestDetailTableTolBar from 'components/MRTTable/TablesOverride/PropertyInterestDetailTable/PropertyInterestDetailTableTolBar';
 import { formatDate } from 'components/Shared/functions';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { detailCardController } from 'controllers/detailCardController';
+import { tableGlobalController } from 'controllers/tableController';
 
 const esIndex = 'propertyinterest_flat';
 

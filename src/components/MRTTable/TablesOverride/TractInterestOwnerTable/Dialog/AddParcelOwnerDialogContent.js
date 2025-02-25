@@ -24,15 +24,15 @@ import parcelOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchem
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { sideDialogController, tractInterestOwnerState } from 'controllers/sideDialogController';
+import { tableGlobalController } from 'controllers/tableController';
+
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { ADDOWNERTOAPARCEL } from 'graphQL/useMutationAddOwnerToAParcel';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { sideDialogController, tractInterestOwnerState } from 'hookstate/sideDialogController';
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { UserSession } from 'utils/user';
 
@@ -82,15 +82,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
+	const formState = sideDialogController('tractInterestDialog').useCompleteState();
+	const formStateValues = formState;
+
 	const dispatch = useDispatch();
 	const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 	const tenantName = UserSession.getStorageItem('tenantName');
 
-	const formState = sideDialogController('tractInterestDialog').useCompleteState();
-	const formStateValues = formState?.get({ noproxy: true });
-
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const { control, reset, getValues, setValue, watch } = useForm();
 
@@ -282,13 +282,15 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 			handleUpdateContact(formStateValues);
 		}
 
+		const updatedFormStateValues = sideDialogController('tractInterestDialog').getAllValues();
+
 		// Fixed label value issue
 		if (selectedRow) {
 			const parcelOwner = extractValueRecursively({
 				_id: selectedRow?._id,
-				...formStateValues,
-				deals: formStateValues?.deals || [],
-				relatedObject: formStateValues.relatedObject,
+				...updatedFormStateValues,
+				deals: updatedFormStateValues?.deals || [],
+				relatedObject: updatedFormStateValues.relatedObject,
 				createBy: getUser?._id,
 				lastUpdateBy: getUser?._id,
 			});
@@ -301,9 +303,9 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 			// Fixed label value issue
 			// Update parcel owner object for autocompletes
 			const parcelOwner = extractValueRecursively({
-				...formStateValues,
-				deals: formStateValues?.deals || [],
-				relatedObject: formStateValues.relatedObject,
+				...updatedFormStateValues,
+				deals: updatedFormStateValues?.deals || [],
+				relatedObject: updatedFormStateValues.relatedObject,
 				createBy: getUser?._id,
 				lastUpdateBy: getUser?._id,
 			});

@@ -3,8 +3,8 @@ import * as turf from '@turf/turf';
 
 import { calculateShapeCenter } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
-import { drawController } from 'hookstate/drawStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { drawController } from 'controllers/drawStateController';
+import { popupController } from 'controllers/popupStateController';
 
 export const showIfUserDefinedLayer = () => {
 	const currentFeature = drawController.getValue('currentFeature');

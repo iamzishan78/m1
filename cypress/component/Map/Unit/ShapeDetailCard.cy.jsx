@@ -4,10 +4,10 @@ import ExpandableCardProvider from 'components/ExpandableCard/ExpandableCardProv
 import ShapeDetailCard from 'components/ShapeDetailCard';
 import { copy } from 'components/Shared/functions';
 
+import { popupController } from 'controllers/popupStateController';
+
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
-
-import { popupController } from 'hookstate/popupStateController';
 
 import { headers } from '../../../cypressUtils/cypressHeaders';
 import { basic_timeouts, retries } from '../../../cypressUtils/data';

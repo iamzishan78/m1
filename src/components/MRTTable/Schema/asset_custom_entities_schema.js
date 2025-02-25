@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
+
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
 import Chips from '../Common/TableCells/Chips';
 import AssetCustomEntitiesToolbar from '../TablesOverride/AssetCustomEntities/Toolbars/AssetCustomEntities';
 
@@ -26,9 +28,9 @@ const AssetCustomEntitiesMeta = {
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'tableName.keyword',
-			accessorFn: row => row?.tableName,
-			id: 'tableName',
+			name: 'name.keyword',
+			accessorFn: row => row?.name,
+			id: 'name',
 			header: 'Asset Name',
 		},
 		{
@@ -37,6 +39,13 @@ const AssetCustomEntitiesMeta = {
 			accessorFn: row => row?.creationPlace,
 			id: 'creationPlace',
 			header: 'Creation Place',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'shapeType.keyword',
+			accessorFn: row => row?.shapeType,
+			id: 'shapeType',
+			header: 'Shape Type',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
@@ -54,8 +63,8 @@ const AssetCustomEntitiesMeta = {
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'associatedModels.label.keyword',
-			accessorKey: 'associatedModels.label',
+			name: 'associatedModels.name.keyword',
+			accessorKey: 'associatedModels.name',
 			header: 'Associated Models',
 			Cell: ({ row }) => <Chips list={row?.original?.associatedModels} />,
 		},

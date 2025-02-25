@@ -19,12 +19,12 @@ import AutoCompleteFieldComponent from 'components/Shared/Forms/Fields/AutoCompl
 import WellSearchApiField from 'components/Shared/Forms/Fields/WellSearchApiField';
 import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { tableGlobalController } from 'controllers/tableController';
+
 import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest';
 import { UPDATE_SHAPE_WELL_INTEREST } from 'graphQL/useMutationUpdateShapeWellInterest';
 import { WELL_INTEREST_SELECT_OPTIONS } from 'graphQL/useQueryWellInterestSelectOptions';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
 	dialogFooter: {
@@ -52,7 +52,7 @@ function RelatedWellsDialog(props) {
 	const classes = useStyles();
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 	const { control, reset, getValues } = useForm();
 
 	const [loading, setLoading] = useState(false);

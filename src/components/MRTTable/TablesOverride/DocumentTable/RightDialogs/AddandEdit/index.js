@@ -12,11 +12,11 @@ import PropTypes from 'prop-types';
 import Slideout from 'components/MRTTable/Common/Slideout';
 import WellIcon from 'components/Shared/svgIcons/well';
 
-import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument';
+import { globalStateController } from 'controllers/globalStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument';
 
 import { history } from 'store';
 
@@ -27,9 +27,8 @@ import OCRText from './OCRText';
 
 function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	const [wellsCount, setWellsCount] = useState(0);
-	const slideOutState = slidoutStateController.useState(['views', 'view', 'activeTabs']);
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const [getWellsFromDocument, { data: wellsFromDocument }] = useLazyQuery(GETWELLSFROMDOCUMENTS, {
 		fetchPolicy: 'cache-and-network',
@@ -158,8 +157,8 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 		handleClose();
 	};
 	useEffect(() => {
-		slideOutState.views.set(views);
-		slideOutState.view.set(views[0]);
+		slidoutStateController.updateState({ views: views });
+		slidoutStateController.updateState({ view: views[0] });
 	}, [selectedDocument, wellsCount]);
 
 	return <Slideout show={true} deleteFunc={deleteFunc} />;

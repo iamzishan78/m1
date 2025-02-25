@@ -6,7 +6,7 @@ import { IconButton, Tooltip } from '@material-ui/core';
 import Contact_card from 'components/Shared/svgIcons/contact_card';
 import Convert_contact from 'components/Shared/svgIcons/convert_contact';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 import { UserSession } from 'utils/user';
 

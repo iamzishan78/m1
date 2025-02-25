@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom';
 
 import { useApolloClient } from '@apollo/client';
 
+import { popupController } from 'controllers/popupStateController';
+
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
-
-import { popupController } from 'hookstate/popupStateController';
 
 function WellClick() {
 	const { paramId } = useParams();

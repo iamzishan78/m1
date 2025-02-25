@@ -8,10 +8,10 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import PotentialShapeOwnersToolbar from 'components/MRTTable/TablesOverride/PotentialShapeOwnersTable/PotentialShapeOwnersToolbar';
 import { getPolygonString } from 'components/Shared/functions';
 
-import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
 
 const PotentialShapeOwnersMeta = {
 	query: SHAPE_OWNERS,

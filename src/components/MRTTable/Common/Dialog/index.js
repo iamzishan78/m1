@@ -11,10 +11,10 @@ import BuyContactsInfoDialogContent from 'components/MRTTable/Common/Components/
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
 import Comments from 'components/Shared/Comments';
 
-import { REMOVECOMMONGRIDFUNCTIONALITY } from 'graphQL/useMutationCommonGridRemove';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { REMOVECOMMONGRIDFUNCTIONALITY } from 'graphQL/useMutationCommonGridRemove';
 
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
@@ -24,7 +24,7 @@ import TagDialog from './TagDialog';
 
 function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
-	const { type, assetName, associatedAssetName, ...rest } = stateValues.dialog || {};
+	const { type, ...rest } = stateValues.dialog || {};
 	const tableKey = rest?.tableKey || props.tableKey;
 
 	const {
@@ -67,8 +67,6 @@ function AllDialogs(props) {
 		gridGenericRemove({
 			variables: {
 				tableKey,
-				mainAssetName: assetName,
-				associatedAssetName,
 				deletedData: dataToDelete,
 				userId: user?.mongoId,
 				ESVariables: rest?.ESVariables,
@@ -122,7 +120,6 @@ function AllDialogs(props) {
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
 					<Comments
 						{...rest}
-						hideSharedCommentCheck={props.hideSharedCommentCheck}
 						containsComments={true}
 						isHelperTextAllow={true}
 						isSaveAllowed={false}

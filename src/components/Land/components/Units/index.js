@@ -3,7 +3,7 @@ import React, { useContext, useEffect } from 'react';
 import MRTTable from 'components/MRTTable';
 import TabPanels from 'components/Shared/TabPanels';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 import { AppContext } from 'AppContext';
 

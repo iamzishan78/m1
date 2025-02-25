@@ -2,22 +2,54 @@ import React, { useEffect } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
-import { Grid, Dialog, IconButton, Button, TextField, MenuItem } from '@material-ui/core';
+import {
+	Grid,
+	Dialog,
+	IconButton,
+	Button,
+	TextField,
+	MenuItem,
+	RadioGroup,
+	FormControlLabel,
+	Radio,
+	FormHelperText,
+} from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { useMutation } from '@apollo/client';
 
 import Loader from 'components/Loaders';
-import { entityCreationOptions } from 'components/MRTTable/utils/data';
+import { entityCreationOptions, entityShapeOptions } from 'components/MRTTable/utils/data';
+
+import { tableGlobalController } from 'controllers/tableController';
 
 import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetInfo';
-
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { showInfoMessage } from 'actions';
 
 import { useStyles } from './styles';
 import DynamicForm from '../Forms/DynamicForm';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const zodValidationSchema = z.object({
+	asset_name: z.string().nonempty('Table name is required'),
+	creation_place: z.string().nonempty('Creation place is required'),
+	shape_type: z.string().nonempty('Shape type is required'),
+	fields: z.array(
+		z.object({
+			_id: z.string(),
+			mappingKey: z.string().nonempty('Key is required'),
+			keyType: z.string().nonempty('Key type is required'),
+			label: z.string().nonempty('Label is required'),
+			isSummaryField: z.boolean(),
+			isControlColumn: z.boolean(),
+			isGridDisplayed: z.boolean(),
+			isDialogDisplayed: z.boolean(),
+			isRequired: z.boolean(),
+		})
+	),
+});
 
 function CustomAssetEntityDialog() {
 	const classes = useStyles();
@@ -34,18 +66,29 @@ function CustomAssetEntityDialog() {
 			isControlColumn: false,
 			isGridDisplayed: true,
 			isDialogDisplayed: true,
+			isRequired: false,
 		},
 	];
-	const { control, handleSubmit, watch, reset, setValue } = useForm({
+	const {
+		control,
+		handleSubmit,
+		watch,
+		reset,
+		setValue,
+		formState: { errors },
+		clearErrors,
+	} = useForm({
+		resolver: zodResolver(zodValidationSchema),
 		defaultValues: {
-			table_name: '',
+			asset_name: '',
 			fields: defaultFields,
 			creation_place: '',
+			shape_type: 'Polygon',
 		},
 	});
 
 	const fields = useWatch({ control, name: 'fields' });
-	const tableName = watch('table_name', ''); // Watch the "table_name" field
+	const creationPlace = watch('creation_place', ''); // Watch the "creation_place" field
 
 	const { stateValues } = tableGlobalController.useState(['AssetCustomEntityDialog', 'selectedAsset']);
 	const { type, isOpen } = stateValues.AssetCustomEntityDialog || {};
@@ -70,9 +113,10 @@ function CustomAssetEntityDialog() {
 
 	useEffect(() => {
 		reset({
-			table_name: selectedAsset?.tableName || '',
+			asset_name: selectedAsset?.name || '',
 			fields: selectedAsset?.modelKeys || defaultFields,
 			creation_place: selectedAsset?.creationPlace || '',
+			shape_type: selectedAsset?.shapeType || 'Polygon',
 		});
 	}, [selectedAsset, reset]);
 
@@ -93,11 +137,14 @@ function CustomAssetEntityDialog() {
 		Loader.createToast(toastType, `${capitalizedToastType} Entity in Progress`);
 		handleClose();
 
+		const modelKeys = data?.fields?.map(({ _id, ...rest }) => (_id ? { _id, ...rest } : rest));
+
 		storeCustomAsset({
 			variables: {
-				tableName: data.table_name,
-				modelKeys: data.fields,
+				name: data.asset_name,
+				modelKeys,
 				creationPlace: data.creation_place,
+				shapeType: data.shape_type,
 			},
 		}).then(res => {
 			if (res?.data?.upsertCustomAssetInfo) {
@@ -112,8 +159,6 @@ function CustomAssetEntityDialog() {
 			}
 		});
 	};
-
-	const hasAtLeastOneKey = fields.some(field => field.mappingKey && field.keyType && field.label);
 
 	return (
 		<Dialog fullWidth maxWidth="lg" open={isOpen} onClose={handleClose}>
@@ -139,24 +184,28 @@ function CustomAssetEntityDialog() {
 									<Grid item xs={6}>
 										<Controller
 											control={control}
-											name="table_name"
+											name="asset_name"
 											render={({ field }) => (
-												<TextField
-													size="small"
-													type="text"
-													variant="outlined"
-													value={field.value}
-													inputRef={field.ref}
-													onWheel={e => e.target.blur()}
-													onChange={e => {
-														field.onChange(e.target.value);
-													}}
-													label="Table Name"
-													placeholder="Table Name"
-													fullWidth
-													defaultValue=""
-													disabled={!isCreateMode}
-												/>
+												<>
+													<TextField
+														size="small"
+														type="text"
+														variant="outlined"
+														value={field.value}
+														inputRef={field.ref}
+														onWheel={e => e.target.blur()}
+														onChange={e => {
+															field.onChange(e.target.value);
+														}}
+														label="Table Name"
+														placeholder="Table Name"
+														fullWidth
+														defaultValue=""
+														error={errors['asset_name']}
+														disabled={!isCreateMode}
+													/>
+													<FormHelperText error>{errors['asset_name']?.message || ' '}</FormHelperText>
+												</>
 											)}
 										/>
 									</Grid>
@@ -165,37 +214,68 @@ function CustomAssetEntityDialog() {
 											control={control}
 											name={'creation_place'}
 											render={({ field }) => (
-												<TextField
-													select
-													size="small"
-													type="text"
-													variant="outlined"
-													value={field.value}
-													inputRef={field.ref}
-													onWheel={e => e.target.blur()}
-													onChange={e => {
-														field.onChange(e.target.value);
-													}}
-													label="Creationn Place"
-													placeholder="creation place"
-													fullWidth
-													defaultValue=""
-													disabled={!isCreateMode}
-												>
-													{entityCreationOptions.map(option => (
-														<MenuItem key={option.value} value={option.value}>
-															{option.label}
-														</MenuItem>
-													))}
-												</TextField>
+												<>
+													<TextField
+														select
+														size="small"
+														type="text"
+														variant="outlined"
+														value={field.value}
+														inputRef={field.ref}
+														onWheel={e => e.target.blur()}
+														onChange={e => {
+															field.onChange(e.target.value);
+														}}
+														label="Creation Place"
+														placeholder="creation place"
+														fullWidth
+														defaultValue=""
+														error={errors['creation_place']}
+														disabled={!isCreateMode}
+													>
+														{entityCreationOptions.map(option => (
+															<MenuItem key={option.value} value={option.value}>
+																{option.label}
+															</MenuItem>
+														))}
+													</TextField>
+													<FormHelperText error>{errors['creation_place']?.message || ' '}</FormHelperText>
+												</>
 											)}
 										/>
 									</Grid>
+									{creationPlace && creationPlace === 'onMap' && (
+										<Grid item xs={6}>
+											<h3>Select the Shape Type</h3>
+											<Controller
+												control={control}
+												name={'shape_type'}
+												render={({ field }) => (
+													<RadioGroup row {...field}>
+														{entityShapeOptions.map((option, index) => (
+															<FormControlLabel
+																disabled={!isCreateMode}
+																index={index}
+																value={option.value}
+																control={<Radio />}
+																label={option.label}
+															/>
+														))}
+													</RadioGroup>
+												)}
+											/>
+										</Grid>
+									)}
 								</Grid>
 								<Grid item>
 									<h3>Add Model Keys for this Entity in this table </h3>
 								</Grid>
-								<DynamicForm control={control} setValue={setValue} />
+								<DynamicForm
+									control={control}
+									setValue={setValue}
+									errors={errors['fields']}
+									clearErrors={clearErrors}
+								/>
 							</div>
 
 							<div
@@ -209,10 +289,9 @@ function CustomAssetEntityDialog() {
 									</Button>
 									<Button
 										type="submit"
-										className={hasAtLeastOneKey && tableName ? classes.btnColor : ''}
+										className={classes.btnColor}
 										style={{ margin: '25px 25px 25px 5px' }}
 										variant="outlined"
-										disabled={hasAtLeastOneKey && tableName ? false : true}
 									>
 										{isCreateMode ? 'Create Asset' : 'Update Asset'}
 									</Button>

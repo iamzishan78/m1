@@ -10,10 +10,10 @@ import { useLazyQuery } from '@apollo/client';
 import MRTTable from 'components/MRTTable';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
-import { AGREEMENT_PAYMENT_SUMMARY } from 'graphQL/useQueryAgreementPaymentSummary';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { tableController } from 'controllers/tableController';
 
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { tableController } from 'hookstate/tableController';
+import { AGREEMENT_PAYMENT_SUMMARY } from 'graphQL/useQueryAgreementPaymentSummary';
 
 import { AppContext } from 'AppContext';
 

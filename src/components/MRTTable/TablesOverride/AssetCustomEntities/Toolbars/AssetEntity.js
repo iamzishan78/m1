@@ -1,10 +1,14 @@
 import React, { memo } from 'react';
-import EditIcon from '@material-ui/icons/Edit';
-import { tableGlobalController } from 'hookstate/tableController';
+
 import { Button, ButtonGroup, IconButton, Tooltip } from '@material-ui/core';
-import CustomAssetEntityDialog from '../Popups/CustomAssetEntityDialog';
-import AssetAssociationDialog from '../Popups/AssetAssociationDialog';
+import EditIcon from '@material-ui/icons/Edit';
+
 import PropTypes from 'prop-types';
+
+import { tableGlobalController } from 'controllers/tableController';
+
+import AssetAssociationDialog from '../Popups/AssetAssociationDialog';
+import CustomAssetEntityDialog from '../Popups/CustomAssetEntityDialog';
 
 function AssetEntityToolbar({ tableKey }) {
 	const editCustomAssetHandler = () => {

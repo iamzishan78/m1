@@ -1,6 +1,8 @@
-import { Chip } from '@material-ui/core';
-import PropTypes from 'prop-types';
 import * as React from 'react';
+
+import { Chip } from '@material-ui/core';
+
+import PropTypes from 'prop-types';
 
 const Chips = ({ list }) => {
 	return (
@@ -12,8 +14,8 @@ const Chips = ({ list }) => {
 							backgroundColor: '#f0f0f0',
 						}}
 						disabled
-						key={item.label || item}
-						label={item.label || item}
+						key={item.label || item.name || item}
+						label={item.label || item.name || item}
 					/>
 				))}
 		</div>

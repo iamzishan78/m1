@@ -7,9 +7,9 @@ import CustomCampaignFilters from 'components/Contacts/components/CampaignFilter
 import MRTTable from 'components/MRTTable';
 import { formatDate } from 'components/Shared/functions';
 
-import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
+import { tableController } from 'controllers/tableController';
 
-import { tableController } from 'hookstate/tableController';
+import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
 import { copy, dateFilterToDate } from 'utils/helper';
 

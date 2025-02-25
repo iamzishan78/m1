@@ -8,9 +8,9 @@ import { useMutation } from '@apollo/client';
 
 import { deepEqual } from 'components/Shared/functions';
 
-import { UPSERTPROFILE } from 'graphQL/useMutationUpsertProfile';
+import { globalStateController } from 'controllers/globalStateController';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { UPSERTPROFILE } from 'graphQL/useMutationUpsertProfile';
 
 import ImageModal from './ImageModal';
 import NotificationSettings from './NotificationSettings';

@@ -13,10 +13,10 @@ import FileName from 'components/MRTTable/TablesOverride/DocumentTable/TableCell
 import FileView from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/FileView';
 import { formatDate } from 'components/Shared/functions';
 
-import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import { slidoutStateController } from 'controllers/slidoutStateController';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
 
 import { history } from 'store';
 

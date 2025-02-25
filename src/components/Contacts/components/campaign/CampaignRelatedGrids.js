@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import MRTTable from 'components/MRTTable';
 import useTabedTablesUnmount from 'components/MRTTable/Hooks/useTabedTablesUnmount';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import { campaignInitialData } from './data';
 
@@ -247,15 +247,15 @@ function CamapignRelatedGrids({ campaign }) {
 								{globalSelectedTabKey.tabKey === 1 && campaign?.name && (
 									<MRTTable name="CampaignUnitTable" overrideMeta={campaignUnitoverrideMeta} />
 								)}
-								{/* eslint-disable-next-line no-magic-numbers */}
+								{}
 								{globalSelectedTabKey.tabKey === 2 && campaign?.name && (
 									<MRTTable name="CampaignUnitInterestTable" overrideMeta={campaignUnitInterestoverrideMeta} />
 								)}
-								{/* eslint-disable-next-line no-magic-numbers */}
+								{}
 								{globalSelectedTabKey.tabKey === 3 && campaign?.name && (
 									<MRTTable name="CampaignTractTable" overrideMeta={campaignTractOverrideMeta} />
 								)}
-								{/* eslint-disable-next-line no-magic-numbers */}
+								{}
 								{globalSelectedTabKey.tabKey === 4 && campaign?.name && (
 									<MRTTable name="CampaignTractInterestTable" overrideMeta={campaignTractInterestOverrideMeta} />
 								)}

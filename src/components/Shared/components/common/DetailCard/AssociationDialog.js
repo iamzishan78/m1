@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
 
 import {
 	Button,
@@ -15,19 +14,21 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { tableGlobalController } from 'hookstate/tableController';
-import { detailCardController } from 'hookstate/detailCardController';
-
-import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { isEmpty } from 'lodash';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import { globalStateController } from 'hookstate/globalStateController';
-import { ADD_ASSOCIATED_MODEL_DATA } from 'graphQL/useMutationAssociatedModelData';
-import { isEmpty } from 'lodash';
 import { formatDate } from 'components/Shared/functions';
+import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-const useStyles = makeStyles(theme => ({
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableGlobalController } from 'controllers/tableController';
+
+import { ADD_ASSOCIATED_MODEL_DATA } from 'graphQL/useMutationAssociatedModelData';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+
+const useStyles = makeStyles(() => ({
 	maxWidth: {
 		width: '100%',
 	},
@@ -80,6 +81,13 @@ function AssociationDialog() {
 
 	const controlColumn = currentAssociatedModel?.modelKeys?.find(key => !!key.isControlColumn);
 
+	const handleClickRightDialogClose = async () => {
+		tableGlobalController.updateState({
+			AssociateDataDialog: {},
+		});
+		setSelectedOption({});
+	};
+
 	const [getDbData] = useLazyQuery(GET_DB_DATA, {
 		onCompleted: data => {
 			const associatedModelData = data?.getDbData?.hits || [];
@@ -100,7 +108,7 @@ function AssociationDialog() {
 		if (isOpen) {
 			getDbData({
 				variables: {
-					index: currentAssociatedModel?.flatModel,
+					index: currentAssociatedModel?.tableName,
 					pagination: {
 						first: 25,
 						after: null,
@@ -117,23 +125,16 @@ function AssociationDialog() {
 		}
 	}, [isOpen, getDbData, currentAssociatedModel]);
 
-	const handleClickRightDialogClose = async () => {
-		tableGlobalController.updateState({
-			AssociateDataDialog: {},
-		});
-		setSelectedOption({});
-	};
-
 	const addAssociatedDataHandler = () => {
 		if (selectedOption && currentAssetRecord && currentAsset) {
 			const selectedId = selectedOption._id;
 
 			addAossciatedData({
 				variables: {
-					mainModelName: currentAsset?.tableName,
+					assetTableName: currentAsset?.tableName,
 					associatedModelName: currentAssociatedModel?.modelName,
 					descriptorObject: currentAssetRecord?._id,
-					descriptorType: currentAsset?.tableName,
+					descriptorType: currentAsset?.name,
 					relatedObject: selectedId,
 					relatedObjectType: currentAssociatedModel?.modelName,
 				},

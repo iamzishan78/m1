@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid, TextField } from '@material-ui/core';
-import loadashFilter from 'lodash/filter';
+import { makeStyles } from '@material-ui/core/styles';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery } from '@apollo/client';
+import loadashFilter from 'lodash/filter';
+import PropTypes from 'prop-types';
+
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
-import { detailCardController } from 'hookstate/detailCardController';
+
+import { detailCardController } from 'controllers/detailCardController';
+
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
 const useStyles = makeStyles({
 	inputRoot: {
@@ -35,7 +40,7 @@ const SummaryAutoComplete = ({ fieldData, fieldKey, defaultOptions = [], payload
 	const [loading, setLoading] = useState(false); // Track if the API request is in progress
 
 	const { callApi } = useUpdate();
-	const [search, setSearch] = useState(fieldData?.get({ noproxy: true }) || '');
+	const [search, setSearch] = useState(fieldData || '');
 
 	const onInputChange = (event, value) => {
 		setSearch(value);
@@ -58,7 +63,7 @@ const SummaryAutoComplete = ({ fieldData, fieldKey, defaultOptions = [], payload
 	};
 
 	useEffect(() => {
-		setSearch(fieldData?.get({ noproxy: true }) || '');
+		setSearch(fieldData || '');
 	}, [fieldData]);
 
 	useEffect(() => {
@@ -100,15 +105,19 @@ const SummaryAutoComplete = ({ fieldData, fieldKey, defaultOptions = [], payload
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
-			getOptionSelected={(option, value) => {
+			getOptionSelected={option => {
 				return option?._id === search;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
-					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				if (option._id === 'newEntity') {
+					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -144,13 +153,22 @@ const SummaryAutoComplete = ({ fieldData, fieldKey, defaultOptions = [], payload
 			onChange={(event, newValue) => {
 				const splitKeys = payload?.filterKey?.replaceAll('.keyword', '')?.split('.');
 				if (newValue) {
-					callApi(
-						fieldKey,
-						splitKeys.length === 1 ? newValue.name : { [splitKeys[splitKeys.length - 1]]: newValue.name }
-					);
+					callApi({
+						key: fieldKey,
+						value: splitKeys.length === 1 ? newValue.name : { [splitKeys[splitKeys.length - 1]]: newValue.name },
+						field,
+						previousValue: fieldData,
+						resetFn: setSearch,
+					});
 				} else {
 					setSearch('');
-					callApi(fieldKey, splitKeys.length === 1 ? '' : { [splitKeys[splitKeys.length - 1]]: '' });
+					callApi({
+						key: fieldKey,
+						value: splitKeys.length === 1 ? '' : { [splitKeys[splitKeys.length - 1]]: '' },
+						field,
+						previousValue: fieldData,
+						resetFn: setSearch,
+					});
 				}
 			}}
 			renderInput={params => (
@@ -167,6 +185,20 @@ const SummaryAutoComplete = ({ fieldData, fieldKey, defaultOptions = [], payload
 			{...other}
 		/>
 	);
+};
+
+SummaryAutoComplete.propTypes = {
+	fieldData: PropTypes.string,
+	fieldKey: PropTypes.string.isRequired,
+	defaultOptions: PropTypes.arrayOf(
+		PropTypes.shape({
+			label: PropTypes.string.isRequired,
+			value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]).isRequired,
+		})
+	),
+	payload: PropTypes.shape({
+		filterKey: PropTypes.string,
+	}),
 };
 
 export default SummaryAutoComplete;

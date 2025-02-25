@@ -1,28 +1,29 @@
 import React, { useContext, useState, useEffect, useMemo, memo } from 'react';
-
-import { AppContext } from 'AppContext';
-
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+
 import { useLazyQuery } from '@apollo/client';
 
 // import RightDialog from './RightDialog';
 // import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
+import ConfirmationDialog from 'components/ContactDetailCard/components/ConfirmationDialog';
 import DetailLayout from 'components/Shared/components/common/DetailCard/DetailLayout';
 // import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
-import ConfirmationDialog from 'components/ContactDetailCard/components/ConfirmationDialog';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { globalStateController } from 'hookstate/globalStateController';
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 import { GET_RECORD_FROM_RUN_TIME_MODEL } from 'graphQL/useQueryRunTimeModel';
 
-import { replaceUnderscoreAndCapitalize } from 'components/MRTTable/utils/helper';
+import { AppContext } from 'AppContext';
 
-function GenericDetailCard(props) {
+function GenericDetailCard() {
 	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const { id, tableName, paramId, type } = useParams();
+
+	const { activeModule } = useSelector(({ common }) => common);
 
 	const [openDialog, setOpenDialog] = useState(false);
 	const [assetRecord, setAssetRecord] = useState(null);
@@ -44,10 +45,8 @@ function GenericDetailCard(props) {
 	});
 
 	useEffect(() => {
-		let assetName = tableName ?? type;
+		let assetName = tableName ?? type ?? activeModule?.name;
 		const assetId = id ?? paramId;
-
-		assetName = replaceUnderscoreAndCapitalize(assetName);
 
 		if (assetName && assetId) {
 			getAsset({
@@ -58,7 +57,7 @@ function GenericDetailCard(props) {
 				variables: { _id: assetId, tableName: assetName },
 			});
 		}
-	}, [id, tableName, paramId, type, getAsset, getRecordFromAsset]);
+	}, [id, tableName, activeModule, paramId, type, getAsset, getRecordFromAsset]);
 
 	useEffect(() => {
 		detailCardController.updateState({ loading: true });

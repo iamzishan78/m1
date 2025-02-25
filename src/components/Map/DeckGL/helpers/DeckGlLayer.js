@@ -3,11 +3,11 @@ import { MapboxOverlay } from '@deck.gl/mapbox';
 import { GridLayer, HeatmapLayer, HexagonLayer } from 'deck.gl';
 import { isEqual } from 'lodash';
 
-import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { drawBoundary, drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
-import { drawController } from 'hookstate/drawStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { drawController } from 'controllers/drawStateController';
+import { layerController } from 'controllers/layerStateController';
+import { popupController } from 'controllers/popupStateController';
 
 import { getClickedFeature } from './common';
 import M1neralGeojsonLayer from './M1neralGeojsonLayer';
@@ -159,7 +159,9 @@ export default class DeckGlOverlay {
 						return;
 					}
 					if (!getLandGrid) {
-						drawBoundary(clickedFeature.object);
+						if (clickedFeature?.object?.geometry?.type === 'Point')
+							drawWellBoundary(clickedFeature?.object?.geometry?.coordinates);
+						else drawBoundary(clickedFeature.object);
 					}
 
 					layerController.updateState({ clickedFeature });

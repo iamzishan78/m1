@@ -5,9 +5,9 @@ import { Container, Button, ButtonGroup } from '@material-ui/core';
 import AddAgreementOwnerAndTractDialog from 'components/Common/TableAddDialog/AddAgreementOwnerAndTractDialog';
 import { DrawerContext } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
 import MRTTable from 'components/MRTTable';
+import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
 import { AppContext } from 'AppContext';
-import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
 function RelatedTractsTable(props) {
 	const [stateApp, setStateApp] = useContext(AppContext);

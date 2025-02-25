@@ -11,12 +11,12 @@ import { useMutation } from '@apollo/client';
 import { get } from 'lodash';
 import PropTypes from 'prop-types'; // Import PropTypes
 
-import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
+import { drawController } from 'controllers/drawStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { popupController } from 'controllers/popupStateController';
 
-import { drawController } from 'hookstate/drawStateController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { popupController } from 'hookstate/popupStateController';
+import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 
 import DrawShapePopup from '../popup/DrawShapesPopup';
 import ShapeActionsPopup from '../popup/ShapeActionsPopup';
@@ -346,6 +346,8 @@ export default function DrawShapes() {
 		!currentFeature.id?.includes('draw_polygon') &&
 		!currentFeature.id?.includes('drag_circle') &&
 		!currentFeature.id?.includes('draw_rectangle') &&
+		!currentFeature.id?.includes('draw_point') &&
+		!currentFeature.id?.includes('draw_line_string') &&
 		!currentFeature.id?.includes('edit_polygon');
 
 	if (!globalStateValues.mapReady) {

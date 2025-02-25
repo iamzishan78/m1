@@ -6,7 +6,6 @@ import { useLazyQuery } from '@apollo/client';
 
 import * as Components from 'components/Land/components';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
-import { removeSpaces } from 'components/MRTTable/utils/helper';
 import { replaceLinkId } from 'components/Shared/functions';
 
 import { ALL_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
@@ -102,7 +101,7 @@ export default function Land() {
 				type: 'Custom',
 			},
 		});
-	}, [getAllCustomAsset]);
+	}, [getAllCustomAsset, activeModule.title]);
 
 	useEffect(() => {
 		if (allCustomAsset) {
@@ -112,16 +111,22 @@ export default function Land() {
 			setSidePanelMenuList(prevList => {
 				const newList = { ...prevList };
 				dynamicAsset?.forEach(item => {
-					const key = item.tableName.replace(/\s+/g, '_').toUpperCase();
+					const key = item.name.replace(/\s+/g, '_').toUpperCase();
 					newList[key] = {
 						featureFlag: 'LANDMODULE',
-						title: item.tableName,
-						link: `/land/customAsset/${removeSpaces(item.tableName)}`,
+						title: item.name,
+						name: item.name,
+						tableName: item.tableName,
+						modelName: item.modelName,
+						link: `/land/customAsset/${item.tableName}`,
 						component: 'DynamicAssetGrid',
 					};
 
 					newList[`${key}_DETAIL`] = {
 						featureFlag: 'LANDMODULE',
+						name: item.name,
+						tableName: item.tableName,
+						modelName: item.modelName,
 						link: '/land/customAsset/:tableName/details/:id',
 						component: 'GenericDetailCardContainer',
 						value: 'GenericDetailCardContainer',
@@ -133,6 +138,9 @@ export default function Land() {
 
 					newList[`${key}_DETAIL_DOCUMENTS`] = {
 						featureFlag: 'LANDMODULE',
+						name: item.name,
+						tableName: item.tableName,
+						modelName: item.modelName,
 						link: '/land/customAsset/:tableName/details/:id/documents',
 						component: 'DocumentsCardContainer',
 						value: 'DocumentsCardContainer',

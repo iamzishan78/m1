@@ -15,7 +15,7 @@ import CopyIcon from 'components/Shared/svgIcons/CopyIcon';
 import TextSmsIcon from 'components/Shared/svgIcons/textsms';
 import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import EditionPopover from '../EditionPopover';
 

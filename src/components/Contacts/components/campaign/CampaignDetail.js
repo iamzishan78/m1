@@ -34,11 +34,11 @@ import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer'
 import DocViewer from 'components/Shared/DocViewer';
 import Tags from 'components/Shared/Tagger';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
+
 import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
 import { GET_CAMPAIGN } from 'graphQL/useQueryCampaign';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { showInfoMessage } from 'actions';
 

@@ -6,10 +6,10 @@ import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
 
+import { globalStateController } from 'controllers/globalStateController';
+
 import { CONTACT } from 'graphQL/useQueryContact';
 import { CONTACTDEALS } from 'graphQL/useQueryContactDeals';
-
-import { globalStateController } from 'hookstate/globalStateController';
 
 import DealsDetailCard from './DealsDetailCard';
 

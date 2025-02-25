@@ -8,7 +8,7 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import { debounce } from 'lodash';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import { AppContext } from 'AppContext';
 

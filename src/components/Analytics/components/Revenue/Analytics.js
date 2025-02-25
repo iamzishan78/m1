@@ -10,10 +10,10 @@ import FilterIcon from 'components/Common/SvgIcons/Filter';
 import { copy } from 'components/Shared/functions';
 import { vf_currency_dollar } from 'components/Shared/valueformatters/vf_currency';
 
+import { tableController } from 'controllers/tableController';
+
 import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
-
-import { tableController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
 	root: {

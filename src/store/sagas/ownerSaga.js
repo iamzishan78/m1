@@ -3,14 +3,14 @@ import { call, takeLatest, put, select } from 'redux-saga/effects';
 
 import { getPolygonString } from 'components/Shared/functions';
 
+import { jobController } from 'controllers/jobStateController';
+
 import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
 import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
 import { GET_DB_DATA, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 import { OWNERS_BY_WELL_IDS } from 'graphQL/useQueryOwnersByWellIds';
 import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
 import { SHAPEOWNERSCOUNT, SHAPEOWNERSINTERESTCOUNT } from 'graphQL/useQueryShapeOwnersCount';
-
-import { jobController } from 'hookstate/jobStateController';
 
 import {
 	getShapeOwnersAndCountAction,
@@ -55,7 +55,7 @@ function* getShapeOwnersAndCount(action) {
 				shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount', 0),
 			})
 		);
-	} catch (error) {
+	} catch {
 		yield put(getShapeOwnersAndCountAction.REJECTED());
 	}
 }
@@ -106,7 +106,7 @@ function* getShapeOwnersAndWells(action) {
 				wellsCount: get(shapeWellCount, 'data.getDbDataTotal.data', 0),
 			})
 		);
-	} catch (error) {
+	} catch {
 		yield put(getShapeOwnersAndWellsAction.REJECTED());
 	}
 }
@@ -154,7 +154,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
 				shapeCount: get(taxOwners, 'data.ownersByWellIds.edges.length', 0),
 			})
 		);
-	} catch (error) {
+	} catch {
 		yield put(getMapFilterShapeOwnersAndCountAction.REJECTED());
 	}
 }
@@ -162,14 +162,6 @@ function* getMapFilterShapeOwnersAndCount(action) {
 function* getMapFilterShapeOwnersAndWells(action) {
 	try {
 		const { client, currentFeature, filters, search } = action.payload;
-
-		// const originalFile = await client.mutate({
-		//   mutation: ADDFILE,
-		//   variables: {
-		//     fileName: inputOriginalFile.fileName,
-		//     userId,
-		//   },
-		// })
 
 		const shapeWellCount = yield client.query({
 			query: GET_DB_DATA_TOTAL,
@@ -218,15 +210,14 @@ function* getMapFilterShapeOwnersAndWells(action) {
 				wellsCount: get(shapeWellCount, 'data.getDbDataTotal.data', 0),
 			})
 		);
-	} catch (error) {
+	} catch {
 		yield put(getMapFilterShapeOwnersAndWellsAction.REJECTED());
 	}
 }
 
 function* execAsyncExportJob(action) {
 	try {
-		const { client, currentFeature, userId, exportWells, exportOwners, exportOwnersInterest, setStateApp } =
-			action.payload;
+		const { client, currentFeature, userId, exportWells, exportOwners, exportOwnersInterest } = action.payload;
 		const ownerState = yield select(state => state.owner);
 
 		const jobInitialization = yield client.mutate({
@@ -264,7 +255,7 @@ function* execAsyncExportJob(action) {
 		jobController.toggleBulkUpload();
 
 		yield put(execAsyncExportJobAction.FULLFILLED({}));
-	} catch (error) {
+	} catch {
 		yield put(execAsyncExportJobAction.REJECTED());
 	}
 }

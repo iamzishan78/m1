@@ -1,8 +1,9 @@
 import React from 'react';
+
 import { Grid, makeStyles } from '@material-ui/core';
 
-import { popupController } from 'hookstate/popupStateController';
-import { detailCardController } from 'hookstate/detailCardController';
+import { detailCardController } from 'controllers/detailCardController';
+import { popupController } from 'controllers/popupStateController';
 
 import * as Pages from './pages';
 
@@ -31,7 +32,7 @@ const TabRender = () => {
 
 	const { MainGridLeftContainer, BottomContainer } = Pages[page];
 
-	if (tabKey === 0 || !tabs || tabs.length < 2)
+	if (tabKey === 0 || !tabs || tabs.length < 2) {
 		return (
 			<Grid container direction="column" className={classes.tabRender}>
 				<Grid item xs={12} className={classes.leftContainer}>
@@ -45,6 +46,7 @@ const TabRender = () => {
 				)}
 			</Grid>
 		);
+	}
 
 	const TabComponent = tabs?.[tabKey]?.component;
 	return <>{typeof TabComponent === 'function' ? <TabComponent /> : null}</>;

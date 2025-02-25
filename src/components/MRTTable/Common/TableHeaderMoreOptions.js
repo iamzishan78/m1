@@ -8,7 +8,7 @@ import Tooltip from '@mui/material/Tooltip';
 
 import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'controllers/tableController';
 
 const useStyles = makeStyles(theme => ({
 	root: {

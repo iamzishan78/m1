@@ -9,7 +9,6 @@ import Typography from '@material-ui/core/Typography';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
 
-import { hookstate, useHookstate } from '@hookstate/core';
 import { set, get, upperFirst, capitalize } from 'lodash';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -22,7 +21,6 @@ import StateField from 'components/Revenue/components/Properties/DetailComponent
 import { summaryTableStyles } from 'components/ShapeDetailCard/style';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
 import DateField from 'components/Shared/components/Fields/DateField';
-import NumberField from 'components/Shared/components/Fields/NumberField';
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
@@ -33,7 +31,7 @@ import UserList from 'components/Shared/UserList';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import { KEYBOARD_KEYS, INTEREST_TO_FIXED } from 'utils/consts';
 import { US_STATES_CODES } from 'utils/data';
@@ -106,14 +104,14 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 		</div>
 	);
 }
-const editIconState = hookstate({});
 
 function EditIconComponent({ data, dataKey, classes, onClick }) {
-	const state = useHookstate(editIconState[dataKey]);
+	const editIconState = globalStateController.useState(['editIconState']);
+	const state = editIconState[dataKey];
 
 	return (
 		<>
-			{state.get() && (
+			{state && (
 				<Tooltip title={'Edit'} placement="top">
 					<IconButton size="small" onClick={onClick} data-testid={`edit-${data.label}`}>
 						<CreateTwoToneIcon id="contPencilIcon" className={classes.pencilIcon} />
@@ -142,6 +140,8 @@ export default function SummaryTableInfo({
 	const [tableDataState, setTableDataState] = useState({});
 	const [state, setState] = useState();
 	const [county, setCounty] = useState();
+
+	const editIconState = globalStateController.useState(['editIconState']);
 
 	const [filteredTableData, setFilteredTableData] = useState(tableData);
 
@@ -378,10 +378,20 @@ export default function SummaryTableInfo({
 								className={classes.cell1}
 								align="left"
 								onMouseEnter={() => {
-									editIconState.set({ [`${data.key}key`]: true });
+									globalStateController.updateState({
+										editIconState: {
+											...editIconState,
+											[`${data.key}key`]: true,
+										},
+									});
 								}}
 								onMouseLeave={() => {
-									editIconState.set({ [`${data.key}key`]: false });
+									globalStateController.updateState({
+										editIconState: {
+											...editIconState,
+											[`${data.key}key`]: false,
+										},
+									});
 								}}
 							>
 								{data.isCustom || data.isCustomData ? (
@@ -441,10 +451,20 @@ export default function SummaryTableInfo({
 								className={classes.cell2}
 								data-testid={`data-cell-${data.label}`}
 								onMouseEnter={() => {
-									editIconState.set({ [data.key]: true });
+									globalStateController.updateState({
+										editIconState: {
+											...editIconState,
+											[`${data.key}key`]: true,
+										},
+									});
 								}}
 								onMouseLeave={() => {
-									editIconState.set({ [data.key]: false });
+									globalStateController.updateState({
+										editIconState: {
+											...editIconState,
+											[`${data.key}key`]: false,
+										},
+									});
 								}}
 							>
 								{tableDataState[data.key] ? (
@@ -547,16 +567,24 @@ export default function SummaryTableInfo({
 											</>
 										)}
 										{data.type === 'number' && (
-											<NumberField
+											<CustomTextField
 												id={`field-${data.key}`}
-												index={index}
-												field={data}
-												fieldKey={data.key}
-												defaultValue={get(tableTempProperties, `${data.key}`, '')}
-												offClickHandler={(key, value) => {
-													set(tableTempProperties, key, value);
-													setTableTempProperties(tableTempProperties);
-													updateProperties(null, key, value);
+												fieldConfig={{
+													size: 'small',
+													variant: 'outlined',
+													margin: 'dense',
+													disabled: data.disabled,
+													type: 'number',
+												}}
+												fieldAttributes={{
+													defaultValue: get(tableTempProperties, `${data.key}`, ''),
+												}}
+												fieldEvents={{
+													onBlur: value => {
+														set(tableTempProperties, data.key, value);
+														setTableTempProperties(tableTempProperties);
+														updateProperties(null, data.key, value);
+													},
 												}}
 											/>
 										)}

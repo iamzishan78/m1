@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import TextField from '@material-ui/core/TextField';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { AppContext } from 'AppContext';
-import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
-import { textFieldLabels, getHrefValue, LinkTypes } from 'components/ContactDetailCard/components/FieldContent/helper';
-import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
+import TextField from '@material-ui/core/TextField';
+
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
+
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
-import { globalStateController } from 'hookstate/globalStateController';
+import { textFieldLabels, getHrefValue, LinkTypes } from 'components/ContactDetailCard/components/FieldContent/helper';
+import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
+import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
-import { detailCardController } from 'hookstate/detailCardController';
+
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
+
+import { AppContext } from 'AppContext';
 
 export default function FieldContent({
 	children,
@@ -24,17 +30,6 @@ export default function FieldContent({
 	isEdited = false,
 	disabled,
 }) {
-	//////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
-	//////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
-	//////////// childrenLeft - will move the chilren components to the left side of the field values//optional//////
-	////////////              - default childrens to rigth///////////////////////////////////////////////////////////
-	//////////// onlyChildren - will show only the children components, no field values  //optional//////////////////
-	//////////// name - will be part of the Not Available text, better use in compound fiels  //optional/////////////
-	//////////// noMargin - no p tag margin  //optional//////////////////////////////////////////////////////////////
-	//////////// noInputFooter //optional////////////////////////////////////////////////////////////////////////////
-	//////////// linkType - LinkTypes value //optional///////////////////////////////////////////////////////////////
-	//////////// fieldType - FieldTypes value //default value = Contact /////////////////////////////////////////////
-
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 	const [edit, setEdit] = useState(null);
 	const [editContent, setEditContent] = useState({ content });
@@ -64,7 +59,7 @@ export default function FieldContent({
 
 			let count = 0;
 			for (const fieldName in content) {
-				if (content.hasOwnProperty(fieldName)) {
+				if (Object.prototype.hasOwnProperty.call(content, fieldName)) {
 					count++;
 				}
 			}
@@ -79,15 +74,16 @@ export default function FieldContent({
 				fieldName = key;
 				break;
 			}
-			if (document.getElementById('fieldContentInput' + fieldName))
+			if (document.getElementById('fieldContentInput' + fieldName)) {
 				document.getElementById('fieldContentInput' + fieldName).focus();
+			}
 		}
 	}, [edit, editContent, fieldsCount]);
 
 	const getOrganizedContent = () => {
 		let textArray = [];
 		for (const key in showContent) {
-			if (showContent.hasOwnProperty(key) && showContent[key] && showContent[key] !== '') {
+			if (Object.prototype.hasOwnProperty.call(showContent, key) && showContent[key] && showContent[key] !== '') {
 				if (
 					key === 'zip' ||
 					key === 'country' ||
@@ -101,8 +97,12 @@ export default function FieldContent({
 				) {
 					textArray = [[textArray.join(', '), showContent[key]].join(' ')];
 				} else if (key === 'contactOwner' || key === 'contactOwnerId') {
-					if (key === 'contactOwner') textArray.push(showContent[key] || '');
-				} else textArray.push(showContent[key]);
+					if (key === 'contactOwner') {
+						textArray.push(showContent[key] || '');
+					}
+				} else {
+					textArray.push(showContent[key]);
+				}
 			}
 		}
 
@@ -114,7 +114,36 @@ export default function FieldContent({
 		e.preventDefault();
 		if (isCopy) {
 			navigator.clipboard.writeText(getOrganizedContent() || '');
-		} else setEdit(!edit ? e.currentTarget : null);
+		} else {
+			setEdit(!edit ? e.currentTarget : null);
+		}
+	};
+
+	const handleUpdating = (val = null) => {
+		let differences = false;
+		for (const field in editContent) {
+			const value = val ? val : editContent[field];
+			if (value !== null && value !== undefined) {
+				const trimmedValue = typeof value === 'string' ? value.trim() : value;
+				if (trimmedValue !== content[field]) {
+					differences = true;
+				}
+			}
+		}
+
+		if (differences) {
+			setIsCurEdited(true);
+			callApi({ key: name, value: val });
+			let entries = Object.entries(editContent);
+			entries.forEach(entry => {
+				content = { ...content, [entry[0]]: entry[1] };
+			});
+			setShowContent({ ...content });
+			setEditContent({ ...content });
+			setStateApp({ ...stateApp, contactUpdated: id });
+		}
+
+		setEdit(null);
 	};
 
 	const keyDownHandler = (event, fieldNames) => {
@@ -138,42 +167,19 @@ export default function FieldContent({
 		fieldNames.forEach(field => (fields[field] = content[field]));
 		// Check if editContent exists and has more than one property, return if true
 		// if editContent has more than one property we don't need to close popup on blur
-		if (Object.keys(editContent || {})?.length > 1) return;
+		if (Object.keys(editContent || {})?.length > 1) {
+			return;
+		}
 
 		// Reset edit state and update editContent with field values
 		setEdit(null); // It closes popup on blur
 		setEditContent({ ...fields });
 	};
 
-	const handleUpdating = (val = null) => {
-		let differences = false;
-		for (const field in editContent) {
-			const value = val ? val : editContent[field];
-			if (value !== null && value !== undefined) {
-				const trimmedValue = typeof value === 'string' ? value.trim() : value;
-				if (trimmedValue !== content[field]) differences = true;
-			}
-		}
-
-		if (differences) {
-			setIsCurEdited(true);
-			callApi(name, val);
-			let entries = Object.entries(editContent);
-			entries.forEach(entry => {
-				content = { ...content, [entry[0]]: entry[1] };
-			});
-			setShowContent({ ...content });
-			setEditContent({ ...content });
-			setStateApp({ ...stateApp, contactUpdated: id });
-		}
-
-		setEdit(null);
-	};
-
 	let inputsArray = [];
 	if (edit) {
 		for (const fieldName in editContent) {
-			if (editContent.hasOwnProperty(fieldName)) {
+			if (Object.prototype.hasOwnProperty.call(editContent, fieldName)) {
 				inputsArray.push(
 					<TextField
 						key={'fieldContentInput' + fieldName}
@@ -227,7 +233,7 @@ export default function FieldContent({
 			}}
 			value={get(editContent, 'campaignName', [])}
 			fullWidth
-			targetLabel={currentAsset?.tableName}
+			targetLabel={currentAsset?.name}
 			targetLabelId={id}
 			onKeyDown={event => keyDownHandler(event, ['campaignName'])}
 			onBlur={() => onBlurHandler(['campaignName'])}
@@ -296,3 +302,17 @@ export default function FieldContent({
 		</React.Fragment>
 	);
 }
+
+FieldContent.propTypes = {
+	children: PropTypes.node,
+	id: PropTypes.string.isRequired,
+	content: PropTypes.node,
+	childrenLeft: PropTypes.node,
+	onlyChildren: PropTypes.bool,
+	name: PropTypes.string,
+	noMargin: PropTypes.bool,
+	noInputFooter: PropTypes.bool,
+	linkType: PropTypes.oneOf(Object.values(LinkTypes)), // Example for limited string values
+	isEdited: PropTypes.bool,
+	disabled: PropTypes.bool,
+};

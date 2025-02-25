@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 const SaveButton = ({ tableKey }) => {
 	const Controller = tableController(tableKey);

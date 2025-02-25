@@ -25,8 +25,8 @@ import RevenueAppBar from 'components/Navigation/AppBar/Revenue';
 import ProfileMenu from 'components/Profile/ProfileMenu';
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
 
-import { navController } from 'hookstate/navStateController';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { navController } from 'controllers/navStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
 
 import { contactManagementRoutes } from 'utils/data';
 
@@ -45,8 +45,8 @@ import DealSearch from './components/DealSearch';
 import DocumentSearch from './components/DocumentSearch';
 import SearchBarWithToggleButton from './components/SearchBarWithToggleButton';
 import SupportCenterModal from './components/SupportCenter';
-import SideNavigation from './SideNavigation';
 import { NavigationContext } from './NavigationContext';
+import SideNavigation from './SideNavigation';
 
 const TabPanel = props => {
 	const { children, value, index, ...other } = props;

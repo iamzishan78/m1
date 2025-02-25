@@ -8,12 +8,12 @@ import { debounce } from 'lodash';
 import Loader from 'components/Loaders/serverLoader';
 import useRefetchHelper from 'components/Shared/Hooks/useRefetchHelper';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { jobController } from 'controllers/jobStateController';
+import { tableGlobalController } from 'controllers/tableController';
+
 import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
 import { GET_JOBS_STATUS } from 'graphQL/useQueryGetJobStatus';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { jobController } from 'hookstate/jobStateController';
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { setReduxKey } from 'store/actions/commonActions';
 

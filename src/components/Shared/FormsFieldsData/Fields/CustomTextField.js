@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 
 import { AddIcCall, Autorenew, EmailOutlined, Textsms, Voicemail } from '@mui/icons-material';
-import { CircularProgress, Grid, IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
+import { CircularProgress, Grid, IconButton, InputAdornment, TextField, Tooltip, Box } from '@mui/material';
 
 import PropTypes from 'prop-types';
 import validator from 'validator';
 
 import UrlTooltip from './UrlTooltip';
 
-const classes = {
+const sx = {
 	maxWidth: {
 		width: '100%',
 		'& .MuiInputLabel-root.Mui-focused': {
@@ -26,10 +26,21 @@ const classes = {
 			color: 'grey',
 		},
 	},
-	emailAdornment: {
+	adornmentIcon: {
 		cursor: 'pointer',
-		padding: '0px', // Remove extra padding
-		margin: '0 2px', // Adjust spacing between icons
+		padding: '8px',
+	},
+	inputFieldContainer: {
+		position: 'relative',
+		'#adornment-icon': {
+			visibility: 'hidden',
+			opacity: 0,
+			transition: 'visibility 0.3s, opacity 0.3s ease-in-out',
+		},
+		'&:hover #adornment-icon': {
+			visibility: 'visible',
+			opacity: 1,
+		},
 	},
 };
 
@@ -70,12 +81,12 @@ const adornmentConfig = {
 		],
 	},
 	loading: {
-		component: <CircularProgress size={22} color="secondary" />,
+		component: <CircularProgress size={22} color="primary" />,
 	},
 };
 
 // Function to render adornments
-function renderAdornment(type, value, handleAction, dialpadFeature, dialpadIds) {
+function renderAdornment({ value, type, handleAction, dialpadFeature, dialpadIds }) {
 	const config = adornmentConfig[type];
 	if (!config) {
 		return null;
@@ -90,7 +101,8 @@ function renderAdornment(type, value, handleAction, dialpadFeature, dialpadIds) 
 			<InputAdornment position="end" key={iconConfig.tooltip}>
 				<Tooltip title={iconConfig.tooltip} placement="top">
 					<IconButton
-						className={classes.emailAdornment}
+						id={'adornment-icon'}
+						style={sx.adornmentIcon}
 						href={iconConfig.href?.(value, dialpadFeature, dialpadIds)}
 						onClick={() => iconConfig.action(value, handleAction, dialpadFeature, dialpadIds)}
 					>
@@ -104,7 +116,7 @@ function renderAdornment(type, value, handleAction, dialpadFeature, dialpadIds) 
 	return (
 		<InputAdornment position="end">
 			<Tooltip title={config.tooltip} placement="top">
-				<IconButton className={classes.emailAdornment} href={config.action(value)}>
+				<IconButton id="adornment-icon" className={sx.adornmentIcon} href={config.action(value)}>
 					{config.icon}
 				</IconButton>
 			</Tooltip>
@@ -134,7 +146,9 @@ function CustomTextField({
 		value: _value = '',
 		label = null,
 		title = null,
+		titleComponent = 'h3',
 		inputRef = null,
+		helperText = '',
 		placeholder = '',
 		InputProps = {},
 		InputLabelProps = {},
@@ -142,6 +156,7 @@ function CustomTextField({
 		isValueOverridden = () => false,
 		resetOveriddenValue,
 		endAdornmentProps,
+		layout = 'vertical',
 	} = {},
 	...propsRest
 }) {
@@ -166,7 +181,7 @@ function CustomTextField({
 		if (watchTextFieldValue && isValueOverridden) {
 			setBaseValueChanged(isValueOverridden(watchTextFieldValue));
 		}
-	}, [watchTextFieldValue, isValueOverridden]);
+	}, [watchTextFieldValue]);
 
 	// URL Tooltip handling
 	const handleTooltipOpen = textFieldValue => {
@@ -182,7 +197,7 @@ function CustomTextField({
 	const renderTextField = ({ field } = {}) => {
 		const textFieldValue = field ? field.value : value;
 		return (
-			<div style={{ position: 'relative' }}>
+			<Box sx={sx.inputFieldContainer}>
 				<TextField
 					type={type}
 					size={size}
@@ -207,7 +222,7 @@ function CustomTextField({
 					onKeyDown={onKeyDown || (() => {})}
 					onMouseEnter={() => handleTooltipOpen(textFieldValue)}
 					onMouseLeave={() => setShowUrlTooltip(false)}
-					sx={baseValueChanged ? classes.baseValueChanged : classes.maxWidth}
+					sx={{ ...propsRest.sx, ...(baseValueChanged ? sx.baseValueChanged : sx.maxWidth) }}
 					InputProps={{
 						...InputProps,
 						endAdornment: baseValueChanged ? (
@@ -225,13 +240,16 @@ function CustomTextField({
 								}}
 							/>
 						) : endAdornmentProps?.type ? (
-							<InputAdornment position="end">{renderAdornment(textFieldValue, endAdornmentProps)}</InputAdornment>
+							<InputAdornment position="end">
+								{renderAdornment({ value: textFieldValue, ...endAdornmentProps })}
+							</InputAdornment>
 						) : (
 							InputProps.endAdornment
 						),
 					}}
 					InputLabelProps={InputLabelProps}
 					error={required && !watchTextFieldValue && error}
+					helperText={error?.message ?? helperText}
 					onChange={e => {
 						const newValue = e.target.value;
 						handleTooltipOpen(newValue);
@@ -242,6 +260,7 @@ function CustomTextField({
 						}
 					}}
 					onBlur={e => {
+						field?.onBlur?.(e);
 						let newValue = e.target.value || '';
 						if (onBlur) {
 							newValue = onBlur(newValue);
@@ -262,18 +281,27 @@ function CustomTextField({
 						containerStyles={{ top: margin === 'dense' ? '8px' : margin === 'normal' ? '16px' : '0' }}
 					/>
 				)}
-			</div>
+			</Box>
 		);
 	};
 
+	const titleXs = layout === 'horizontal' ? 3 : 12;
+	const fieldXs = layout === 'horizontal' ? 9 : 12;
+
 	return (
-		<Grid item xs={12}>
-			{title && <h3>{title}</h3>}
-			{control ? (
-				<Controller control={control} name={name} render={props => renderTextField(props)} />
-			) : (
-				renderTextField()
+		<Grid container spacing={2}>
+			{title && (
+				<Grid item xs={titleXs} sx={{ display: 'flex', alignItems: 'center' }}>
+					<Box component={titleComponent}>{title}</Box>
+				</Grid>
 			)}
+			<Grid item xs={fieldXs}>
+				{control ? (
+					<Controller control={control} name={name} render={props => renderTextField(props)} />
+				) : (
+					renderTextField()
+				)}
+			</Grid>
 		</Grid>
 	);
 }

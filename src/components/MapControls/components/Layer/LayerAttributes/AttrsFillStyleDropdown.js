@@ -9,9 +9,9 @@ import PropTypes from 'prop-types'; // Import PropTypes for prop validation
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+import { getLayerKey } from 'controllers/helpers';
 
-import { getLayerKey } from 'hookstate/helpers';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { colorBasedAttributes } from './ColorBasedAttributes';
 import { styleImageMap } from '../Common';
@@ -94,7 +94,9 @@ const AttrsFillStyleDropdown = ({
 	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
-		if (!selectedValue) {return;}
+		if (!selectedValue) {
+			return;
+		}
 
 		let esIndex = selectedLayer.layerType === 'file layer' ? 'shapefile_flat' : 'shapes_flat';
 		const layerType =
@@ -153,13 +155,12 @@ const AttrsFillStyleDropdown = ({
 			};
 		});
 
-		setAttributeBasedStyles(prevStyles => ({
-			...prevStyles,
+		setAttributeBasedStyles({
 			[selectedValue.label]: options.reduce((acc, { label, style }) => {
 				acc[label] = style;
 				return acc;
 			}, {}),
-		}));
+		});
 
 		return options;
 	}, [filtersData, fillStyle]);

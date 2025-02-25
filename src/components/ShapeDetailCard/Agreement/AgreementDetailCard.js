@@ -22,15 +22,15 @@ import TabPanels from 'components/Shared/TabPanels';
 import Tags from 'components/Shared/Tagger';
 import Taps from 'components/Shared/Taps';
 
+import { jobController } from 'controllers/jobStateController';
+import { layerController } from 'controllers/layerStateController';
+import { popupController } from 'controllers/popupStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
+
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
 import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
-
-import { jobController } from 'hookstate/jobStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { popupController } from 'hookstate/popupStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { showSuccessMessage, showErrorMessage, showInfoMessage } from 'actions';
 

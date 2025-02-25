@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import moment from 'moment';
-import { makeStyles } from '@material-ui/core/styles';
-import { parseDate } from 'utils/helper';
-import { detailCardController } from 'hookstate/detailCardController';
-import * as Pages from 'components/Shared/components/common/DetailCard/pages';
+
 import { TextField, CircularProgress } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import moment from 'moment';
+
+import * as Pages from 'components/Shared/components/common/DetailCard/pages';
+
+import { detailCardController } from 'controllers/detailCardController';
+
+import { parseDate } from 'utils/helper';
 
 const useStyles = makeStyles({
 	dateRoot: {
@@ -52,7 +57,7 @@ function DateField({ fieldData, field }) {
 		let currValue = event.target.value;
 
 		if (currValue !== fieldData) {
-			callApi(field.key, currValue);
+			callApi({ key: field.key, value: currValue, field, previousValue: fieldData, resetFn: setValue });
 		}
 	};
 

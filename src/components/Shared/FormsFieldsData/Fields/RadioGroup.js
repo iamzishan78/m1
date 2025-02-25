@@ -3,7 +3,7 @@ import { Controller } from 'react-hook-form';
 
 import { Grid, Radio, RadioGroup, FormControlLabel, TextField } from '@mui/material';
 
-import { sideDialogController } from 'hookstate/sideDialogController';
+import { sideDialogController } from 'controllers/sideDialogController';
 
 function RadioComponent({ control, item, dialogKey }) {
 	const { name, label, options = [] } = item;
@@ -23,8 +23,9 @@ function RadioComponent({ control, item, dialogKey }) {
 						row
 						value={field.value}
 						onChange={event => {
-							field.onChange(event.target.value);
-							sideDialogController(dialogKey).updateState({ [item.name]: event.target.value });
+							const value = item.type === 'boolean' ? event.target.value === 'true' : event.target.value;
+							field.onChange(value);
+							sideDialogController(dialogKey).updateState({ [item.name]: value });
 						}}
 					>
 						{options.map((option, index) => (

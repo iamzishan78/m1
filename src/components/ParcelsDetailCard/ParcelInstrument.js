@@ -36,6 +36,8 @@ import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import UploadZone from 'components/Shared/UploadZone';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
+import { tableGlobalController } from 'controllers/tableController';
+
 import { ADD_PARCEL_AGREEMENT } from 'graphQL/useMutationAddParcelAgreement';
 import { DELETEDESCRIPTORRELATEDFILE } from 'graphQL/useMutationDeleteDescriptorFile';
 import { DELETE_PARCEL_RUNSHEET } from 'graphQL/useMutationDeleteParcelAgreement';
@@ -44,8 +46,6 @@ import { GET_VIEW_TOKEN_URI } from 'graphQL/useQueryGetViewTokenUri';
 import { INSTRUMENT_TYPE } from 'graphQL/useQueryInstrumentType';
 import { RECORD_TYPE } from 'graphQL/useQueryRecordType';
 import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { AppContext } from 'AppContext';
 

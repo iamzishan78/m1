@@ -6,7 +6,7 @@ import MRTTable from 'components/MRTTable';
 import PropertyRevenueDetailToolBar from 'components/MRTTable/TablesOverride/PropertyRelatedAgreementTable/PropertyRelatedAgreementToolBar';
 import TabPanels from 'components/Shared/TabPanels';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 const onClickedRow = selectedRow => {
 	const Controller = tableController('PropertyRelatedAgreementTable');

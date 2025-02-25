@@ -18,12 +18,12 @@ import {
 } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import SmallTXQtr from 'components/MRTTable/Common/Components/SmallTXQtr';
 
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { drawController } from 'controllers/drawStateController';
+import { jobController } from 'controllers/jobStateController';
+import { layerController } from 'controllers/layerStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
 
-import { drawController } from 'hookstate/drawStateController';
-import { jobController } from 'hookstate/jobStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
 import { copy } from 'utils/helper';
 

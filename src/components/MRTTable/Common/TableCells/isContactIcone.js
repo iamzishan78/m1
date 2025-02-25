@@ -9,7 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ContactCard from 'components/Shared/svgIcons/contact_card';
 import ConvertContact from 'components/Shared/svgIcons/convert_contact';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import { UserSession } from 'utils/user';
 

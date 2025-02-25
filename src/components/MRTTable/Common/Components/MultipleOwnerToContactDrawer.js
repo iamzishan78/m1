@@ -34,9 +34,9 @@ import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import { copy, setStateIfDeepEqual } from 'components/Shared/functions';
 import Tags from 'components/Shared/Tagger';
 
-import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
+import { globalStateController } from 'controllers/globalStateController';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },

@@ -4,7 +4,7 @@ import { Controller } from 'react-hook-form';
 import { Grid, TextField, Select, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { jobController } from 'hookstate/jobStateController';
+import { jobController } from 'controllers/jobStateController';
 
 const useStyles = makeStyles(() => ({
 	root: {

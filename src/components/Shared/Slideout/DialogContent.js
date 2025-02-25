@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { useHookstate } from '@hookstate/core';
-
 import Contacts from 'components/FlowDrawer/Contacts';
 
-import { slidoutState } from 'hookstate/initialStates';
+import { slidoutStateController } from 'controllers/slidoutStateController';
 
 import CommentComponent from '../CommentComponent';
 import Documents from '../Documents';
@@ -23,10 +21,7 @@ const useStyles = makeStyles(theme => ({
 
 function DialogContent(props) {
 	const classes = useStyles();
-
-	const view = useHookstate(slidoutState.view).get({ noproxy: true });
-	const parentId = useHookstate(slidoutState.parentId).get({ noproxy: true });
-	const loader = useHookstate(slidoutState.loader).get({ noproxy: true });
+	const { view, parentId, loader } = slidoutStateController.useState(['view', 'parentId', 'loader']);
 	const { name, Component } = view;
 	const { consts, functions } = view.props;
 

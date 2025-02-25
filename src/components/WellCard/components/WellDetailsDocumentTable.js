@@ -9,10 +9,10 @@ import { useLazyQuery } from '@apollo/client';
 import WellFile from 'components/Document/components/WellFile';
 import MRTTable from 'components/MRTTable';
 
+import { tableGlobalController } from 'controllers/tableController';
+
 import { GET_PARCELS_FILES } from 'graphQL/useQueryGetParcelFiles';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
-
-import { tableGlobalController } from 'hookstate/tableController';
 
 // QUERIES
 
