@@ -106,7 +106,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 }
 
 function EditIconComponent({ data, dataKey, classes, onClick }) {
-	const editIconState = globalStateController.useState(['editIconState']);
+	const { editIconState } = globalStateController.useState(['editIconState']);
 	const state = editIconState[dataKey];
 
 	return (
@@ -140,8 +140,6 @@ export default function SummaryTableInfo({
 	const [tableDataState, setTableDataState] = useState({});
 	const [state, setState] = useState();
 	const [county, setCounty] = useState();
-
-	const editIconState = globalStateController.useState(['editIconState']);
 
 	const [filteredTableData, setFilteredTableData] = useState(tableData);
 
@@ -380,7 +378,6 @@ export default function SummaryTableInfo({
 								onMouseEnter={() => {
 									globalStateController.updateState({
 										editIconState: {
-											...editIconState,
 											[`${data.key}key`]: true,
 										},
 									});
@@ -388,7 +385,6 @@ export default function SummaryTableInfo({
 								onMouseLeave={() => {
 									globalStateController.updateState({
 										editIconState: {
-											...editIconState,
 											[`${data.key}key`]: false,
 										},
 									});
@@ -453,16 +449,14 @@ export default function SummaryTableInfo({
 								onMouseEnter={() => {
 									globalStateController.updateState({
 										editIconState: {
-											...editIconState,
-											[`${data.key}key`]: true,
+											[data.key]: true,
 										},
 									});
 								}}
 								onMouseLeave={() => {
 									globalStateController.updateState({
 										editIconState: {
-											...editIconState,
-											[`${data.key}key`]: false,
+											[data.key]: false,
 										},
 									});
 								}}
