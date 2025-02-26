@@ -75,17 +75,14 @@ export default function Land() {
 	useEffect(() => {
 		const option = sidePanelMenuList.find(item => {
 			const path = location.pathname;
-			if (item.link.includes(':id')) {
-				return replaceLinkId(item.link, path);
-			}
-			return path.startsWith(item.link);
+			return replaceLinkId(item.link, path);
 		});
 		if (option?.parent) {
 			dispatch(setActiveModule(sidePanelMenuList.find(item => item.key === option.parent)));
 		} else if (option) {
 			dispatch(setActiveModule(option));
 		}
-	}, [location.pathname, dispatch, sidePanelMenuList]);
+	}, [location.pathname, sidePanelMenuList]);
 
 	useEffect(() => {
 		// Get all custom assets
