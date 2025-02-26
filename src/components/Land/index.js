@@ -13,45 +13,45 @@ import { ALL_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 //Actions
 import { toggleQuickActionsPanel, setActiveModule } from 'store/actions/commonActions';
 
-export const SIDE_PANEL_MENU_ITEMS_LIST = {
-	// PORTFOLIO: {
-	//   featureFlag: "LANDPORTFOLIO",
-	//   title: "Portfolio",
-	//   link: "/land/portfolio",
-	//   component: "Portfolio",
-	// },
-	AGREEMENTS: {
+export const SIDE_PANEL_MENU_ITEMS_LIST = [
+	{
+		key: 'AGREEMENTS',
 		featureFlag: 'LANDMODULE',
 		title: 'Agreements',
 		link: '/land/agreements',
 		component: 'Agreements',
 	},
-	AGREEMENT_DETAIL: {
+	{
+		key: 'AGREEMENT_DETAIL',
 		isExcluded: true,
 		parent: 'AGREEMENTS',
 		title: 'Agreements',
 		link: '/land/agreement/details/:id',
 		component: 'AgreementDetails',
 	},
-	TRACTS: {
+	{
+		key: 'TRACTS',
 		featureFlag: 'LANDMODULE',
 		title: 'Tracts',
 		link: '/land/tracts',
 		component: 'Tracts',
 	},
-	UNIT: {
+	{
+		key: 'UNIT',
 		featureFlag: 'LANDMODULE',
 		title: 'Units',
 		link: '/land/units',
 		component: 'Units',
 	},
-	WELLS: {
+	{
+		key: 'WELLS',
 		featureFlag: 'LANDMODULE',
 		title: 'Wells',
 		link: '/land/wells',
 		component: 'Wells',
 	},
-	WELL_DETAILS: {
+	{
+		key: 'WELL_DETAILS',
 		featureFlag: 'LANDMODULE',
 		title: 'Wells',
 		link: '/land/well/details/:id',
@@ -59,14 +59,7 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
 		component: 'Wells',
 		isExcluded: true,
 	},
-	// ADVANCED_SEARCH: {
-	//   featureFlag: "LANDMODULE",
-	//   title: "Advanced Search",
-	//   link: "/land/search",
-	//   component: "AdvancedSearch",
-	//   hideSearch: true,
-	// },
-};
+];
 
 export default function Land() {
 	const location = useLocation();
@@ -80,7 +73,7 @@ export default function Land() {
 	});
 
 	useEffect(() => {
-		const option = Object.values(sidePanelMenuList).find(item => {
+		const option = sidePanelMenuList.find(item => {
 			const path = location.pathname;
 			if (item.link.includes(':id')) {
 				return replaceLinkId(item.link, path);
@@ -88,7 +81,7 @@ export default function Land() {
 			return path.startsWith(item.link);
 		});
 		if (option?.parent) {
-			dispatch(setActiveModule(sidePanelMenuList[option.parent]));
+			dispatch(setActiveModule(sidePanelMenuList.find(item => item.key === option.parent)));
 		} else if (option) {
 			dispatch(setActiveModule(option));
 		}
@@ -101,18 +94,19 @@ export default function Land() {
 				type: 'Custom',
 			},
 		});
-	}, [getAllCustomAsset, activeModule.title]);
+	}, [getAllCustomAsset, activeModule?.title]);
 
 	useEffect(() => {
 		if (allCustomAsset) {
 			const dynamicAsset = allCustomAsset?.getAllCustomAssetInfo?.res;
 
-			// Set dynamic assets in side panel
-			setSidePanelMenuList(prevList => {
-				const newList = { ...prevList };
-				dynamicAsset?.forEach(item => {
-					const key = item.name.replace(/\s+/g, '_').toUpperCase();
-					newList[key] = {
+			// Generate dynamic assets list
+			const dynamicAssetsList = dynamicAsset?.flatMap(item => {
+				const key = item.name.replace(/\s+/g, '_').toUpperCase();
+
+				return [
+					{
+						key,
 						featureFlag: 'LANDMODULE',
 						title: item.name,
 						name: item.name,
@@ -120,9 +114,9 @@ export default function Land() {
 						modelName: item.modelName,
 						link: `/land/customAsset/${item.tableName}`,
 						component: 'DynamicAssetGrid',
-					};
-
-					newList[`${key}_DETAIL`] = {
+					},
+					{
+						key: `${key}_DETAIL`,
 						featureFlag: 'LANDMODULE',
 						name: item.name,
 						tableName: item.tableName,
@@ -134,9 +128,9 @@ export default function Land() {
 						isDefault: true,
 						isExcluded: true,
 						parent: key,
-					};
-
-					newList[`${key}_DETAIL_DOCUMENTS`] = {
+					},
+					{
+						key: `${key}_DETAIL_DOCUMENTS`,
 						featureFlag: 'LANDMODULE',
 						name: item.name,
 						tableName: item.tableName,
@@ -148,10 +142,12 @@ export default function Land() {
 						isDefault: true,
 						isExcluded: true,
 						parent: `${key}_DETAIL`,
-					};
-				});
-				return newList;
+					},
+				];
 			});
+
+			// Append dynamic assets to the end of the side panel menu list
+			setSidePanelMenuList([...SIDE_PANEL_MENU_ITEMS_LIST, ...dynamicAssetsList]);
 		}
 	}, [allCustomAsset]);
 
@@ -168,13 +164,8 @@ export default function Land() {
 			actions={sidePanelMenuList}
 		>
 			<Switch>
-				{Object.keys(sidePanelMenuList).map(option => (
-					<Route
-						key={option.title}
-						exact
-						path={sidePanelMenuList[option].link}
-						component={Components[sidePanelMenuList[option].component]}
-					/>
+				{sidePanelMenuList.map(option => (
+					<Route key={option.key} exact path={option.link} component={Components[option.component]} />
 				))}
 				<Redirect to={'/land/agreements'} />
 			</Switch>
