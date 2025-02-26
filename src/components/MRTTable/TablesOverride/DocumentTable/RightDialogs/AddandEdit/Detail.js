@@ -36,8 +36,8 @@ import { convertFile } from 'utils/tesseractHelper';
 
 import { showErrorMessage } from 'actions';
 
-import { createViewStateController, initialState } from './AddAndEditController';
 import UploadZone from './UploadZone';
+import { createViewStateController, initialState } from '../../../../../../controllers/AddAndEditController';
 
 const filter = createFilterOptions();
 

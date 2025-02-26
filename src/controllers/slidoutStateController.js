@@ -14,6 +14,8 @@ export const slidoutInitialState = {
 	selectedActivityId: '',
 	newComments: [],
 	loader: false,
+	isChanged: false,
+	lines: [],
 };
 
 class SlidoutStateController extends StateController {

@@ -7,7 +7,6 @@ import _, { get, isEqual, isEmpty, pull } from 'lodash';
 import { extractUniqueFilters, filterValidFilters } from 'components/Map/DeckGL/helpers/common';
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
-import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController';
 import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
@@ -21,6 +20,7 @@ import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoenn
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { globalStateController } from 'controllers/globalStateController';
+import { metaDataColumnStateController } from 'controllers/MetaDataColumnsController';
 
 import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
@@ -902,7 +902,7 @@ class TableESStateControllerHandler extends StateController {
 						filters: [
 							...mapViewsFitlers.filter(
 								({ dataSourceName, fieldName }) =>
-									(fieldName?.value || fieldName).replace('.keyword', '') !== field ||
+									(fieldName?.value || fieldName)?.replace('.keyword', '') !== field ||
 									dataSourceName !== tableState?.layerDataSourceName
 							),
 						],
