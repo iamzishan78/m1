@@ -14,7 +14,7 @@ import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 import { sideDialogController } from 'controllers/sideDialogController';
 
 import AutoCompleteNewOption from './Fields/AutoCompleteNewOption';
-import DatePicker from './Fields/DatePicker';
+import CustomDatePicker from './Fields/CustomDatePicker';
 import StartEndDate from './Fields/StartEndDate';
 
 function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
@@ -122,7 +122,24 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 						break;
 
 					case 'datePicker':
-						renderedField = <DatePicker item={item} control={control} />;
+						renderedField = (
+							<CustomDatePicker
+								control={control}
+								fieldAttributes={{
+									name: item?.name,
+									value: item?.value,
+									title: item?.label,
+								}}
+								fieldEvents={{
+									onChange: item?.onChange,
+								}}
+								fieldConfig={{
+									disabled: item?.disabled,
+									variant: 'standard',
+								}}
+							/>
+						);
+
 						break;
 
 					case 'startEndDate':
@@ -184,6 +201,7 @@ CommonForm.propTypes = {
 		})
 	).isRequired,
 	error: PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.bool]),
+	errors: PropTypes.object,
 };
 
 export default CommonForm;
