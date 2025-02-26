@@ -17,6 +17,7 @@ class LayerStylingStateController extends StateController {
 		const {
 			width,
 			aggregation,
+			colorScaleType,
 			fillColor,
 			fillStyle,
 			lineStyle,
@@ -64,7 +65,8 @@ class LayerStylingStateController extends StateController {
 			layer.layerSettings?.selectedLineStyle?.label !== selectedLineStyle?.label ||
 			layer.layerSettings?.fillStyle !== fillStyle ||
 			layer.layerSettings?.lineStyle !== lineStyle ||
-			layer.layerSettings?.aggregation !== aggregation
+			layer.layerSettings?.aggregation !== aggregation ||
+			layer.layerSettings?.colorScaleType !== colorScaleType
 		) {
 			let currentLayer = { ...layer };
 			let fColor;
@@ -130,6 +132,8 @@ class LayerStylingStateController extends StateController {
 			layerSettings.aggregation = aggregation || 'SUM';
 			layerSettings.binsWidth = binsWidth || 20;
 			layerSettings.elevationScale = elevationScale || 4;
+
+			layerSettings.colorScaleType = colorScaleType;
 
 			if (
 				currentLayer &&
@@ -418,6 +422,7 @@ class LayerStylingStateController extends StateController {
 		const initialElevationScale = layer.layerSettings?.elevationScale || 4;
 
 		const initialAggregation = layer.layerSettings?.aggregation || 'SUM';
+		const initialColorScaleType = layer.layerSettings?.colorScaleType || 'quantize';
 
 		const initialFillColor =
 			layerType === 'fill'
@@ -449,6 +454,7 @@ class LayerStylingStateController extends StateController {
 			layerName: null,
 			fillColor: initialFillColor,
 			aggregation: initialAggregation,
+			colorScaleType: initialColorScaleType,
 
 			fillStyle: layer.layerSettings?.fillStyle || null,
 			lineStyle: layer.layerSettings?.lineStyle || null,
@@ -489,15 +495,15 @@ class LayerStylingStateController extends StateController {
 		this.updateState({ aggregation: newAggregation });
 	}
 
+	setColorScaleType(newColorScaleType) {
+		this.updateState({ colorScaleType: newColorScaleType });
+	}
+
 	setFillStyle(newFillStyle) {
 		this.updateState({ fillStyle: newFillStyle });
 	}
 	setFillColor(newFillColor) {
 		this.updateState({ fillColor: newFillColor });
-	}
-
-	setFillStyle(newFillStyle) {
-		this.updateState({ fillStyle: newFillStyle });
 	}
 
 	setLineStyle(newLineStyle) {
@@ -571,10 +577,6 @@ class LayerStylingStateController extends StateController {
 
 	setStrokeColor(newStrokeColor) {
 		this.updateState({ strokeColor: newStrokeColor });
-	}
-
-	setStrokeWidth(newStrokeWidth) {
-		this.updateState({ strokeWidth: newStrokeWidth });
 	}
 }
 

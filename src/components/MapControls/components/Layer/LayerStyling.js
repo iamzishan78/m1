@@ -41,6 +41,7 @@ function LayerStyling() {
 		width,
 		fillColor,
 		aggregation,
+		colorScaleType,
 		fillStyle,
 		lineStyle,
 		enablefillColor,
@@ -79,6 +80,7 @@ function LayerStyling() {
 				? undefined
 				: ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['circle-stroke-color']);
 	const initialAggregation = selectedLayer.layerSettings?.aggregation || 'SUM';
+	const initialColorScaleType = selectedLayer.layerSettings?.colorScaleType || 'quantize';
 
 	let initialWidth;
 	if (layerType === 'circle') {
@@ -157,7 +159,8 @@ function LayerStyling() {
 			selectedLayer.layerSettings?.selectedLineStyle?.label !== selectedLineStyle?.label ||
 			selectedLayer.layerSettings?.fillStyle !== fillStyle ||
 			selectedLayer.layerSettings?.lineStyle !== lineStyle ||
-			selectedLayer.layerSettings?.aggregation !== aggregation
+			selectedLayer.layerSettings?.aggregation !== aggregation ||
+			selectedLayer.layerSettings?.colorScaleType !== colorScaleType
 		) {
 			let { currentLayer } = layerStylingController.handleLayerChange(selectedLayer);
 			const currentLayers = [...hookStateAppLayers];
@@ -215,6 +218,7 @@ function LayerStyling() {
 		elevationScale,
 		fillColor,
 		aggregation,
+		colorScaleType,
 		fillStyle,
 		lineStyle,
 		strokeColor,
@@ -232,6 +236,7 @@ function LayerStyling() {
 	useEffect(() => {
 		layerStylingController.setFillColor(initialFillColor);
 		layerStylingController.setAggregation(initialAggregation);
+		layerStylingController.setColorScaleType(initialColorScaleType);
 		layerStylingController.setStrokeColor(initialStrokeColor);
 		layerStylingController.setFillStyle(selectedLayer.layerSettings?.fillStyle);
 		layerStylingController.setLineStyle(selectedLayer.layerSettings?.lineStyle);
@@ -241,6 +246,7 @@ function LayerStyling() {
 		layerStylingController.setWidth(initialWidth);
 		layerStylingController.setFillColor(initialFillColor);
 		layerStylingController.setAggregation(initialAggregation);
+		layerStylingController.setColorScaleType(initialColorScaleType);
 		layerStylingController.setStrokeColor(initialStrokeColor);
 		layerStylingController.setFillStyle(selectedLayer.layerSettings?.fillStyle);
 		layerStylingController.setLineStyle(selectedLayer.layerSettings?.lineStyle);
@@ -411,6 +417,29 @@ function LayerStyling() {
 									</>
 								)}
 								<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
+
+								{enablefillColor && (
+									<>
+										<Typography variant="h6" style={{ marginBottom: '10px' }}>
+											Color Scale Type
+										</Typography>
+										<AggAutocomplete
+											defaultValue={'quantize'}
+											aggregation={colorScaleType}
+											options={['linear', 'quantize', 'quantile', 'ordinal']}
+											setAggregation={layerStylingController.setColorScaleType}
+										/>
+										{/* <AttrsValuesDropdown
+											selectedValue={selectedValue}
+											selectedLayer={selectedLayer}
+											fillColor={fillColor}
+											setFillColor={value => layerStylingController.setFillColor(value)}
+											attributeBasedColors={attributeBasedColors}
+											setAttributeBasedColors={value => layerStylingController.setAttributeBasedColors(value)}
+										/> */}
+									</>
+								)}
+								<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
 							</Grid>
 
 							{/* dropdown for fill style selection */}
@@ -420,7 +449,12 @@ function LayerStyling() {
 										<Typography variant="h6" style={{ marginBottom: '10px' }}>
 											Layer Aggregation
 										</Typography>
-										<AggAutocomplete aggregation={aggregation} setAggregation={layerStylingController.setAggregation} />
+										<AggAutocomplete
+											defaultValue={'SUM'}
+											aggregation={aggregation}
+											options={['SUM', 'MEAN', 'MIN', 'MAX', 'COUNT']}
+											setAggregation={layerStylingController.setAggregation}
+										/>
 										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
 									</Grid>
 

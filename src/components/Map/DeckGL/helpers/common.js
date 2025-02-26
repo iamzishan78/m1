@@ -679,12 +679,10 @@ export const getLayerDashStyle = dbLayer => {
 	};
 };
 
-export function getHexLayerProps(dbLayer, labelProps) {
+export function getHexLayerProps(dbLayer) {
 	const basedOnField = dbLayer.layerSettings?.selectedAttribute?.value;
 	const aggregation = dbLayer.layerSettings?.aggregation;
 	const props = {};
-
-	console.log(dbLayer);
 
 	if (basedOnField) {
 		props.getColorWeight = d => _.get(d, basedOnField);
@@ -699,7 +697,7 @@ export function getHexLayerProps(dbLayer, labelProps) {
 
 	return props;
 }
-export function getHeatMapLayerProps(dbLayer, labelProps) {
+export function getHeatMapLayerProps(dbLayer) {
 	console.log(dbLayer);
 	const aggregation = dbLayer.layerSettings?.aggregation;
 
@@ -710,7 +708,7 @@ export function getHeatMapLayerProps(dbLayer, labelProps) {
 	props.radiusPixels = 25;
 	return props;
 }
-export function getGridLayerProps(dbLayer, labelProps) {
+export function getGridLayerProps(dbLayer) {
 	const basedOnField = dbLayer.layerSettings?.selectedAttribute?.value;
 	const aggregation = dbLayer.layerSettings?.aggregation;
 
@@ -823,7 +821,7 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 		};
 		// props.textMaxWidth = 5;
 		props.pointType = 'text';
-		if (dbLayer.layerPaintProps?.[0]?.paintType === 'circle') props.pointType = 'circle+text';
+		if (dbLayer.layerPaintProps?.[0]?.paintType === 'circle') {props.pointType = 'circle+text';}
 
 		props.textFontFamily = 'Poppins';
 		// props.textSizeUnits = 'meters';
