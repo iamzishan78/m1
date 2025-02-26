@@ -26,10 +26,11 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 import loadashFilter from 'lodash/filter';
 import { grey600, grey400 } from 'material-ui/styles/colors';
+import PropTypes from 'prop-types';
 
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
-import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
 import AutoCompleteDocumentList from 'components/Shared/Forms/Fields/AutoCompleteDocumentList';
+import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
@@ -196,7 +197,6 @@ export default function RelatedFile(props) {
 		partyName2: '',
 		fileId: '',
 	};
-	const recentFiles = [];
 	const classes = useStyles();
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 
@@ -233,6 +233,33 @@ export default function RelatedFile(props) {
 		refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'shapeSummaryDetails', 'getDbData'], // refetch table data on adding new documents
 		awaitRefetchQueries: true,
 	});
+	const [viewFiles, { data: viewFileSResult }] = useLazyQuery(VIEWFILESQUERY, {
+		fetchPolicy: 'no-cache',
+	});
+
+	const addExistingDocument = () => {
+		setLoader(true);
+		const fileId = fileData?.addFileDescriptor?.file?.id;
+		addFile({
+			variables: {
+				fileName: newDocument.fileName || newDocument.documentName,
+				descriptorObjectId: fileId || newDocument.fileId,
+				userId: stateApp.user.mongoId,
+				relatedObjectId: props.relatedObjectId,
+				relatedObjectType: props.relatedObjectType,
+			},
+			// add queries to refetch
+			refetchQueries: ['getParcelFiles', 'getDbData'],
+			awaitRefetchQueries: true,
+		}).then(() => {
+			props.setShowDocumentSlider('');
+			setNameAutValueParty1({ name: '', _id: null });
+			setNameAutValueParty2({ name: '', _id: null });
+			setNewDocument(documentInitial);
+			setLoader(false);
+			tableGlobalController.refetch();
+		});
+	};
 
 	useEffect(() => {
 		getDocuments({
@@ -363,30 +390,6 @@ export default function RelatedFile(props) {
 		});
 	};
 
-	const addExistingDocument = () => {
-		setLoader(true);
-		const fileId = fileData?.addFileDescriptor?.file?.id;
-		addFile({
-			variables: {
-				fileName: newDocument.fileName || newDocument.documentName,
-				descriptorObjectId: fileId || newDocument.fileId,
-				userId: stateApp.user.mongoId,
-				relatedObjectId: props.relatedObjectId,
-				relatedObjectType: props.relatedObjectType,
-			},
-			// add queries to refetch
-			refetchQueries: ['getParcelFiles', 'getDbData'],
-			awaitRefetchQueries: true,
-		}).then(() => {
-			props.setShowDocumentSlider('');
-			setNameAutValueParty1({ name: '', _id: null });
-			setNameAutValueParty2({ name: '', _id: null });
-			setNewDocument(documentInitial);
-			setLoader(false);
-			tableGlobalController.refetch();
-		});
-	};
-
 	const handleViewFile = async id => {
 		viewFile({ variables: { fileId: id } });
 	};
@@ -432,10 +435,6 @@ export default function RelatedFile(props) {
 			});
 		}
 	};
-
-	const [viewFiles, { data: viewFileSResult }] = useLazyQuery(VIEWFILESQUERY, {
-		fetchPolicy: 'no-cache',
-	});
 
 	const LightTooltip = withStyles(theme => ({
 		tooltip: {
@@ -588,82 +587,6 @@ export default function RelatedFile(props) {
 										<AutoCompleteDocumentList search={search} setSearch={setSearch} onSelect={onSearcSelected} />
 									</Grid>
 								</Grid>
-								{/* <Autocomplete
-                  defaultValue={search}
-                  value={search}
-                  disableListWrap
-                  className={classes.maxWidth}
-                  options={
-                    documents?.getFiles
-                      ? documents?.getFiles?.map((doc) => {
-                        return {
-                          _id: doc.fileId,
-                          name: doc.documentName,
-                          number: doc.documentNumber,
-                          fileName: doc.fileName,
-                        };
-                      })
-                      : []
-                  }
-                  getOptionLabel={(option) => {
-                    if (typeof option === "string") {
-                      return option;
-                    }
-                    if (option.inputValue) {
-                      return option.name;
-                    }
-
-                    // if (option?.name) return option.name;
-                    // else return "";
-                  }}
-                  renderOption={(option) => (
-                    <React.Fragment>
-                      <Grid container direction="column">
-                        <Grid item>{option.name}</Grid>
-                        <Grid item className={classes.optionNumber}>
-                          {option.number}
-                        </Grid>
-                      </Grid>
-                    </React.Fragment>
-                  )}
-                  getOptionSelected={(option, value) => {
-                    return option?._id === value?._id;
-                  }}
-                  onInputChange={(event, value) => {
-                    setSearch(value);
-                  }}
-                  filterOptions={(options, params) => {
-                    const filtered = options.filter(
-                      (opt) =>
-                        opt.name?.toLowerCase()?.includes(search?.toLowerCase()) ||
-                        opt.number?.toLowerCase()?.includes(search?.toLowerCase())
-                    );
-                    return filtered;
-                  }}
-                  onChange={(event, newValue) => {
-                    if (newValue) {
-                      const document = documents.getFiles.find((doc) => doc.fileId === newValue._id);
-                      onSearcSelected(document);
-                    } else setNewDocument(documentInitial);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      variant="outlined"
-                      margin="dense"
-                      placeholder="Search by document name or number"
-                      {...params}
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SearchIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                      size="small"
-                    />
-                  )}
-                 /> */}
 							</ListItem>
 						)}
 					</>
@@ -742,62 +665,22 @@ export default function RelatedFile(props) {
 					}}
 				>
 					<h4>File Date</h4>
-					{/* <KeyboardDatePicker
-            className={classes.maxWidth}
-            disableToolbar
-            disabled={selectedType === "existing"}
-            variant="inline"
-            format="MM/DD/YYYY"
-            margin="normal"
-            id="fileDate"
-            value={newDocument?.dateTime ? new Date(newDocument.dateTime) : null}
-            onChange={(date) => {
-              setNewDocument({
-                ...newDocument,
-                dateTime: date ? String(date["_d"]) : "",
-              });
-            }}
-            KeyboardButtonProps={{
-              "aria-label": "change date",
-            }}
-          /> */}
 
-					<GenericDateField
-						value={newDocument?.dateTime}
-						onChange={value => {
-							setNewDocument({
-								...newDocument,
-								dateTime: value,
-							});
+					<CustomDatePicker
+						fieldAttributes={{ value: newDocument?.dateTime }}
+						fieldEvents={{
+							onChange: value => {
+								setNewDocument({
+									...newDocument,
+									dateTime: value,
+								});
+							},
+						}}
+						fieldConfig={{
+							variant: 'standard',
 						}}
 					/>
 				</ListItem>
-				{/* <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Party 1 Name</h4>
-          <ContactPaginatedDropdown
-            nameAutValue={nameAutValueParty1}
-            setNameAutValue={setNameAutValueParty1}
-          />
-        </ListItem>
-        <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Party 2 Name</h4>
-          <ContactPaginatedDropdown
-            nameAutValue={nameAutValueParty2}
-            setNameAutValue={setNameAutValueParty2}
-          />
-        </ListItem> */}
 
 				<ListItem
 					style={{
@@ -861,38 +744,16 @@ export default function RelatedFile(props) {
 						/>
 					</div>
 				</ListItem>
-
-				{/* <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Recording Info</h4>
-          <TextField
-            className={classes.maxWidth}
-            multiline
-            disabled={selectedType === "existing"}
-            value={newDocument?.recordingInfo}
-            onChange={(e) => {
-              setNewDocument({
-                ...newDocument,
-                recordingInfo: e.target.value,
-              });
-            }}
-          />
-        </ListItem> */}
 			</List>
 
-			{newDocument?.fileId || fileData ? (
+			{(newDocument?.fileId || fileData) && (
 				<ListItem>
 					<div style={{ display: 'flex', justifyContent: 'start' }}>
-						{viewFileSResult?.viewFiles?.map((value, key) => {
+						{viewFileSResult?.viewFiles?.map((value, index) => {
 							let fileExtension = value?.name?.slice(value.name.lastIndexOf('.') + 1)?.toLowerCase();
-							if (key <= 1) {
+							if (index <= 1) {
 								return (
-									<div key={key}>
+									<div key={value.uri}>
 										<LightTooltip
 											title={
 												<div className={classes.IconSection}>
@@ -958,75 +819,6 @@ export default function RelatedFile(props) {
              
               />
          </div> */}
-					</div>
-				</ListItem>
-			) : (
-				<ListItem>
-					<div style={{ display: 'flex', justifyContent: 'start' }}>
-						{recentFiles?.map((value, key) => {
-							let fileExtension = value?.name?.slice(value.name.lastIndexOf('.') + 1)?.toLowerCase();
-							if (key <= 1) {
-								return (
-									<div key={key}>
-										<LightTooltip
-											title={
-												<div className={classes.IconSection}>
-													<IconButton
-														size="small"
-														onClick={() => {
-															setOpenDeleteConfirmDialog(true);
-															setFileIdToDelete(value.id);
-														}}
-													>
-														<DeleteIcon />
-													</IconButton>
-
-													<IconButton
-														disabled={false}
-														size="small"
-														// onClick={() =>
-														//   handleViewFile(
-														//     files?.getFileDescriptors[key].fileId
-														//   )
-														// }
-													>
-														<GetAppIcon />
-													</IconButton>
-												</div>
-											}
-											interactive
-										>
-											<div>
-												{new RegExp(['jpg', 'jpeg', 'png', 'bmp'].join('|')).test(fileExtension) ? (
-													<img src={value.uri} alt={value.name} className={classes.forImage}></img>
-												) : (
-													<div
-														className={classes.forImageContainer}
-														onClick={() => {
-															if (fileExtension === 'pdf') {
-																setStateApp({
-																	...stateApp,
-																	viewDoc: { uri: value.uri, name: value.name },
-																});
-															} else {
-																handleViewFile();
-															}
-														}}
-													>
-														{get_file_icon(fileExtension)}
-													</div>
-												)}
-												<div className={classes.imageSubText}>
-													{value?.name?.length > 12 ? value.name.slice(0, 8) + '...' : value.name}
-												</div>
-											</div>
-										</LightTooltip>
-									</div>
-								);
-							} else {
-								return null;
-							}
-						})}
 					</div>
 				</ListItem>
 			)}
@@ -1224,4 +1016,17 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			{...other}
 		/>
 	);
+};
+
+RelatedFile.propTypes = {
+	parcelId: PropTypes.string,
+	relatedObjectId: PropTypes.string,
+	relatedObjectType: PropTypes.string,
+	setShowDocumentSlider: PropTypes.func.isRequired,
+};
+
+DocumentType.propTypes = {
+	setDocumentType: PropTypes.func.isRequired,
+	value: PropTypes.string,
+	documentTypes: PropTypes.object,
 };

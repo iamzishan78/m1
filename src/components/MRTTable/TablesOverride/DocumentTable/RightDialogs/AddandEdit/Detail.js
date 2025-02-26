@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 
 import Loader from 'components/Loaders';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
-import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
+import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
@@ -476,10 +476,15 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 					</ListItem>
 					<ListItem className={classes.listItem}>
 						<h4>File Date</h4>
-						<GenericDateField
-							value={formStateValues?.dateTime}
-							onChange={value => {
-								formController.updateState({ dateTime: value });
+						<CustomDatePicker
+							fieldAttributes={{ value: formStateValues?.dateTime }}
+							fieldEvents={{
+								onChange: value => {
+									formController.updateState({ dateTime: value });
+								},
+							}}
+							fieldConfig={{
+								variant: 'standard',
 							}}
 						/>
 					</ListItem>
