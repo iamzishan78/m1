@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
 import { uniqueId } from 'lodash';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import MRTTable from 'components/MRTTable';
 
@@ -38,7 +39,7 @@ const ActivitiesCalendar = props => {
 	const { quickActionsPanelState } = useSelector(({ common }) => common);
 
 	useEffect(() => {
-		const handleShowMoreClick = event => {
+		const handleShowMoreClick = () => {
 			setTimeout(() => {
 				const overlays = document.querySelectorAll('.rbc-overlay');
 				overlays.forEach(overlay => {
@@ -89,7 +90,13 @@ const ActivitiesCalendar = props => {
 	);
 };
 
-const useStyles = makeStyles(theme => ({
+ActivitiesCalendar.propTypes = {
+	events: PropTypes.array,
+	view: PropTypes.string,
+	onEventClick: PropTypes.func.isRequired,
+};
+
+const useStyles = makeStyles(() => ({
 	progress: {
 		marginLeft: '30px',
 		verticalAlign: 'middle',
@@ -168,6 +175,20 @@ const Activities = () => {
 	const [activityFilterByTime, setActivityFilterByTime] = useState('all');
 	const activitiesGridState = tableController('ActivitiesTable').useState(['filters']).stateValues;
 	const [view, setView] = React.useState(Views.MONTH);
+
+	const setSelectedActivityId = id => {
+		slidoutStateController.updateState({ selectedActivityId: id });
+	};
+
+	const onModalOpen = () => {
+		slidoutStateController.updateState({ loader: true });
+		getContactsForActivity({
+			variables: { activityId: slidoutStateController.getValue('selectedActivityId') },
+		}).then(() => {
+			slidoutStateController.showSlideout();
+		});
+	};
+
 	useEffect(() => {
 		const contacts = getContactsForActivityResult?.getContactsForActivity?.contacts;
 		setStateApp(stateApp => ({
@@ -306,19 +327,6 @@ const Activities = () => {
 		slidoutStateController.showSlideout();
 	};
 
-	const onModalOpen = () => {
-		slidoutStateController.updateState({ loader: true });
-		getContactsForActivity({
-			variables: { activityId: slidoutStateController.getValue('selectedActivityId') },
-		}).then(() => {
-			slidoutStateController.showSlideout();
-		});
-	};
-
-	const setSelectedActivityId = id => {
-		slidoutStateController.updateState({ selectedActivityId: id });
-	};
-
 	const overrideMeta = {
 		defaultFilters: [
 			{ field: 'category.keyword', value: 'CRM' },
@@ -379,12 +387,14 @@ const Activities = () => {
 							</div>
 						</div>
 					)}
-					<ActivitiesSlideout
-						activityId={selectedActivityId}
-						setSelectedActivityId={setSelectedActivityId}
-						events={events}
-						getContactsForActivity={getContactsForActivity}
-					/>
+					{selectedActivityId && (
+						<ActivitiesSlideout
+							activityId={selectedActivityId}
+							setSelectedActivityId={setSelectedActivityId}
+							events={events}
+							getContactsForActivity={getContactsForActivity}
+						/>
+					)}
 				</>
 			)}
 		</div>
