@@ -384,10 +384,6 @@ export default function CommentComponent(props) {
 				props.activityLog
 					.filter(act => (activityType === 'all' ? true : act?.type === activityType))
 					.forEach(element => {
-						const timestamp = element?.createAt
-							? new Date(new Date(element.createAt).toUTCString()).getTime()
-							: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime();
-
 						const user = element.isExternal
 							? { name: 'Dialpad' }
 							: { name: element.ownerName, email: element.ownerName };
@@ -397,7 +393,7 @@ export default function CommentComponent(props) {
 							activityData: element,
 							comment: element.notes,
 							outcome: element.outcome,
-							ts: timestamp,
+							ts: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime(),
 							isActivity: true,
 							isEdited: false,
 							public: true,
