@@ -680,6 +680,7 @@ export function DetailComponents(props) {
 						overflow: 'auto',
 						width: !!drawer ? 620 : 0,
 						background: 'white',
+						overflowY: 'auto',
 					}}
 					id={'agreementDetailsDrawer'}
 				>
@@ -699,6 +700,7 @@ export function DetailComponents(props) {
 							shapeData={activeAgreement}
 							isApproval
 							showCommentType
+							height="100vh"
 						/>
 					)}
 					{drawer === 'agrmt' && (
