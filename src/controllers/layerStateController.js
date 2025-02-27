@@ -781,7 +781,7 @@ class LayerStateControllerHandler extends StateController {
 	}
 
 	toggleLayersActivity(identifier, value) {
-		let layers = this.getValue();
+		let layers = this.getValue('layers');
 		const layer = layers.find(layer => layer.identifier.startsWith(identifier));
 
 		this.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } });
