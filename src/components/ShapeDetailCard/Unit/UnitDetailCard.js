@@ -82,8 +82,11 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 		}
 	}, [dataCustomLayer, UnitInterestOwnerGridState?.data]);
 
+	const maxTableHeight = 'calc(100vh - 400px)';
+
 	const unitInterestOwnerOverrideMeta = useMemo(
 		() => ({
+			maxTableHeight,
 			tabLabels: ['Unit Ownership', 'Potential Ownership'],
 			defaultFilters: [
 				{ field: 'shape._id', value: dataCustomLayer?.customLayer?._id },
@@ -98,7 +101,7 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 	const relatedAgreementOverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [{ field: 'relatedShape._id', value: dataCustomLayer?.customLayer?._id }],
-			maxTableHeight: 'calc(60vh - 200px)',
+			maxTableHeight,
 		}),
 		[dataCustomLayer]
 	);
@@ -211,7 +214,7 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 
 	const relatedDocumentsOverrideMeta = useMemo(
 		() => ({
-			maxTableHeight: 'calc(50vh - 100px)',
+			maxTableHeight,
 			gridViewSettings: null,
 			fetchMetaData: null,
 			defaultFilters: [{ field: 'shapeObj._id', value: uniObj?._id }],
@@ -226,7 +229,7 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 
 	const relatedWellsOverrideMeta = useMemo(
 		() => ({
-			maxTableHeight: 'calc(50vh - 100px)',
+			maxTableHeight,
 			tabLabels: ['Unit Wells', 'Potential Wells'],
 			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
 			customProps: { customLayer: uniObj, shapeType: 'Unit' },
@@ -241,6 +244,7 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 
 	const potentialTractsOverrideMeta = useMemo(
 		() => ({
+			maxTableHeight,
 			tabLabels: ['Unit Tracts', 'Potential Tracts'],
 			defaultFilters: [
 				{
@@ -263,7 +267,7 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 
 	const runsheetOverrideMeta = useMemo(
 		() => ({
-			maxTableHeight: 'calc(50vh - 100px)',
+			maxTableHeight,
 			defaultFilters: [
 				{ field: 'customLayerId', value: uniObj?._id },
 				{ field: 'isRunsheetInstrument', value: 'true' },
@@ -315,6 +319,7 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 										key="PotentialWellOwnersTable"
 										name="PotentialWellOwnersTable"
 										overrideMeta={{
+											maxTableHeight,
 											tabLabels: ['Unit Ownership', 'Potential Ownership'],
 											customProps: {
 												customLayer: uniObj,
@@ -330,7 +335,7 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 								key="Wells"
 								value={selectedTab}
 								panels={[
-									<div key="relatedWellsTable" className={showSummary ? classes.subContent : classes.subContent2}>
+									<div key="relatedWellsTable">
 										<RelatedWellsTable
 											id="relatedWellsTable"
 											overrideMeta={relatedWellsOverrideMeta}
@@ -338,10 +343,11 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 											customLayer={uniObj}
 										/>
 									</div>,
-									<div key="PotentialWellsTable" className={showSummary ? classes.subContent : classes.subContent2}>
+									<div key="PotentialWellsTable">
 										<MRTTable
 											name="PotentialWellsTable"
 											overrideMeta={{
+												maxTableHeight,
 												tabLabels: ['Unit Wells', 'Potential Wells'],
 												customProps: {
 													customLayer: uniObj,
@@ -360,6 +366,7 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 										key="UnitTractTable"
 										name="UnitTractTable"
 										overrideMeta={{
+											maxTableHeight,
 											tabLabels: ['Unit Tracts', 'Potential Tracts'],
 											defaultFilters: [{ field: 'shape._id', value: dataCustomLayer?.customLayer?._id }],
 											customProps: {
@@ -375,10 +382,7 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 								name="UnitRelatedAgreementTable"
 								overrideMeta={relatedAgreementOverrideMeta}
 							/>,
-							<div
-								key="Documents"
-								className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}
-							>
+							<div key="Documents">
 								<RelatedDocumentsTable
 									id="relatedDocumentsTable"
 									moduleId={uniObj?._id}
