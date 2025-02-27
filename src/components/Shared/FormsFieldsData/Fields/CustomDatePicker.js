@@ -37,21 +37,23 @@ function CustomDatePicker({
 	} = {},
 	...propsRest
 }) {
-	const [value, setValue] = useState(_value ? dayjs(_value) : null);
+	const [value, setValue] = useState(_value);
 
 	const watchDateValue = watch ? watch(name) : '';
 
 	useEffect(() => {
-		setValue(_value ? dayjs(_value) : null);
+		setValue(_value);
 	}, [_value]);
 
 	const renderDatePicker = ({ field } = {}) => {
 		const PickerComponent = hasTime ? DateTimePicker : DatePicker;
 
+		const fieldValue = field?.value || value;
+
 		return (
 			<PickerComponent
 				label={label}
-				value={field?.value || value}
+				value={fieldValue ? dayjs(fieldValue) : null}
 				onChange={newValue => {
 					setValue(newValue);
 					onChange?.(newValue);

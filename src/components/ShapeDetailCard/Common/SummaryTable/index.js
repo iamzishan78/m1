@@ -20,9 +20,9 @@ import CountyField from 'components/Revenue/components/Properties/DetailComponen
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { summaryTableStyles } from 'components/ShapeDetailCard/style';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
-import DateField from 'components/Shared/components/Fields/DateField';
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
+import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 import CustomTypography from 'components/Shared/FormsFieldsData/Fields/CustomTypography';
 import { copy } from 'components/Shared/functions';
@@ -583,16 +583,22 @@ export default function SummaryTableInfo({
 											/>
 										)}
 										{data.type === 'date' && (
-											<DateField
+											<CustomDatePicker
 												id={`field-${data.key}`}
-												index={index}
-												field={data}
-												fieldKey={data.key}
-												defaultValue={get(tableTempProperties, `${data.key}`, '')}
-												offClickHandler={(key, value) => {
-													set(tableTempProperties, key, value);
-													setTableTempProperties(tableTempProperties);
-													updateProperties(null, key, value);
+												fieldAttributes={{
+													name: data.key,
+													value: get(tableTempProperties, `${data.key}`, ''),
+												}}
+												fieldConfig={{
+													variant: 'standard',
+													size: 'small',
+												}}
+												fieldEvents={{
+													onChange: newValue => {
+														set(tableTempProperties, data.key, newValue.toDate());
+														setTableTempProperties({ ...tableTempProperties });
+														updateProperties?.(null, data.key, newValue.toDate());
+													},
 												}}
 											/>
 										)}

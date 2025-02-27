@@ -28,8 +28,8 @@ import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectF
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
-import DateField from 'components/Shared/components/Fields/DateField';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
+import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 
 import { globalStateController } from 'controllers/globalStateController';
@@ -165,7 +165,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 			alignItems="center"
 			className={classes.fieldsSection}
 		>
-			{fieldsList.map((field, index) => {
+			{fieldsList.map(field => {
 				const handleEdit = () => {
 					globalStateController.updateState({ showFieldModal: true, selectedMeta: field });
 				};
@@ -268,33 +268,32 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 											}}
 										/>
 									)}
-									{(field.type === 'date' ||
-										field.type === 'dropdown' ||
-										field.type === 'multiselect' ||
-										field.type === 'select') && (
+									{field.type === 'date' && (
+										<CustomDatePicker
+											control={control}
+											id={`field-${field.key}`}
+											fieldAttributes={{
+												name: field.key,
+												value: get(agreementDetails, `${field.key}`, ''),
+											}}
+											fieldEvents={{
+												onChange: newValue => {
+													offClickHandler?.(field.key, newValue.toDate());
+												},
+											}}
+											InputProps={{
+												...field.InputProps,
+												endAdornment,
+											}}
+										/>
+									)}
+									{(field.type === 'dropdown' || field.type === 'multiselect' || field.type === 'select') && (
 										<Controller
 											control={control}
 											name={field.key}
 											render={({ field: fieldProps }) => {
 												return (
 													<Fragment>
-														{field.type === 'date' && (
-															<DateField
-																{...fieldProps}
-																id={`field-${field.key}`}
-																index={index}
-																field={field}
-																fieldKey={field.key}
-																defaultValue={get(agreementDetails, `${field.key}`, '')}
-																offClickHandler={(key, value) => {
-																	offClickHandler(key, value);
-																}}
-																InputProps={{
-																	...field.InputProps,
-																	endAdornment,
-																}}
-															/>
-														)}
 														{field.type === 'dropdown' && (
 															<div
 																style={{
