@@ -34,6 +34,7 @@ function CustomDatePicker({
 		InputProps = {},
 		InputLabelProps = {},
 		layout = 'vertical',
+		spacing = 2,
 	} = {},
 	...propsRest
 }) {
@@ -86,7 +87,7 @@ function CustomDatePicker({
 	const fieldXs = layout === 'horizontal' ? 9 : 12;
 
 	return (
-		<Grid container spacing={2}>
+		<Grid container spacing={spacing}>
 			{title && (
 				<Grid item xs={titleXs} sx={{ display: 'flex', alignItems: 'center' }}>
 					<Box component={titleComponent}>{title}</Box>

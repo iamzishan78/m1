@@ -24,13 +24,14 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { KeyboardDatePicker } from '@material-ui/pickers';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 import loadashFilter from 'lodash/filter';
+import PropTypes from 'prop-types';
 
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
@@ -650,60 +651,30 @@ export default function DocumentDrawer(props) {
 						value={newDocument.documentType ? newDocument.documentType : ''}
 					/>
 				</ListItem>
-				<ListItem
-					style={{
-						flexDirection: 'column',
-						justifyContent: 'start',
-						alignItems: 'start',
-					}}
-				>
-					<h4>File Date</h4>
-					<KeyboardDatePicker
-						className={classes.maxWidth}
-						disableToolbar
-						disabled={selectedType === 'existing'}
-						variant="inline"
-						format="MM/DD/YYYY"
-						margin="normal"
-						id="date-picker-inline"
-						value={newDocument?.dateTime ? new Date(newDocument.dateTime) : null}
-						onChange={date => {
-							setNewDocument({
-								...newDocument,
-								dateTime: date ? String(date['_d']) : '',
-							});
+				<ListItem>
+					<CustomDatePicker
+						fieldAttributes={{
+							name: 'fileDate',
+							title: 'File Date',
+							value: newDocument?.dateTime || null,
+							titleComponent: 'h4',
+							spacing: 0,
 						}}
-						KeyboardButtonProps={{
-							'aria-label': 'change date',
+						fieldConfig={{
+							variant: 'standard',
+							disabled: selectedType === 'existing',
+							fullWidth: true,
+						}}
+						fieldEvents={{
+							onChange: value => {
+								setNewDocument({
+									...newDocument,
+									dateTime: value.toDate(),
+								});
+							},
 						}}
 					/>
 				</ListItem>
-				{/* <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Party 1 Name</h4>
-          <ContactPaginatedDropdown
-            nameAutValue={nameAutValueParty1}
-            setNameAutValue={setNameAutValueParty1}
-          />
-        </ListItem>
-        <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Party 2 Name</h4>
-          <ContactPaginatedDropdown
-            nameAutValue={nameAutValueParty2}
-            setNameAutValue={setNameAutValueParty2}
-          />
-        </ListItem> */}
 				<ListItem
 					style={{
 						flexDirection: 'column',
@@ -738,7 +709,7 @@ export default function DocumentDrawer(props) {
 							}
 
 							return (
-								<div key={index}>
+								<div key={value.id}>
 									<LightTooltip
 										title={
 											<div className={classes.IconSection}>
@@ -1019,4 +990,18 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			{...other}
 		/>
 	);
+};
+
+DocumentDrawer.propTypes = {
+	setShowDocumentSlider: PropTypes.func.isRequired,
+	getAllFiles: PropTypes.func.isRequired,
+	globalWellId: PropTypes.string,
+	tenantWellId: PropTypes.string,
+};
+
+DocumentType.propTypes = {
+	control: PropTypes.object.isRequired,
+	setDocumentType: PropTypes.func.isRequired,
+	documentTypes: PropTypes.array,
+	value: PropTypes.string,
 };
