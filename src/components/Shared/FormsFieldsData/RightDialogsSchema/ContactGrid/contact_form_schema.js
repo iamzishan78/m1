@@ -141,6 +141,7 @@ const contactForm = ({ getValues, setValue }) => {
 			onChange: value => {
 				const booleanValue = value === true || value === 'true';
 				setValue('isPurchased', booleanValue);
+				return booleanValue;
 			},
 		},
 	];

@@ -112,8 +112,8 @@ function AutoCompleteComponent({ control, item, watch, error }) {
 						}
 						value={options.find(option => option.value === value?.toString()) || null}
 						onChange={(e, option) => {
-							onChange?.(option?.value);
-							onInputChange(option ? option.value : null);
+							const val = onChange?.(option?.value);
+							onInputChange(option ? (val ?? option.value) : null);
 						}}
 						renderInput={params => (
 							<TextField
