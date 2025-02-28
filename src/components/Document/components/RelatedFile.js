@@ -347,7 +347,7 @@ export default function RelatedFile(props) {
 					fileId: fileId || newDocument.fileId,
 				},
 			},
-			refetchQueries: ['getParcelFiles', 'getDbData'],
+			refetchQueries: ['getParcelFiles', 'getDbData', 'getRecentContactFiles'],
 			awaitRefetchQueries: true,
 		}).then(() => {
 			if (props.relatedObjectId && props.relatedObjectType && selectedType === 'new') {
@@ -375,7 +375,7 @@ export default function RelatedFile(props) {
 				relatedObjectType: props.relatedObjectType,
 			},
 			// add queries to refetch
-			refetchQueries: ['getParcelFiles', 'getDbData', 'getContact'],
+			refetchQueries: ['getParcelFiles', 'getDbData', 'getContact', 'getRecentContactFiles'],
 			awaitRefetchQueries: true,
 		}).then(() => {
 			props.setShowDocumentSlider('');

@@ -27,6 +27,7 @@ import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 import { AppContext } from 'AppContext';
 
 import UploadZone from './DailogUploadZone';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const useStyles = makeStyles(theme => ({
@@ -262,6 +263,9 @@ const Documents = memo(props => {
 				},
 				refetchQueries: ['getRecentContactFiles', 'getContactFiles', 'getParcelFiles', 'getParcelFilesCount'],
 				awaitRefetchQueries: true,
+				onCompleted: () => {
+					tableGlobalController.refetch();
+				},
 			});
 			setFileIdToDelete(null);
 			setOpenDeleteConfirmDialog(false);

@@ -303,6 +303,7 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 				parentRecord: { value: contactData?._id },
 			},
 			customValue: { parentRecord: contactData?._id },
+			refetchQueries: ['getContactSummary', 'getRecentContactFiles'],
 		}),
 		[contactData?._id]
 	);

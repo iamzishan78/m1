@@ -339,6 +339,8 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 				// relatedObjectType: null,
 				fileId: selectedDocument?._id,
 			},
+			refetchQueries: ['getRecentContactFiles'],
+			awaitRefetchQueries: true,
 		}).then(res => {
 			if (res?.data?.addFileDescriptor) {
 				const { success, message } = res.data.addFileDescriptor;
