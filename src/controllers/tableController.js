@@ -1203,7 +1203,7 @@ class TableESStateControllerHandler extends StateController {
 		if (selectedView?.filters?.length) {
 			Controller.setShowColumnFilters(true);
 			Controller.clearFilters();
-			selectedView.filters.forEach(filter => Controller.setFilter(filter));
+			Controller.setFilters(selectedView?.filters);
 		} else {
 			Controller.setShowColumnFilters(false);
 			Controller.clearFilters();
