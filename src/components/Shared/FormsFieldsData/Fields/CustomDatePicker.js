@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Controller } from 'react-hook-form';
 
-import { Grid, Box } from '@mui/material';
-import { DatePicker, DateTimePicker } from '@mui/x-date-pickers';
+import { CalendarToday } from '@mui/icons-material';
+import { Grid, Box, IconButton, Popper, Paper } from '@mui/material';
+import { DatePicker, DateTimePicker, StaticDatePicker } from '@mui/x-date-pickers';
 
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
@@ -21,6 +22,7 @@ function CustomDatePicker({
 		autoFocus = false,
 		variant = 'outlined',
 		hasTime = false,
+		iconOnly = false,
 	} = {},
 	fieldAttributes: {
 		name = '',
@@ -39,6 +41,7 @@ function CustomDatePicker({
 	...propsRest
 }) {
 	const [value, setValue] = useState(_value);
+	const [anchorEl, setAnchorEl] = useState(null);
 
 	const watchDateValue = watch ? watch(name) : '';
 
@@ -46,10 +49,37 @@ function CustomDatePicker({
 		setValue(_value);
 	}, [_value]);
 
+	const open = Boolean(anchorEl);
+
 	const renderDatePicker = ({ field } = {}) => {
 		const PickerComponent = hasTime ? DateTimePicker : DatePicker;
-
 		const fieldValue = field?.value || value;
+		const popperRef = useRef(null);
+
+		if (iconOnly) {
+			return (
+				<>
+					<IconButton onClick={e => setAnchorEl(anchorEl ? null : e.currentTarget)} disabled={disabled} ref={popperRef}>
+						<CalendarToday />
+					</IconButton>
+					<Popper open={open} anchorEl={popperRef.current} placement="bottom-start" disablePortal sx={{ zIndex: 1300 }}>
+						<Paper elevation={3} sx={{ p: 1 }}>
+							<StaticDatePicker
+								value={fieldValue ? dayjs(fieldValue) : null}
+								onChange={newValue => {
+									setValue(newValue);
+									onChange?.(newValue);
+									field?.onChange?.(newValue);
+
+									setAnchorEl(null);
+								}}
+								onClose={() => setAnchorEl(null)}
+							/>
+						</Paper>
+					</Popper>
+				</>
+			);
+		}
 
 		return (
 			<PickerComponent
@@ -120,6 +150,7 @@ CustomDatePicker.propTypes = {
 		autoFocus: PropTypes.bool,
 		variant: PropTypes.oneOf(['standard', 'outlined', 'filled']),
 		hasTime: PropTypes.bool,
+		iconOnly: PropTypes.bool,
 	}),
 	fieldAttributes: PropTypes.shape({
 		name: PropTypes.string,
