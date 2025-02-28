@@ -1,7 +1,6 @@
 import React, { memo } from 'react';
 
-import { ButtonGroup, Button } from '@material-ui/core';
-
+import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 import AssociationDialog from 'components/Shared/components/common/DetailCard/AssociationDialog';
 
 import { tableGlobalController } from 'controllers/tableController';
@@ -18,19 +17,7 @@ function AssetAssociationToolbar() {
 
 	return (
 		<>
-			<ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
-				<Button
-					id="addCustomAssetEntity"
-					color="primary"
-					size="small"
-					aria-label="select merge strategy"
-					aria-haspopup="menu"
-					onClick={associatedDataHandler}
-				>
-					Associate Data
-				</Button>
-			</ButtonGroup>
-
+			<ToolbarButton label={'+ Associate Data'} onClick={associatedDataHandler} />
 			<AssociationDialog />
 		</>
 	);

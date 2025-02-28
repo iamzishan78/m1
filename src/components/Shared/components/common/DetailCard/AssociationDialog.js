@@ -132,11 +132,11 @@ function AssociationDialog() {
 			addAossciatedData({
 				variables: {
 					assetTableName: currentAsset?.tableName,
-					associatedModelName: currentAssociatedModel?.modelName,
+					associatedModelName: currentAssociatedModel?.tableName,
 					descriptorObject: currentAssetRecord?._id,
 					descriptorType: currentAsset?.name,
 					relatedObject: selectedId,
-					relatedObjectType: currentAssociatedModel?.modelName,
+					relatedObjectType: currentAssociatedModel?.name,
 				},
 			});
 		}
@@ -152,7 +152,7 @@ function AssociationDialog() {
 			<Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
 				<Grid item md={10} xs={10}>
 					<DialogTitle id="customized-dialog-title" style={{ fontWeight: 'bold' }}>
-						{`Add Associated ${currentAssociatedModel?.modelName}`}
+						{`Add Associated ${currentAssociatedModel?.name}`}
 					</DialogTitle>
 				</Grid>
 				<Grid item md={1} xs={1} style={{ marginLeft: '20px' }}>
@@ -201,8 +201,8 @@ function AssociationDialog() {
 									margin="dense"
 									{...params}
 									InputLabelProps={{ shrink: true }}
-									label={`${currentAssociatedModel?.modelName}'s`}
-									placeholder={`Select ${currentAssociatedModel?.modelName}`}
+									label={`${currentAssociatedModel?.name}'s`}
+									placeholder={`Select ${currentAssociatedModel?.name}`}
 									variant="outlined"
 								/>
 							)}
@@ -244,7 +244,7 @@ function AssociationDialog() {
 				</Button>
 				<Button
 					className={classes.secondary}
-					disabled={!selectedOption}
+					disabled={isEmpty(selectedOption)}
 					onClick={addAssociatedDataHandler}
 					color="secondary"
 					style={{ marginBottom: '40px', marginRight: '20px', bottom: 0 }}

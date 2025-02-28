@@ -11,3 +11,9 @@ export const GET_CUSTOM_ASSET_INFO = gql`
 		getCustomAssetInfo(_id: $_id, tableName: $tableName, name: $name)
 	}
 `;
+
+export const IS_TABLE_NAME_VALID = gql`
+	query isTableNameValid($tableName: String!) {
+		isTableNameValid(tableName: $tableName)
+	}
+`;
