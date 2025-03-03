@@ -1099,8 +1099,9 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
                         >
                           {searchHistoryList && searchHistoryList.length > 0 ? (
                             searchHistoryList.map((search, i) => {
-                              let option = search.searchData;
-                              const parts = parse(option.Primary, Array());
+															let option = search.searchData;
+															if (!option) return;
+															const parts = parse(option.Primary, Array());
 
                               /// THIS IS THEI LIST FOR THE SEARCH HISTORY
                               return (
