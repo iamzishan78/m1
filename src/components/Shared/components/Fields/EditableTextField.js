@@ -70,6 +70,7 @@ function EditableTextField({
 								textAlign: 'left',
 								display: 'flex',
 								flexDirection: 'row',
+								alignItems: 'center',
 							}
 				}
 			>
