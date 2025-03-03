@@ -288,6 +288,7 @@ export default function DetailComponents(props) {
 
 	useEffect(() => {
 		if (getCheckResult?.getCheck?.check) {
+			globalStateController.updateState({ activeStatement: getCheckResult?.getCheck?.check });
 			dispatch(setRevenueKey('statements', { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
 		}
 	}, [getCheckResult, dispatch]);
