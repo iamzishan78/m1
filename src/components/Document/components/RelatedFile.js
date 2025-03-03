@@ -678,6 +678,7 @@ export default function RelatedFile(props) {
 						}}
 						fieldConfig={{
 							variant: 'standard',
+							disabled: selectedType === 'existing',
 						}}
 					/>
 				</ListItem>
@@ -700,6 +701,7 @@ export default function RelatedFile(props) {
 							className={classes.maxWidth}
 							multiline
 							value={newDocument?.book}
+							disabled={selectedType === 'existing'}
 							onChange={e => {
 								setNewDocument({
 									...newDocument,
@@ -720,6 +722,7 @@ export default function RelatedFile(props) {
 							className={classes.maxWidth}
 							multiline
 							value={newDocument?.page}
+							disabled={selectedType === 'existing'}
 							onChange={e => {
 								setNewDocument({
 									...newDocument,
@@ -735,6 +738,7 @@ export default function RelatedFile(props) {
 							className={classes.maxWidth}
 							multiline
 							value={newDocument?.instrument}
+							disabled={selectedType === 'existing'}
 							onChange={e => {
 								setNewDocument({
 									...newDocument,

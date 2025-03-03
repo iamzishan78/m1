@@ -387,14 +387,12 @@ const Activities = () => {
 							</div>
 						</div>
 					)}
-					{selectedActivityId && (
-						<ActivitiesSlideout
-							activityId={selectedActivityId}
-							setSelectedActivityId={setSelectedActivityId}
-							events={events}
-							getContactsForActivity={getContactsForActivity}
-						/>
-					)}
+					<ActivitiesSlideout
+						activityId={selectedActivityId}
+						setSelectedActivityId={setSelectedActivityId}
+						events={events}
+						getContactsForActivity={getContactsForActivity}
+					/>
 				</>
 			)}
 		</div>

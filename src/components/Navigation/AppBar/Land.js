@@ -6,6 +6,7 @@ import { Grid, Typography } from '@material-ui/core';
 
 import { useMutation } from '@apollo/client';
 import hat from 'hat';
+import PropTypes from 'prop-types';
 
 import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Land/index';
 import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
@@ -88,11 +89,11 @@ export default function LandAppBar(props) {
 				<Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
 					<Grid item md={2.5}>
 						<Typography variant="h5" style={{ color: 'black', fontWeight: 'bold' }}>
-							{activeModule.title}
+							{activeModule?.title}
 						</Typography>
 					</Grid>
 
-					{!activeModule.hideSearch && (
+					{!activeModule?.hideSearch && (
 						<Grid item md={5} style={{ marginLeft: '20px' }}>
 							<LandSearch activeModule={activeModule} />
 						</Grid>
@@ -100,7 +101,7 @@ export default function LandAppBar(props) {
 				</Grid>
 			</Grid>
 
-			{activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.AGREEMENTS.title && (
+			{activeModule?.title === SIDE_PANEL_MENU_ITEMS_LIST.find(item => item.key === 'AGREEMENTS')?.title && (
 				<Grid item>
 					<div className={classes.filterTabs} style={{ paddingRight: '10px' }}>
 						<ButtonDropDown variant="contained" color="primary" options={AgreementAction} />
@@ -110,3 +111,10 @@ export default function LandAppBar(props) {
 		</Grid>
 	);
 }
+
+LandAppBar.propTypes = {
+	classes: PropTypes.object.isRequired,
+	user: PropTypes.shape({
+		mongoId: PropTypes.string.isRequired,
+	}).isRequired,
+};

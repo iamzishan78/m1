@@ -60,6 +60,16 @@ const AssetCustomEntitiesMeta = {
 			accessorKey: 'controlColumns.label',
 			header: 'Control Columns',
 			Cell: ({ row }) => <Chips list={row?.original?.controlColumns} />,
+			isArrayKey: true,
+			handleArrayExport: {
+				esType: 'array',
+				// field in data array that will be matched
+				referenceKey: 'controlColumns',
+				// field in customprops that will be matched
+				referenceValueKey: 'mappingKey',
+				// field that needs to be exported from matched object
+				actualKey: 'label', //label
+			},
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
@@ -67,6 +77,16 @@ const AssetCustomEntitiesMeta = {
 			accessorKey: 'associatedModels.name',
 			header: 'Associated Models',
 			Cell: ({ row }) => <Chips list={row?.original?.associatedModels} />,
+			isArrayKey: true,
+			handleArrayExport: {
+				esType: 'array',
+				// field in data array that will be matched
+				referenceKey: 'associatedModels',
+				// field in customprops that will be matched
+				referenceValueKey: '_id',
+				// field that needs to be exported from matched object
+				actualKey: 'name', //label
+			},
 		},
 		{
 			...CommonSchema.CREATED_BY,

@@ -231,7 +231,6 @@ const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) 
 										size="small"
 										htmlColor="#fff"
 										onClick={() => {
-											setNotifications(defaultData);
 											setSearch('');
 										}}
 									>

@@ -65,7 +65,6 @@ const useStyles = makeStyles(theme => ({
 export default function AddContactDialogContent(props) {
 	const Controller = sideDialogController('contactDialog');
 	const formState = Controller.useCompleteState();
-	const formStateValues = formState;
 
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user;

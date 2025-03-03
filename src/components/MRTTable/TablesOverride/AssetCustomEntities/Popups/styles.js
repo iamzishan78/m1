@@ -18,9 +18,14 @@ export const useStyles = makeStyles(theme => ({
 		},
 	},
 
-	btnColor: {
+	btnColor_active: {
 		color: 'white',
 		backgroundColor: '#4576CF',
+	},
+
+	btnColor_disabled: {
+		color: 'white !important',
+		backgroundColor: 'rgba(69, 118, 207, 0.5)',
 	},
 
 	assetsContainer: {

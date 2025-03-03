@@ -7,7 +7,7 @@ const DynamicAssetAssocitionMeta = {
 		pageIndex: 0,
 		pageSize: 50,
 	},
-	maxTableHeight: 'calc(70vh - 200px)',
+	maxTableHeight: 'calc(70vh - 100px)',
 	columnVirtualization: false,
 	TableSchema: [
 		{

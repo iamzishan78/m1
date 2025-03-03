@@ -13,7 +13,6 @@ import { GET_FILE_OCR_TEXT, VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 
 import { convertFile } from 'utils/tesseractHelper';
 
-
 const EditableLine = ({ text, onUpdate }) => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [value, setValue] = useState(text);
