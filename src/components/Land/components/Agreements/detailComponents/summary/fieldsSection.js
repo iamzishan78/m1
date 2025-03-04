@@ -272,6 +272,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 										<CustomDatePicker
 											control={control}
 											id={`field-${field.key}`}
+											fieldConfig={{
+												margin: 'dense',
+											}}
 											fieldAttributes={{
 												name: field.key,
 												value: get(agreementDetails, `${field.key}`, ''),
