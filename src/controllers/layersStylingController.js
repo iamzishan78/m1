@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import { ALPHA_INDEX, ifRgbaConvt, TWO } from 'components/MapControls/components/Layer/Common';
+import { colorPalettes } from 'components/MapControls/components/Layer/LayerAttributes/ColorPaletteGrid';
 import { copy } from 'components/Shared/functions';
 
 import { StateController } from './stateController';
@@ -17,6 +18,7 @@ class LayerStylingStateController extends StateController {
 		const {
 			width,
 			aggregation,
+			selectedPalette,
 			colorScaleType,
 			fillColor,
 			fillStyle,
@@ -66,6 +68,7 @@ class LayerStylingStateController extends StateController {
 			layer.layerSettings?.fillStyle !== fillStyle ||
 			layer.layerSettings?.lineStyle !== lineStyle ||
 			layer.layerSettings?.aggregation !== aggregation ||
+			!_.isEqual(layer.layerSettings?.selectedPalette, selectedPalette) ||
 			layer.layerSettings?.colorScaleType !== colorScaleType
 		) {
 			let currentLayer = { ...layer };
@@ -134,6 +137,7 @@ class LayerStylingStateController extends StateController {
 			layerSettings.elevationScale = elevationScale || 4;
 
 			layerSettings.colorScaleType = colorScaleType;
+			layerSettings.selectedPalette = selectedPalette;
 
 			if (
 				currentLayer &&
@@ -422,6 +426,7 @@ class LayerStylingStateController extends StateController {
 		const initialElevationScale = layer.layerSettings?.elevationScale || 4;
 
 		const initialAggregation = layer.layerSettings?.aggregation || 'SUM';
+		const initialSelectedPalette = layer.layerSettings?.selectedPalette || colorPalettes[0];
 		const initialColorScaleType = layer.layerSettings?.colorScaleType || 'quantize';
 
 		const initialFillColor =
@@ -454,6 +459,7 @@ class LayerStylingStateController extends StateController {
 			layerName: null,
 			fillColor: initialFillColor,
 			aggregation: initialAggregation,
+			selectedPalette: initialSelectedPalette,
 			colorScaleType: initialColorScaleType,
 
 			fillStyle: layer.layerSettings?.fillStyle || null,
@@ -497,6 +503,10 @@ class LayerStylingStateController extends StateController {
 
 	setColorScaleType(newColorScaleType) {
 		this.updateState({ colorScaleType: newColorScaleType });
+	}
+
+	setSelectedPalette(newSelectedPalette) {
+		this.updateState({ selectedPalette: newSelectedPalette });
 	}
 
 	setFillStyle(newFillStyle) {

@@ -695,6 +695,23 @@ export function getHexLayerProps(dbLayer) {
 	props.radius = dbLayer.layerSettings?.binsWidth * 10 || 200;
 	props.elevationScale = dbLayer.layerSettings?.elevationScale || 4;
 
+	props.colorRange = dbLayer.layerSettings?.selectedPalette;
+	props.onSetColorDomain = domain => {
+		const [min, max] = domain;
+		// Check if min and max are valid numbers
+		if (typeof min !== 'number' || typeof max !== 'number' || isNaN(min) || isNaN(max)) {
+			return;
+		}
+
+		const numColors = dbLayer.layerSettings?.selectedPalette?.length;
+		const binSize = (max - min) / numColors; // Auto bin size
+		const autoBins = Array.from({ length: numColors + 1 }, (_, i) => min + i * binSize);
+		const binLabels = autoBins.slice(0, -1).map((start, i) => `${start} - ${autoBins[i + 1]}`);
+		layerController.updateState({
+			bins: binLabels,
+		});
+	};
+
 	return props;
 }
 export function getHeatMapLayerProps(dbLayer) {
@@ -705,7 +722,8 @@ export function getHeatMapLayerProps(dbLayer) {
 	props.aggregation = aggregation;
 	props.getPosition = d => d.geometry.coordinates;
 	props.getWeight = d => d.properties.DBH;
-	props.radiusPixels = 25;
+	props.radiusPixels = dbLayer.layerSettings?.binsWidth * 10 || 50;
+	props.colorRange = dbLayer.layerSettings?.selectedPalette;
 	return props;
 }
 export function getGridLayerProps(dbLayer) {
@@ -725,6 +743,23 @@ export function getGridLayerProps(dbLayer) {
 	props.getElevationValue = points => points.length;
 	props.cellSize = dbLayer.layerSettings?.binsWidth * 10 || 200;
 	props.elevationScale = dbLayer.layerSettings?.elevationScale || 4;
+
+	props.colorRange = dbLayer.layerSettings?.selectedPalette;
+	props.onSetColorDomain = domain => {
+		const [min, max] = domain;
+		// Check if min and max are valid numbers
+		if (typeof min !== 'number' || typeof max !== 'number' || isNaN(min) || isNaN(max)) {
+			return;
+		}
+
+		const numColors = dbLayer.layerSettings?.selectedPalette?.length;
+		const binSize = (max - min) / numColors; // Auto bin size
+		const autoBins = Array.from({ length: numColors + 1 }, (_, i) => min + i * binSize);
+		const binLabels = autoBins.slice(0, -1).map((start, i) => `${start} - ${autoBins[i + 1]}`);
+		layerController.updateState({
+			bins: binLabels,
+		});
+	};
 
 	return props;
 }
@@ -821,7 +856,9 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 		};
 		// props.textMaxWidth = 5;
 		props.pointType = 'text';
-		if (dbLayer.layerPaintProps?.[0]?.paintType === 'circle') {props.pointType = 'circle+text';}
+		if (dbLayer.layerPaintProps?.[0]?.paintType === 'circle') {
+			props.pointType = 'circle+text';
+		}
 
 		props.textFontFamily = 'Poppins';
 		// props.textSizeUnits = 'meters';

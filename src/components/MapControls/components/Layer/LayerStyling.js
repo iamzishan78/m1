@@ -30,6 +30,8 @@ import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
 import AttrsFillStyleDropdown from './LayerAttributes/AttrsFillStyleDropdown';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
 import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
+import ColorPaletteGrid, { colorPalettes } from './LayerAttributes/ColorPaletteGrid';
+import ColorScaleDropdown from './LayerAttributes/ColorScaleDropdown';
 import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
 
 function LayerStyling() {
@@ -41,6 +43,7 @@ function LayerStyling() {
 		width,
 		fillColor,
 		aggregation,
+		selectedPalette,
 		colorScaleType,
 		fillStyle,
 		lineStyle,
@@ -81,6 +84,7 @@ function LayerStyling() {
 				: ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['circle-stroke-color']);
 	const initialAggregation = selectedLayer.layerSettings?.aggregation || 'SUM';
 	const initialColorScaleType = selectedLayer.layerSettings?.colorScaleType || 'quantize';
+	const initialSelectedPalette = selectedLayer.layerSettings?.selectedPalette || colorPalettes[0];
 
 	let initialWidth;
 	if (layerType === 'circle') {
@@ -160,7 +164,8 @@ function LayerStyling() {
 			selectedLayer.layerSettings?.fillStyle !== fillStyle ||
 			selectedLayer.layerSettings?.lineStyle !== lineStyle ||
 			selectedLayer.layerSettings?.aggregation !== aggregation ||
-			selectedLayer.layerSettings?.colorScaleType !== colorScaleType
+			selectedLayer.layerSettings?.colorScaleType !== colorScaleType ||
+			!_.isEqual(selectedLayer.layerSettings?.selectedPalette, selectedPalette)
 		) {
 			let { currentLayer } = layerStylingController.handleLayerChange(selectedLayer);
 			const currentLayers = [...hookStateAppLayers];
@@ -218,6 +223,7 @@ function LayerStyling() {
 		elevationScale,
 		fillColor,
 		aggregation,
+		selectedPalette,
 		colorScaleType,
 		fillStyle,
 		lineStyle,
@@ -237,6 +243,7 @@ function LayerStyling() {
 		layerStylingController.setFillColor(initialFillColor);
 		layerStylingController.setAggregation(initialAggregation);
 		layerStylingController.setColorScaleType(initialColorScaleType);
+		layerStylingController.setSelectedPalette(initialSelectedPalette);
 		layerStylingController.setStrokeColor(initialStrokeColor);
 		layerStylingController.setFillStyle(selectedLayer.layerSettings?.fillStyle);
 		layerStylingController.setLineStyle(selectedLayer.layerSettings?.lineStyle);
@@ -247,6 +254,7 @@ function LayerStyling() {
 		layerStylingController.setFillColor(initialFillColor);
 		layerStylingController.setAggregation(initialAggregation);
 		layerStylingController.setColorScaleType(initialColorScaleType);
+		layerStylingController.setSelectedPalette(initialSelectedPalette);
 		layerStylingController.setStrokeColor(initialStrokeColor);
 		layerStylingController.setFillStyle(selectedLayer.layerSettings?.fillStyle);
 		layerStylingController.setLineStyle(selectedLayer.layerSettings?.lineStyle);
@@ -429,17 +437,20 @@ function LayerStyling() {
 											options={['linear', 'quantize', 'quantile', 'ordinal']}
 											setAggregation={layerStylingController.setColorScaleType}
 										/>
-										{/* <AttrsValuesDropdown
-											selectedValue={selectedValue}
-											selectedLayer={selectedLayer}
-											fillColor={fillColor}
-											setFillColor={value => layerStylingController.setFillColor(value)}
-											attributeBasedColors={attributeBasedColors}
-											setAttributeBasedColors={value => layerStylingController.setAttributeBasedColors(value)}
-										/> */}
+										<ColorScaleDropdown />
 									</>
 								)}
 								<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
+
+								<>
+									<Typography variant="h6" style={{ marginBottom: '10px' }}>
+										Color Palette
+									</Typography>
+									<ColorPaletteGrid
+										selectedPalette={selectedPalette || colorPalettes[0]}
+										setSelectedPalette={layerStylingController.setSelectedPalette}
+									/>
+								</>
 							</Grid>
 
 							{/* dropdown for fill style selection */}
