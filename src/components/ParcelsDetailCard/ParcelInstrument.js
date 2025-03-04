@@ -689,7 +689,11 @@ export default function ParcelInstrument(props) {
 						>
 							<h4>Effective Date</h4>
 							<CustomDatePicker
-								fieldAttributes={{ value: newInstrument?.effectiveDate }}
+								fieldAttributes={{
+									value: newInstrument?.effectiveDate,
+									placeholder: 'MM/DD/YYYY',
+									format: 'MM/DD/YYYY',
+								}}
 								fieldEvents={{
 									onChange: value => {
 										setNewInstrument({
@@ -712,7 +716,11 @@ export default function ParcelInstrument(props) {
 						>
 							<h4>Instrument Date</h4>
 							<CustomDatePicker
-								fieldAttributes={{ value: newInstrument?.executionDate }}
+								fieldAttributes={{
+									value: newInstrument?.executionDate,
+									placeholder: 'MM/DD/YYYY',
+									format: 'MM/DD/YYYY',
+								}}
 								fieldEvents={{
 									onChange: value => {
 										setNewInstrument({
@@ -735,7 +743,11 @@ export default function ParcelInstrument(props) {
 						>
 							<h4>File Date</h4>
 							<CustomDatePicker
-								fieldAttributes={{ value: newInstrument?.fileDate }}
+								fieldAttributes={{
+									value: newInstrument?.fileDate,
+									placeholder: 'MM/DD/YYYY',
+									format: 'MM/DD/YYYY',
+								}}
 								fieldEvents={{
 									onChange: value => {
 										setNewInstrument({
