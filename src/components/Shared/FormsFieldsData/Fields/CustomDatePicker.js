@@ -27,6 +27,7 @@ function CustomDatePicker({
 	fieldAttributes: {
 		name = '',
 		value: _value = null,
+		format = null,
 		label = null,
 		title = null,
 		titleComponent = 'h3',
@@ -37,6 +38,7 @@ function CustomDatePicker({
 		InputLabelProps = {},
 		layout = 'vertical',
 		spacing = 2,
+		minDate,
 	} = {},
 	...propsRest
 }) {
@@ -84,6 +86,8 @@ function CustomDatePicker({
 		return (
 			<PickerComponent
 				label={label}
+				format={format}
+				minDate={minDate ? dayjs(minDate) : null}
 				value={fieldValue ? dayjs(fieldValue) : null}
 				onChange={newValue => {
 					setValue(newValue);

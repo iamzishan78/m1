@@ -4,11 +4,11 @@ import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { KeyboardDatePicker } from '@material-ui/pickers';
 
 import useQueryCountiesByState from '../../../graphQL/useQueryCountiesByState';
 import stateNamesAb from '../../Navigation/components/Utils/USAStates';
 import { TitleOpinionContext } from '../TitleOpinionContext';
+import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -210,24 +210,24 @@ export default function GeneralInfoForm() {
 						/>
 					</Grid>
 					<Grid item xs={4}>
-						<KeyboardDatePicker
-							label="Certified Date"
-							className={classes.maxWidth}
-							inputVariant="outlined"
-							autoOk
-							variant="inline"
-							value={TOData.certifiedDate}
-							onChange={date => {
-								setStateTitleOpinion({
-									...stateTitleOpinion,
-									edited: true,
-									TOData: {
-										...TOData,
-										certifiedDate: date.format('MM-DD-YYYY'),
-									},
-								});
+						<CustomDatePicker
+							fieldAttributes={{
+								label: 'Certified Date',
+								value: TOData.certifiedDate,
+								format: 'MM-DD-YYYY',
 							}}
-							format="MM-DD-YYYY"
+							fieldEvents={{
+								onChange: date => {
+									setStateTitleOpinion({
+										...stateTitleOpinion,
+										edited: true,
+										TOData: {
+											...TOData,
+											certifiedDate: date.format('MM-DD-YYYY'),
+										},
+									});
+								},
+							}}
 						/>
 					</Grid>
 				</Grid>
