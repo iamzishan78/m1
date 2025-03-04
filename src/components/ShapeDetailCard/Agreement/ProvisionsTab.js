@@ -31,7 +31,7 @@ import {
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
 import { Autocomplete } from '@material-ui/lab';
-import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import debounce from 'lodash/debounce';

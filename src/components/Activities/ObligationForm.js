@@ -7,8 +7,8 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
-import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
-import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
 import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';

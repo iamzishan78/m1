@@ -6,7 +6,7 @@ import { styled } from '@mui/system';
 
 import PropTypes from 'prop-types';
 
-import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 
 import NameWithTooltip from '../../SidePanel/compoennts/Common/NameWithTooltip';
 

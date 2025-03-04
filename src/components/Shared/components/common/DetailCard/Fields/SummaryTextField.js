@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Autorenew as AutorenewIcon } from '@material-ui/icons';
 
 import { isEqual } from 'lodash';
-import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';

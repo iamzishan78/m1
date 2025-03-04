@@ -31,7 +31,7 @@ import loadashFilter from 'lodash/filter';
 import PropTypes from 'prop-types';
 
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
-import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import UploadZone from 'components/Shared/UploadZone';

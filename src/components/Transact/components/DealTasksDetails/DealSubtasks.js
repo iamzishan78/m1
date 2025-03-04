@@ -29,7 +29,7 @@ import { useMutation } from '@apollo/client';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import PropTypes from 'prop-types';
 
-import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 
 import { UPDATE_DEAL_SUBTASK } from 'graphQL/useMutationDealSubtask';

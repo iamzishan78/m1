@@ -7,14 +7,14 @@ import PropTypes from 'prop-types';
 
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
-import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
-import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import AutoCompleteComponent from 'components/Shared/components/Fields/AutoComplete';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 
 import { sideDialogController } from 'controllers/sideDialogController';
 
 import AutoCompleteNewOption from './Fields/AutoCompleteNewOption';
-import CustomDatePicker from './Fields/CustomDatePicker';
+import CustomDatePicker from '../components/Fields/CustomDatePicker';
 import StartEndDate from './Fields/StartEndDate';
 
 function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {

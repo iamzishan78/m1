@@ -4,7 +4,7 @@ import { Grid } from '@mui/material';
 
 import PropTypes from 'prop-types';
 
-import CustomDatePicker from './CustomDatePicker';
+import CustomDatePicker from '../../components/Fields/CustomDatePicker';
 
 function StartEndDate({ control, item, watch, error }) {
 	const { onStartDateChange, onEndDateChange, disabled = false, required = false } = item || {};
