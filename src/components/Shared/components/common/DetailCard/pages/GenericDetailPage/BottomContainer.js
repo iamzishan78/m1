@@ -19,7 +19,7 @@ const BottomContainer = () => {
 		stateValues: { currentAssetRecord },
 	} = detailCardController.useState(['currentAssetRecord']);
 
-	const tableHeight = 'calc(70vh - 200px)';
+	const tableHeight = 'calc(70vh - 100px)';
 
 	const transformAssociatedModels = useCallback(
 		models => {

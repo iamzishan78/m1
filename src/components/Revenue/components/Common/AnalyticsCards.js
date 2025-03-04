@@ -107,6 +107,8 @@ export default function AnalyticsCards({
 	const classes = useStyles();
 	const [isFiltered, setFiltered] = useState([]);
 	const [cards, setCards] = useState(cardsDefault);
+	const [isApprovedCountLoading, setIsApprovedCountLoading] = useState(true);
+	const [isActiveCountLoading, setIsActiveCountLoading] = useState(true);
 
 	const aggsKey = useRef(null);
 
@@ -157,7 +159,7 @@ export default function AnalyticsCards({
 		return myDate.toISOString();
 	};
 
-	const [getAggsActiveCount, { loading: activeCountLoading }] = useLazyQuery(GET_DB_AGGS, {
+	const [getAggsActiveCount] = useLazyQuery(GET_DB_AGGS, {
 		context: { batch: true },
 		fetchPolicy: 'no-cache',
 		onCompleted: aggsData => {
@@ -172,10 +174,11 @@ export default function AnalyticsCards({
 				cards[2].points = totalCount - count;
 				setCards(cards);
 			}
+			setIsActiveCountLoading(false);
 		},
 	});
 
-	const [getAggsApprovedCount, { loading: approvedCountLoading }] = useLazyQuery(GET_DB_AGGS, {
+	const [getAggsApprovedCount] = useLazyQuery(GET_DB_AGGS, {
 		context: { batch: true },
 		fetchPolicy: 'no-cache',
 		onCompleted: aggsData => {
@@ -196,6 +199,7 @@ export default function AnalyticsCards({
 				cards[3].points = unmappedPropertyCount;
 				setCards(cards);
 			}
+			setIsApprovedCountLoading(false);
 		},
 	});
 
@@ -314,7 +318,7 @@ export default function AnalyticsCards({
 										<div>1</div>
 									</div>
 								)}
-								{activeCountLoading || approvedCountLoading ? (
+								{isApprovedCountLoading || isActiveCountLoading ? (
 									<CircularProgress size={40} color="secondary" />
 								) : (
 									<Typography

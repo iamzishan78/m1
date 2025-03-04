@@ -7,8 +7,8 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
+import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
-import DateField from 'components/Shared/Slideout/FieldComponents/DateField';
 import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
 import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
@@ -372,8 +372,24 @@ export default function ObligationForm({ setSelectedActivityId }) {
 
 				<FormControl variant="outlined" fullWidth size="small">
 					<Grid container className={classes.gridStyle}>
-						<DateField disabled={true} title="Start Date" date={startDate} setDate={() => {}} />
-						<DateField disabled={true} title="End Date" date={endDate} setDate={() => {}} />
+						<CustomDatePicker
+							{...commonTextFieldProps}
+							fieldAttributes={{
+								...commonTextFieldProps.fieldAttributes,
+								name: 'startDate',
+								title: 'Start Date',
+								value: startDate,
+							}}
+						/>
+						<CustomDatePicker
+							{...commonTextFieldProps}
+							fieldAttributes={{
+								...commonTextFieldProps.fieldAttributes,
+								name: 'endDate',
+								title: 'End Date',
+								value: endDate,
+							}}
+						/>
 					</Grid>
 				</FormControl>
 

@@ -23,7 +23,10 @@ const useStyles = makeStyles(() => ({
 	},
 	cardNumberTypography: {
 		fontWeight: 900,
-		fontSize: 'xx-large',
+		fontSize: 'x-large',
+		wordBreak: 'break-word', // Allows breaking long words
+		overflowWrap: 'break-word', // Ensures wrapping inside a container
+		whiteSpace: 'normal', // Prevents single-line overflow
 	},
 	cardContent: {
 		display: 'flex',

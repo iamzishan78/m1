@@ -7,14 +7,13 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import get from 'lodash/get';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
 import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
+import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
-import DateField from 'components/Shared/Slideout/FieldComponents/DateField';
 import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
 import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
 import SearchableSelectField from 'components/Shared/Slideout/FieldComponents/searchableSelectField';
@@ -170,14 +169,7 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-const getCurrentDate = () => {
-	const d = new Date().toISOString();
-	return d.slice(0, d.indexOf('T'));
-};
-
-const mergeDateAndTime = (d, t) => {
-	return `${d}T${t}`;
-};
+const getCurrentDate = () => new Date().toISOString();
 
 const activityStatusOptions = [
 	{ label: 'Open', value: false },
@@ -205,19 +197,16 @@ export default function ActivityForm({ setSelectedActivityId }) {
 		'selectedActivity',
 	]);
 	const activityName = title;
-	const { activityType, outcome, startDate, endDate, owner, dealId, status, notes, startTime, endTime } =
-		formStateController.useState([
-			'activityType',
-			'outcome',
-			'startDate',
-			'endDate',
-			'owner',
-			'dealId',
-			'status',
-			'notes',
-			'startTime',
-			'endTime',
-		]);
+	const { activityType, outcome, startDate, endDate, owner, dealId, status, notes } = formStateController.useState([
+		'activityType',
+		'outcome',
+		'startDate',
+		'endDate',
+		'owner',
+		'dealId',
+		'status',
+		'notes',
+	]);
 	const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
 	const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
 
@@ -255,8 +244,6 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			status: false,
 			startDate: getCurrentDate(),
 			endDate: getCurrentDate(),
-			startTime: '08:00',
-			endTime: '08:00',
 		});
 
 		slidoutStateController.updateTitle('');
@@ -381,10 +368,8 @@ export default function ActivityForm({ setSelectedActivityId }) {
 				activityType: activity.type,
 				status: activity.isClosed,
 				outcome: activity.outcome,
-				startTime: moment.parseZone(activity.start).format('HH:mm'),
-				endTime: moment.parseZone(activity.end).format('HH:mm'),
-				startDate: moment.parseZone(activity.start).format('YYYY-MM-DD'),
-				endDate: moment.parseZone(activity.end).format('YYYY-MM-DD'),
+				startDate: activity.start,
+				endDate: activity.end,
 			});
 
 			setNameAutValue({
@@ -409,8 +394,6 @@ export default function ActivityForm({ setSelectedActivityId }) {
 				status: status || false,
 				startDate: startDate || getCurrentDate(),
 				endDate: endDate || getCurrentDate(),
-				startTime: '08:00',
-				endTime: '08:00',
 			});
 
 			setNameAutValue({ name: activityName, _id: null });
@@ -435,8 +418,6 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			return;
 		}
 		globalStateController.updateState({ universalLoader: true });
-		const dateTime = mergeDateAndTime(startDate, startTime);
-		const endDateTime = mergeDateAndTime(endDate, endTime);
 
 		await addActivityMutation({
 			variables: {
@@ -450,8 +431,8 @@ export default function ActivityForm({ setSelectedActivityId }) {
 					contactId: nameAutValue._id,
 					contactName: nameAutValue.name,
 					dealId: dealId,
-					dateTime: new Date(dateTime).toUTCString(),
-					endDateTime: new Date(endDateTime).toUTCString(),
+					dateTime: new Date(startDate).toUTCString(),
+					endDateTime: new Date(endDate).toUTCString(),
 					isClosed: status,
 					user: stateApp.user._id,
 					createdBy: stateApp?.user?._id,
@@ -463,8 +444,6 @@ export default function ActivityForm({ setSelectedActivityId }) {
 
 	const updateActivity = async () => {
 		globalStateController.updateState({ universalLoader: true });
-		const dateTime = mergeDateAndTime(startDate, startTime);
-		const endDateTime = mergeDateAndTime(endDate, endTime);
 
 		updateActivityMutation({
 			variables: {
@@ -472,8 +451,8 @@ export default function ActivityForm({ setSelectedActivityId }) {
 					_id: selectedActivity?._id,
 					type: activityType,
 					name: activityName,
-					dateTime: new Date(dateTime).toUTCString(),
-					endDateTime: new Date(endDateTime).toUTCString(),
+					dateTime: new Date(startDate).toUTCString(),
+					endDateTime: new Date(endDate).toUTCString(),
 					notes: notes,
 					outcome: outcome,
 					ownerId: owner?.id,
@@ -559,32 +538,47 @@ export default function ActivityForm({ setSelectedActivityId }) {
 					</Grid>
 				</Grid>
 			</FormControl>
-			<FormControl variant="outlined" fullWidth size="small">
-				<Grid container className={classes.gridStyle} style={{ marginTop: '10px' }}>
-					<DateField
-						title="Start Date"
-						date={startDate}
-						time={startTime}
-						setDate={value => {
-							formStateController.updateState({ startDate: value, endDate: value });
-						}}
-						setTime={value => {
-							formStateController.updateState({ startTime: value, endTime: value });
-						}}
-						isTime={true}
-					/>
-				</Grid>
-				<Grid container className={classes.gridStyle} style={{ marginTop: '10px' }}>
-					<DateField
-						title="End Date"
-						date={endDate}
-						time={endTime}
-						setDate={value => formStateController.updateState({ endDate: value })}
-						setTime={value => formStateController.updateState({ endTime: value })}
-						isTime={true}
-					/>
-				</Grid>
-			</FormControl>
+
+			<CustomDatePicker
+				fieldAttributes={{
+					name: 'startDate',
+					title: 'Start Date',
+					value: startDate,
+					titleComponent: 'div',
+					layout: 'horizontal',
+				}}
+				fieldConfig={{
+					hasTime: true,
+					margin: 'dense',
+					variant: 'outlined',
+					size: 'small',
+				}}
+				fieldEvents={{
+					onChange: value => {
+						formStateController.updateState({ startDate: value.toDate() });
+					},
+				}}
+			/>
+			<CustomDatePicker
+				fieldAttributes={{
+					name: 'endDate',
+					title: 'End Date',
+					value: endDate,
+					titleComponent: 'div',
+					layout: 'horizontal',
+				}}
+				fieldConfig={{
+					hasTime: true,
+					margin: 'dense',
+					variant: 'outlined',
+					size: 'small',
+				}}
+				fieldEvents={{
+					onChange: value => {
+						formStateController.updateState({ endDate: value.toDate() });
+					},
+				}}
+			/>
 
 			<OwnerField
 				title="Owner"

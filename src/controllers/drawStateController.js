@@ -836,7 +836,7 @@ class DrawStateControllerHandler extends StateController {
 		const layer = currentAsset?.tableName;
 
 		const layers = globalStateController.getValue('layers');
-		const featureLayer = layers.find(l => {
+		const featureLayer = layers?.find(l => {
 			return l.layerSettings?.showable && l.layerSettings?.visiable && l.identifier.startsWith(currentAsset?.name);
 		});
 

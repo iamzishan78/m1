@@ -280,12 +280,13 @@ export default function AgreementDetailCard(props) {
 		});
 	};
 
+	const maxTableHeight = 'calc(100vh - 400px)';
 	// Table overridden meta
 	const RelatedUnitsOverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
 			CustomToolBar: AgreementRelatedUnitsToolbar,
-			maxTableHeight: 'calc(60vh - 200px)',
+			maxTableHeight,
 			customProps: { customLayer: uniObj },
 		}),
 		[uniObj]
@@ -293,7 +294,7 @@ export default function AgreementDetailCard(props) {
 
 	const RelatedDocumentsOverrideMeta = useMemo(
 		() => ({
-			maxTableHeight: 'calc(50vh - 100px)',
+			maxTableHeight,
 			gridViewSettings: null,
 			fetchMetaData: null,
 			defaultFilters: [{ field: 'shapeObj._id', value: uniObj?._id }],
@@ -325,7 +326,7 @@ export default function AgreementDetailCard(props) {
 
 	const RelatedWellsOverrideMeta = useMemo(
 		() => ({
-			maxTableHeight: 'calc(50vh - 100px)',
+			maxTableHeight,
 			tabLabels: ['Agreement Wells', 'Potential Wells'],
 			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
 			customProps: { customLayer: uniObj, shapeType: 'Agreement' },
@@ -439,7 +440,7 @@ export default function AgreementDetailCard(props) {
 								<TabPanels
 									value={selectedTableTab}
 									panels={[
-										<div className={showSummary ? classes.subContent : classes.subContent2}>
+										<div>
 											<RelatedWellsTable
 												id="relatedWellsTable"
 												overrideMeta={RelatedWellsOverrideMeta}
@@ -447,10 +448,11 @@ export default function AgreementDetailCard(props) {
 												customLayer={uniObj}
 											/>
 										</div>,
-										<div className={showSummary ? classes.subContent : classes.subContent2}>
+										<div>
 											<MRTTable
 												name="PotentialWellsTable"
 												overrideMeta={{
+													maxTableHeight,
 													tabLabels: ['Agreement Wells', 'Potential Wells'],
 													customProps: {
 														customLayer: uniObj,
@@ -462,7 +464,7 @@ export default function AgreementDetailCard(props) {
 									]}
 								/>
 							</div>,
-							<div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
+							<div>
 								<RelatedDocumentsTable
 									id="relatedDocumentsTable"
 									moduleId={uniObj?._id}

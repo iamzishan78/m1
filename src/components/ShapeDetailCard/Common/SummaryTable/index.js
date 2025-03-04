@@ -20,9 +20,9 @@ import CountyField from 'components/Revenue/components/Properties/DetailComponen
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { summaryTableStyles } from 'components/ShapeDetailCard/style';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
-import DateField from 'components/Shared/components/Fields/DateField';
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
+import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
 import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
 import CustomTypography from 'components/Shared/FormsFieldsData/Fields/CustomTypography';
 import { copy } from 'components/Shared/functions';
@@ -106,7 +106,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 }
 
 function EditIconComponent({ data, dataKey, classes, onClick }) {
-	const editIconState = globalStateController.useState(['editIconState']);
+	const { editIconState } = globalStateController.useState(['editIconState']);
 	const state = editIconState[dataKey];
 
 	return (
@@ -140,8 +140,6 @@ export default function SummaryTableInfo({
 	const [tableDataState, setTableDataState] = useState({});
 	const [state, setState] = useState();
 	const [county, setCounty] = useState();
-
-	const editIconState = globalStateController.useState(['editIconState']);
 
 	const [filteredTableData, setFilteredTableData] = useState(tableData);
 
@@ -380,7 +378,6 @@ export default function SummaryTableInfo({
 								onMouseEnter={() => {
 									globalStateController.updateState({
 										editIconState: {
-											...editIconState,
 											[`${data.key}key`]: true,
 										},
 									});
@@ -388,7 +385,6 @@ export default function SummaryTableInfo({
 								onMouseLeave={() => {
 									globalStateController.updateState({
 										editIconState: {
-											...editIconState,
 											[`${data.key}key`]: false,
 										},
 									});
@@ -453,16 +449,14 @@ export default function SummaryTableInfo({
 								onMouseEnter={() => {
 									globalStateController.updateState({
 										editIconState: {
-											...editIconState,
-											[`${data.key}key`]: true,
+											[data.key]: true,
 										},
 									});
 								}}
 								onMouseLeave={() => {
 									globalStateController.updateState({
 										editIconState: {
-											...editIconState,
-											[`${data.key}key`]: false,
+											[data.key]: false,
 										},
 									});
 								}}
@@ -589,16 +583,22 @@ export default function SummaryTableInfo({
 											/>
 										)}
 										{data.type === 'date' && (
-											<DateField
+											<CustomDatePicker
 												id={`field-${data.key}`}
-												index={index}
-												field={data}
-												fieldKey={data.key}
-												defaultValue={get(tableTempProperties, `${data.key}`, '')}
-												offClickHandler={(key, value) => {
-													set(tableTempProperties, key, value);
-													setTableTempProperties(tableTempProperties);
-													updateProperties(null, key, value);
+												fieldAttributes={{
+													name: data.key,
+													value: get(tableTempProperties, `${data.key}`, ''),
+												}}
+												fieldConfig={{
+													variant: 'standard',
+													size: 'small',
+												}}
+												fieldEvents={{
+													onChange: newValue => {
+														set(tableTempProperties, data.key, newValue.toDate());
+														setTableTempProperties({ ...tableTempProperties });
+														updateProperties?.(null, data.key, newValue.toDate());
+													},
 												}}
 											/>
 										)}

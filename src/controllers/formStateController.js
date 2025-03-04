@@ -1,9 +1,6 @@
 import { StateController } from './stateController';
 
-const getCurrentDate = () => {
-	const d = new Date().toISOString();
-	return d.slice(0, d.indexOf('T'));
-};
+const getCurrentDate = () => new Date().toISOString();
 
 export const formInitialState = {
 	activityType: 'Call',
@@ -16,8 +13,6 @@ export const formInitialState = {
 	nameAutValue: { name: '', _id: null },
 	status: false,
 	notes: '',
-	startTime: '08:00',
-	endTime: '08:00',
 	frequency: '',
 	applicable: '',
 	obligationValue: '',
