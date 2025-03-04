@@ -33,7 +33,7 @@ function CustomDatePicker({
 		titleComponent = 'h3',
 		inputRef = null,
 		helperText = '',
-		placeholder = '',
+		placeholder = 'MM/DD/YYYY',
 		InputProps = {},
 		InputLabelProps = {},
 		layout = 'vertical',
