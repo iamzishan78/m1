@@ -674,7 +674,7 @@ export const bypassTenants = [
 	'wildbasin',
 	'covenant',
 	'sansaba',
-	'farmers'
+	'farmers',
 	// "m1Production",
 	// "m1Development",
 	// "GHR",
