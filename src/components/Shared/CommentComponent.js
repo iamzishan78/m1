@@ -805,8 +805,11 @@ export default function CommentComponent(props) {
 
 							{commentsArray.map((eachComment, index) => {
 								let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
+
+								const commentorText = eachComment?.user?.name || eachComment?.user?.email;
+								
 								return (
-									eachComment?.user?.name && (
+									commentorText && (
 										<Fragment key={index}>
 											{(showAllComments || index >= indexToShow) && (
 												<Grid
@@ -830,7 +833,7 @@ export default function CommentComponent(props) {
 																	round
 																/>
 															) : (
-																<Avatar name={eachComment?.user?.name} size="38" round />
+																<Avatar name={commentorText} size="38" round />
 															)}
 														</IconButton>
 													</Grid>
@@ -842,7 +845,7 @@ export default function CommentComponent(props) {
 														}
 													>
 														<div>
-															<span className={classes.bold}>{eachComment?.user?.name}</span>
+															<span className={classes.bold}>{commentorText}</span>
 															{eachComment?.commentType?.commentType === 'unitCreation' && (
 																<span style={{ display: 'inline-block', marginLeft: '8px' }}>
 																	{eachComment?.comment}
