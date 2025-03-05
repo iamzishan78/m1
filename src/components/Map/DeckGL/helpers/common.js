@@ -694,6 +694,7 @@ export function getHexLayerProps(dbLayer) {
 	props.getElevationValue = points => points.length;
 	props.radius = dbLayer.layerSettings?.binsWidth * 10 || 200;
 	props.elevationScale = dbLayer.layerSettings?.elevationScale || 4;
+	props.colorScaleType = dbLayer.layerSettings?.colorScaleType || 'quantize';
 
 	props.colorRange = dbLayer.layerSettings?.selectedPalette;
 	props.onSetColorDomain = domain => {
@@ -720,8 +721,8 @@ export function getHeatMapLayerProps(dbLayer) {
 
 	const props = {};
 	props.aggregation = aggregation;
-	props.getPosition = d => d.geometry.coordinates;
-	props.getWeight = d => d.properties.DBH;
+	props.getPosition = d => d.COORDINATES;
+	props.getWeight = d => d.RACKS;
 	props.radiusPixels = dbLayer.layerSettings?.binsWidth * 10 || 50;
 	props.colorRange = dbLayer.layerSettings?.selectedPalette;
 	return props;
@@ -743,6 +744,7 @@ export function getGridLayerProps(dbLayer) {
 	props.getElevationValue = points => points.length;
 	props.cellSize = dbLayer.layerSettings?.binsWidth * 10 || 200;
 	props.elevationScale = dbLayer.layerSettings?.elevationScale || 4;
+	props.colorScaleType = dbLayer.layerSettings?.colorScaleType || 'quantize';
 
 	props.colorRange = dbLayer.layerSettings?.selectedPalette;
 	props.onSetColorDomain = domain => {

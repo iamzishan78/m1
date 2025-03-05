@@ -8,7 +8,8 @@ import { layerController } from 'controllers/layerStateController';
 // Styles for AttrsValuesDropdown
 const useStyles = makeStyles(() => ({
 	dropdownContainer: {
-		width: '485px',
+		width: '475px',
+		margin: '15px 0px 0px 0px',
 		position: 'relative',
 		fontFamily: 'Arial, sans-serif',
 	},

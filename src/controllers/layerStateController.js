@@ -210,7 +210,6 @@ const LayerMeta = {
 			getProps: layerId => {
 				return {
 					data: deckLayers[layerId].getData([]),
-					colorScaleType: 'quantize',
 				};
 			},
 		},
@@ -245,7 +244,6 @@ const LayerMeta = {
 			getProps: layerId => {
 				return {
 					data: deckLayers[layerId].getData([]),
-					colorScaleType: 'quantize',
 				};
 			},
 		},
