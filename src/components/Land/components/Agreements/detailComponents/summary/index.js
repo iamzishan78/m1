@@ -10,7 +10,7 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
 import PropTypes from 'prop-types';
 
-import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField.js';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField.js';
 import AgreementIcon from 'components/Shared/svgIcons/agreements';
 import TractIcon from 'components/Shared/svgIcons/tract';
 import WellIcon from 'components/Shared/svgIcons/well';

@@ -13,8 +13,8 @@ import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOp
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
 import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
-import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
-import CustomTypography from 'components/Shared/FormsFieldsData/Fields/CustomTypography';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
+import CustomTypography from 'components/Shared/components/Fields/CustomTypography';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
@@ -1203,7 +1203,7 @@ class TableESStateControllerHandler extends StateController {
 		if (selectedView?.filters?.length) {
 			Controller.setShowColumnFilters(true);
 			Controller.clearFilters();
-			selectedView.filters.forEach(filter => Controller.setFilter(filter));
+			Controller.setFilters(selectedView?.filters);
 		} else {
 			Controller.setShowColumnFilters(false);
 			Controller.clearFilters();

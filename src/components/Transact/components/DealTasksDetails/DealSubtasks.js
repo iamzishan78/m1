@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Flipper, Flipped } from 'react-flip-toolkit';
-import { ContextProvider } from 'react-sortly';
-import Sortly, { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
+import Sortly, { ContextProvider, useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
 
 import {
 	Grid,
@@ -25,18 +24,19 @@ import {
 	Close as CloseIcon,
 	Edit as EditIcon,
 } from '@material-ui/icons';
-import { KeyboardDatePicker } from '@material-ui/pickers';
 
 import { useMutation } from '@apollo/client';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import PropTypes from 'prop-types';
 
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 
 import { UPDATE_DEAL_SUBTASK } from 'graphQL/useMutationDealSubtask';
 
 import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	subTaskRoot: props => ({
 		width: '100%',
 		minHeight: '40px',
@@ -108,7 +108,6 @@ export const SubtaskItem = ({
 }) => {
 	const approver = users.find(user => user?.value === task.assignee) || {};
 	const [showTaskActions, setShow] = useState(false);
-	const [isDatePopup, setDatePopup] = useState(false);
 	const [isEdit, setEdit] = useState({ index: -1, isEditing: false, showIcon: false });
 	const onHoverTask = state => setShow(state);
 
@@ -118,7 +117,7 @@ export const SubtaskItem = ({
 				isDragging: monitor.isDragging(),
 			};
 		},
-		end(f) {
+		end() {
 			handleDragEnd();
 		},
 	});
@@ -126,12 +125,6 @@ export const SubtaskItem = ({
 	const [, drop] = useDrop();
 	const classes = useStyles({ muted: useIsClosestDragging() || isDragging, task });
 	const [timeframe, setTimeframe] = useState();
-
-	useEffect(() => {
-		if (!showTaskActions) {
-			setDatePopup(false);
-		}
-	}, [showTaskActions]);
 
 	return (
 		<Flipped flipId={task.id}>
@@ -291,22 +284,20 @@ export const SubtaskItem = ({
 									!isTemplate &&
 									(task.dueDate || showTaskActions) && (
 										<span className={classes.taskTemplateDatePopover}>
-											<KeyboardDatePicker
-												disableToolbar
-												variant="inline"
-												format="MM/DD/YY"
-												margin="normal"
-												allowKeyboardControl={false}
-												value={task.dueDate || ''}
-												emptyLabel
-												disabled
-												keyboardIcon={task.dueDate && <></>}
-												open={isDatePopup}
-												onClick={() => setDatePopup(!isDatePopup)}
-												onClose={() => setDatePopup(!isDatePopup)}
-												onChange={date => {
-													handleUpdateSubtask({ ...task, dueDate: date ? String(date['_d']) : '' });
-													setDatePopup(!isDatePopup);
+											<CustomDatePicker
+												fieldAttributes={{
+													name: 'dueDate',
+													value: task.dueDate || '',
+												}}
+												fieldConfig={{
+													variant: 'outlined',
+													fullWidth: true,
+													iconOnly: true,
+												}}
+												fieldEvents={{
+													onChange: value => {
+														handleUpdateSubtask({ ...task, dueDate: value.toDate() });
+													},
 												}}
 											/>
 										</span>
@@ -341,6 +332,7 @@ export const SubtaskItem = ({
 														<List style={{ maxHeight: 450 }}>
 															{users.map(user => (
 																<ListItem
+																	key={user.value}
 																	button
 																	onClick={() => {
 																		handleUpdateSubtask({
@@ -437,6 +429,24 @@ const DealSubtasks = props => {
 		</ContextProvider>
 		// </DndProvider>
 	);
+};
+
+SubtaskItem.propTypes = {
+	task: PropTypes.object,
+	handleUpdateSubtask: PropTypes.func.isRequired,
+	handleDragEnd: PropTypes.func.isRequired,
+	canDrag: PropTypes.bool,
+	isTemplate: PropTypes.bool,
+	users: PropTypes.array,
+};
+
+DealSubtasks.propTypes = {
+	tasks: PropTypes.array,
+	users: PropTypes.array,
+	canDrag: PropTypes.bool,
+	isTemplate: PropTypes.bool,
+	currentStage: PropTypes.string,
+	data: PropTypes.array,
 };
 
 export default DealSubtasks;

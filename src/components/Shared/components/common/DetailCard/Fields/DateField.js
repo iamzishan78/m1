@@ -7,7 +7,7 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
-import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 
 import { detailCardController } from 'controllers/detailCardController';
 

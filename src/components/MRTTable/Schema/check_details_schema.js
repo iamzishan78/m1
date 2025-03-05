@@ -46,6 +46,7 @@ const CheckDetailsMeta = {
 		table.setCreatingRow(null);
 	},
 	onCreatingRowSave: async ({ row, table, values, exitCreatingMode }) => {
+		const activeStatement = globalStateController.getValue('activeStatement');
 		const client = globalStateController.getValue('client');
 
 		const Controller = tableController('CheckDetailsTable');
@@ -77,7 +78,7 @@ const CheckDetailsMeta = {
 		}
 
 		await client.mutate({
-			variables: { checkDetail: { ...obj } },
+			variables: { checkDetail: { ...obj, check: activeStatement?._id } },
 			mutation: UPDATE_CHECK_DETAIL,
 		});
 

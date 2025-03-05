@@ -29,8 +29,8 @@ import CountyField from 'components/Revenue/components/Properties/DetailComponen
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
-import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
-import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 
 import { globalStateController } from 'controllers/globalStateController';
 import { popupController } from 'controllers/popupStateController';
@@ -272,6 +272,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 										<CustomDatePicker
 											control={control}
 											id={`field-${field.key}`}
+											fieldConfig={{
+												margin: 'dense',
+											}}
 											fieldAttributes={{
 												name: field.key,
 												value: get(agreementDetails, `${field.key}`, ''),

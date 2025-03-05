@@ -14,7 +14,7 @@ import { SUMMARY_FIELDS, featureFlagChanges, contactStatusOptions } from 'compon
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { NumberFormatComma } from 'components/Shared/Forms/Formatting/NumberFormatComma';
-import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';

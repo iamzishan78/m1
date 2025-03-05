@@ -24,8 +24,8 @@ import useStyles from 'components/ContactDetailCard/components/FieldContent/styl
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
-import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
-import CustomTypography from 'components/Shared/FormsFieldsData/Fields/CustomTypography';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
+import CustomTypography from 'components/Shared/components/Fields/CustomTypography';
 import { formatDate } from 'components/Shared/functions';
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
 import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
