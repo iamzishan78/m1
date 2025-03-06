@@ -20,7 +20,7 @@ import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoenn
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { globalStateController } from 'controllers/globalStateController';
-import { metaDataColumnStateController } from 'controllers/MetaDataColumnsController';
+import { metaDataColumnStateController } from 'controllers/metaDataColumnsController';
 
 import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';

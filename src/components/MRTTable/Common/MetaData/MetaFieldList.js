@@ -20,7 +20,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import PropTypes from 'prop-types';
 
 import { globalStateController } from 'controllers/globalStateController';
-import { metaDataColumnStateController } from 'controllers/MetaDataColumnsController';
+import { metaDataColumnStateController } from 'controllers/metaDataColumnsController';
 import { tableController } from 'controllers/tableController';
 
 const useStyles = makeStyles(() => ({
