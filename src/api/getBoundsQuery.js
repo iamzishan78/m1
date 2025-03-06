@@ -12,6 +12,7 @@ import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { PLSSSECONDDIVISIONGEO } from 'graphQL/useQueryPLSSSecondDivisionGeo';
 
+
 const queries = {
 	Wells: {
 		queryString: GET_DB_DATA,
@@ -74,6 +75,13 @@ const handleQuery = (queryHandler, onData) => {
 	});
 };
 
+const getQuery = identifier => {
+	if (identifier.startsWith('PlatformWells - Point')) {
+		return queries['Wells'];
+	}
+	return queries[identifier] || queries['search'];
+};
+
 const getBoundsQuery = async ({
 	layerId,
 	identifier,
@@ -88,7 +96,7 @@ const getBoundsQuery = async ({
 	polygonFilter,
 	polygonsFilter,
 }) => {
-	const { isWellsQuery, isOneTimeQuery, isLandGridQuery } = queries[identifier] || queries['search'];
+	const { isWellsQuery, isOneTimeQuery, isLandGridQuery } = getQuery(identifier);
 
 	if (isOneTimeQuery) {
 		const queryHandler = {

@@ -122,13 +122,34 @@ function NewLayerManager() {
 	}, [source, selectCategory, getShapeFileSchema]);
 
 	const _datasets = useMemo(() => {
-		return layerStateValues.datasets || [];
+		const wellsSource = {
+			_id: '67c81d0894b843cd5fbbc87d',
+			sourceName: 'PlatformWells',
+			types: ['Point'],
+			public: true,
+			IsDeleted: false,
+
+			categories: [
+				{
+					name: 'PlatformWells - Point',
+					layerGeometry: 'Point',
+					layerIdentifier: 'PlatformWells - Point',
+				},
+			],
+			name: 'PlatformWells',
+			categoryCount: 1,
+			visibility: true,
+		};
+		return layerStateValues.datasets ? [...layerStateValues.datasets, wellsSource] : [];
 	}, [datasets]);
 
 	const layerCategories = useMemo(() => {
 		const dataset = layerStateValues.datasets.find(dataset => dataset.name === source?.name);
 		if (source?.name === 'M1 Platform') {
 			dataset.categories = dataset?.categories.filter(category => category.isNewLayerCreationAllowed);
+		}
+		if (source?.name === 'PlatformWells') {
+			return source?.categories;
 		}
 		return dataset?.categories || [];
 	}, [source, datasets]);

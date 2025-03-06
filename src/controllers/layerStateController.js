@@ -306,6 +306,29 @@ class LayerStateControllerHandler extends StateController {
 		NotificationManager.error(error, 'Error', 6000);
 	}
 
+	getLayerMeta(dbLayer) {
+		let meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
+		if (dbLayer?.identifier.startsWith('PlatformWells - Point') && dbLayer?.layerType !== 'point') {
+			meta = LayerMeta['Wells'];
+			meta.layer = LayerMeta[dbLayer?.layerType]?.layer;
+			meta.layer.getProps = layerId => {
+				return {
+					data: deckLayers[layerId].getData([]),
+					getPosition: d => d.geometry.geometries[0].coordinates,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
+				};
+			};
+			meta.propsFunc = LayerMeta[dbLayer?.layerType]?.propsFunc;
+			meta.props = {};
+			return meta;
+		} else if (dbLayer?.identifier.startsWith('PlatformWells - Point')) {
+			return LayerMeta['Wells'];
+		}
+		return meta;
+	}
+
 	getShowableLayers() {
 		let layers = this.getValue('layers');
 		if (layers?.length === 0) {
@@ -688,8 +711,7 @@ class LayerStateControllerHandler extends StateController {
 			return null;
 		}
 
-		const meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
-
+		const meta = this.getLayerMeta(dbLayer);
 		if (!meta?.layer) {
 			return null;
 		}

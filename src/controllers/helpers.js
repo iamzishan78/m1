@@ -24,6 +24,7 @@ import { tableController } from 'controllers/tableController';
 
 import { SMALL_TIMEOUT } from 'utils/consts';
 
+
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
 		const elements = document.querySelectorAll('ul[role="menu"] .MuiFormControlLabel-label');
@@ -410,6 +411,10 @@ export const handleMRTSchema = ({
 export const getLayerKey = (identifier, array) => {
 	// Find the key in LayerMeta that matches the prefix of the identifier
 	const key = Object.keys(array).find(metaKey => identifier?.startsWith(metaKey));
+
+	if (identifier.startsWith('PlatformWells')) {
+		return 'Wells';
+	}
 
 	// Return the corresponding value or undefined if no match is found
 	return key ? key : undefined;
