@@ -17,6 +17,27 @@ export const entityTypeOptions = [
 	{ label: 'UNKNOWN', value: 'UNKNOWN' },
 ];
 
+export const activityTypeOptions = [
+	{ label: 'Call', value: 'call' },
+	{ label: 'Text Message', value: 'text_messgae' },
+	{ label: 'Email', value: 'email' },
+	{ label: 'Mailer', value: 'mailer' },
+	{ label: 'Meeting', value: 'meeting' },
+	{ label: 'Task', value: 'task' },
+	{ label: 'Deadline', value: 'deadline' },
+];
+
+export const activityStatusOptions = [
+	{
+		label: 'Open',
+		value: false,
+	},
+	{
+		label: 'Completed',
+		value: true,
+	},
+];
+
 export const contactStatusOptions = [
 	// {
 	//   label: "Unqualified Lead",

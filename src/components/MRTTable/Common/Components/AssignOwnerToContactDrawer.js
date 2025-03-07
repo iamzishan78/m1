@@ -26,6 +26,7 @@ import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import FieldBulkAutoComplete from 'components/Shared/FieldBulkAutoComplete';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
 import { copy } from 'components/Shared/functions';
+import BulkAddActivityForm from 'components/MRTTable/Common/Dialog/BulkUpdate/BulkAddActivityForm';
 
 import { ASSIGN_OWNER_TO_CONTACT } from 'graphQL/useMutationAssignOwnerToContact';
 import { BULKUPSERTTAG } from 'graphQL/useMutationBulkUpsertTagOnContacts';
@@ -36,6 +37,7 @@ import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
 import { PUBLICTAGSQUERY } from 'graphQL/useQueryPublicTags';
+import { BULK_ADD_ACTIVITIES } from 'graphQL/useMutationBulkAddActivities';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableGlobalController } from 'stateManagement/tableController';
@@ -161,6 +163,7 @@ function SelectedField({
 		case 'Industry Type':
 		case 'Lead Source':
 		case 'Territory':
+		case 'County':
 			// Renders text field for entering values for industry type, lead source, or territory
 			return (
 				<TextField
@@ -233,6 +236,8 @@ function SelectedField({
 		case 'Related Contact':
 			// Renders component for selecting related contacts
 			return <RelatedContact setFieldKey={setFieldKey} />;
+		case 'Add New Activity':
+			return <BulkAddActivityForm fieldKey={fieldKey} setFieldKey={setFieldKey} />;
 		default:
 	}
 
@@ -312,6 +317,7 @@ export default function AssignOwnerToContactDrawer({
 	const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT, options);
 	const [updateBulkContact] = useMutation(UPDATEBULKCONTACT, options);
 	const [updateBulkTags] = useMutation(BULKUPSERTTAG, options);
+	const [bulkAddActivities] = useMutation(BULK_ADD_ACTIVITIES, options);
 	const [upsertEntityCampaigns] = useMutation(UPSERT_ENTITY_CAMPAIGNS, {
 		onCompleted: () => {
 			tableGlobalController.refetch();
@@ -343,14 +349,18 @@ export default function AssignOwnerToContactDrawer({
 		{ title: 'Status', value: 'contactStatus' },
 		{ title: 'Tags', value: 'contactStatus' },
 		{ title: 'Territory', value: 'territory' },
+		{ title: 'County', value: 'county' },
 		{ title: 'Time Zone', value: 'timeZone' },
 		{ title: 'Related Contact', value: 'relatedcontact' },
+		{ title: 'Add New Activity', value: 'activity' },
 	];
 
 	const fieldsToUpdate = rest.header === 'UnitTable' ? [...unitTableFields] : [...otherTableFields];
 
 	useEffect(() => {
-		if (!['Industry Type', 'Lead Source', 'Territory', 'Time Zone', 'Tags'].includes(field)) {
+		if (
+			!['Industry Type', 'Lead Source', 'Territory', 'County', 'Time Zone', 'Tags', 'Add New Activity'].includes(field)
+		) {
 			getContactCampaignAction({
 				search: fieldKey ? `${fieldKey}*` : '*',
 			});
@@ -548,6 +558,40 @@ export default function AssignOwnerToContactDrawer({
 						}
 					} else {
 						Loader.errorToast('contact-creation', errorMsg);
+					}
+				},
+				err => {
+					console.log(err);
+					Loader.errorToast('contact-creation', errorMsg);
+				}
+			);
+		} else if (field === 'Add New Activity') {
+			const isOwnerTable = ['TractPerUnitTable', 'OwnersPerUnitTable'].includes(rest.header);
+
+			bulkAddActivities({
+				variables: {
+					activity: fieldKey,
+					userId: getUser._id,
+					contacts: rows.map(row => ({
+						_id: isOwnerTable ? row.contact._id : row._id,
+						name: row.name,
+					})),
+				},
+				refetchQueries: 'getESSimpleSearch',
+				awaitRefetchQueries: true,
+			}).then(
+				res => {
+					resetESTableToggle.set(!resetESTableToggle.get());
+					if (res.data && res.data.bulkAddActivities) {
+						const { success } = res.data.bulkAddActivities;
+						if (success) {
+							Loader.successToast('contact-creation', 'Contact Activities Added');
+							showSuccessMessage('Contact Activities Added');
+						} else {
+							Loader.errorToast('contact-creation', 'Failed to add activities');
+						}
+					} else {
+						Loader.errorToast('contact-creation', 'Failed to add activities');
 					}
 				},
 				err => {

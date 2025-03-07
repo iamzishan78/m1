@@ -438,10 +438,6 @@ export default function CommentComponent(props) {
 				props.activityLog
 					.filter(act => (activityType === 'all' ? true : act?.type === activityType))
 					.forEach(element => {
-						const timestamp = element?.createAt
-							? new Date(new Date(element.createAt).toUTCString()).getTime()
-							: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime();
-
 						const user = element.isExternal
 							? { name: 'Dialpad' }
 							: { name: element.ownerName, email: element.ownerName };
@@ -451,7 +447,7 @@ export default function CommentComponent(props) {
 							activityData: element,
 							comment: element.notes,
 							outcome: element.outcome,
-							ts: timestamp,
+							ts: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime(),
 							isActivity: true,
 							isEdited: false,
 							public: true,
@@ -880,8 +876,11 @@ export default function CommentComponent(props) {
 
 							{commentsArray.map((eachComment, index) => {
 								let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
+
+								const commentorText = eachComment?.user?.name || eachComment?.user?.email;
+
 								return (
-									eachComment?.user?.name && (
+									commentorText && (
 										<Fragment key={index}>
 											{(showAllComments || index >= indexToShow) && (
 												<Grid
@@ -905,7 +904,7 @@ export default function CommentComponent(props) {
 																	round
 																/>
 															) : (
-																<Avatar name={eachComment?.user?.name} size="38" round />
+																<Avatar name={commentorText} size="38" round />
 															)}
 														</IconButton>
 													</Grid>
@@ -917,7 +916,7 @@ export default function CommentComponent(props) {
 														}
 													>
 														<div>
-															<span className={classes.bold}>{eachComment?.user?.name}</span>
+															<span className={classes.bold}>{commentorText}</span>
 															{eachComment?.commentType?.commentType === 'unitCreation' && (
 																<span style={{ display: 'inline-block', marginLeft: '8px' }}>
 																	{eachComment?.comment}

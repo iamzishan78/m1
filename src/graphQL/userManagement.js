@@ -11,6 +11,7 @@ export const GET_USER = gql`
 			roles
 			rolePrivileges
 			ts
+			featureSettings
 		}
 	}
 `;
@@ -27,6 +28,7 @@ export const GET_ALL_USERS = gql`
 			rolePrivileges
 			ts
 			lastLogin
+			featureSettings
 		}
 	}
 `;
@@ -41,6 +43,7 @@ export const ADD_USER = gql`
 			role
 			roles
 			ts
+			featureSettings
 		}
 	}
 `;
@@ -55,6 +58,7 @@ export const UPDATE_USER = gql`
 			role
 			roles
 			ts
+			featureSettings
 		}
 	}
 `;
@@ -69,6 +73,7 @@ export const REMOVE_USERS = gql`
 			role
 			roles
 			ts
+			featureSettings
 		}
 	}
 `;

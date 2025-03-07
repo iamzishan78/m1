@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, Fragment } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Controller } from 'react-hook-form';
 import { useSelector } from 'react-redux';
@@ -85,6 +85,7 @@ const dealFlowLine = [
 	{ name: 'Offer Price', isSelected: false, key: 'offerPrice' },
 	{ name: 'Closed Price', isSelected: false, key: 'closedPrice' },
 	{ name: 'Total NRA', isSelected: false, key: 'totalNRA' },
+	{ name: 'Total NMA', isSelected: false, key: 'totalNMA' },
 ];
 const generalFlowLine = [{ name: 'Due Date', isSelected: false, key: 'dueDate' }];
 

@@ -14,6 +14,7 @@ export const GET_LOGGED_IN_USER = gql`
 				adUserId
 				rolePrivileges
 				roles
+				featureSettings
 			}
 		}
 	}

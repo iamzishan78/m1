@@ -14,6 +14,7 @@ export const BYPASS_LOGIN_MUTATION = gql`
 				adUserId
 				rolePrivileges
 				roles
+				featureSettings
 				dialpad
 			}
 		}
@@ -34,6 +35,7 @@ export const SIMPLE_BYPASS_LOGIN_MUTATION = gql`
 				adUserId
 				rolePrivileges
 				roles
+				featureSettings
 				dialpad
 			}
 		}

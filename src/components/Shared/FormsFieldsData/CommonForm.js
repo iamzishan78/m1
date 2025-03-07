@@ -2,6 +2,9 @@ import React from 'react';
 import { Controller } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid';
+import PropTypes from 'prop-types';
+import UserField from './Fields/UserField';
+import DateTimeField from './Fields/DateTimeField';
 
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
@@ -22,7 +25,19 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 				<React.Fragment key={item.name}>
 					{item.renderField === 'autoComplete' ? (
 						<AutoCompleteComponent item={item} control={control} watch={watch} error={error} />
-					) : item.renderField === 'campaigns' ? (
+					) : item.renderField === 'owner' ? (
+						<Grid item xs={12}>
+							<h3>{item.label}</h3>
+
+							<UserField dialogKey={dialogKey} item={item} />
+						</Grid>
+					) : item.renderField === 'dateTime' ? (
+						<Grid item xs={12}>
+							<h3>{item.label}</h3>
+
+							<DateTimeField dialogKey={dialogKey} item={item} />
+						</Grid>
+					) : item.renderField === 'campaignName' ? (
 						<Grid item xs={12}>
 							<h3>{item.label}</h3>
 
@@ -82,5 +97,45 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 		</>
 	);
 }
+
+CommonForm.propTypes = {
+	formSchema: PropTypes.arrayOf(
+		PropTypes.shape({
+			name: PropTypes.string.isRequired,
+			label: PropTypes.string,
+			renderField: PropTypes.oneOf([
+				'autoComplete',
+				'owner',
+				'dateTime',
+				'campaignName',
+				'associatedDeals',
+				'radioButton',
+				'autoCompleteNewOption',
+				'datePicker',
+				'startEndDate',
+			]).isRequired,
+			defaultOptions: PropTypes.array,
+			variables: PropTypes.object,
+			query: PropTypes.func,
+			getOptions: PropTypes.func,
+			options: PropTypes.array,
+			size: PropTypes.string,
+			type: PropTypes.string,
+			InputProps: PropTypes.object,
+			fullWidth: PropTypes.bool,
+			defaultValue: PropTypes.any,
+			multiline: PropTypes.bool,
+			variant: PropTypes.oneOf(['standard', 'outlined', 'filled']),
+			isValueOverridden: PropTypes.bool,
+			onBlur: PropTypes.func,
+			onChange: PropTypes.func,
+			disabled: PropTypes.bool,
+		})
+	).isRequired,
+	control: PropTypes.object.isRequired, // From react-hook-form
+	watch: PropTypes.func.isRequired, // Function to watch form values
+	dialogKey: PropTypes.string.isRequired, // Key for side dialog state updates
+	error: PropTypes.bool,
+};
 
 export default CommonForm;

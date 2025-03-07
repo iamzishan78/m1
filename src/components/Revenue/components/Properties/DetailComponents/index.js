@@ -508,6 +508,7 @@ export default function DetailComponents(props) {
 							height: 'calc(100vh - 270px)',
 							width: '620px',
 							maxWidth: '620px',
+							overflowY: 'auto',
 						}}
 					>
 						{!isNewAgmt ? (
@@ -520,6 +521,7 @@ export default function DetailComponents(props) {
 								setStateApp={setStateApp}
 								ownerTitle="Approver"
 								isApproval={true}
+								height="100vh"
 								showCommentType
 							/>
 						) : (

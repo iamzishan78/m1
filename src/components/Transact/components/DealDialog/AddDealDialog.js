@@ -436,6 +436,7 @@ function AddDealDialog(props) {
 	const [label, setLabel] = useState('');
 	const [closedPrice, setClosedPrice] = useState('');
 	const [totalNRA, setTotalNRA] = useState('');
+	const [totalNMA, setTotalNMA] = useState('');
 	const [stageId, setStageId] = useState(null);
 	const [dealPosition, setDealPosition] = useState(null);
 	const [dealState, setDealState] = useState(null);
@@ -718,6 +719,7 @@ function AddDealDialog(props) {
 				status: dealState ? dealState : 'open',
 				closedPrice: closedPrice,
 				totalNRA: totalNRA,
+				totalNMA: totalNMA,
 				receivedDate:
 					selectedReceivedDate && selectedReceivedDate !== ''
 						? new Date(`${selectedReceivedDate}T08:00`).toUTCString()
@@ -1007,6 +1009,7 @@ function AddDealDialog(props) {
 			setLabel(card.offerPrice ? card.offerPrice : '');
 			setClosedPrice(card.closedPrice ? card.closedPrice : '');
 			setTotalNRA(card.totalNRA ? card.totalNRA : '');
+			setTotalNMA(card.totalNMA ? card.totalNMA : '');
 			setDescription(card.notes ? card.notes : '');
 			// setPipelineId
 			settingNewPipeWithDefaultStage(card.pipeline ? card.pipeline : null, false);
@@ -1703,6 +1706,34 @@ function AddDealDialog(props) {
 																	fullWidth
 																	onChange={e => {
 																		setTotalNRA(e.target.value);
+																	}}
+																	InputProps={{
+																		classes: {
+																			root: classes.customDataTextInputRoot,
+																			focused: classes.focused,
+																			notchedOutline: classes.notchedOutline,
+																		},
+																	}}
+																/>
+															</Grid>
+														</Grid>
+													</FormControl>
+													<FormControl variant="outlined" fullWidth size="small">
+														<Grid container className={classes.gridStyle}>
+															<Grid item xs={3}>
+																<div>Total NMA</div>
+															</Grid>
+															<Grid item xs={9}>
+																<TextField
+																	margin="dense"
+																	variant="outlined"
+																	value={totalNMA}
+																	error={isNaN(totalNMA)}
+																	helperText={isNaN(totalNMA) ? 'Total NMA must be a valid number' : ''}
+																	className={classes.inputFieldCustomTextInput}
+																	fullWidth
+																	onChange={e => {
+																		setTotalNMA(e.target.value);
 																	}}
 																	InputProps={{
 																		classes: {

@@ -189,6 +189,7 @@ const CARD_FIELD_MAPPER = {
 	offerPrice: { label: 'Offer Price', format: value => vf_currency(value) },
 	closedPrice: { label: 'Closed Price', format: value => vf_currency(value) },
 	totalNRA: { label: 'Total NRA', format: value => vf_number(value) },
+	totalNMA: { label: 'Total NMA', format: value => vf_number(value) },
 };
 
 const Transact = () => {
@@ -260,11 +261,12 @@ const Transact = () => {
 			if (pipelineData.pipeline) {
 				let laneId = '';
 				let cardId = '';
+				const paths = history.location.pathname.split('/');
 				if (history.location.pathname.includes('lane')) {
-					laneId = history.location.pathname.split('/')[FOUR];
+					laneId = paths[FOUR];
 				}
 				if (history.location.pathname.includes('card')) {
-					cardId = history.location.pathname.split('/')[SIX];
+					cardId = paths[SIX];
 				}
 
 				let deals = [];
@@ -274,7 +276,11 @@ const Transact = () => {
 						...lane,
 						cards: lane.cards?.map(card => {
 							if (!card.metadata.IsDeleted) {
-								if (lane.id === laneId && cardId === card.id) {
+								if (cardId === card.id) {
+									if (lane.id !== laneId) {
+										laneId = paths[4] = lane.id;
+										history.replace(paths.join('/'));
+									}
 									setStateApp(stateApp => ({
 										...stateApp,
 										dealDialog: true,
