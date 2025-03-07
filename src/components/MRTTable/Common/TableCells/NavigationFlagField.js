@@ -2,7 +2,7 @@ import React, { memo, useEffect, useState } from 'react';
 import { Checkbox } from '@material-ui/core';
 import { UPDATE_USER_FEATURE_SETTING } from 'graphQL/useMutationUpdateUserFeatureSetting';
 import { useMutation } from '@apollo/client';
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 function NavigationFlagField({ featureName, row }) {
 	const { stateValues } = globalStateController.useState(['user']);

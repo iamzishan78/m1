@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import bulkAddActivityForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/bulk_add_activity_form_schema';
-import { sideDialogController } from 'hookstate/sideDialogController';
+import { sideDialogController } from 'stateManagement/sideDialogController';
 import { useForm } from 'react-hook-form';
 import { isEqual, merge } from 'lodash';
 

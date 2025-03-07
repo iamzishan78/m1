@@ -3,7 +3,7 @@ import { capitalize, isEqual } from 'lodash';
 
 import { copy } from 'components/Shared/functions';
 
-import { popupController } from 'hookstate/popupStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { basic_timeouts } from '../../../cypressUtils/data';
 

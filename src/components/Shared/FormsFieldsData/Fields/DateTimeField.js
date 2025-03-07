@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles, TextField } from '@material-ui/core';
-import { sideDialogController } from 'hookstate/sideDialogController';
+import { sideDialogController } from 'stateManagement/sideDialogController';
 
 const getCurrentDate = () => {
 	const d = new Date().toISOString();

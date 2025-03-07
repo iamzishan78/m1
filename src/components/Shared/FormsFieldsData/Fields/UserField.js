@@ -1,5 +1,5 @@
 import UserList from 'components/Shared/UserList';
-import { sideDialogController } from 'hookstate/sideDialogController';
+import { sideDialogController } from 'stateManagement/sideDialogController';
 import React, { useState } from 'react';
 
 const UserField = ({ dialogKey, item }) => {
