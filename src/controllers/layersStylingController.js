@@ -36,6 +36,7 @@ class LayerStylingStateController extends StateController {
 			attributeBasedStyles,
 			attributeBasedLineStyles,
 			layerLabelVisibility,
+			isExtruded,
 			layerClickability,
 			strokeColor,
 			strokeWidth,
@@ -68,6 +69,7 @@ class LayerStylingStateController extends StateController {
 			layer.layerSettings?.fillStyle !== fillStyle ||
 			layer.layerSettings?.lineStyle !== lineStyle ||
 			layer.layerSettings?.aggregation !== aggregation ||
+			layer.layerSettings?.isExtruded !== isExtruded ||
 			!_.isEqual(layer.layerSettings?.selectedPalette, selectedPalette) ||
 			layer.layerSettings?.colorScaleType !== colorScaleType
 		) {
@@ -138,6 +140,7 @@ class LayerStylingStateController extends StateController {
 
 			layerSettings.colorScaleType = colorScaleType;
 			layerSettings.selectedPalette = selectedPalette;
+			layerSettings.isExtruded = isExtruded;
 
 			if (
 				currentLayer &&
@@ -484,6 +487,7 @@ class LayerStylingStateController extends StateController {
 			strokeColor: initialStrokeColor,
 			strokeWidth: initialWidth || initialStrokeWidth,
 			binsWidth: initialBinsWidth,
+			isExtruded: layer.layerSettings?.isExtruded || true,
 			elevationScale: initialElevationScale,
 			layerInitialized: true,
 		});
@@ -570,6 +574,10 @@ class LayerStylingStateController extends StateController {
 
 	setLayerLabelVisibility(newVisibility) {
 		this.updateState({ layerLabelVisibility: newVisibility });
+	}
+
+	setLayerExtrusion(newExtrusion) {
+		this.updateState({ isExtruded: newExtrusion });
 	}
 
 	setStrokeWidth(newStrokeWidth) {

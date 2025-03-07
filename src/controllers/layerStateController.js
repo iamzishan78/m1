@@ -791,6 +791,7 @@ class LayerStateControllerHandler extends StateController {
 				getDashArray: newId,
 				getFillPattern: newId,
 				opacity: newId,
+				extruded: newId,
 			};
 		}
 		if (!boundingState.show?.current) {

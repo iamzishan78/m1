@@ -67,7 +67,6 @@ const Layers = {
 	HexagonLayer: {
 		component: HexagonLayer,
 		defaultProps: {
-			extruded: true,
 			pickable: true,
 		},
 	},
@@ -78,7 +77,6 @@ const Layers = {
 	GridLayer: {
 		component: GridLayer,
 		defaultProps: {
-			extruded: true,
 			pickable: true,
 		},
 	},
@@ -159,9 +157,11 @@ export default class DeckGlOverlay {
 						return;
 					}
 					if (!getLandGrid) {
-						if (clickedFeature?.object?.geometry?.type === 'Point')
+						if (clickedFeature?.object?.geometry?.type === 'Point') {
 							drawWellBoundary(clickedFeature?.object?.geometry?.coordinates);
-						else drawBoundary(clickedFeature.object);
+						} else {
+							drawBoundary(clickedFeature.object);
+						}
 					}
 
 					layerController.updateState({ clickedFeature });

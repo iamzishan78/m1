@@ -14,6 +14,7 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
 import { aggregationLayers } from 'components/Shared/functions/shapeLayer';
 import { getLayerColor } from 'components/Shared/SidePanel/compoennts/common';
 
+
 import { globalStateController } from 'controllers/globalStateController';
 import { getLayerKey } from 'controllers/helpers';
 import { layerStylingController } from 'controllers/layersStylingController';
@@ -60,6 +61,7 @@ function LayerStyling() {
 		attributeBasedStyles,
 		attributeBasedLineStyles,
 		layerLabelVisibility,
+		isExtruded,
 		layerClickability,
 		strokeColor,
 		layerInitialized,
@@ -68,6 +70,7 @@ function LayerStyling() {
 		elevationScale,
 	} = layerStylingController.useCompleteState();
 	const isAggLayer = aggregationLayers.includes(selectedLayer?.layerType);
+	const isHeatMap = selectedLayer?.layerType === 'heatmap layer';
 	const layerType = selectedLayer.layerPaintProps?.[0]?.paintType;
 
 	const initialFillColor =
@@ -165,6 +168,7 @@ function LayerStyling() {
 			selectedLayer.layerSettings?.lineStyle !== lineStyle ||
 			selectedLayer.layerSettings?.aggregation !== aggregation ||
 			selectedLayer.layerSettings?.colorScaleType !== colorScaleType ||
+			selectedLayer.layerSettings?.isExtruded !== isExtruded ||
 			!_.isEqual(selectedLayer.layerSettings?.selectedPalette, selectedPalette)
 		) {
 			let { currentLayer } = layerStylingController.handleLayerChange(selectedLayer);
@@ -206,6 +210,7 @@ function LayerStyling() {
 	}, [
 		layerClickability,
 		layerLabelVisibility,
+		isExtruded,
 		enablefillColor,
 		enableStrokeColor,
 		enableStrokeStyle,
@@ -382,6 +387,25 @@ function LayerStyling() {
 						</Grid>
 					)}
 
+					{isAggLayer && !isHeatMap && (
+						<Grid item xs={12}>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}>
+								<Typography variant="h6">Layer 3D(extruded)</Typography>
+								<FormControlLabel
+									control={
+										<Switch
+											checked={isExtruded}
+											onChange={() => layerStylingController.setLayerExtrusion(!isExtruded)}
+											size="small"
+											data-testid="layer-label-visibility-toggle"
+										/>
+									}
+								/>
+							</div>
+							<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
+						</Grid>
+					)}
+
 					{selectedLayer.layerSettings?.colorable && (
 						<>
 							<Grid item xs={12}>
@@ -406,7 +430,7 @@ function LayerStyling() {
 										<WidthPicker width={width} setWidth={layerStylingController.setWidth} layerType={layerType} />
 									)}
 								</div>
-								{enablefillColor && (
+								{enablefillColor && !isHeatMap && (
 									<>
 										<AttrsAutocomplete
 											options={options}
@@ -424,10 +448,10 @@ function LayerStyling() {
 										/>
 									</>
 								)}
-								<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
 
-								{enablefillColor && (
+								{enablefillColor && !isHeatMap && (
 									<>
+										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
 										<Typography variant="h6" style={{ marginBottom: '10px' }}>
 											Color Scale Type
 										</Typography>
@@ -505,41 +529,43 @@ function LayerStyling() {
 										</Box>
 									</Grid>
 
-									<Grid item xs={12}>
-										<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
-											Elevation Scale
-										</Typography>
-										<Box display="flex" alignItems="center" justifyContent="space-between">
-											<Slider
-												value={elevationScale}
-												onChange={(e, val) => layerStylingController.setElevationScale(val)}
-												aria-labelledby="continuous-slider"
-												className={classes.slider}
-												valueLabelDisplay="auto" // Shows the value above the thumb
-											/>
-											<TextField
-												value={elevationScale !== '' ? Number(elevationScale).toString() : ''}
-												variant="outlined"
-												type="number"
-												onChange={e => {
-													let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
-													if (width > 100) {
-														width = 100;
-													}
-													if (width < 0) {
-														width = 0;
-													}
-													layerStylingController.setElevationScale(width);
-												}}
-												size="small"
-												className={classes.valueBox}
-												inputProps={{
-													inputMode: 'numeric',
-													pattern: '[0-9]*',
-												}}
-											/>
-										</Box>
-									</Grid>
+									{!isHeatMap && (
+										<Grid item xs={12}>
+											<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
+												Elevation Scale
+											</Typography>
+											<Box display="flex" alignItems="center" justifyContent="space-between">
+												<Slider
+													value={elevationScale}
+													onChange={(e, val) => layerStylingController.setElevationScale(val)}
+													aria-labelledby="continuous-slider"
+													className={classes.slider}
+													valueLabelDisplay="auto" // Shows the value above the thumb
+												/>
+												<TextField
+													value={elevationScale !== '' ? Number(elevationScale).toString() : ''}
+													variant="outlined"
+													type="number"
+													onChange={e => {
+														let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
+														if (width > 100) {
+															width = 100;
+														}
+														if (width < 0) {
+															width = 0;
+														}
+														layerStylingController.setElevationScale(width);
+													}}
+													size="small"
+													className={classes.valueBox}
+													inputProps={{
+														inputMode: 'numeric',
+														pattern: '[0-9]*',
+													}}
+												/>
+											</Box>
+										</Grid>
+									)}
 								</>
 							)}
 
