@@ -44,6 +44,9 @@ import EntityType from './EntityType';
 import { timeZoneOptions } from './timeZoneList';
 import { formatDate } from 'components/Shared/functions';
 
+import { useDispatch } from 'react-redux';
+import { showErrorMessage } from 'actions';
+
 const filter = createFilterOptions();
 export default function FieldContent({
 	children,
@@ -73,6 +76,7 @@ export default function FieldContent({
 	const [showContent, setShowContent] = useState(content);
 	const [isCurEdited, setIsCurEdited] = useState(isEdited);
 	const [fieldsCount, setFieldsCount] = useState(0);
+	const dispatch = useDispatch();
 
 	const [updateContact, { loading }] = useMutation(UPDATECONTACT);
 	const [updateContactPurchaseData, { loading: loadingPurchaseData }] = useMutation(UPDATE_CONTACT_PURCHASE_DATA);
@@ -276,6 +280,10 @@ export default function FieldContent({
 						},
 						refetchQueries: ['getContactPurchaseData'],
 						awaitRefetchQueries: false,
+					}).then(({ data }) => {
+						if (data?.updateContactPurchaseData && !data.updateContactPurchaseData?.success) {
+							dispatch(showErrorMessage(data?.updateContactPurchaseData?.message));
+						}
 					});
 				} else {
 					updateContact({
@@ -285,7 +293,7 @@ export default function FieldContent({
 						},
 						refetchQueries: ['getPaginatedContacts', 'getContact', 'getparcelOwners'],
 						awaitRefetchQueries: false,
-					}).then(() => {
+					}).then(({ data }) => {
 						let entries = Object.entries(editContent);
 						entries.forEach(entry => {
 							content = { ...content, [entry[0]]: entry[1] };
@@ -293,6 +301,9 @@ export default function FieldContent({
 						setShowContent({ ...content });
 						setEditContent({ ...content });
 						setStateApp({ ...stateApp, contactUpdated: id });
+						if (data?.updateContact && !data.updateContact?.success) {
+							dispatch(showErrorMessage(data?.updateContact?.message));
+						}
 					});
 				}
 			}

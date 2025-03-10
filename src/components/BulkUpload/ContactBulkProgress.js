@@ -177,6 +177,8 @@ const ContactBulkProgress = () => {
 				if (name === 'idiCore') {
 					message = lastMessage;
 					refetchHelper(['getContactPurchaseData']);
+				} else if (name === 'Sync Dialpad Contacts') {
+					message = lastMessage;
 				} else if (type === 'contacts') {
 					message =
 						status === 'Created'

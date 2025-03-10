@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Fragment, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Grid, TextField, InputAdornment, CircularProgress, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -24,6 +24,7 @@ import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
+import { showErrorMessage } from 'actions';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -90,7 +91,13 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 
 	const { user } = useSelector(state => state.app);
 
-	const [updateContact] = useMutation(UPDATECONTACT);
+	const [updateContact] = useMutation(UPDATECONTACT, {
+		onCompleted: data => {
+			if (data?.updateContact && !data.updateContact?.success) {
+				dispatch(showErrorMessage(data?.updateContact?.message));
+			}
+		},
+	});
 
 	const showGenericPhones = React.useMemo(() => {
 		return user.features?.find(f => f.name === 'showGenericPhones');

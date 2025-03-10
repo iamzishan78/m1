@@ -39,7 +39,6 @@ import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFe
 import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
 
 import { INITIATE_DIALPAD_CALL } from 'graphQL/useMutationInitiateCall';
-import { RESYNC_DIALPAD_CONTACT } from 'graphQL/useMutationResyncDialpadContact';
 import { SYNC_CONTACT_TO_DIALPAD } from 'graphQL/useMutationSyncContactToDialpad';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
@@ -431,7 +430,6 @@ function ContactDetailCard(props) {
 	});
 	const [updateContact] = useMutation(UPDATECONTACT);
 	const [syncContactToDialpad] = useMutation(SYNC_CONTACT_TO_DIALPAD);
-	const [resyncDialpadContact] = useMutation(RESYNC_DIALPAD_CONTACT);
 	const [initiateDialpadCall] = useMutation(INITIATE_DIALPAD_CALL);
 
 	const handleClick = event => setAnchorEl(event.currentTarget);
@@ -612,25 +610,6 @@ function ContactDetailCard(props) {
 		});
 	};
 
-	const handleContactResync = async () => {
-		if (!contactData?.entityDetail?.firstName || !contactData?.entityDetail?.lastName) {
-			dispatch(showErrorMessage('First Name and Last Name are required to sync contact to Dialpad'));
-			return;
-		}
-		dispatch(showInfoMessage('Syncing contact to Dialpad...'));
-		resyncDialpadContact({
-			variables: { contactId: contactData?._id },
-			refetchQueries: ['getContact'],
-			awaitRefetchQueries: true,
-		}).then(({ data }) => {
-			if (data?.resyncDialpadContact && !data.resyncDialpadContact?.success) {
-				dispatch(showErrorMessage(data?.resyncDialpadContact?.message));
-			} else {
-				dispatch(showSuccessMessage('Contact synced successfully'));
-			}
-		});
-	};
-
 	const options = [
 		{
 			text: 'Launch Dialpad',
@@ -638,11 +617,6 @@ function ContactDetailCard(props) {
 			action: () => {
 				window.open('https://dialpad.com/app/contacts/frequent', '_blank');
 			},
-		},
-		{
-			text: 'Resync Contact',
-			isShow: true,
-			action: handleContactResync,
 		},
 	];
 
@@ -787,7 +761,15 @@ function ContactDetailCard(props) {
 														startIcon={<DialpadIcon color={'white'} />}
 														options={options}
 														tooltipText={`Last Synced: ${moment(contactData?.dialpadSyncAt).format('MM/DD/YYYY, h:mm a')}`}
-														buttonStyles={{ color: 'white', transform: 'translateY(4px)' }}
+														buttonStyles={{
+															color: 'white',
+															transform: 'translateY(6px)',
+															height: '41px',
+														}}
+														style={{
+															backgroundColor: 'transparent',
+															boxShadow: 'none',
+														}}
 														sideButtonStyles={{
 															minWidth: '25px',
 															padding: 0,
