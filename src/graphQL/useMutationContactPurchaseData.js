@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const UPDATE_CONTACT_PURCHASE_DATA = gql`
-	mutation updateContactPurchaseData($purchaseData: JSON) {
-		updateContactPurchaseData(purchaseData: $purchaseData) {
+	mutation updateContactPurchaseData($purchaseData: JSON, $isDialpadEnabled: Boolean) {
+		updateContactPurchaseData(purchaseData: $purchaseData, isDialpadEnabled: $isDialpadEnabled) {
 			age
 			bankruptcy
 			contactId

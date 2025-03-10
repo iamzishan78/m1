@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment, useRef } from 'react';
+import React, { useEffect, useState, Fragment, useRef, useContext } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -25,6 +25,7 @@ import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { showErrorMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -88,6 +89,8 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 	const { control, reset } = useForm();
 	const [activeLoadingField, setLoading] = useState();
 	const [isFormSet, setFormState] = useState(false);
+	const [stateApp] = useContext(AppContext);
+	const dispatch = useDispatch();
 
 	const { user } = useSelector(state => state.app);
 
@@ -160,6 +163,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			variables: {
 				contact,
 				ignoreResponse: true,
+				isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 			},
 			refetchQueries: ['getContact'],
 			awaitRefetchQueries: false,
