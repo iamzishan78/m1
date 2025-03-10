@@ -87,8 +87,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 	const { control, reset } = useForm();
 	const [activeLoadingField, setLoading] = useState();
 	const [isFormSet, setFormState] = useState(false);
-	const [stateApp] = useContext(AppContext);
-	const dispatch = useDispatch();
+	const [stateApp] = useContext();
 
 	const { user } = useSelector(state => state.app);
 	const dispatch = useDispatch();
