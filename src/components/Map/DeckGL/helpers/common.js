@@ -724,8 +724,8 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	return props;
 }
 
-export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true }) => {
-	let features = pickDeckObjects({ x, y, depth });
+export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true, radius }) => {
+	let features = pickDeckObjects({ x, y, depth, radius });
 
 	if (!getLandGrid) {
 		features = features.filter(f => !deckGlLandGridIdentifiers.some(prefix => f.layer.id.startsWith(prefix)));
