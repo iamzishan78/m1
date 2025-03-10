@@ -38,6 +38,7 @@ import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import { useDispatch } from 'react-redux';
 import { showErrorMessage } from 'actions';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -275,6 +276,7 @@ export default function FieldContent({
 					updateContactPurchaseData({
 						variables: {
 							purchaseData: trimmedEditContent,
+							isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 						},
 						refetchQueries: ['getContactPurchaseData'],
 						awaitRefetchQueries: false,
@@ -288,6 +290,7 @@ export default function FieldContent({
 						variables: {
 							contact: trimmedEditContent,
 							ignoreResponse: true,
+							isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 						},
 						refetchQueries: ['getPaginatedContacts', 'getContact', 'getparcelOwners'],
 						awaitRefetchQueries: false,

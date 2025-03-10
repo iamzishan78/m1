@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment, useRef } from 'react';
+import React, { useEffect, useState, Fragment, useRef, useContext } from 'react';
 import { get, set, isEmpty } from 'lodash';
 import { useMutation } from '@apollo/client';
 import { Controller, useForm } from 'react-hook-form';
@@ -23,6 +23,7 @@ import TextSmsIcon from 'components/Shared/svgIcons/textsms';
 import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { showErrorMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -86,6 +87,8 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 	const { control, reset } = useForm();
 	const [activeLoadingField, setLoading] = useState();
 	const [isFormSet, setFormState] = useState(false);
+	const [stateApp] = useContext(AppContext);
+	const dispatch = useDispatch();
 
 	const { user } = useSelector(state => state.app);
 	const dispatch = useDispatch();
@@ -155,6 +158,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			variables: {
 				contact,
 				ignoreResponse: true,
+				isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 			},
 			refetchQueries: ['getContact'],
 			awaitRefetchQueries: false,
