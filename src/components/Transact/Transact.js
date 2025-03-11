@@ -385,6 +385,33 @@ const Transact = () => {
 		};
 	}, []);
 
+	const summaryData = useMemo(() => {
+		let totalDealCount = 0;
+		let totalPriceSum = 0;
+		let totalForecast = 0;
+
+		filteredBoardTransactData?.lanes?.forEach(lane => {
+			totalDealCount += lane?.cards?.length || 0;
+
+			let laneSum = 0;
+			lane?.cards?.forEach(card => {
+				const offerPrice = card?.metadata?.offerPrice || 0;
+				laneSum += offerPrice;
+			});
+			totalPriceSum += laneSum;
+
+			if (lane?.metadata?.dealProbability > 0 && laneSum > 0) {
+				totalForecast += laneSum * (lane.metadata.dealProbability / 100);
+			}
+		});
+
+		return {
+			totalDealCount,
+			totalPriceSum: vf_currency(totalPriceSum),
+			totalForecast: vf_currency(totalForecast),
+		};
+	}, [filteredBoardTransactData]);
+
 	const handleCardClick = (cardId, metadata, laneId) => {
 		history.push(`/flow/${selectedPipe._id}/lane/${laneId}/card/${cardId}`);
 		setStateApp(stateApp => ({
@@ -734,7 +761,12 @@ const Transact = () => {
 			{!stateApp.transactBarShowGrid && <SidePanel />}
 
 			<main className={classes.content}>
-				<TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} setStateApp={setStateApp} />
+				<TransactAppBar
+					dealFilter={dealFilter}
+					setDealFilter={setDealFilter}
+					setStateApp={setStateApp}
+					summaryData={summaryData}
+				/>
 				{pipeToShow ? (
 					<div className={classes.boardAndTable}>
 						{isPipeLoading === true && (
