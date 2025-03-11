@@ -73,7 +73,8 @@ const ShapeFile = () => {
 				<Box
 					sx={{
 						display: 'flex',
-						justifyContent: 'space-evenly',
+						justifyContent: 'flex-start',
+						pl: 4,
 					}}
 				>
 					<DatasetsAutoCompleteFilter sx={{ width: '35%' }} value={dataset} setValue={setDataset} />
