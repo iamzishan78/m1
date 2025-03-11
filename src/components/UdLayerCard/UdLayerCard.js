@@ -196,6 +196,8 @@ function UdLayerCard(props) {
 	const { parent } = props;
 	const { selectedHex } = props;
 
+	const disableProperties = ['pointIndices', 'points', 'position', 'row', 'col'];
+
 	if (!selectedUserDefinedLayer && !selectedHex) {
 		return <></>;
 	}
@@ -340,13 +342,10 @@ function UdLayerCard(props) {
 							display="block"
 							className={classes.contentGrid}
 						>
-							{loading ? (
-								<Grid item>
-									<CircularProgress color="secondary" />
-								</Grid>
-							) : (
-								<>
-									{Object.keys(selectedHex).map(prop => (
+							<>
+								{Object.keys(selectedHex)
+									.filter(prop => !disableProperties.includes(prop))
+									.map(prop => (
 										<React.Fragment key={prop}>
 											<Grid item xs={5}>
 												{prop}
@@ -356,8 +355,7 @@ function UdLayerCard(props) {
 											</Grid>
 										</React.Fragment>
 									))}
-								</>
-							)}
+							</>
 						</Grid>
 					</CardContent>
 				) : (
