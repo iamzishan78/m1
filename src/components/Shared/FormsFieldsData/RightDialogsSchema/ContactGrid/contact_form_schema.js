@@ -3,7 +3,7 @@ import { entityTypeOptions } from 'components/ContactDetailedInfo/helper';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-const phonenumber = inputtxt => {
+export const phonenumber = inputtxt => {
 	if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
 		return true;
 	}
