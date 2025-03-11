@@ -210,7 +210,8 @@ export const filterUniqueFeatures = features => {
 					feature?.object?._id ||
 					feature?.object?.id ||
 					feature?.object?.properties?.id ||
-					feature?.object?.properties?.Id,
+					feature?.object?.properties?.Id ||
+					feature?.layer?.id,
 			},
 		}))
 		.filter(f => f?.object?.id);

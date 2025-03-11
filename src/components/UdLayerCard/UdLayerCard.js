@@ -127,7 +127,7 @@ function UdLayerCard(props) {
 
 	useEffect(() => {
 		getShapeFeature({
-			variables: { id: props.selectedUserDefinedLayer._id },
+			variables: { id: props?.selectedUserDefinedLayer?._id },
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [getShapeFeature]);
@@ -193,10 +193,12 @@ function UdLayerCard(props) {
 		}
 	};
 
-	if (!selectedUserDefinedLayer) {
+	const { parent } = props;
+	const { selectedHex } = props;
+
+	if (!selectedUserDefinedLayer && !selectedHex) {
 		return <></>;
 	}
-	const { parent } = props;
 
 	const { layer, properties } = selectedUserDefinedLayer;
 
@@ -328,104 +330,138 @@ function UdLayerCard(props) {
 			</Menu>
 
 			<Card className={classes.card}>
-				<CardHeader
-					data-testid="ud-layer-card-header"
-					classes={{ title: classes.title, subheader: classes.subheader }}
-					className={classes.headerContainer}
-					action={
-						<div className={classes.headerIcons}>
-							{/* Filter support added back */}
-							<Tooltip title="Delete" placement="top">
-								<IconButton
-									size="small"
-									onClick={() => {
-										setDeleteDialogOpen(true);
-									}}
-									aria-label="Delete"
-									data-testid="delete-on-map"
-								>
-									<Delete color="secondary" />
-								</IconButton>
-							</Tooltip>
-							<Tooltip title="Filter" placement="top">
-								<IconButton
-									size="small"
-									onClick={() => {
-										drawController.updateState({ editDraw: true });
-										drawController.actionFilter();
-										popupController.updateState({ popupOpen: false });
-									}}
-									aria-label="Filter"
-									data-testid="filter-on-map"
-								>
-									<FilterAltIcon color="secondary" />
-								</IconButton>
-							</Tooltip>
-
-							<Tooltip title={'Add + Sync'} placement="top">
-								<IconButton
-									size="small"
-									aria-haspopup="true"
-									aria-expanded={isCreateParcelMenu ? 'true' : undefined}
-									className={classes.icons}
-									onClick={event => setAnchorEl(event.currentTarget)}
-								>
-									<Sync color="secondary" />
-								</IconButton>
-							</Tooltip>
-							<Tooltip title={'Add Shape to Layer'} placement="top">
-								<IconButton
-									size={'small'}
-									onClick={e => handleAddShapeClick(e, 'draw')}
-									aria-label="close"
-									className={classes.icons}
-								>
-									<Layers color="secondary" />
-								</IconButton>
-							</Tooltip>
-							<Tooltip title={'Close'} placement="top">
-								<IconButton size={'small'} onClick={handleClose} aria-label="close" className={classes.icons}>
-									<Close color="secondary" />
-								</IconButton>
-							</Tooltip>
-						</div>
-					}
-					// Expandable Card Title
-					title={getTitle()}
-					// Expandable Card Secondary Header
-					subheader={layer.groupName ? layer.layerName : ''}
-				/>
-				<CardContent className={classes.content}>
-					<Grid
-						container
-						direction="row"
-						alignItems={loading ? 'center' : 'flex-start'}
-						justifyContent={loading ? 'center' : 'flex-start'}
-						display="block"
-						className={classes.contentGrid}
-					>
-						{loading ? (
-							<Grid item>
-								<CircularProgress color="secondary" />
-							</Grid>
-						) : (
-							<>
-								{Object.keys(properties)
-									.filter(prop => prop !== 'shapeCenter' && prop !== 'originalProperties')
-									.map(prop => (
+				{selectedHex ? (
+					<CardContent className={classes.content}>
+						<Grid
+							container
+							direction="row"
+							alignItems={'flex-start'}
+							justifyContent={'flex-start'}
+							display="block"
+							className={classes.contentGrid}
+						>
+							{loading ? (
+								<Grid item>
+									<CircularProgress color="secondary" />
+								</Grid>
+							) : (
+								<>
+									{Object.keys(selectedHex).map(prop => (
 										<React.Fragment key={prop}>
 											<Grid item xs={5}>
 												{prop}
 											</Grid>
 											<Grid item xs={7} style={{ fontWeight: 'bold' }}>
-												{properties[prop]}
+												{selectedHex[prop]}
 											</Grid>
 										</React.Fragment>
 									))}
-							</>
-						)}
-					</Grid>
-				</CardContent>
+								</>
+							)}
+						</Grid>
+					</CardContent>
+				) : (
+					<>
+						<CardHeader
+							data-testid="ud-layer-card-header"
+							classes={{ title: classes.title, subheader: classes.subheader }}
+							className={classes.headerContainer}
+							action={
+								<div className={classes.headerIcons}>
+									{/* Filter support added back */}
+									<Tooltip title="Delete" placement="top">
+										<IconButton
+											size="small"
+											onClick={() => {
+												setDeleteDialogOpen(true);
+											}}
+											aria-label="Delete"
+											data-testid="delete-on-map"
+										>
+											<Delete color="secondary" />
+										</IconButton>
+									</Tooltip>
+									<Tooltip title="Filter" placement="top">
+										<IconButton
+											size="small"
+											onClick={() => {
+												drawController.updateState({ editDraw: true });
+												drawController.actionFilter();
+												popupController.updateState({ popupOpen: false });
+											}}
+											aria-label="Filter"
+											data-testid="filter-on-map"
+										>
+											<FilterAltIcon color="secondary" />
+										</IconButton>
+									</Tooltip>
+
+									<Tooltip title={'Add + Sync'} placement="top">
+										<IconButton
+											size="small"
+											aria-haspopup="true"
+											aria-expanded={isCreateParcelMenu ? 'true' : undefined}
+											className={classes.icons}
+											onClick={event => setAnchorEl(event.currentTarget)}
+										>
+											<Sync color="secondary" />
+										</IconButton>
+									</Tooltip>
+									<Tooltip title={'Add Shape to Layer'} placement="top">
+										<IconButton
+											size={'small'}
+											onClick={e => handleAddShapeClick(e, 'draw')}
+											aria-label="close"
+											className={classes.icons}
+										>
+											<Layers color="secondary" />
+										</IconButton>
+									</Tooltip>
+									<Tooltip title={'Close'} placement="top">
+										<IconButton size={'small'} onClick={handleClose} aria-label="close" className={classes.icons}>
+											<Close color="secondary" />
+										</IconButton>
+									</Tooltip>
+								</div>
+							}
+							// Expandable Card Title
+							title={getTitle()}
+							// Expandable Card Secondary Header
+							subheader={layer.groupName ? layer.layerName : ''}
+						/>
+						<CardContent className={classes.content}>
+							<Grid
+								container
+								direction="row"
+								alignItems={loading ? 'center' : 'flex-start'}
+								justifyContent={loading ? 'center' : 'flex-start'}
+								display="block"
+								className={classes.contentGrid}
+							>
+								{loading ? (
+									<Grid item>
+										<CircularProgress color="secondary" />
+									</Grid>
+								) : (
+									<>
+										{Object.keys(properties)
+											.filter(prop => prop !== 'shapeCenter' && prop !== 'originalProperties')
+											.map(prop => (
+												<React.Fragment key={prop}>
+													<Grid item xs={5}>
+														{prop}
+													</Grid>
+													<Grid item xs={7} style={{ fontWeight: 'bold' }}>
+														{properties[prop]}
+													</Grid>
+												</React.Fragment>
+											))}
+									</>
+								)}
+							</Grid>
+						</CardContent>
+					</>
+				)}
 			</Card>
 		</React.Fragment>
 	);

@@ -3,6 +3,7 @@ import { NotificationManager } from 'react-notifications';
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
 import update from 'immutability-helper';
 import { debounce, sortBy, set } from 'lodash';
+import mapboxgl from 'mapbox-gl';
 import { v4 as uuid } from 'uuid';
 
 import getBoundsQuery from 'api/getBoundsQuery';
@@ -210,6 +211,28 @@ const LayerMeta = {
 			getProps: layerId => {
 				return {
 					data: deckLayers[layerId].getData([]),
+					onHover: info => {
+						const popUps = document.getElementsByClassName('mapboxgl-popup');
+						if (popUps[0]) {
+							popUps[0].remove();
+						}
+
+						// Create new popup
+						new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+							.setLngLat(info?.coordinate)
+							.setMaxWidth('none')
+							.setHTML('<div id="popupContainer"></div>')
+							.addTo(window.mapRef);
+
+						// removing unnessacary data from info object
+						delete info.object.pointIndices;
+						delete info.object.points;
+						delete info.object.position;
+						delete info.object.row;
+						delete info.object.col;
+
+						popupController.setState({ selectedHex: info.object, popupOpen: true });
+					},
 				};
 			},
 		},

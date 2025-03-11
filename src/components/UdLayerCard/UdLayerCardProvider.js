@@ -8,6 +8,7 @@ function UdLayerCardProvider(props) {
 		<UdLayerCardContextProvider>
 			<UdLayerCard
 				selectedUserDefinedLayer={props.selectedUserDefinedLayer}
+				selectedHex={props.selectedHex}
 				parent={props.parent}
 				mouseX={props.mouseX}
 				mouseY={props.mouseY}
