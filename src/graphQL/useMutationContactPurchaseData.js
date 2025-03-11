@@ -17,12 +17,23 @@ export const UPDATE_CONTACT_PURCHASE_DATA = gql`
 			phone1
 			phone1LastSeen
 			phone1Type
+			phone1Status
 			phone2
 			phone2LastSeen
 			phone2Type
+			phone2Status
 			phone3
 			phone3LastSeen
 			phone3Type
+			phone3Status
+			phone4
+			phone4LastSeen
+			phone4Type
+			phone4Status
+			phone5
+			phone5LastSeen
+			phone5Type
+			phone5Status
 			pid
 			previousAddress1
 			previousAddress1DateRange

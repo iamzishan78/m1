@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 import { Typography, Grid } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -8,7 +10,6 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { get } from 'lodash';
 import loadashFilter from 'lodash/filter';
 
 import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
@@ -23,7 +24,7 @@ import {
 import MergeHistory from 'components/ContactDetailCard/components/FieldContent/MergeHistory';
 import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { phoneStatusOptions, contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
@@ -70,6 +71,7 @@ export default function FieldContent({
 	row,
 	handleQuickActionActivity,
 	metafields,
+	purchaseDataId = null,
 }) {
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 	const [edit, setEdit] = useState(null);
@@ -128,7 +130,7 @@ export default function FieldContent({
 
 			let count = 0;
 			for (const fieldName in content) {
-				if (content.hasOwnProperty(fieldName) && !ignorableFieldsInCount.includes(fieldName)) {
+				if (_.has(content, fieldName) && !ignorableFieldsInCount.includes(fieldName)) {
 					count++;
 				}
 			}
@@ -156,7 +158,7 @@ export default function FieldContent({
 	const getOrganizedContent = () => {
 		let textArray = [];
 		for (const key in showContent) {
-			if (showContent.hasOwnProperty(key) && showContent[key] && showContent[key] !== '') {
+			if (_.has(showContent, key) && showContent[key] && showContent[key] !== '') {
 				if (
 					key === 'zip' ||
 					key === 'country' ||
@@ -229,7 +231,7 @@ export default function FieldContent({
 
 		// Iterate over the keys of the original object
 		for (const key in editContent) {
-			if (editContent.hasOwnProperty(key)) {
+			if (_.has(editContent, key)) {
 				// Check if the key starts with 'custom_data.'
 				if (key.startsWith('custom_data.')) {
 					// Extract the custom field name
@@ -277,7 +279,7 @@ export default function FieldContent({
 				if (isPurchased) {
 					updateContactPurchaseData({
 						variables: {
-							purchaseData: trimmedEditContent,
+							purchaseData: { ...trimmedEditContent, ...(purchaseDataId && { purchaseDataId }) },
 							isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 						},
 						refetchQueries: ['getContactPurchaseData'],
@@ -371,6 +373,7 @@ export default function FieldContent({
 		return val;
 	};
 
+	const phoneStatusFields = ['phone1Status', 'phone2Status', 'phone3Status', 'phone4Status', 'phone5Status'];
 	let inputsArray = [];
 	if (edit) {
 		for (const fieldName in editContent) {
@@ -387,7 +390,7 @@ export default function FieldContent({
 						/>
 					);
 				}
-			} else if (editContent.hasOwnProperty(fieldName)) {
+			} else if (_.has(editContent, fieldName)) {
 				const metaField = metafields ? metafields.find(meta => meta?.esKey === fieldName) : null;
 				inputsArray.push(
 					fieldName === 'contactStatus' ? (
@@ -436,6 +439,31 @@ export default function FieldContent({
 							key={'fieldContentInput' + fieldName}
 							options={timeZoneOptions}
 							getOptionLabel={option => option || editContent[fieldName]}
+							onChange={(e, data) => {
+								e.persist();
+								setEditContent(editContent => ({
+									...editContent,
+									[fieldName]: data || '',
+								}));
+							}}
+							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+							autoComplete
+							onKeyDown={event => keyDownHandler(event, [fieldName])}
+							onBlur={() => onBlurHandler([fieldName])}
+							style={{ width: '100%' }}
+							renderInput={params => (
+								<TextField
+									{...params}
+									label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+									className={classes.editTextField}
+								/>
+							)}
+						/>
+					) : phoneStatusFields.includes(fieldName) ? (
+						<Autocomplete
+							id={'fieldContentInput' + fieldName}
+							key={'fieldContentInput' + fieldName}
+							options={phoneStatusOptions}
 							onChange={(e, data) => {
 								e.persist();
 								setEditContent(editContent => ({
@@ -618,7 +646,7 @@ export default function FieldContent({
 				}));
 				handleUpdating(value);
 			}}
-			value={get(editContent, 'campaigns', [])}
+			value={_.get(editContent, 'campaigns', [])}
 			fullWidth
 			targetLabel="Contact"
 			targetLabelId={id}
@@ -840,4 +868,34 @@ export const Status = ({ setDocumentType, value, options, ...other }) => {
 			{...other}
 		/>
 	);
+};
+
+FieldContent.propTypes = {
+	children: PropTypes.node,
+	id: PropTypes.string.isRequired,
+	isPurchased: PropTypes.bool,
+	entity: PropTypes.string,
+	melissaRecordId: PropTypes.string,
+	melissaAddressRecordId: PropTypes.string,
+	content: PropTypes.object.isRequired,
+	childrenLeft: PropTypes.bool,
+	onlyChildren: PropTypes.bool,
+	name: PropTypes.string,
+	noMargin: PropTypes.bool,
+	noInputFooter: PropTypes.bool,
+	linkType: PropTypes.oneOf(Object.values(LinkTypes)),
+	fieldType: PropTypes.oneOf(Object.values(FieldTypes)),
+	isEdited: PropTypes.bool,
+	isMerged: PropTypes.bool,
+	disabled: PropTypes.bool,
+	row: PropTypes.object,
+	handleQuickActionActivity: PropTypes.func,
+	metafields: PropTypes.arrayOf(PropTypes.object),
+	purchaseDataId: PropTypes.string,
+};
+
+Status.propTypes = {
+	setDocumentType: PropTypes.func.isRequired,
+	value: PropTypes.string.isRequired,
+	options: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
