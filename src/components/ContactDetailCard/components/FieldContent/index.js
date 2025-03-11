@@ -47,6 +47,7 @@ import { formatDate } from 'components/Shared/functions';
 import { useDispatch } from 'react-redux';
 import { showErrorMessage } from 'actions';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import { phonenumber } from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -580,10 +581,10 @@ export default function FieldContent({
 							multiline
 							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
 							onChange={e => {
-								e.persist();
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: e.target.value,
+								const { value } = e.target;
+								setEditContent(prev => ({
+									...prev,
+									[fieldName]: row?.isPhoneNumber && !phonenumber(value) ? '' : value,
 								}));
 							}}
 							onKeyDown={event => keyDownHandler(event, [fieldName])}

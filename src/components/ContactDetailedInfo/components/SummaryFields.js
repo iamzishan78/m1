@@ -26,6 +26,7 @@ import vf_number from 'components/Shared/valueformatters/vf_number';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
+import { phonenumber } from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -280,8 +281,8 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 															updateFieldData(field.key, currValue);
 														}
 													}}
-													onChange={({ target }) => {
-														params.onChange(target.value);
+													onChange={({ target: { value } }) => {
+														params.onChange(field.isPhoneNumber && !phonenumber(value) ? '' : value);
 													}}
 													onKeyUp={e => {
 														if (e.key === 'Enter') {
