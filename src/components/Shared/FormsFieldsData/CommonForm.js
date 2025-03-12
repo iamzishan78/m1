@@ -13,7 +13,6 @@ import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 
 import { sideDialogController } from 'controllers/sideDialogController';
 
-import AutoCompleteNewOption from './Fields/AutoCompleteNewOption';
 import StartEndDate from './Fields/StartEndDate';
 import CustomDatePicker from '../components/Fields/CustomDatePicker';
 
@@ -55,12 +54,14 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 				let renderedField;
 				switch (item.renderField) {
 					case 'autoComplete':
+					case 'autoCompleteNewOption':
 						renderedField = (
 							<CustomAutoComplete
+								key={item.name}
 								control={control}
 								watch={watch}
 								error={error || errors?.[item.name]}
-								fieldConfig={{ margin: 'dense' }}
+								fieldConfig={{ margin: 'dense', allowNewOptions: item.renderField === 'autoCompleteNewOption' }}
 								fieldEvents={{ onChange: item.onChange }}
 								fieldAttributes={{
 									name: item.name,
@@ -70,6 +71,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 									getOptions: item.getOptions,
 									query: item.query,
 									variables: item.variables,
+									isESSearch: item.isESSearch || false,
 								}}
 							/>
 						);
@@ -130,10 +132,6 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 						renderedField = (
 							<RadioGroup key={JSON.stringify(item)} item={item} control={control} dialogKey={dialogKey} />
 						);
-						break;
-
-					case 'autoCompleteNewOption':
-						renderedField = <AutoCompleteNewOption item={item} control={control} />;
 						break;
 
 					case 'datePicker':

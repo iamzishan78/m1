@@ -20,6 +20,7 @@ function CustomAutoComplete({
 		margin = '',
 		layout = 'vertical',
 		titleComponent = 'h3',
+		allowNewOptions = false,
 	} = {},
 	fieldAttributes: {
 		name = '',
@@ -42,7 +43,9 @@ function CustomAutoComplete({
 	const watchValue = watch ? watch(name) : '';
 
 	const fetchOptions = debounce(async value => {
-		if (!query) {return;}
+		if (!query) {
+			return;
+		}
 		setLoading(true);
 		setOptions([]);
 		try {
@@ -50,8 +53,11 @@ function CustomAutoComplete({
 				variables: isESSearch ? { ...variables, search: { ...variables.search, query: value } } : variables,
 				query,
 			});
-			if (res) {setOptions(getOptions(res));}
-			else {setOptions([]);}
+			if (res) {
+				setOptions(getOptions(res));
+			} else {
+				setOptions([]);
+			}
 		} catch (err) {
 			console.error('Error fetching options:', err);
 		}
@@ -63,14 +69,21 @@ function CustomAutoComplete({
 	}, []);
 
 	const getOptionLabel = option => {
-		if (!option) {return '';}
-		if (typeof option === 'string') {return option;}
+		if (!option) {
+			return '';
+		}
+		if (typeof option === 'string') {
+			return option;
+		}
 		return option.label || option.value || option.name || '';
 	};
 
 	const getOptionSelected = (option, value) => {
-		if (option?._id && value._id) {return option._id === value._id;}
-		else {return option.value == value.value;}
+		if (option?._id && value._id) {
+			return option._id === value._id;
+		} else {
+			return option.value == value.value;
+		}
 	};
 
 	const autoCompleteChnage = (option, fieldOnChange) => {
@@ -81,10 +94,12 @@ function CustomAutoComplete({
 	const filterOptions = (options, params) => {
 		let filtered = filter(options, params);
 		const inputValue = params.inputValue || '';
+
 		const isExisting =
 			Array.isArray(filtered) &&
 			filtered.some(option => (option.value ? option.value === inputValue : option === inputValue));
-		if (inputValue !== '' && !isExisting) {
+
+		if (inputValue !== '' && !isExisting && allowNewOptions) {
 			filtered = [...filtered, { id: 'newEntity', value: inputValue }];
 		}
 
