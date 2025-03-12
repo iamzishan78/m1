@@ -220,6 +220,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 									{field.type === 'text' && (
 										<CustomTextField
 											id={`field-${field.key}`}
+											style={{ width: 'calc(100% + 8px)' }}
 											control={control}
 											fieldConfig={{
 												disabled: field?.disabled,
@@ -245,6 +246,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 									{field.type === 'number' && (
 										<CustomTextField
 											id={`field-${field.key}`}
+											style={{ width: 'calc(100% + 8px)' }}
 											control={control}
 											fieldConfig={{
 												disabled: field?.disabled,
@@ -278,6 +280,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 											fieldAttributes={{
 												name: field.key,
 												value: get(agreementDetails, `${field.key}`, ''),
+												InputProps: {
+													style: { width: 'calc(100% + 8px)' },
+												},
 											}}
 											fieldEvents={{
 												onChange: newValue => {
