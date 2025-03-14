@@ -34,12 +34,13 @@ function CustomDatePicker({
 		inputRef = null,
 		helperText = '',
 		placeholder = 'MM/DD/YYYY',
-		InputProps = {},
+
 		InputLabelProps = {},
 		layout = 'vertical',
 		spacing = 2,
 		minDate,
 	} = {},
+	InputProps = {},
 	...propsRest
 }) {
 	const [value, setValue] = useState(_value);
@@ -104,9 +105,7 @@ function CustomDatePicker({
 						autoFocus,
 						placeholder,
 						inputRef: inputRef || field?.ref || null,
-						InputProps: {
-							...InputProps,
-						},
+						InputProps,
 						InputLabelProps,
 						error: required && !watchDateValue && error,
 						helperText: error?.message ?? helperText,
@@ -162,11 +161,11 @@ CustomDatePicker.propTypes = {
 		label: PropTypes.string,
 		inputRef: PropTypes.any,
 		placeholder: PropTypes.string,
-		InputProps: PropTypes.object,
 		InputLabelProps: PropTypes.object,
 	}),
 	onChange: PropTypes.func,
 	value: PropTypes.string,
+	InputProps: PropTypes.object,
 };
 
 export default CustomDatePicker;

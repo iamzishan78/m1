@@ -3,11 +3,12 @@ import { useController } from 'react-hook-form';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import CloseIcon from '@mui/icons-material/Close';
-import { Autocomplete, TextField, Chip, IconButton } from '@mui/material';
-
 import moment from 'moment';
 import PropTypes from 'prop-types';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 
 /**
  * CustomAutocomplete component integrates MUI Autocomplete with react-hook-form using useController.
@@ -49,7 +50,7 @@ const useStyles = makeStyles(() => ({
 		'& .MuiInputBase-input': { color: '#17AADD' },
 	},
 	dateRoot: {
-		color: '#ffffff',
+		color: '#ffffff !important',
 		'& input': {
 			marginLeft: 8,
 		},
@@ -57,10 +58,11 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-const CustomAutocomplete = ({
+const RenderCustomFields = ({
 	defaultValue,
 	name,
 	control,
+	watch,
 	options,
 	label,
 	className,
@@ -71,6 +73,7 @@ const CustomAutocomplete = ({
 	multiple = false,
 	type,
 	isSearch,
+	setFieldNameObj,
 }) => {
 	const { field } = useController({
 		name,
@@ -79,6 +82,8 @@ const CustomAutocomplete = ({
 	});
 
 	const classes = useStyles();
+
+	// label === 'Field Name' && console.log({ type });
 
 	if (type === 'date') {
 		const handleDateChange = (key, value) => {
@@ -89,51 +94,52 @@ const CustomAutocomplete = ({
 
 		return (
 			<div style={{ display: 'flex', gap: '3em' }}>
-				<TextField
-					type="date"
-					label={'Date From'}
-					value={field.value?.gte || '1970-01-01'}
-					onChange={e => handleDateChange('gte', e.target.value)}
+				<CustomDatePicker
+					fieldConfig={{
+						variant: 'standard',
+					}}
+					fieldAttributes={{
+						label: 'Date From',
+						value: field.value?.gte || '1970-01-01',
+						InputLabelProps: { shrink: true },
+					}}
+					fieldEvents={{
+						onChange: value => handleDateChange('gte', value),
+					}}
 					style={{ width: '160px' }}
-					InputLabelProps={{ shrink: true }}
+					className={className}
 					InputProps={{
 						inputProps: {
 							max: moment().subtract(1, 'day').format('YYYY-MM-DD'),
 						},
-						endAdornment: field.value?.gte && (
-							<IconButton onClick={() => handleDateChange('gte', '')}>
-								<CloseIcon />
-							</IconButton>
-						),
 						classes: {
 							root: classes.dateRoot,
 						},
 					}}
-					variant="standard"
-					className={className}
 				/>
-				<TextField
-					type="date"
-					label={'Date To'}
-					value={field.value?.lte || moment().format('YYYY-MM-DD')}
-					onChange={e => handleDateChange('lte', e.target.value)}
+
+				<CustomDatePicker
+					fieldConfig={{
+						variant: 'standard',
+					}}
+					fieldAttributes={{
+						label: 'Date To',
+						value: field.value?.lte || moment().format('YYYY-MM-DD'),
+						InputLabelProps: { shrink: true },
+					}}
+					fieldEvents={{
+						onChange: value => handleDateChange('lte', value),
+					}}
 					style={{ width: '160px' }}
-					InputLabelProps={{ shrink: true }}
+					className={className}
 					InputProps={{
 						inputProps: {
 							max: moment().format('YYYY-MM-DD'),
 						},
-						endAdornment: field.value?.lte && (
-							<IconButton onClick={() => handleDateChange('lte', '')}>
-								<CloseIcon />
-							</IconButton>
-						),
 						classes: {
 							root: classes.dateRoot,
 						},
 					}}
-					variant="standard"
-					className={className}
 				/>
 			</div>
 		);
@@ -150,33 +156,46 @@ const CustomAutocomplete = ({
 
 		return (
 			<div style={{ display: 'flex', gap: '4em' }}>
-				<TextField
-					type="number"
-					label={'Min'}
-					value={field.value?.[0] || ''}
-					onChange={e => handleNumberChange(0, e.target.value)}
-					InputLabelProps={{ shrink: true }}
-					InputProps={{
-						classes: {
-							root: classes.dateRoot, // Reusing dateRoot styles for consistency
+				<CustomTextField
+					fieldConfig={{
+						type: 'number',
+						variant: 'standard',
+						customStyleClass: className,
+					}}
+					fieldAttributes={{
+						label: 'Min',
+						value: field.value?.[0] || '',
+						InputLabelProps: { shrink: true },
+						InputProps: {
+							classes: {
+								root: classes.dateRoot,
+							},
 						},
 					}}
-					variant="standard"
-					className={className}
+					fieldEvents={{
+						onChange: value => handleNumberChange(0, value),
+					}}
 				/>
-				<TextField
-					type="number"
-					label={'Max'}
-					value={field.value?.[1] || ''}
-					onChange={e => handleNumberChange(1, e.target.value)}
-					InputLabelProps={{ shrink: true }}
-					InputProps={{
-						classes: {
-							root: classes.dateRoot, // Reusing dateRoot styles for consistency
+
+				<CustomTextField
+					fieldConfig={{
+						type: 'number',
+						variant: 'standard',
+						customStyleClass: className,
+					}}
+					fieldAttributes={{
+						label: 'Max',
+						value: field.value?.[1] || '',
+						InputLabelProps: { shrink: true },
+						InputProps: {
+							classes: {
+								root: classes.dateRoot,
+							},
 						},
 					}}
-					variant="standard"
-					className={className}
+					fieldEvents={{
+						onChange: value => handleNumberChange(1, value),
+					}}
 				/>
 			</div>
 		);
@@ -184,72 +203,60 @@ const CustomAutocomplete = ({
 
 	if (isTextFieldOnly) {
 		return (
-			<TextField
-				fullWidth
-				label={label}
-				className={className}
-				variant="standard"
-				value={field.value}
-				onChange={e => field.onChange(e.target.value)}
+			<CustomTextField
+				control={control}
+				watch={watch}
+				fieldConfig={{
+					fullWidth: true,
+					variant: 'standard',
+					customStyleClass: className,
+				}}
+				fieldAttributes={{
+					label,
+					name,
+				}}
 			/>
 		);
 	}
 
-	if (defaultValue?.label) {
-		field.value = defaultValue.label;
-	}
-
 	return (
-		<Autocomplete
-			{...field}
-			multiple={multiple}
-			options={options.filter(option => (multiple ? !field?.value?.includes(option) : true))}
-			onChange={(e, v, r) => {
-				handleChange('');
-				onChange?.(e, v, r, field?.value);
-				field.onChange(v);
+		<CustomAutoComplete
+			control={control}
+			watch={watch}
+			fieldConfig={{
+				multiple: multiple,
+				variant: 'standard',
+				inputClassName: className,
+				chipStyles: {
+					backgroundColor: 'darkgray',
+					color: 'white',
+				},
 			}}
-			value={(multiple && typeof field?.value === 'string' ? [field?.value] : field?.value) || (multiple ? [] : '')}
-			renderInput={params => (
-				<TextField
-					{...params}
-					label={label}
-					inputProps={{
-						...params.inputProps,
-						value: isSearch ? params?.inputProps?.value || searchText : params?.inputProps?.value,
-					}}
-					className={className}
-					variant="standard"
-					onChange={e => {
-						if (isSearch) {
-							handleChange(e);
-						}
-					}}
-				/>
-			)}
-			renderTags={(value, getTagProps) =>
-				value.map((option, index) => (
-					<Chip
-						key={option}
-						label={option}
-						{...getTagProps({ index })}
-						style={{
-							backgroundColor: 'darkgray',
-							color: 'white',
-						}}
-						deleteIcon={<CloseIcon style={{ color: 'white' }} />}
-					/>
-				))
-			}
+			fieldAttributes={{
+				label,
+				name,
+				defaultOptions: options,
+				inputSearchText: searchText,
+			}}
+			fieldEvents={{
+				onChange: (newVal, oldVal) => {
+					handleChange('');
+					onChange?.({ value: newVal, previousValue: oldVal });
+					const option = options.find(opt => opt.value === newVal);
+					setFieldNameObj(option);
+				},
+				onInputSearchChange: value => isSearch && handleChange(value),
+			}}
 		/>
 	);
 };
 
-CustomAutocomplete.propTypes = {
-	defaultValue: PropTypes.any,
-	name: PropTypes.string.isRequired,
-	control: PropTypes.object.isRequired,
-	options: PropTypes.array.isRequired,
+RenderCustomFields.propTypes = {
+	defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array, PropTypes.object]),
+	name: PropTypes.string,
+	control: PropTypes.object,
+	watch: PropTypes.func,
+	options: PropTypes.array,
 	label: PropTypes.string,
 	className: PropTypes.string,
 	onChange: PropTypes.func,
@@ -259,5 +266,7 @@ CustomAutocomplete.propTypes = {
 	multiple: PropTypes.bool,
 	type: PropTypes.string,
 	isSearch: PropTypes.bool,
+	setFieldNameObj: PropTypes.func,
 };
-export default CustomAutocomplete;
+
+export default RenderCustomFields;
