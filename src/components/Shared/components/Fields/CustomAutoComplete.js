@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 
-import { Grid, TextField, Autocomplete, CircularProgress, Typography, createFilterOptions, Box } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import {
+	Grid,
+	TextField,
+	Autocomplete,
+	CircularProgress,
+	Typography,
+	createFilterOptions,
+	Box,
+	Chip,
+} from '@mui/material';
 
 import { useApolloClient } from '@apollo/client';
 import { debounce } from 'lodash';
@@ -11,28 +21,32 @@ function CustomAutoComplete({
 	control = null,
 	watch = null,
 	error = null,
-	fieldEvents: { onChange = null } = {},
+	fieldEvents: { onChange = null, onInputSearchChange = null } = {},
 	fieldConfig: {
-		disabled = false,
-		required = false,
-		size = 'small',
-		variant = 'standard',
 		margin = '',
+		size = 'small',
+		chipStyles = {},
+		required = false,
+		disabled = false,
+		multiple = false,
 		layout = 'vertical',
+		inputClassName = '',
+		variant = 'standard',
 		titleComponent = 'h3',
 		allowNewOptions = false,
 	} = {},
 	fieldAttributes: {
 		name = '',
-		title = null,
 		label = '',
+		title = null,
 		value = null,
-		defaultValue = null,
-		defaultOptions = [],
 		query = null,
 		variables = {},
-		getOptions = options => options,
 		isESSearch = false,
+		defaultValue = null,
+		defaultOptions = null,
+		inputSearchText = null,
+		getOptions = options => options,
 	} = {},
 	...propsRest
 }) {
@@ -41,6 +55,10 @@ function CustomAutoComplete({
 	const [options, setOptions] = useState(Array.isArray(defaultOptions) ? defaultOptions : []);
 	const [loading, setLoading] = useState(false);
 	const watchValue = watch ? watch(name) : '';
+
+	useEffect(() => {
+		setOptions(defaultOptions);
+	}, [defaultOptions]);
 
 	const fetchOptions = debounce(async value => {
 		if (!query) {
@@ -86,9 +104,30 @@ function CustomAutoComplete({
 		}
 	};
 
-	const autoCompleteChnage = (option, fieldOnChange) => {
-		const val = onChange?.(option?.value || option);
-		fieldOnChange?.(option ? (val ?? option.value) : null);
+	const autoCompleteChnage = (newOpt, oldOpt, fieldOnChange) => {
+		let val = onChange?.(newOpt?.value || newOpt, oldOpt);
+		val = newOpt ? (val ?? (newOpt.value || newOpt)) : null;
+		fieldOnChange?.(val);
+	};
+
+	const textFieldChange = event => {
+		const value = event.target.value;
+		isESSearch && fetchOptions(value);
+		onInputSearchChange?.(value);
+	};
+
+	const getValue = fieldValue => {
+		if (multiple) {
+			return typeof fieldValue === 'string' ? [fieldValue] : fieldValue || [];
+		}
+
+		return (fieldValue && options.find(opt => opt.value === fieldValue || opt === fieldValue)) || value || null;
+	};
+
+	const getOptionsArray = value => {
+		if (!multiple) {return options;}
+		const optArray = options.filter(opt => !value?.some(selected => getOptionLabel(selected) === getOptionLabel(opt)));
+		return optArray;
 	};
 
 	const filterOptions = (options, params) => {
@@ -129,30 +168,44 @@ function CustomAutoComplete({
 	const renderAutoComplete = ({ field } = {}) => {
 		return (
 			<Autocomplete
-				options={options}
 				loading={loading}
 				disabled={disabled}
 				defaultValue={defaultValue}
-				filterOptions={filterOptions}
 				renderOption={renderOption}
+				multiple={multiple ?? false}
+				filterOptions={filterOptions}
 				getOptionLabel={getOptionLabel}
 				getOptionSelected={getOptionSelected}
+				value={getValue(field?.value ?? null)}
+				options={getOptionsArray(field?.value)}
 				noOptionsText={loading ? <CircularProgress size={20} /> : 'No options'}
-				value={(field?.value && options.find(opt => opt.value === field?.value)) || value || null} //ternary ???
-				onChange={(_, newValue) => autoCompleteChnage(newValue, field?.onChange)}
+				onChange={(_, newValue) => autoCompleteChnage(newValue, field?.value, field?.onChange)}
 				renderInput={params => (
 					<TextField
 						{...params}
 						size={size}
+						value={(inputSearchText ?? params?.inputProps?.value) || ''}
 						label={label}
 						margin={margin}
 						variant={variant}
 						onBlur={field?.onBlur}
+						onChange={textFieldChange}
 						helperText={error?.message}
 						error={required && !watchValue && error}
-						onChange={event => isESSearch && fetchOptions(event.target.value)}
+						className={inputClassName}
 					/>
 				)}
+				renderTags={(value, getTagProps) => {
+					return value?.map((option, index) => (
+						<Chip
+							key={option}
+							style={chipStyles}
+							{...getTagProps({ index })}
+							label={getOptionLabel(option)}
+							deleteIcon={<CloseIcon style={{ color: 'white' }} />}
+						/>
+					));
+				}}
 				{...propsRest}
 			/>
 		);
@@ -185,27 +238,33 @@ CustomAutoComplete.propTypes = {
 	error: PropTypes.object,
 	fieldEvents: PropTypes.shape({
 		onChange: PropTypes.func,
+		onInputSearchChange: PropTypes.func,
 	}),
 	fieldConfig: PropTypes.shape({
-		disabled: PropTypes.bool,
-		required: PropTypes.bool,
-		size: PropTypes.string,
-		variant: PropTypes.string,
 		margin: PropTypes.string,
+		size: PropTypes.string,
+		chipStyles: PropTypes.object,
+		required: PropTypes.bool,
+		disabled: PropTypes.bool,
+		multiple: PropTypes.bool,
 		layout: PropTypes.string,
+		inputClassName: PropTypes.string,
+		variant: PropTypes.string,
 		titleComponent: PropTypes.string,
+		allowNewOptions: PropTypes.bool,
 	}),
 	fieldAttributes: PropTypes.shape({
 		name: PropTypes.string,
-		title: PropTypes.string,
 		label: PropTypes.string,
+		title: PropTypes.string,
 		value: PropTypes.any,
-		defaultValue: PropTypes.any,
-		defaultOptions: PropTypes.array,
 		query: PropTypes.object,
 		variables: PropTypes.object,
-		getOptions: PropTypes.func,
 		isESSearch: PropTypes.bool,
+		defaultValue: PropTypes.any,
+		defaultOptions: PropTypes.array,
+		inputSearchText: PropTypes.string,
+		getOptions: PropTypes.func,
 	}),
 	propsRest: PropTypes.object,
 };
