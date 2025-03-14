@@ -212,11 +212,15 @@ const LayerItem = React.memo(props => {
 									)}
 								</Box>
 								<div className="zoom-section">
-									{type !== 'group' && data.visiable && data.file && data.defaultSettings?.bbox && (
-										<ListItemIcon onClick={() => handleLayerZoomClick(data.defaultSettings.bbox)}>
-											<ZoomInIcon htmlColor="#ffff" />
-										</ListItemIcon>
-									)}
+									{type !== 'group' &&
+										data.visiable &&
+										data.file &&
+										data.defaultSettings?.bbox &&
+										data.defaultSettings.bbox.length >= 4 && (
+											<ListItemIcon onClick={() => handleLayerZoomClick(data.defaultSettings.bbox)}>
+												<ZoomInIcon htmlColor="#ffff" />
+											</ListItemIcon>
+										)}
 								</div>
 								{layerFilters?.length ? (
 									<IconButton>
