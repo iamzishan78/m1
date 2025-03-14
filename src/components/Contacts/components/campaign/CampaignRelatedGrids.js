@@ -99,6 +99,7 @@ function CamapignRelatedGrids({ campaign }) {
     },
     customValue: { campaign: campaign },
     maxTableHeight: '35vh',
+    columnVirtualization: false,
   }), [campaign?.name]);
 
   const campaignUnitoverrideMeta = useMemo(() => ({
@@ -148,6 +149,7 @@ function CamapignRelatedGrids({ campaign }) {
     customValue: { parentRecord: campaign?._id, campaign: campaign },
     isCampaignRefetch: true,
     maxTableHeight: '35vh',
+    columnVirtualization: false,
   }), [campaign?.name]);
 
   const campaignContactoverrideMeta = useMemo(() => ({
@@ -194,6 +196,7 @@ function CamapignRelatedGrids({ campaign }) {
     isCampaignRefetch: true,
     showAddContactButton: false,
     maxTableHeight: '35vh',
+    columnVirtualization: false,
   }), [campaign?.name]);
 
   const campaignTractOverrideMeta = useMemo(() => ({
@@ -242,6 +245,7 @@ function CamapignRelatedGrids({ campaign }) {
         marginLeft: '-9px',
       },
     },
+    columnVirtualization: false,
   }), [campaign?.name]);
 
   const campaignTractInterestOverrideMeta = useMemo(() => ({
@@ -281,6 +285,7 @@ function CamapignRelatedGrids({ campaign }) {
         marginLeft: '-9px',
       },
     },
+    columnVirtualization: false,
   }), [campaign?.name]);
 
   return (

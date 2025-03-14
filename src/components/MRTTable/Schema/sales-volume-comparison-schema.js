@@ -14,7 +14,7 @@ const SalesVolumeComparisonMeta = {
 	maxTableHeight: 'calc(100vh - 710px)',
 	height: '767px',
 	isInFiniteScroll: true,
-	columnVirtualization: true,
+	columnVirtualization: false,
 	isDeleteDisabled: true, // Disable delete functionality
 	TableSchema: [
 		// MongoDB ID column

@@ -27,7 +27,7 @@ const AgreementMeta = {
   defaultSort: { field: "_ts", order: "desc" },
   maxTableHeight: 'calc(100vh - 200px)',
   isInFiniteScroll: true,
-  columnVirtualization: true,
+  columnVirtualization: false,
   TableSchema: [
     {
       ...CommonSchema.HIDDEN,
