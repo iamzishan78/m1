@@ -1400,6 +1400,7 @@ function AddDealDialog(props) {
 								setTitleFocus={setTitleFocus}
 								isTransactPage={props.isTransactPage}
 								handleClickDialogClose={handleClickDialogClose}
+								addUpdateDeal={addUpdateDeal}
 							/>
 							{addDealLoading ? (
 								<div
@@ -1525,6 +1526,7 @@ function AddDealDialog(props) {
 															onChange={e => {
 																setInternalId(e.target.value);
 															}}
+															onBlur={() => addUpdateDeal()}
 															InputLabelProps={{
 																shrink: true,
 															}}
