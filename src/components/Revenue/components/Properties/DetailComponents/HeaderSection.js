@@ -1167,7 +1167,7 @@ export default function HeaderSection(props) {
           </Grid>
 
           {/* Field for approval status */}
-          <Grid item xs={5}>
+          {/* <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
                 <div className={classes.label}>Approval Status</div>
@@ -1193,7 +1193,7 @@ export default function HeaderSection(props) {
                 />
               </Grid>
             </Grid>
-          </Grid>
+          </Grid> */}
 
 
 
