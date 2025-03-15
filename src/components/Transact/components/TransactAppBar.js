@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Typography, AppBar, Button, ButtonGroup, Tooltip, IconButton, Icon } from "@material-ui/core";
-import { Launch } from "@material-ui/icons";
 import Add from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core/styles";
 import { setFlowState } from "actions";
@@ -221,19 +220,23 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp, summaryData })
     }));
   };
 
-  const summaryItems = [
-	{ title: 'Sum Total', content: summaryData?.totalPriceSum || 0 },
-	{
-		title: 'Forecast Total',
-		content: (
-			<div className={classes.priceWithIcon}>
-				<Icon component={CurrencyExchangeIcon} />
-				<span>{summaryData?.totalForecast || 0}</span>
-			</div>
-		),
-	},
-	{ title: 'Total Deals', content: `${summaryData?.totalDealCount || 0} Deals` },
-];
+  const summaryItems = useMemo(() => {
+		if (!summaryData) return [];
+
+		return [
+			{ title: 'Sum Total', content: summaryData.totalPriceSum || 0 },
+			{
+				title: 'Forecast Total',
+				content: (
+					<div className={classes.priceWithIcon}>
+						<Icon component={CurrencyExchangeIcon} />
+						<span>{summaryData?.totalForecast || 0}</span>
+					</div>
+				),
+			},
+			{ title: 'Total Deals', content: `${summaryData.totalDealCount || 0} Deals` },
+		];
+	}, [summaryData]);
 
   return (
     <>
@@ -249,16 +252,16 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp, summaryData })
 
           {openPipeDialog && <PipelineCustomDialog />}
           <div className={classes.left}>
-			<div className={classes.summaryContainer}>
-				{summaryItems.map((item, index) => (
-					<React.Fragment key={item.title}>
-						<Tooltip title={item.title}>
-							<span>{item.content}</span>
-						</Tooltip>
-						{index < summaryItems.length - 1 && <span className={classes.separator}>{'·'}</span>}
-					</React.Fragment>
-				))}
-				</div>
+          <div className={classes.summaryContainer}>
+            {summaryItems.map((item, index) => (
+              <React.Fragment key={item.title}>
+                <Tooltip title={item.title}>
+                  <span>{item.content}</span>
+                </Tooltip>
+                {index < summaryItems.length - 1 && <span className={classes.separator}>{'·'}</span>}
+              </React.Fragment>
+            ))}
+          </div>
             <div>
             <Tooltip title={"Flowline Actions"}>
               {/* Settings Icon Button to open Flowline settings */}

@@ -394,6 +394,8 @@ const Transact = () => {
 	const handleDataChange = newData => {};
 
 	const summaryData = useMemo(() => {
+		if (!filteredBoardTransactData || pipeToShow?.flowLineType !== 'deal') return null;
+
 		let totalDealCount = 0;
 		let totalPriceSum = 0;
 		let totalForecast = 0;
@@ -418,7 +420,7 @@ const Transact = () => {
 			totalPriceSum: vf_currency(totalPriceSum),
 			totalForecast: vf_currency(totalForecast),
 		};
-	}, [filteredBoardTransactData]);
+	}, [filteredBoardTransactData, pipeToShow?.flowLineType]);
 
 	const handleCardClick = (cardId, metadata, laneId) => {
 		history.push(`/flow/${selectedPipe._id}/lane/${laneId}/card/${cardId}`);
