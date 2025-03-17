@@ -21,7 +21,7 @@ import { tableController, tableESState } from 'controllers/tableController';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { customLayersFieldAccessors } from './consts';
-import CustomAutocomplete from './CustomAutocomplete';
+import RenderCustomFields from './RenderCustomFields';
 
 const TWO = 2;
 const FIVE_HUNDRED = 500;
@@ -42,12 +42,12 @@ const useStyles = makeStyles(theme => ({
 	autoComplete: {
 		marginBottom: '25px', // Margin for spacing between autocomplete fields
 		// White styles for input and label elements to match dark background
-		'& .MuiInputBase-input': { color: 'white' },
+		'& .MuiInputBase-input': { color: 'white !important' },
 		'& .MuiInput-underline:before': { borderBottom: '1px solid white' },
 		'& .MuiInput-underline:hover:before': { borderBottom: '2px solid white' },
 		'& .MuiInput-underline:after': { borderBottom: '2px solid white' },
-		'& .MuiFormLabel-root': { color: 'white' },
-		'& .MuiFormLabel-root.Mui-focused': { color: 'white' },
+		'& .MuiFormLabel-root': { color: 'white !important' },
+		'& .MuiFormLabel-root.Mui-focused': { color: 'white !important' },
 		'& .MuiSvgIcon-root': { color: 'white' },
 	},
 	iconButton: {
@@ -133,6 +133,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 	const { control, setValue, watch } = useFormContext(); // Get form control methods
 
 	const [searchText, setSearchText] = useState('');
+	const [fieldNameObj, setFieldNameObj] = useState({});
 	const [immediateSearchText, setImmediateSearchText] = useState('');
 	const debouncedSetSearchText = useMemo(() => {
 		return _.debounce(value => {
@@ -141,9 +142,9 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		}, FIVE_HUNDRED); // Adjust delay as needed
 	}, []);
 
-	const handleChange = e => {
-		setImmediateSearchText(e?.target?.value || '');
-		debouncedSetSearchText(e?.target?.value || '');
+	const handleChange = value => {
+		setImmediateSearchText(value || '');
+		debouncedSetSearchText(value || '');
 	};
 	// Lazy query to fetch filter list from the GraphQL API when required
 	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
@@ -385,7 +386,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				defaultValue: mapView?.dataSourceName
 					? [...m1LayersOptions, ...datasetsShapeNames]?.find(option => option.value === mapView?.dataSourceName)
 					: null, // Set default value if mapView is provided
-				onChange: (e, v, r, previousValue) => {
+				onChange: ({ previousValue }) => {
 					const tableKey = Object.keys(tableESState).find(key => {
 						const layerDataSourceName = tableESState[key].getValue('layerDataSourceName');
 						return layerDataSourceName === previousValue?.value;
@@ -397,6 +398,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 						false
 					);
 					// layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
+					setFieldNameObj({});
 					setValue(`mapViews.${index}.fieldName`, null);
 					setValue(`mapViews.${index}.filterType`, null);
 					setValue(`mapViews.${index}.filterValues`, null);
@@ -408,10 +410,10 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Field Name',
 				options: customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema || [], // Dynamic based on data source
 				defaultValue: mapView?.dataSourceName ? getSelectedField(mapView?.fieldName) || mapView?.fieldName : null, // Set default value if mapView is provided
-				onChange: (e, v, r, previousValue) => {
+				onChange: ({ previousValue }) => {
 					setValue(
 						`mapViews.${index}.filterType`,
-						v?.type
+						fieldNameObj?.type
 							? null
 							: {
 									label: 'Multi Select',
@@ -437,8 +439,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			},
 		];
 
-		const isDate = fieldName?.type === 'date';
-		const isRange = fieldName?.type === 'range';
+		const isDate = (fieldNameObj?.type ?? '') === 'date';
+		const isRange = (fieldNameObj?.type ?? '') === 'range';
 
 		if (!isDate && !isRange) {
 			fields.push({
@@ -446,9 +448,9 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Filter Type',
 				options: requiredFilterOptions,
 				defaultValue: filterTypeOptions.find(filterTypeOption => filterTypeOption.value === mapView?.filterType), // Set default value if mapView is provided
-				onChange: (e, v, r, previousValue) => {
+				onChange: ({ value, previousValue }) => {
 					setValue(`mapViews.${index}.filterValues`, null);
-					if (!['empty', 'notEmpty'].includes(v?.value) && !['empty', 'notEmpty'].includes(previousValue?.value)) {
+					if (!['empty', 'notEmpty'].includes(value?.value) && !['empty', 'notEmpty'].includes(previousValue?.value)) {
 						Object.keys(tableESState).map(tableKey =>
 							tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false)
 						);
@@ -464,7 +466,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Filter Values',
 				options: filterValuesOptions || [], // Dynamic based on filter options
 				defaultValue: mapView?.filterValues, // Set default value if mapView is provided
-				type: fieldName?.type,
+				type: fieldNameObj?.type ?? '',
 			});
 		}
 		return fields;
@@ -515,22 +517,24 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			{/* Render autocomplete fields */}
 			{autocompleteFields.map(field => (
 				<Box mb={2} key={field?.name}>
-					<CustomAutocomplete
-						defaultValue={field.defaultValue} // Set default value if mapView is provided
-						onChange={field.onChange} // Triggered when the field value changes
-						name={field.name}
+					<RenderCustomFields
+						watch={watch}
+						control={control}
 						type={field.type}
-						control={control} // Form control passed for managing input state
-						options={field.options}
+						name={field.name}
 						label={field.label}
-						className={classes.autoComplete} // Apply custom autocomplete styles
+						options={field.options}
+						isSearch={field.isSearch}
+						onChange={field.onChange}
+						handleChange={handleChange}
+						searchText={immediateSearchText}
+						className={classes.autoComplete}
+						defaultValue={field.defaultValue}
+						setFieldNameObj={setFieldNameObj}
+						multiple={field.label === 'Filter Values' && (filterType?.value || filterType) === 'multiselect'}
 						isTextFieldOnly={
 							searchFilterOptions.includes(filterType?.value || filterType) && field.label === 'Filter Values'
 						}
-						searchText={immediateSearchText}
-						handleChange={handleChange}
-						multiple={field.label === 'Filter Values' && (filterType?.value || filterType) === 'multiselect'}
-						isSearch={field.isSearch}
 					/>
 				</Box>
 			))}

@@ -8,8 +8,8 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
-import CustomDatePicker from 'components/Shared/FormsFieldsData/Fields/CustomDatePicker';
-import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 
 import { globalStateController } from 'controllers/globalStateController';
 

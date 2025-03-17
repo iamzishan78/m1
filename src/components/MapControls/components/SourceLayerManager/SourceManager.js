@@ -208,7 +208,7 @@ const StyledListItem = withStyles(theme => ({
 function useOnClickOutside(ref, handler) {
 	useEffect(() => {
 		const listener = event => {
-			if (!ref.current || ref.current.contains(event.target)) {
+			if (!ref.current || ref.current?.contains(event.target)) {
 				return;
 			}
 			handler(event);

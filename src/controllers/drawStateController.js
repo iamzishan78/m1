@@ -1093,7 +1093,7 @@ class DrawStateControllerHandler extends StateController {
 			});
 		}
 
-		setTimeout(() => actionClose(dispatch, { rotateableFeature: drawFeature }), 0);
+		setTimeout(() => this.actionClose(dispatch, { rotateableFeature: drawFeature }), 0);
 	}
 
 	setShowDataCard(showDataCard) {

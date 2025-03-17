@@ -7,18 +7,17 @@ import PropTypes from 'prop-types';
 
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
-import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
-import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 
 import { sideDialogController } from 'controllers/sideDialogController';
 
-import AutoCompleteNewOption from './Fields/AutoCompleteNewOption';
-import CustomDatePicker from './Fields/CustomDatePicker';
 import StartEndDate from './Fields/StartEndDate';
+import CustomDatePicker from '../components/Fields/CustomDatePicker';
 
 function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
-	const getFormattedFieldProps = ({ item, watch, error, key }) => {
+	const getTextFieldProps = ({ item, watch, error, key }) => {
 		const fieldProps = {
 			key,
 			control,
@@ -55,8 +54,26 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 				let renderedField;
 				switch (item.renderField) {
 					case 'autoComplete':
+					case 'autoCompleteNewOption':
 						renderedField = (
-							<AutoCompleteComponent item={item} control={control} watch={watch} error={error || errors?.[item.name]} />
+							<CustomAutoComplete
+								key={item.name}
+								control={control}
+								watch={watch}
+								error={error || errors?.[item.name]}
+								fieldConfig={{ margin: 'dense', allowNewOptions: item.renderField === 'autoCompleteNewOption' }}
+								fieldEvents={{ onChange: item.onChange }}
+								fieldAttributes={{
+									name: item.name,
+									title: item.label,
+									label: item.label,
+									defaultOptions: item.defaultOptions,
+									getOptions: item.getOptions,
+									query: item.query,
+									variables: item.variables,
+									isESSearch: item.isESSearch || false,
+								}}
+							/>
 						);
 						break;
 
@@ -117,10 +134,6 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 						);
 						break;
 
-					case 'autoCompleteNewOption':
-						renderedField = <AutoCompleteNewOption item={item} control={control} />;
-						break;
-
 					case 'datePicker':
 						renderedField = (
 							<CustomDatePicker
@@ -149,7 +162,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 						break;
 
 					default: {
-						const formattedFieldProps = getFormattedFieldProps({
+						const formattedFieldProps = getTextFieldProps({
 							item,
 							watch,
 							error: error || errors?.[item.name],

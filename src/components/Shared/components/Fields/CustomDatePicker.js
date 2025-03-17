@@ -27,17 +27,20 @@ function CustomDatePicker({
 	fieldAttributes: {
 		name = '',
 		value: _value = null,
+		format = null,
 		label = null,
 		title = null,
 		titleComponent = 'h3',
 		inputRef = null,
 		helperText = '',
-		placeholder = '',
-		InputProps = {},
+		placeholder = 'MM/DD/YYYY',
+
 		InputLabelProps = {},
 		layout = 'vertical',
 		spacing = 2,
+		minDate,
 	} = {},
+	InputProps = {},
 	...propsRest
 }) {
 	const [value, setValue] = useState(_value);
@@ -84,6 +87,8 @@ function CustomDatePicker({
 		return (
 			<PickerComponent
 				label={label}
+				format={format}
+				minDate={minDate ? dayjs(minDate) : null}
 				value={fieldValue ? dayjs(fieldValue) : null}
 				onChange={newValue => {
 					setValue(newValue);
@@ -100,9 +105,7 @@ function CustomDatePicker({
 						autoFocus,
 						placeholder,
 						inputRef: inputRef || field?.ref || null,
-						InputProps: {
-							...InputProps,
-						},
+						InputProps,
 						InputLabelProps,
 						error: required && !watchDateValue && error,
 						helperText: error?.message ?? helperText,
@@ -158,11 +161,11 @@ CustomDatePicker.propTypes = {
 		label: PropTypes.string,
 		inputRef: PropTypes.any,
 		placeholder: PropTypes.string,
-		InputProps: PropTypes.object,
 		InputLabelProps: PropTypes.object,
 	}),
 	onChange: PropTypes.func,
 	value: PropTypes.string,
+	InputProps: PropTypes.object,
 };
 
 export default CustomDatePicker;
