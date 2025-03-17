@@ -83,6 +83,7 @@ function CamapignRelatedGrids({ campaign }) {
 			},
 			customValue: { campaign: campaign },
 			maxTableHeight: '35vh',
+			columnVirtualization: false,
 		}),
 		[campaign?._id]
 	);
@@ -123,6 +124,7 @@ function CamapignRelatedGrids({ campaign }) {
 			},
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
+			columnVirtualization: false,
 		}),
 		[campaign?._id]
 	);
@@ -147,6 +149,7 @@ function CamapignRelatedGrids({ campaign }) {
 			isCampaignRefetch: true,
 			showAddContactButton: false,
 			maxTableHeight: '35vh',
+			columnVirtualization: false,
 		}),
 		[campaign?._id]
 	);
@@ -178,6 +181,7 @@ function CamapignRelatedGrids({ campaign }) {
 			customValue: { parentRecord: campaign?._id, campaign: campaign },
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
+			columnVirtualization: false,
 			gridViewSettings: null,
 			fetchMetaData: null,
 		}),
@@ -203,6 +207,7 @@ function CamapignRelatedGrids({ campaign }) {
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
 			gridViewSettings: null,
+			columnVirtualization: false,
 			fetchMetaData: null,
 		}),
 		[campaign?.name]
@@ -247,15 +252,15 @@ function CamapignRelatedGrids({ campaign }) {
 								{globalSelectedTabKey.tabKey === 1 && campaign?.name && (
 									<MRTTable name="CampaignUnitTable" overrideMeta={campaignUnitoverrideMeta} />
 								)}
-								{/* eslint-disable-next-line no-magic-numbers */}
+								{}
 								{globalSelectedTabKey.tabKey === 2 && campaign?.name && (
 									<MRTTable name="CampaignUnitInterestTable" overrideMeta={campaignUnitInterestoverrideMeta} />
 								)}
-								{/* eslint-disable-next-line no-magic-numbers */}
+								{}
 								{globalSelectedTabKey.tabKey === 3 && campaign?.name && (
 									<MRTTable name="CampaignTractTable" overrideMeta={campaignTractOverrideMeta} />
 								)}
-								{/* eslint-disable-next-line no-magic-numbers */}
+								{}
 								{globalSelectedTabKey.tabKey === 4 && campaign?.name && (
 									<MRTTable name="CampaignTractInterestTable" overrideMeta={campaignTractInterestOverrideMeta} />
 								)}

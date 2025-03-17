@@ -386,6 +386,10 @@ const Transact = () => {
 	}, []);
 
 	const summaryData = useMemo(() => {
+		if (!filteredBoardTransactData || pipeToShow?.flowLineType !== 'deal') {
+			return null;
+		}
+
 		let totalDealCount = 0;
 		let totalPriceSum = 0;
 		let totalForecast = 0;
@@ -393,15 +397,15 @@ const Transact = () => {
 		filteredBoardTransactData?.lanes?.forEach(lane => {
 			totalDealCount += lane?.cards?.length || 0;
 
-			let laneSum = 0;
+			let laneForecast = 0;
 			lane?.cards?.forEach(card => {
 				const offerPrice = card?.metadata?.offerPrice || 0;
-				laneSum += offerPrice;
+				laneForecast += offerPrice;
 			});
-			totalPriceSum += laneSum;
+			totalPriceSum += laneForecast;
 
-			if (lane?.metadata?.dealProbability > 0 && laneSum > 0) {
-				totalForecast += laneSum * (lane.metadata.dealProbability / 100);
+			if (lane?.metadata?.dealProbability > 0 && laneForecast > 0) {
+				totalForecast += laneForecast * (lane.metadata.dealProbability / 100);
 			}
 		});
 
@@ -410,7 +414,7 @@ const Transact = () => {
 			totalPriceSum: vf_currency(totalPriceSum),
 			totalForecast: vf_currency(totalForecast),
 		};
-	}, [filteredBoardTransactData]);
+	}, [filteredBoardTransactData, pipeToShow?.flowLineType]);
 
 	const handleCardClick = (cardId, metadata, laneId) => {
 		history.push(`/flow/${selectedPipe._id}/lane/${laneId}/card/${cardId}`);

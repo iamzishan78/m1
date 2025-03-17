@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { Typography, AppBar, Button, ButtonGroup, Tooltip, IconButton, Icon } from '@material-ui/core';
@@ -202,19 +202,25 @@ const TransactAppBar = ({ dealFilter, setDealFilter, summaryData }) => {
 		}));
 	};
 
-	const summaryItems = [
-		{ title: 'Sum Total', content: summaryData.totalPriceSum },
-		{
-			title: 'Forecast Total',
-			content: (
-				<div className={classes.priceWithIcon}>
-					<Icon component={CurrencyExchangeIcon} />
-					<span>{summaryData.totalForecast}</span>
-				</div>
-			),
-		},
-		{ title: 'Total Deals', content: `${summaryData.totalDealCount} Deals` },
-	];
+	const summaryItems = useMemo(() => {
+		if (!summaryData) {
+			return [];
+		}
+
+		return [
+			{ title: 'Sum Total', content: summaryData.totalPriceSum || 0 },
+			{
+				title: 'Forecast Total',
+				content: (
+					<div className={classes.priceWithIcon}>
+						<Icon component={CurrencyExchangeIcon} />
+						<span>{summaryData?.totalForecast || 0}</span>
+					</div>
+				),
+			},
+			{ title: 'Total Deals', content: `${summaryData.totalDealCount || 0} Deals` },
+		];
+	}, [summaryData]);
 
 	return (
 		<>
