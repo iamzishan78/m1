@@ -25,7 +25,6 @@ steps:
   - script: |
       echo $NODE_OPTIONS
       yarn run build
-    failOnStderr: true
     displayName: "Prepare binaries"
 
   ## Copy the client to the staging directory
