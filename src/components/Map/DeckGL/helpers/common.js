@@ -701,6 +701,10 @@ export function getHexLayerProps(dbLayer) {
 	props.colorRange = dbLayer.layerSettings?.selectedPalette;
 	props.onSetColorDomain = domain => {
 		const [min, max] = domain;
+		if (min === Infinity || max === Infinity) {
+			return;
+		}
+
 		// Check if min and max are valid numbers
 		if (typeof min !== 'number' || typeof max !== 'number' || isNaN(min) || isNaN(max)) {
 			return;

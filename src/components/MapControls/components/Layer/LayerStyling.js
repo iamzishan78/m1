@@ -14,7 +14,6 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
 import { aggregationLayers } from 'components/Shared/functions/shapeLayer';
 import { getLayerColor } from 'components/Shared/SidePanel/compoennts/common';
 
-
 import { globalStateController } from 'controllers/globalStateController';
 import { getLayerKey } from 'controllers/helpers';
 import { layerStylingController } from 'controllers/layersStylingController';
@@ -449,7 +448,7 @@ function LayerStyling() {
 									</>
 								)}
 
-								{enablefillColor && !isHeatMap && (
+								{enablefillColor && !isHeatMap && isAggLayer && (
 									<>
 										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
 										<Typography variant="h6" style={{ marginBottom: '10px' }}>
@@ -462,19 +461,19 @@ function LayerStyling() {
 											setAggregation={layerStylingController.setColorScaleType}
 										/>
 										<ColorScaleDropdown />
+										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
+
+										<>
+											<Typography variant="h6" style={{ marginBottom: '10px' }}>
+												Color Palette
+											</Typography>
+											<ColorPaletteGrid
+												selectedPalette={selectedPalette || colorPalettes[0]}
+												setSelectedPalette={layerStylingController.setSelectedPalette}
+											/>
+										</>
 									</>
 								)}
-								<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
-
-								<>
-									<Typography variant="h6" style={{ marginBottom: '10px' }}>
-										Color Palette
-									</Typography>
-									<ColorPaletteGrid
-										selectedPalette={selectedPalette || colorPalettes[0]}
-										setSelectedPalette={layerStylingController.setSelectedPalette}
-									/>
-								</>
 							</Grid>
 
 							{/* dropdown for fill style selection */}

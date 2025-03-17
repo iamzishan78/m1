@@ -14,6 +14,7 @@ export const mapStateInitialState = {
 	mapVars: defaultMapVars,
 	defaultMapVars,
 	isDefaultViewAllowed: true,
+	showLegend: false,
 	isMapRefreshing: false,
 };
 

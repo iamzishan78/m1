@@ -76,7 +76,6 @@ const useStyles = makeStyles(() => ({
 const ColorScaleDropdown = () => {
 	const classes = useStyles();
 	const [displayDropdown, setDisplayDropdown] = useState(false);
-	// const [displayColorPicker, setDisplayColorPicker] = useState(false);
 
 	// State for managing the clicked value and its color
 	const [selectedOption] = useState('');
@@ -110,11 +109,6 @@ const ColorScaleDropdown = () => {
 							<li
 								key={option?.label}
 								className={`${classes.listItem} ${selectedOption?.label === option.label ? classes.highlighted : ''}`}
-								// onClick={() => {
-								//     setSelectedOption(option);
-								//     setFillColor(option['color']);
-								//     setDisplayColorPicker(!displayColorPicker);
-								// }}
 							>
 								<span>{option['label'] === '' ? '(Blank)' : option['label']}</span>
 								<span
@@ -126,11 +120,6 @@ const ColorScaleDropdown = () => {
 					</ul>
 				)}
 			</div>
-			{/* {displayColorPicker && (
-                <Paper id="fill-picker-box">
-                    <ColorPickerStyledBox value={fillColor} onChange={color => setFillColor(color)} />
-                </Paper>
-            )} */}
 		</>
 	);
 };
