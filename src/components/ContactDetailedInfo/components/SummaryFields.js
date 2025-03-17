@@ -27,6 +27,8 @@ import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
 import { phonenumber } from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
+import DailpadIcon from 'components/Shared/components/svgIcons/DailpadIcon';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -58,12 +60,26 @@ const useStyles = makeStyles(() => ({
 			display: 'flex',
 			alignItems: 'center',
 			justifyContent: 'space-between',
+
+			// Show the dialpad icon by default
+			'& #dialpad-icon': {
+				visibility: 'visible',
+				opacity: 1,
+				transition: 'visibility 0.3s, opacity 0.3s ease-in-out',
+			},
+
 			// Hide the quick actions
 			'& #voicemail-icon, & #textsms-icon, & #call-icon, & #mail-icon': {
 				visibility: 'hidden',
 				opacity: 0,
 				transition: 'visibility 0.3s, opacity 0.3s ease-in-out',
 			},
+
+			// On hover: Hide dialpad icon completely and show other quick action icons
+			'&:hover #dialpad-icon': {
+				display: 'none', // Completely removes it from layout
+			},
+
 			// Show the quick actions on hover
 			'&:hover #voicemail-icon, &:hover #textsms-icon, &:hover #call-icon, &:hover #mail-icon': {
 				visibility: 'visible',
@@ -94,6 +110,9 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 	const dispatch = useDispatch();
 
 	const { user } = useSelector(state => state.app);
+
+	const globalState = globalStateController.useState(['dialpadContact'], 'globalStateValues');
+	const { basicInfo = [] } = globalState?.globalStateValues?.dialpadContact?.phoneKeys ?? {}; // Default to an empty object
 
 	const [updateContact] = useMutation(UPDATECONTACT, {
 		onCompleted: data => {
@@ -166,7 +185,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 				ignoreResponse: true,
 				isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 			},
-			refetchQueries: ['getContact'],
+			refetchQueries: ['getContact', 'getDailpadContact'],
 			awaitRefetchQueries: false,
 		})
 			.then(() => {
@@ -354,29 +373,37 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 																		</Tooltip>
 																	</InputAdornment>
 
-																	<InputAdornment position="end">
-																		<Tooltip title={'Call'} placement="top">
-																			<IconButton
-																				id="call-icon"
-																				href={
-																					contactData?.dialpadIds?.length && dialpadFeature
-																						? ''
-																						: `tel: ${contactData[field.key]}`
-																				}
-																				className={classes.emailAdornment}
-																				onClick={() => {
-																					contactData?.dialpadIds?.length &&
-																						dialpadFeature &&
-																						handleQuickActionActivity({
-																							phoneNumber: contactData[field.key],
-																							type: 'dialpad',
-																						});
-																				}}
-																			>
-																				<AddIcCallIcon htmlColor="#757575" />
-																			</IconButton>
-																		</Tooltip>
-																	</InputAdornment>
+																	{basicInfo.includes(field.key) && (
+																		<>
+																			<InputAdornment position="end">
+																				<Tooltip title={'Call'} placement="top">
+																					<IconButton
+																						id="call-icon"
+																						href={
+																							contactData?.dialpadIds?.length && dialpadFeature
+																								? ''
+																								: `tel: ${contactData[field.key]}`
+																						}
+																						className={classes.emailAdornment}
+																						onClick={() => {
+																							contactData?.dialpadIds?.length &&
+																								dialpadFeature &&
+																								handleQuickActionActivity({
+																									phoneNumber: contactData[field.key],
+																									type: 'dialpad',
+																								});
+																						}}
+																					>
+																						<AddIcCallIcon htmlColor="#757575" />
+																					</IconButton>
+																				</Tooltip>
+																			</InputAdornment>
+
+																			<InputAdornment id="dialpad-icon" position="end">
+																				<DailpadIcon htmlColor="#757575" />
+																			</InputAdornment>
+																		</>
+																	)}
 																</>
 															) : activeLoadingField === field.key ? (
 																<CircularProgress className={classes.loader} size={22} color="secondary" />

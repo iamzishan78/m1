@@ -43,6 +43,7 @@ import { SYNC_CONTACT_TO_DIALPAD } from 'graphQL/useMutationSyncContactToDialpad
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
 import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
+import { GET_DIALPAD_CONTACT } from 'graphQL/useQueryDailpad';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 
@@ -423,6 +424,7 @@ function ContactDetailCard(props) {
 	const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
 
 	const [getContact, { data }] = useLazyQuery(CONTACT);
+	const [getDailpadContact, { data: dailpadContactRes }] = useLazyQuery(GET_DIALPAD_CONTACT);
 	const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
 
 	const [getLastMelissaRecord] = useLazyQuery(LASTMELISSARECORD, {
@@ -488,6 +490,11 @@ function ContactDetailCard(props) {
 					contactId: stateApp.selectedContact,
 				},
 			});
+			getDailpadContact({
+				variables: {
+					contactId: stateApp.selectedContact,
+				},
+			});
 		} else if (contactId) {
 			setStateApp(stateApp => ({
 				...stateApp,
@@ -518,6 +525,14 @@ function ContactDetailCard(props) {
 			}
 		}
 	}, [data, stateApp.contactUpdated]);
+
+	useEffect(() => {
+		if (dailpadContactRes?.getDailpadContact?.dialpadContact) {
+			globalStateController.updateState({ dialpadContact: dailpadContactRes?.getDailpadContact?.dialpadContact });
+		} else {
+			globalStateController.updateState({ dialpadContact: {} });
+		}
+	}, [dailpadContactRes]);
 
 	const StyleBadge = withStyles({
 		badge: {
