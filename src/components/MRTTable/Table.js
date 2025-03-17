@@ -10,7 +10,7 @@ import MRTFallback from 'components/MRTTable/MRTFallBack';
 
 import { tableController } from 'controllers/tableController';
 
-function Table({ tableKey }) {
+function Table({ tableKey, muiTableBodyRowProps }) {
 	// Functional component Table accepts tableKey as props.
 	const { tableProps, tablePropsState, classes } = useMRTTable(tableKey);
 	// Destructuring the table properties, state, and CSS classes from the custom hook.
@@ -30,6 +30,7 @@ function Table({ tableKey }) {
 						...tablePropsState,
 						// Spreading the state properties specific to the table into the state prop.
 					}}
+					muiTableBodyRowProps={muiTableBodyRowProps || tableProps.muiTableBodyRowProps}
 				/>
 				<AllDialogs tableKey={tableKey} controller={tableController} />
 				{/* Rendering AllDialogs component. */}
@@ -41,6 +42,7 @@ function Table({ tableKey }) {
 // Define prop types for the Table component
 Table.propTypes = {
 	tableKey: PropTypes.string.isRequired, // tableKey is a required string
+	muiTableBodyRowProps: PropTypes.object, // muiTableBodyRowProps is an optional object
 };
 
 export default memo(Table);
