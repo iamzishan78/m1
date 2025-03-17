@@ -24,9 +24,9 @@ import LeftDialog from 'components/Shared/LeftDialog';
 
 import { UPSERT_MAP_VIEW } from 'graphQL/useMutationUpsertMapView';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerFiltersController } from 'stateManagement/layerFiltersController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({
 	container: {

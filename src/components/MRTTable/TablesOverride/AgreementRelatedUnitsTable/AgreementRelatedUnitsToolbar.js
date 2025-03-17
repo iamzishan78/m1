@@ -4,7 +4,7 @@ import { Button } from '@material-ui/core';
 
 import AgreementRelatedUnitDialog from 'components/MRTTable/TablesOverride/AgreementRelatedUnitsTable/RightDialog';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 // Overridden Tootlbar for AgreementRelatedUnitsToolbar
 function AgreementRelatedUnitsToolbar({ table, tableKey }) {

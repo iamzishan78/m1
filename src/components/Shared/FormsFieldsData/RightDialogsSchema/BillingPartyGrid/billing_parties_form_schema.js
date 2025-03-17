@@ -4,7 +4,7 @@ import { calculatePercentage } from 'components/Shared/valueformatters/vf_curren
 
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const billingPartiesForm = ({ setValue }) => {
 	const { paymentAmount } = tableGlobalController.getValue('paymentMultiGrid');

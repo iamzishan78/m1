@@ -8,8 +8,8 @@ import { useMutation } from '@apollo/client';
 
 import { TOGGLETRACK } from 'graphQL/useMutationToggleCreateRemoveTrack';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 function IsTracked({ id, targetLabel, isTracked }) {
 	const [toggleCreateRemoveTrack] = useMutation(TOGGLETRACK, {

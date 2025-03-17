@@ -16,15 +16,15 @@ import { useLazyQuery } from '@apollo/client';
 
 import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
 import CommentComponent from 'components/Shared/CommentComponent';
-import MetaField from 'utils/MetaField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
 import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
 
-import { globalStateController } from 'hookstate/globalStateController';
-
 import { copy } from 'utils/helper';
+import MetaField from 'utils/MetaField';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import parcelDefaultData from './parcelDefaultData';
 import QtrQtrSelectorNew from '../../ShapeDetailCard/Common/QtrQtrSelectorNew';

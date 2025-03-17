@@ -11,7 +11,7 @@ import Loader from 'components/Loaders';
 import { UPSERT_CHECK_PROPERTY } from 'graphQL/useMutationCheckPropertyUpdate';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 function UpdateProperty(props) {
 	const [propertiesNumbers, setPropertiesNumbers] = useState([]);

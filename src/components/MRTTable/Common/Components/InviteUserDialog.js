@@ -14,7 +14,7 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 import { ADD_USER, UPDATE_USER } from 'graphQL/userManagement';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { Modals } from 'styles/Modal';
 

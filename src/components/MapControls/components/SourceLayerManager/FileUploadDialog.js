@@ -19,8 +19,8 @@ import { ADDFILE } from 'graphQL/useMutationAddFile';
 import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';
 import { GET_DATASET_UPLOAD_STATE } from 'graphQL/useQueryDataset';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { showErrorMessage } from 'actions';
 

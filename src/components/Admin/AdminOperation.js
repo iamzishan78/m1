@@ -12,7 +12,7 @@ import { copy } from 'components/Shared/functions';
 import { TRIGGER_ADMIN_OPERATIONS } from 'graphQL/useMutationadminESOperations';
 import { GET_DB_OPERATIONS } from 'graphQL/useQueryadminDBOperations';
 
-import { adminOperationsController } from 'hookstate/adminOperationsController';
+import { adminOperationsController } from 'stateManagement/adminOperationsController';
 
 import { getHeaders } from 'utils/helper';
 

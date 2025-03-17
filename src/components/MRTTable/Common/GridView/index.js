@@ -8,8 +8,8 @@ import GridViewOptions from 'components/MRTTable/Common/GridView/GridViewOptions
 
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController } from 'stateManagement/tableController';
 import { isEqual } from 'lodash';
 
 function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, module }) {

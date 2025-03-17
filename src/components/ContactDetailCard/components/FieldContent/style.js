@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	fieldContentP: {
 		visibility: ({ loading }) => (loading ? 'hidden' : 'visible'),
 		margin: ({ noMargin }) => (noMargin ? '0' : '5px 10px'),
@@ -8,12 +8,13 @@ const useStyles = makeStyles(theme => ({
 			if (noMargin) {
 				return 'fit-content';
 			}
+			return '';
 		},
 		borderRadius: '4px',
-		'& #contPencilIcon, & #mergeTypeIcon, & #copyIcon, & #voiceMailIcon, & #textSmsIcon': {
+		'& #contPencilIcon, & #mergeTypeIcon, & #copyIcon, & #voiceMailIcon, & #textSmsIcon, & #dialpad': {
 			display: 'none', // use display none to remove extra space between icon and title
 		},
-		'&:hover #contPencilIcon, &:hover #mergeTypeIcon, &:hover #copyIcon, &:hover #voiceMailIcon, &:hover #textSmsIcon':
+		'&:hover #contPencilIcon, &:hover #mergeTypeIcon, &:hover #copyIcon, &:hover #voiceMailIcon, &:hover #textSmsIcon, &:hover #dialpad':
 			{
 				display: 'block',
 			},
@@ -82,6 +83,12 @@ const useStyles = makeStyles(theme => ({
 		'& .primary': {
 			color: 'rgba(23, 170, 221, 1)',
 		},
+	},
+
+	emailAdornment: {
+		cursor: 'pointer',
+		padding: '0px', // Remove extra padding
+		margin: '0 2px', // Adjust spacing between icons
 	},
 }));
 

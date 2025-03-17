@@ -7,9 +7,9 @@ import { colorBasedAttributes } from 'components/MapControls/components/Layer/La
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { deckGlLandGridIdentifiers, ifDefaultLayers } from 'components/Shared/functions/shapeLayer';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { getLayerKey } from 'hookstate/helpers';
-import { popupController } from 'hookstate/popupStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { getLayerKey } from 'stateManagement/helpers';
+import { popupController } from 'stateManagement/popupStateController';
 
 const MAX_COLOR_VALUE_HEX = 0xfffff;
 const COLOR_MULTIPLIER = 1000000;
@@ -724,8 +724,8 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	return props;
 }
 
-export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true }) => {
-	let features = pickDeckObjects({ x, y, depth });
+export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true, radius }) => {
+	let features = pickDeckObjects({ x, y, depth, radius });
 
 	if (!getLandGrid) {
 		features = features.filter(f => !deckGlLandGridIdentifiers.some(prefix => f.layer.id.startsWith(prefix)));

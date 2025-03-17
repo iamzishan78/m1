@@ -23,10 +23,10 @@ import { DRAWING_MODES } from 'components/Navigation/NavigationContext';
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { calculateLandArea, shapeTypeLayers } from 'components/Shared/functions/shapeLayer';
 
-import { hookStateController } from 'hookstate/hookStateController';
+import { hookStateController } from 'stateManagement/hookStateController';
 
 import { showErrorMessage } from 'actions';
-import { layerRefs } from 'hookstate';
+import { layerRefs } from 'stateManagement';
 
 import { globalStateController } from './globalStateController';
 import { drawInitialState, drawState } from './initialStates';
@@ -469,7 +469,7 @@ const drawStateControllerHandler = state => {
 					shapeEdit: false,
 				});
 			}
-		} catch (err) { }
+		} catch (err) {}
 	};
 
 	const actionShowWellsAndOwners = dispatch => {
@@ -678,8 +678,9 @@ const drawStateControllerHandler = state => {
 		if (abstractShape?.properties?.County && state) {
 			if (layerType === 'unit') {
 				if (abstractShape.properties.State === 'TX') {
-					shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''
-						} - ${blockTownship}${section ? `, SEC ${section}` : ''}`;
+					shapeSubtitle = `${abstractShape?.properties?.County}, ${
+						state || ''
+					} - ${blockTownship}${section ? `, SEC ${section}` : ''}`;
 				} else {
 					shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''} - ${shapeName}`;
 				}
@@ -813,8 +814,8 @@ const drawStateControllerHandler = state => {
 
 		const isShapeResizeMode = shapeTypeLayers.includes(
 			featureToEdit?.properties?.layerType ||
-			featureToEdit?.properties?.sdType ||
-			featureToEdit?.properties?.layerSubType
+				featureToEdit?.properties?.sdType ||
+				featureToEdit?.properties?.layerSubType
 		);
 
 		let drawFeature = null;

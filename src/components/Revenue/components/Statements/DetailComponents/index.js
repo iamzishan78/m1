@@ -38,7 +38,7 @@ import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
 import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
 import { GETCHECK } from 'graphQL/useQueryCheck';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import MetaField from 'utils/MetaField';
 
@@ -67,7 +67,7 @@ const useStyles = makeStyles(() => ({
 	highlighter: {
 		background: '#263451',
 		padding: '5px 16px',
-		borderRadius: 5,
+		borderRadius: 16,
 		width: '160px',
 		transform: 'translateX(5px) translateY(11px)',
 		height: '32px',
@@ -81,7 +81,7 @@ const useStyles = makeStyles(() => ({
 		height: 80,
 		width: 80,
 		backgroundColor: '#d5f4ff',
-		borderRadius: 4,
+		borderRadius: 12,
 		'& svg': {
 			fontSize: '3.1875rem',
 			fill: '#263451',
@@ -220,7 +220,6 @@ export default function DetailComponents(props) {
 	const [isButtonScroll, setButtonScroll] = useState(false);
 	const [collapse, setCollapse] = useState(true);
 	const [stateApp, setStateApp] = useContext(AppContext);
-	const { globalStateValues } = globalStateController.useState(['showFieldModal', 'user'], 'globalStateValues');
 	const [anchorEl, setAnchorEl] = useState();
 	const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 	const [loader, setLoader] = useState(false);
@@ -246,9 +245,7 @@ export default function DetailComponents(props) {
 	});
 
 	useEffect(() => {
-		if (getCheckResult?.getCheck?.check) {
-			setChecksFlatData(getCheckResult.getCheck.check);
-		}
+		if (getCheckResult?.getCheck?.check) setChecksFlatData(getCheckResult.getCheck.check);
 	}, [getCheckResult]);
 
 	const handleDeleteCancel = () => {
@@ -283,9 +280,9 @@ export default function DetailComponents(props) {
 	};
 
 	useEffect(() => {
-		if (getCheckResult?.getCheck?.check) {
+		if (getCheckResult?.getCheck?.check)
 			dispatch(setRevenueKey('statements', { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
-		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [getCheckResult, dispatch]);
 
 	useEffect(() => {
@@ -381,8 +378,9 @@ export default function DetailComponents(props) {
 									</IconButton>
 									<div className={classes.titleText}>
 										{checksFlatData && (
-											<Typography style={{ fontWeight: 'bold', fontSize: 'large', marginLeft: 8 }}>{`${checksFlatData?.checkNumber || ''
-												} - ${checksFlatData?.payor?.name || ''}`}</Typography>
+											<Typography style={{ fontWeight: 'bold', fontSize: 'large', marginLeft: 8 }}>{`${
+												checksFlatData?.checkNumber || ''
+											} - ${checksFlatData?.payor?.name || ''}`}</Typography>
 										)}
 										<div className={classes.tagsContainer}>
 											<div className={classes.highlighter}>
@@ -458,6 +456,7 @@ export default function DetailComponents(props) {
 										height: 'calc(100vh - 270px)',
 										width: '620px',
 										maxWidth: '620px',
+										overflowY: 'auto',
 									}}
 								>
 									<MetadataDrawer
@@ -471,6 +470,8 @@ export default function DetailComponents(props) {
 										isApproval={true}
 										ownerTitle="Approver"
 										ownerPlaceHolder="Assign Approver"
+										height="100vh"
+										showCommentType
 									/>
 								</div>
 							)}

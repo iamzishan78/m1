@@ -4,7 +4,7 @@ import { findBoundsMap } from 'components/MapControls/commonHelper';
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
 import { copy, deepEqual } from 'components/Shared/functions';
 
-import { hookStateController } from 'hookstate/hookStateController';
+import { hookStateController } from 'stateManagement/hookStateController';
 
 import { layerFiltersController } from './layerFiltersController';
 

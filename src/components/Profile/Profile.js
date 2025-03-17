@@ -10,7 +10,7 @@ import { deepEqual } from 'components/Shared/functions';
 
 import { UPSERTPROFILE } from 'graphQL/useMutationUpsertProfile';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import ImageModal from './ImageModal';
 import NotificationSettings from './NotificationSettings';

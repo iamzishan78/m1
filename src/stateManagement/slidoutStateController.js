@@ -1,6 +1,6 @@
 import { useHookstate } from '@hookstate/core';
 
-import { hookStateController } from 'hookstate/hookStateController';
+import { hookStateController } from 'stateManagement/hookStateController';
 
 import { slidoutInitialState, slidoutState } from './initialStates';
 

@@ -16,9 +16,9 @@ import { BatchHttpLink } from 'apollo-link-batch-http';
 import { HttpLink } from 'apollo-link-http';
 import PropTypes from 'prop-types';
 
-import { globalStateController } from 'hookstate/globalStateController';
-
 import { UserSession } from 'utils/user';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { AppProvider, setApolloHeaders } from './AppContext';
 import ContactBulkProgress from './components/BulkUpload/ContactBulkProgress';

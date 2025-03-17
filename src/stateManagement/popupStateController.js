@@ -7,7 +7,7 @@ import {
 	drawPlaceBoundary,
 } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
-import { hookStateController } from 'hookstate/hookStateController';
+import { hookStateController } from 'stateManagement/hookStateController';
 
 import { popupInitialState, popupState } from './initialStates';
 import { layerController } from './layerStateController';

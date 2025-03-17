@@ -12,7 +12,7 @@ import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 const MIN_SEARCH_LENGTH = 700;
 const MIN_FILTER_LENGTH = 2;

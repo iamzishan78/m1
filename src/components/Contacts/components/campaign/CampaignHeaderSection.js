@@ -15,12 +15,11 @@ import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import MetaField from 'utils/MetaField';
 
 import { headerStyles } from './styles';
-
 
 const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
 	const { globalStateValues } = globalStateController.useState(['showFieldModal', 'user'], 'globalStateValues');

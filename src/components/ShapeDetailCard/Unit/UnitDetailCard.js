@@ -21,17 +21,16 @@ import Taps from 'components/Shared/Taps';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { jobController } from 'hookstate/jobStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { popupController } from 'hookstate/popupStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-
 import { LOD_YEAR } from 'utils/consts';
 
 import { showSuccessMessage, showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { jobController } from 'stateManagement/jobStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { popupController } from 'stateManagement/popupStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { getShapeSubtitle } from '../helper';
 import { detailCardStyles } from '../style';

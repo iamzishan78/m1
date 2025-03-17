@@ -23,11 +23,11 @@ import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIco
 
 // functions
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { sideDialogController } from 'hookstate/sideDialogController';
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { checkFormRequireField } from 'utils/helper';
+
+import { detailCardController } from 'stateManagement/detailCardController';
+import { sideDialogController } from 'stateManagement/sideDialogController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles({
 	list: {

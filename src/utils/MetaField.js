@@ -31,12 +31,11 @@ import { ADD_META_DATA } from 'graphQL/useMutationAddMetaData';
 import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
 import { GET_ALL_LIBRARY_META_DATA, CHECK_META_KEY_EXISTS } from 'graphQL/useQueryGetMetaData';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-
 import { colorPallete } from 'utils/consts';
 
 import { AppContext } from 'AppContext';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { getMetaCss } from './getMetaCss';
 

@@ -47,7 +47,7 @@ import { CREATE_AGREEMENT_PROVISION } from 'graphQL/useMutationCreateAgreementPr
 import { GET_PROVISION_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetProvisionAutoCompleteList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-import { detailCardController } from 'hookstate/detailCardController';
+import { detailCardController } from 'stateManagement/detailCardController';
 
 import ResponsibleParty from './ResponsibleParty';
 import { AppContext } from '../../../AppContext';

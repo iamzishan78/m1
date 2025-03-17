@@ -27,19 +27,18 @@ import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 
-import { drawController } from 'hookstate/drawStateController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { navController } from 'hookstate/navStateController';
-import { popupController } from 'hookstate/popupStateController';
-
 import { baseTenantsMaps } from 'utils/data';
 import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
 
-import { layerRefs } from 'hookstate';
+import { layerRefs } from 'stateManagement';
+import { drawController } from 'stateManagement/drawStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerFiltersController } from 'stateManagement/layerFiltersController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { mapStateController } from 'stateManagement/mapStateController';
+import { navController } from 'stateManagement/navStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import HugeRequest from './components/HugeRequest';
 import DeckGL from './DeckGL';

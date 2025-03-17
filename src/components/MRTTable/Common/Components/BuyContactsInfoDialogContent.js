@@ -25,13 +25,12 @@ import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { GET_FEATURE_QUOTA } from 'graphQL/useQueryGetFeatureQuota';
 import { GET_IDICORE_DATA } from 'graphQL/useQueryGetIdiCoreData';
 
-import { jobController } from 'hookstate/jobStateController';
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { Modals } from 'styles/Modal';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';
+import { jobController } from 'stateManagement/jobStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const styles = () => ({
 	dialogTitle: {

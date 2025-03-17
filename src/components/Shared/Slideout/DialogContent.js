@@ -7,7 +7,7 @@ import { useHookstate } from '@hookstate/core';
 
 import Contacts from 'components/FlowDrawer/Contacts';
 
-import { slidoutState } from 'hookstate/initialStates';
+import { slidoutState } from 'stateManagement/initialStates';
 
 import CommentComponent from '../CommentComponent';
 import Documents from '../Documents';
@@ -51,7 +51,7 @@ function DialogContent(props) {
 			>
 				<Component />
 				<div>
-					<CommentComponent targetLabel={'activity'} targetSourceId={parentId} />
+					<CommentComponent targetLabel={'activity'} targetSourceId={parentId} showCommentType />
 				</div>
 			</div>
 		);

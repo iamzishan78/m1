@@ -14,7 +14,7 @@ import MRTTable from 'components/MRTTable';
 
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import ActivitiesEvent from './components/ActivitiesEvent';
 import ActivitiesModal from './components/ActivitiesModal';

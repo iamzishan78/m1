@@ -13,7 +13,7 @@ import LandSearch from 'components/Navigation/components/LandSearch';
 
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 
-import { layerController } from 'hookstate/layerStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 export default function LandAppBar(props) {
 	const { classes, user } = props;

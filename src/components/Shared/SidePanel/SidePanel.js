@@ -6,13 +6,12 @@ import { useMutation } from '@apollo/client';
 
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-
 import { copy } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import Panel from './compoennts/Panel';
 
@@ -118,20 +117,24 @@ export default function SidePanel() {
 						const mappedLayers = currentLayers.map(layer => {
 							return layer.identifier === 'Land Grid'
 								? {
-									...layer,
-									layerSettings: {
-										...layer.layerSettings,
-										visiable: !visible,
-										showable: !visible,
-									},
-								}
+										...layer,
+										layerSettings: {
+											...layer.layerSettings,
+											visiable: !visible,
+											showable: !visible,
+										},
+									}
 								: layer;
 						});
 						globalStateController.updateState({ layers: mappedLayers });
 						stateApp.layers = [...mappedLayers];
 						// Handle DeckGL layers
 						['AbstractGeo', 'Pls'].forEach(identifier =>
-							layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: !visible, showable: !visible }, identifier })
+							layerController.handleDeckLayer({
+								...layer,
+								layerSettings: { ...layer.layerSettings, visiable: !visible, showable: !visible },
+								identifier,
+							})
 						);
 						// saving to mongo
 						updateLayerSettings({
@@ -243,8 +246,8 @@ export default function SidePanel() {
 	//   for Marketplace Panel
 	useEffect(() => {
 		if (panelType === 'marketplace') {
-			setDragFunction(() => { });
-			setToggleFunction(() => { });
+			setDragFunction(() => {});
+			setToggleFunction(() => {});
 			// setPanelItems(stateApp.layers);
 			setPanelTitle('Marketplace');
 			setPanelButton(null);

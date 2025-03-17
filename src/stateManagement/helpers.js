@@ -18,7 +18,7 @@ import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { SMALL_TIMEOUT } from 'utils/consts';
 

@@ -9,9 +9,9 @@ import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/Co
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-import { sideDialogController } from 'hookstate/sideDialogController';
-
 import { calculateStandardNraForUnit } from 'utils/calculatedNraHelper';
+
+import { sideDialogController } from 'stateManagement/sideDialogController';
 
 const calculateOfferPrice = (nra, uUnitPricing = 0) => {
 	if (!uUnitPricing) {

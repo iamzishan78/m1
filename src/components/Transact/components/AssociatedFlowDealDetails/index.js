@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import RelatedTractInterestTable from 'components/Common/RelatedTables/Tracts/tractInterests';
 import RelatedUnitInterestTable from 'components/Common/RelatedTables/Units/unitInterests';
 
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { AppContext } from 'AppContext';
 

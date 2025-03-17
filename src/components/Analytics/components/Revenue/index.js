@@ -20,7 +20,7 @@ import { GET_CHECK_DETAILS_DATA } from 'graphQL/useQueryCheckDetailsData';
 import { GET_DB_MIN_VALUE, GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from 'graphQL/useQueryGetPortfolioGrossRevenueSummary';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
 import AnalyticsCards from './Analytics';

@@ -10,8 +10,8 @@ import { getPolygonString } from 'components/Shared/functions';
 
 import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController } from 'stateManagement/tableController';
 
 const PotentialShapeOwnersMeta = {
 	query: SHAPE_OWNERS,

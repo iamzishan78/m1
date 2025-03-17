@@ -8,8 +8,8 @@ import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
 import { IS_TRACKED_BY_IDS } from 'graphQL/useQueryTrackByObjectId';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useHandleAdditionalQueries = ({ Controller, tableState, tableStateValues }) => {
 	const { stateValues } = Controller.useState(['alreadyCheckedOwnersLength']);

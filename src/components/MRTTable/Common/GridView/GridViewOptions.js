@@ -29,8 +29,8 @@ import {
 	UPDATE_DEFAULT_GRID_VIEW,
 } from 'graphQL/useMutationUpdateGridView';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({
 	container: {

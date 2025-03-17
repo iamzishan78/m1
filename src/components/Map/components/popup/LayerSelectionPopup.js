@@ -320,7 +320,7 @@ function LayerSelectionPopup(props) {
 								<List component="nav" aria-label="secondary mailbox folders">
 									{groupFeatures[key].map(layer => (
 										<ListItem
-											key={layer.layer.id}
+											key={layer.object._id || layer.object.id || layer.layer.id}
 											button
 											onClick={() => {
 												selectLayer(layer);

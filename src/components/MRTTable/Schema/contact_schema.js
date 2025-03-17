@@ -20,7 +20,7 @@ import Contact from 'components/Shared/svgIcons/contact';
 
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
 
@@ -332,7 +332,7 @@ const ContactMeta = {
 			...CommonSchema.STRING_COLUMN,
 			name: 'phone1.keyword',
 			id: 'phone1',
-			header: 'Phone 1',
+			header: 'Phone 1 (Purchased Data)',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
@@ -341,7 +341,7 @@ const ContactMeta = {
 			...CommonSchema.STRING_COLUMN,
 			name: 'phone2.keyword',
 			id: 'phone2',
-			header: 'Phone 2',
+			header: 'Phone 2 (Purchased Data)',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
@@ -350,7 +350,7 @@ const ContactMeta = {
 			...CommonSchema.STRING_COLUMN,
 			name: 'phone3.keyword',
 			id: 'phone3',
-			header: 'Phone 3',
+			header: 'Phone 3 (Purchased Data)',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
@@ -359,7 +359,7 @@ const ContactMeta = {
 			...CommonSchema.STRING_COLUMN,
 			name: 'phone4.keyword',
 			id: 'phone4',
-			header: 'Phone 4',
+			header: 'Phone 4 (Purchased Data)',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
@@ -368,7 +368,7 @@ const ContactMeta = {
 			...CommonSchema.STRING_COLUMN,
 			name: 'phone5.keyword',
 			id: 'phone5',
-			header: 'Phone 5',
+			header: 'Phone 5 (Purchased Data)',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
@@ -621,7 +621,13 @@ const ContactMeta = {
 			header: 'Industry Type',
 			hidden: true,
 		},
-
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'outcome.keyword',
+			accessorKey: 'outcome',
+			header: 'Outcome',
+			hidden: true,
+		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			name: 'leadSource.keyword',

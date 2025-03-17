@@ -10,8 +10,6 @@ import { OWNERS_BY_WELL_IDS } from 'graphQL/useQueryOwnersByWellIds';
 import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
 import { SHAPEOWNERSCOUNT, SHAPEOWNERSINTERESTCOUNT } from 'graphQL/useQueryShapeOwnersCount';
 
-import { jobController } from 'hookstate/jobStateController';
-
 import {
 	getShapeOwnersAndCountAction,
 	getShapeOwnersAndWellsAction,
@@ -31,6 +29,7 @@ import { LOD_YEAR } from 'utils/consts';
 
 import { showErrorMessage } from 'actions';
 import Api from 'api';
+import { jobController } from 'stateManagement/jobStateController';
 
 function* getShapeOwnersAndCount(action) {
 	try {

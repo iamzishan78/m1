@@ -3,10 +3,10 @@ import moment from 'moment';
 
 import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 
-import { globalStateController } from 'hookstate/globalStateController';
-
 import { wellsKeys } from 'utils/data';
 import { UserSession } from 'utils/user';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { TO_FIXED, WEEK_DAYS } from './consts';
 

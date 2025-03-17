@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 const CreateNewButton = ({ table, tableKey, label = 'Create New' }) => {
 	const Controller = tableController(tableKey);

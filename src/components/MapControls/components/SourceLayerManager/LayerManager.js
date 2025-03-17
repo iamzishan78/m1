@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Typography, Collapse, IconButton,Divider, Popper, Grow, Paper, MenuList, MenuItem } from '@material-ui/core';
+import { Typography, Collapse, IconButton, Divider, Popper, Grow, Paper, MenuList, MenuItem } from '@material-ui/core';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Box from '@material-ui/core/Box';
@@ -35,8 +35,8 @@ import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 import { showInfoMessage } from 'actions';
 import { AppContext } from 'AppContext';
@@ -241,12 +241,12 @@ export default function AddLayer(props) {
 		});
 	};
 
-	const handleLayerSettingChange = (layers) => {
+	const handleLayerSettingChange = layers => {
 		const updatefn = {};
 		if (layers?.filter(row => row?.layerSettings?.showable === true).length < layer_limit) {
 			layers.forEach(layer => {
 				if (layer.type === 'group') {
-					const value = !layer.layers.find(l => l.layerSettings.showable)
+					const value = !layer.layers.find(l => l.layerSettings.showable);
 					layer.layers.forEach(l => {
 						const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
 						updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
@@ -383,7 +383,7 @@ export default function AddLayer(props) {
 		return customLayers.some(customLayer => layer.identifier.startsWith(customLayer));
 	};
 
-	const handleGroups = (layers) => {
+	const handleGroups = layers => {
 		const groupHandled = [];
 		for (let index = 0; index < layers.length; index++) {
 			const UdLayer = layers[index];
@@ -401,17 +401,19 @@ export default function AddLayer(props) {
 			}
 		}
 		return layers?.filter(ul => !ul.groupId);
-	}
+	};
 
 	const M1Layers = React.useMemo(() => {
 		// Filter layers
-		const layers = currentLayers?.filter(layer => layer.layerCategory === 'M1 Layer' && layer.identifier !== 'Land Grid');
-		return handleGroups(layers)
+		const layers = currentLayers?.filter(
+			layer => layer.layerCategory === 'M1 Layer' && layer.identifier !== 'Land Grid'
+		);
+		return handleGroups(layers);
 	}, [currentLayers]);
 
 	const UdLayers = React.useMemo(() => {
 		const layers = currentLayers.filter(layer => layer.layerCategory === 'UD layer' || layer.file);
-		return handleGroups(layers)
+		return handleGroups(layers);
 	}, [currentLayers]);
 
 	useEffect(() => {
@@ -421,7 +423,7 @@ export default function AddLayer(props) {
 	}, [currentLayers]);
 
 	return (
-		<ClickAwayListener onClickAway={() => { }}>
+		<ClickAwayListener onClickAway={() => {}}>
 			<>
 				<div style={{ height: '100%', display: 'flex', width: '100%' }}>
 					<div>
@@ -461,8 +463,8 @@ export default function AddLayer(props) {
 										{M1Layers?.filter(
 											layer =>
 												!props.search ||
-											layer.name?.toLowerCase().includes(props?.search?.toLowerCase()) ||
-											layer.layerName?.toLowerCase().includes(props?.search?.toLowerCase())
+												layer.name?.toLowerCase().includes(props?.search?.toLowerCase()) ||
+												layer.layerName?.toLowerCase().includes(props?.search?.toLowerCase())
 										)?.map((layer, index) => {
 											const labelId = `m1layer-list-label-${index}`;
 
@@ -500,7 +502,9 @@ export default function AddLayer(props) {
 																		isEditable={false}
 																		showExpandIcon
 																		openUd={openUDLayers.includes(index)}
-																		openEditField={layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'}
+																		openEditField={
+																			layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'
+																		}
 																	/>
 																	{checkIfDeleteAllow(layer) && (
 																		<MoreHorizIcon
@@ -566,11 +570,7 @@ export default function AddLayer(props) {
 														inputProps={{ 'aria-label': 'primary checkbox' }}
 													/>
 													{/* Override layer manager name of Wells */}
-													<ListItemText
-														id={labelId}
-														primary={truncate(layer.layerName, 30)}
-													/>
-
+													<ListItemText id={labelId} primary={truncate(layer.layerName, 30)} />
 
 													{layer.identifier === 'Units' && (
 														<FeatureFlag feature={FEATURES.UNITIMPORT}>
@@ -668,7 +668,9 @@ export default function AddLayer(props) {
 																		isEditable={false}
 																		showExpandIcon
 																		openUd={openUDLayers.includes(index)}
-																		openEditField={layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'}
+																		openEditField={
+																			layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'
+																		}
 																	/>
 																	{checkIfDeleteAllow(layer) && (
 																		<MoreHorizIcon
@@ -719,7 +721,6 @@ export default function AddLayer(props) {
 																	))}
 																</List>
 															</Box>
-
 														</Accordion>
 														<Divider style={{ height: '2px' }} />
 													</>
@@ -760,10 +761,7 @@ export default function AddLayer(props) {
 															)}
 														</>
 													) : (
-														<ListItemText
-															id={labelId}
-															primary={layer.layerName}
-														/>
+														<ListItemText id={labelId} primary={layer.layerName} />
 													)}
 												</StyledListItem>
 											);

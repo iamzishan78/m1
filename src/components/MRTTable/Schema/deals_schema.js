@@ -74,6 +74,12 @@ const DealsMeta = {
 			name: 'totalNRA',
 		},
 		{
+			...CommonSchema.INTEREST_COLUMN,
+			header: 'Total NMA',
+			id: 'totalNMA',
+			name: 'totalNMA',
+		},
+		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Flowline',
 			id: 'stage.pipeline.name',

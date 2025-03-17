@@ -38,7 +38,7 @@ import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
 import { GET_PROPERTY } from 'graphQL/useQueryGetProperty';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 
-import { detailCardController } from 'hookstate/detailCardController';
+import { detailCardController } from 'stateManagement/detailCardController';
 
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import { ConvertOwnerToContactContainer } from 'store/containers/entity';
@@ -508,6 +508,7 @@ export default function DetailComponents(props) {
 							height: 'calc(100vh - 270px)',
 							width: '620px',
 							maxWidth: '620px',
+							overflowY: 'auto',
 						}}
 					>
 						{!isNewAgmt ? (
@@ -520,6 +521,8 @@ export default function DetailComponents(props) {
 								setStateApp={setStateApp}
 								ownerTitle="Approver"
 								isApproval={true}
+								height="100vh"
+								showCommentType
 							/>
 						) : (
 							<AddNewRelatedAgreementDialog

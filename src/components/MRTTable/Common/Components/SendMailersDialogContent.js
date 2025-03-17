@@ -21,7 +21,7 @@ import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
 import { UPLOADRECIPIENTS } from 'graphQL/useMutationUploadStorefrontRecipientsList';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { Modals } from 'styles/Modal';
 

@@ -3,7 +3,7 @@ import MRTTable from 'components/MRTTable';
 
 import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { basic_timeouts } from '../../../cypress/cypressUtils/data';
 import { headers } from '../../cypressUtils/cypressHeaders';

@@ -14,7 +14,7 @@ import { useHookstate } from '@hookstate/core';
 
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { slidoutState } from 'hookstate/initialStates';
+import { slidoutState } from 'stateManagement/initialStates';
 
 const getDealNameFieldHeight = title => {
 	const lineLength = Math.ceil(title.length / 53);

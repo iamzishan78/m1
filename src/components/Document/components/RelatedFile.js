@@ -40,7 +40,7 @@ import { GET_DOCUMENTS } from 'graphQL/useQueryDocuments';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 
@@ -230,7 +230,7 @@ export default function RelatedFile(props) {
 		fetchPolicy: 'no-cache',
 	});
 	const [addFile] = useMutation(CREATEDESCRIPTORFILE, {
-		refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'shapeSummaryDetails', 'getDbData'], // refetch table data on adding new documents
+		refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'shapeSummaryDetails', 'getDbData', 'getContact'], // refetch table data on adding new documents
 		awaitRefetchQueries: true,
 	});
 
@@ -347,7 +347,7 @@ export default function RelatedFile(props) {
 					fileId: fileId || newDocument.fileId,
 				},
 			},
-			refetchQueries: ['getParcelFiles', 'getDbData'],
+			refetchQueries: ['getParcelFiles', 'getDbData', 'getRecentContactFiles'],
 			awaitRefetchQueries: true,
 		}).then(() => {
 			if (props.relatedObjectId && props.relatedObjectType && selectedType === 'new') {
@@ -375,7 +375,7 @@ export default function RelatedFile(props) {
 				relatedObjectType: props.relatedObjectType,
 			},
 			// add queries to refetch
-			refetchQueries: ['getParcelFiles', 'getDbData'],
+			refetchQueries: ['getParcelFiles', 'getDbData', 'getContact', 'getRecentContactFiles'],
 			awaitRefetchQueries: true,
 		}).then(() => {
 			props.setShowDocumentSlider('');

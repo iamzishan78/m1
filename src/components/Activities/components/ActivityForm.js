@@ -20,9 +20,9 @@ import SearchableSelectField from 'components/Shared/Slideout/FieldComponents/se
 import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTextfield';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
-import { slidoutState, globalState } from 'hookstate/initialStates';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { slidoutState, globalState } from 'stateManagement/initialStates';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { activityFormState } from './activityFormStateController';
 import { AppContext } from '../../../AppContext';

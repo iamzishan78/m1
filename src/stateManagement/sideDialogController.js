@@ -2,7 +2,7 @@ import { hookstate } from '@hookstate/core';
 
 import { copy } from 'components/Shared/functions';
 
-import { hookStateController } from 'hookstate/hookStateController';
+import { hookStateController } from 'stateManagement/hookStateController';
 
 export const commonIterestOwnerStates = {
 	newOwner: false,
@@ -80,6 +80,22 @@ export const contactState = {
 	contactOwner: null,
 };
 
+export const activityState = {
+	activityName: null,
+	activityType: null,
+	outcome: null,
+	startDate: null,
+	startTime: null,
+	endDate: null,
+	endTime: null,
+	notes: null,
+	contactName: null,
+	associatedDeal: null,
+	activityOwner: null,
+	createdBy: null,
+	activityStatus: null,
+};
+
 export const payeeState = {
 	payeeName: null,
 	payeeAddress: null,
@@ -119,6 +135,7 @@ const initialStates = {
 	tractInterestDialog: tractInterestOwnerState,
 	unitInterestDialog: unitInterestOwnerState,
 	contactDialog: contactState,
+	activityDialog: activityState,
 	payeeDialog: payeeState,
 	billingPartiesDialog: billingPartiesState,
 	costAllocationDialog: costAllocationState,

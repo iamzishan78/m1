@@ -9,7 +9,7 @@ import CreateNewButton from 'components/MRTTable/Common/EditTable/CreateNewButto
 import InputModeButton from 'components/MRTTable/Common/EditTable/InputModeButton';
 import SaveButton from 'components/MRTTable/Common/EditTable/SaveButton';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { getIdFromPath } from 'utils/helper';
 

@@ -19,9 +19,9 @@ import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown
 import TractInterestTableDialogs from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/RightDialogs';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 
-import { navController } from 'hookstate/navStateController';
-import { popupController } from 'hookstate/popupStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { navController } from 'stateManagement/navStateController';
+import { popupController } from 'stateManagement/popupStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {

@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 
 import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Revenue/Revenue';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { AppContext } from 'AppContext';
 

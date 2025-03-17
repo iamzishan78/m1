@@ -13,7 +13,7 @@ import { vf_currency_dollar } from 'components/Shared/valueformatters/vf_currenc
 import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({
 	root: {

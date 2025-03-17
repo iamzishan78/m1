@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import { UPSERT_MY_WELL } from 'graphQL/useMutationUpsertMyWell';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { wellParams } from './helpers';
 import { addMyWellStyles as useStyles } from './styles';

@@ -9,7 +9,7 @@ import { useMutation } from '@apollo/client';
 
 import { UPSERT_MAP_VIEW } from 'graphQL/useMutationUpsertMapView';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
 	const [updateMapView] = useMutation(UPSERT_MAP_VIEW, {

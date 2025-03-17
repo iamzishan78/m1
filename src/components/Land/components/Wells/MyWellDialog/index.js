@@ -28,8 +28,8 @@ import { DELETE_MY_WELL } from 'graphQL/useMutationDeleteMyWell';
 import { GET_MY_WELL_BY_GLOBAL_ID } from 'graphQL/useQueryMyWellByGlobalId';
 import { WELL_SUMMARY_WITH_HEADER } from 'graphQL/useQueryWellWithHeader';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import AddMyWell from './AddMyWell';
 import Agreements from './Agreements';

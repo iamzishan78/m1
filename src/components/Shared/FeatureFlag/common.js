@@ -25,6 +25,12 @@ export const FEATURES = {
 	USERTAGSLAYER: 'showUserTagsLayer',
 	SEARCHLAYER: 'showSearchLayer',
 	DATA: 'dataModule',
+	DASHBOARD: 'dashboardModule',
+	MAP: 'mapModule',
+	FLOW: 'flowModule',
+	FILES: 'filesModule',
+	CALENDAR: 'calendarModule',
+	DIALPAD_INTEGRATION: 'DialPadIntegration',
 };
 
 export const ROUTES = {

@@ -12,10 +12,9 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 import { AGREEMENT_PAYMENT_SUMMARY } from 'graphQL/useQueryAgreementPaymentSummary';
 
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { tableController } from 'hookstate/tableController';
-
 import { AppContext } from 'AppContext';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { tableController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(theme => ({
 	card: {

@@ -13,7 +13,7 @@ import PdfViewer from 'components/Revenue/components/Statements/DetailComponents
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 const SPACING = 2;
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { Divider, makeStyles, Tab, Tabs, withStyles } from '@material-ui/core';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import AcreageDetail from './AcreageDetail';
 import AcreageSummary from './AcreageSummary';

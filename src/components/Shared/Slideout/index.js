@@ -8,8 +8,8 @@ import { useHookstate } from '@hookstate/core';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
-import { slidoutState } from 'hookstate/initialStates';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { slidoutState } from 'stateManagement/initialStates';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import Dialog from './Dialog';
 import DialogHeader from './DialogHeader';

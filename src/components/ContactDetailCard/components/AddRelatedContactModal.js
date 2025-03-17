@@ -14,7 +14,7 @@ import AutoCompleteAddNewField from 'components/Common/AutoCompleteWithAddNew';
 import { ADD_RELATED_CONTACT } from 'graphQL/useMutationRelatedContact';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import RightDialog from './RightDialog';
 import { AppContext } from '../../../AppContext';
@@ -50,7 +50,7 @@ export default function AddRelatedContactModal(props) {
 		fetchPolicy: 'no-cache',
 	});
 	const [addContact, { data: response, loading: isSubmitting }] = useMutation(ADD_RELATED_CONTACT, {
-		refetchQueries: ['getContactSummary'],
+		refetchQueries: ['getContactSummary', 'getContact'],
 		onCompleted: () => {
 			tableGlobalController.refetch();
 		},
@@ -102,7 +102,7 @@ export default function AddRelatedContactModal(props) {
 				relatedObject: props.relatedObject,
 				userId,
 			},
-			refetchQueries: ['getContactSummary'],
+			refetchQueries: ['getContactSummary', 'getContact'],
 			awaitRefetchQueries: true,
 		});
 	};

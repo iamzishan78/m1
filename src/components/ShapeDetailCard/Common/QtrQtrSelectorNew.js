@@ -19,10 +19,10 @@ import SmallTXQtr from 'components/MRTTable/Common/Components/SmallTXQtr';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
-import { drawController } from 'hookstate/drawStateController';
-import { jobController } from 'hookstate/jobStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { drawController } from 'stateManagement/drawStateController';
+import { jobController } from 'stateManagement/jobStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { copy } from 'utils/helper';
 

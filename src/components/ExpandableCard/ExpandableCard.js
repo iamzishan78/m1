@@ -35,12 +35,11 @@ import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/Confirma
 import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
 import { modifyExandableCardStyle } from 'components/Shared/functions/shapeLayer';
 
-import { drawController } from 'hookstate/drawStateController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { popupController } from 'hookstate/popupStateController';
-
 import { showInfoMessage } from 'actions';
-import { layerRefs } from 'hookstate';
+import { layerRefs } from 'stateManagement';
+import { drawController } from 'stateManagement/drawStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import ReportBugModal from './components/ReportBugModal';
 import { ExpandableCardContext } from './ExpandableCardContext';
@@ -78,7 +77,7 @@ function ExpandableCard(props) {
 	const [deleteLoading, setDeleteLoading] = useState(false);
 	const [anchorEl, setAnchorEl] = useState();
 
-	const { title, targetLabel, subTitle, parent, targetSourceId, mouseX, mouseY, position, cardWidth } = props
+	const { title, targetLabel, subTitle, parent, targetSourceId, mouseX, mouseY, position, cardWidth } = props;
 
 	const {
 		stateValues: { selectedShape, selectedWell },
@@ -119,9 +118,7 @@ function ExpandableCard(props) {
 	// Queries
 	const [trackByObjectId, { data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
 
-	const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(
-		selectedShape
-	);
+	const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(selectedShape);
 
 	const useStyles = makeStyles(() => ({
 		root: {
@@ -461,9 +458,7 @@ function ExpandableCard(props) {
 										{agreementTypes.find(at => at.value === selectedShape?.agreementType)?.label || ''}
 									</Box>
 								)}
-								{targetLabel === 'parcel' && (
-									<Box className="type">Tract</Box>
-								)}
+								{targetLabel === 'parcel' && <Box className="type">Tract</Box>}
 							</Grid>
 						</Grid>
 						{targetLabel === 'parcel' && props.expanded === false && (
@@ -603,11 +598,7 @@ function ExpandableCard(props) {
 								{breadcrumb.title}
 							</Typography>
 						))}
-						<Typography
-							color="inherit"
-						>
-							Wells
-						</Typography>
+						<Typography color="inherit">Wells</Typography>
 						<Typography className={classes.currentLocation}> {title.toUpperCase()}</Typography>
 					</Breadcrumbs>
 				)}
@@ -744,16 +735,16 @@ function ExpandableCard(props) {
 								)}
 
 							{stateExpandableCard.expanded &&
-								targetLabel !== 'activity' &&
-								targetLabel !== 'contact' &&
-								parent !== 'table' ? (
+							targetLabel !== 'activity' &&
+							targetLabel !== 'contact' &&
+							parent !== 'table' ? (
 								parent !== 'table' &&
-									targetLabel !== 'well' &&
-									targetLabel !== 'expandedWell' &&
-									targetLabel !== 'parcel' &&
-									!selectedShape &&
-									targetLabel !== 'expandedParcel' &&
-									targetLabel !== 'recent_submitted_permits' ? (
+								targetLabel !== 'well' &&
+								targetLabel !== 'expandedWell' &&
+								targetLabel !== 'parcel' &&
+								!selectedShape &&
+								targetLabel !== 'expandedParcel' &&
+								targetLabel !== 'recent_submitted_permits' ? (
 									<Tooltip title={'Shrink'} placement="top">
 										<IconButton color="secondary" onClick={handleShrink} aria-label="shrink" className={classes.icons}>
 											<ShrinkIcon viewBox="0 0 64 64" color="secondary" />
@@ -810,27 +801,27 @@ function ExpandableCard(props) {
 													targetLabel === 'unit' ||
 													targetLabel === 'agreement' ||
 													targetLabel === 'activity') && (
-														<>
-															{' '}
-															<IconButton size="small" component="span" onClick={handleMenuClick}>
-																<MoreVertIcon id="expandCardVertIcon" color="secondary" size="medium" />
-															</IconButton>
-															<Menu
-																id="dealMenu"
-																anchorEl={anchorEl}
-																open={Boolean(anchorEl)}
-																onClose={handleMenuClose}
-																className={classes.menu}
-															>
-																<MenuItem onClick={openConfirmationDialog} data-testid="delete-icon">
-																	<ListItemIcon>
-																		<DeleteIcon size="medium" />
-																	</ListItemIcon>
-																	<ListItemText>Delete</ListItemText>
-																</MenuItem>
-															</Menu>
-														</>
-													)}
+													<>
+														{' '}
+														<IconButton size="small" component="span" onClick={handleMenuClick}>
+															<MoreVertIcon id="expandCardVertIcon" color="secondary" size="medium" />
+														</IconButton>
+														<Menu
+															id="dealMenu"
+															anchorEl={anchorEl}
+															open={Boolean(anchorEl)}
+															onClose={handleMenuClose}
+															className={classes.menu}
+														>
+															<MenuItem onClick={openConfirmationDialog} data-testid="delete-icon">
+																<ListItemIcon>
+																	<DeleteIcon size="medium" />
+																</ListItemIcon>
+																<ListItemText>Delete</ListItemText>
+															</MenuItem>
+														</Menu>
+													</>
+												)}
 											</>
 										)}
 									</Tooltip>

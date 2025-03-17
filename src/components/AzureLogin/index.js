@@ -11,9 +11,6 @@ import { SIMPLE_BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
 import { GET_LOGGED_IN_USER } from 'graphQL/useMutationLoggedInUser';
 import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapStateController } from 'hookstate/mapStateController';
-
 import { setUserAction } from 'store/actions/appActions';
 import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';
 
@@ -22,6 +19,8 @@ import { apolloClientEndpointDev, isDev } from 'utils/helper';
 import { UserSession } from 'utils/user';
 
 import Api from 'api';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { mapStateController } from 'stateManagement/mapStateController';
 
 import { tenantsCredentials, b2cPolicies, msalConfig, loginRequest, authGraphQLRequest } from './AADAuthConfig';
 import BypassSignInCard from './BypassSignInCard';

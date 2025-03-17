@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 
 import 'components/Transact/components/DealDialog/dialog.css';
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import Dialog from './Dialog';
 import DialogHeader from './DialogHeader';

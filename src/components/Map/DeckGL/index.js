@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import LayerManager from './components/LayerManager';
 import Portals from './components/portals';

@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 
 import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews }) {
 	const [updateGridView] = useMutation(UPDATE_GRID_VIEW, {

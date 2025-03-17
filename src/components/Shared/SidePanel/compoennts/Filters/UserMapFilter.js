@@ -15,10 +15,10 @@ import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } fr
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableESState } from 'hookstate/initialStates';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { tableController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableESState } from 'stateManagement/initialStates';
+import { layerFiltersController } from 'stateManagement/layerFiltersController';
+import { tableController } from 'stateManagement/tableController';
 
 import { customLayersFieldAccessors } from './consts';
 import CustomAutocomplete from './CustomAutocomplete';

@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 function TractPotentialUnitsToolBar({ table, tableKey }) {
 	const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {

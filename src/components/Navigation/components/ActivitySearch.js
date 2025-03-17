@@ -16,9 +16,8 @@ import debounce from 'lodash/debounce';
 
 import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
 
-import { slidoutState } from 'hookstate/initialStates';
-
 import { AppContext } from 'AppContext';
+import { slidoutState } from 'stateManagement/initialStates';
 
 const useStyles = makeStyles(theme => ({
 	barTitle: {

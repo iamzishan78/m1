@@ -10,7 +10,7 @@ import { useLazyQuery } from '@apollo/client';
 import { CREATE_NOTE } from 'graphQL/useMutationNote';
 import { GET_USER_NOTES } from 'graphQL/useQueryGetNote';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { ProfileContext } from '../../Profile/ProfileContext';
 

@@ -4,6 +4,7 @@ import { Switch, Route, useLocation } from 'react-router-dom';
 
 import AdminOperation from 'components/Admin/AdminOperation';
 import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
+import Integrations from 'components/Integrations';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 import AdminSettings from 'components/Shared/AdminSettings';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
@@ -24,6 +25,7 @@ const Components = {
 	AdminOperation,
 	BulkDataEditing,
 	BulkDataEditingDetail,
+	Integrations,
 };
 
 function isM1neralAddress(email) {
@@ -48,7 +50,6 @@ export default function Admin() {
 		if (option) {
 			dispatch(setActiveModule(option));
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [location.pathname]);
 
 	const handlePanelStateChange = state => {
@@ -69,6 +70,7 @@ export default function Admin() {
 		const allPaths = JSON.parse(JSON.stringify(AdminManagementRoutes));
 		if (!isM1neralAddress(stateApp.user.email)) {
 			delete allPaths['ADMINOPERATION'];
+			delete allPaths['INTEGRATION'];
 		}
 		const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.CONTACTSUBMENU);
 		// const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);
@@ -93,6 +95,12 @@ export default function Admin() {
 				allAllowedPaths[path] = allPaths[path];
 			}
 		});
+
+		Object.keys(allPaths).forEach(path => {
+			if (allPaths[path].featureFlag === 'DIALPAD_INTEGRATION') {
+				allAllowedPaths[path] = allPaths[path];
+			}
+		});
 		setAllowablePaths(allAllowedPaths);
 	}, [stateApp?.user]);
 
@@ -106,7 +114,7 @@ export default function Admin() {
 				actions={sidePanelOptions}
 			>
 				{Object.values(allowedPaths).map(option => (
-					<Switch>
+					<Switch key={option.link}>
 						<Route exact path={option.link} component={Components[option.component]} />
 					</Switch>
 				))}

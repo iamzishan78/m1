@@ -7,7 +7,7 @@ import { copy } from 'components/Shared/functions';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 
-import { popupController } from 'hookstate/popupStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { headers } from '../../../cypressUtils/cypressHeaders';
 import { basic_timeouts, retries } from '../../../cypressUtils/data';

@@ -19,14 +19,14 @@ import CommentComponent from 'components/Shared/CommentComponent';
 import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
 import TractIcon from 'components/Shared/svgIcons/tract';
 import WellIcon from 'components/Shared/svgIcons/well';
-import MetaField from 'utils/MetaField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
 
-import { globalStateController } from 'hookstate/globalStateController';
-
 import { copy } from 'utils/helper';
+import MetaField from 'utils/MetaField';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 export default function AgreementSummary(props) {
 	const user = useSelector(({ app }) => app.user);

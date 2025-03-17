@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import useHandleAdditionalQueries from 'components/MRTTable/Hooks/useHandleAdditionalQueries';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import useHandleQuery from './useHandleQuery';
 import EditRowActions from '../Common/EditTable/EditRowActions';

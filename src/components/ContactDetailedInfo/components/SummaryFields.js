@@ -1,9 +1,8 @@
-import React, { useEffect, useState, Fragment, useRef } from 'react';
+import React, { useEffect, useState, Fragment, useRef, useContext } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { Grid, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
+import { Grid, TextField, InputAdornment, CircularProgress, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Autorenew as AutorenewIcon } from '@material-ui/icons';
@@ -13,10 +12,11 @@ import AddIcCallIcon from '@mui/icons-material/AddIcCall';
 
 import { useMutation } from '@apollo/client';
 import { get, set, isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 
 import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
-import { SUMMARY_FIELDS, featureFlagChanges } from 'components/ContactDetailedInfo/helper';
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { SUMMARY_FIELDS, featureFlagChanges, contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { NumberFormatComma } from 'components/Shared/Forms/Formatting/NumberFormatComma';
 import TextSmsIcon from 'components/Shared/svgIcons/textsms';
@@ -24,6 +24,9 @@ import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
+import { showErrorMessage } from 'actions';
+import { AppContext } from 'AppContext';
+import { phonenumber } from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -87,16 +90,35 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 	const { control, reset } = useForm();
 	const [activeLoadingField, setLoading] = useState();
 	const [isFormSet, setFormState] = useState(false);
+	const [stateApp] = useContext(AppContext);
+	const dispatch = useDispatch();
 
 	const { user } = useSelector(state => state.app);
 
-	const [updateContact] = useMutation(UPDATECONTACT);
+	const [updateContact] = useMutation(UPDATECONTACT, {
+		onCompleted: data => {
+			if (data?.updateContact && !data.updateContact?.success) {
+				dispatch(showErrorMessage(data?.updateContact?.message));
+			}
+		},
+	});
 
 	const showGenericPhones = React.useMemo(() => {
 		return user.features?.find(f => f.name === 'showGenericPhones');
 	}, [user]);
+	const dialpadFeature = React.useMemo(() => {
+		return user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION);
+	}, [user]);
 
 	const [contactInterest, setContactInterest] = useState();
+
+	const getCommaValue = value => {
+		if (value && !value.includes('.')) {
+			return vf_number(Number(value.replace(/,/g, '')));
+		} else {
+			return value;
+		}
+	};
 
 	useEffect(() => {
 		if (!isEmpty(contactData)) {
@@ -116,14 +138,6 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			setFormState(true);
 		}
 	}, [contactData, reset, isFormSet]);
-
-	const getCommaValue = value => {
-		if (value && !value.includes('.')) {
-			return vf_number(Number(value.replace(/,/g, '')));
-		} else {
-			return value;
-		}
-	};
 
 	const updateFieldData = (key, value) => {
 		if (contactData[key] === value) {
@@ -150,14 +164,15 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			variables: {
 				contact,
 				ignoreResponse: true,
+				isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 			},
 			refetchQueries: ['getContact'],
 			awaitRefetchQueries: false,
 		})
-			.then(result => {
+			.then(() => {
 				setLoading(null);
 			})
-			.catch(error => {
+			.catch(() => {
 				setLoading(null);
 			});
 	};
@@ -188,7 +203,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			{SUMMARY_FIELDS(contactData).map((field, key) => (
 				<Grid
 					item
-					key={key}
+					key={field.key}
 					style={{ position: 'relative', width: '100%', marginRight: '30px', maxWidth: '44%', flexBasis: '7%' }}
 				>
 					<Grid container className={classes.gridStyle}>
@@ -204,10 +219,8 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 								render={params => {
 									const isValueOveridden = isChanged(field.key, params.value);
 
-									// eslint-disable-next-line react-hooks/rules-of-hooks
 									const initialized = useRef(false);
 
-									// eslint-disable-next-line react-hooks/rules-of-hooks
 									useEffect(() => {
 										if (initialized.current) {
 											return;
@@ -268,8 +281,8 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 															updateFieldData(field.key, currValue);
 														}
 													}}
-													onChange={({ target }) => {
-														params.onChange(target.value);
+													onChange={({ target: { value } }) => {
+														params.onChange(field.isPhoneNumber && !phonenumber(value) ? '' : value);
 													}}
 													onKeyUp={e => {
 														if (e.key === 'Enter') {
@@ -345,8 +358,20 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 																		<Tooltip title={'Call'} placement="top">
 																			<IconButton
 																				id="call-icon"
-																				href={`tel: ${contactData[field.key]}`}
+																				href={
+																					contactData?.dialpadIds?.length && dialpadFeature
+																						? ''
+																						: `tel: ${contactData[field.key]}`
+																				}
 																				className={classes.emailAdornment}
+																				onClick={() => {
+																					contactData?.dialpadIds?.length &&
+																						dialpadFeature &&
+																						handleQuickActionActivity({
+																							phoneNumber: contactData[field.key],
+																							type: 'dialpad',
+																						});
+																				}}
 																			>
 																				<AddIcCallIcon htmlColor="#757575" />
 																			</IconButton>
@@ -407,3 +432,8 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 		</Grid>
 	);
 }
+
+SummaryFields.propTypes = {
+	contactData: PropTypes.object.isRequired,
+	handleQuickActionActivity: PropTypes.func.isRequired,
+};

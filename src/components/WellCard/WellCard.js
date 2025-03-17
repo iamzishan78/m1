@@ -7,7 +7,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -15,32 +15,21 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 
 import { useLazyQuery } from '@apollo/client';
-import moment from 'moment';
 
-import { GET_PARCELS_FILES_COUNT } from 'graphQL/useQueryGetParcelFiles';
-
-import { popupController } from 'hookstate/popupStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { WellCardContext } from './WellCardContext';
 import { AppContext } from '../../AppContext';
 import { ExpandableCardContext } from '../ExpandableCard/ExpandableCardContext';
-
-//material-ui components
 
 //custom components
 import OwnershipIcon from './components/svgIcons/OwnershipIcon';
 import ProductionIcon from './components/svgIcons/ProductionIcon';
 import WellIcon from './components/svgIcons/WellIcon';
 import WellCardDetails from './WellCardDetails';
-import { TENANTWELL } from '../../graphQL/useQueryTenantWell';
 import { WELLSUMMARYDETAILQUERY } from '../../graphQL/useQueryWellSummaryDetail';
 import convert_date from '../Shared/valueformatters/convert_date.js';
 import formatBOE from '../Shared/valueformatters/format_boe.js';
-import DescriptionIcon from '../WellCard/components/svgIcons/DescriptionIcon';
-
-// queries
-
-// value formatters
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -150,34 +139,22 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
+const wellCardHeight = 'calc(94vh - 20px)';
+
 function WellCard() {
 	// context
-	const [stateApp, setStateApp] = useContext(AppContext);
-	const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
-	const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
+	const [stateApp] = useContext(AppContext);
+	const [stateExpandableCard] = useContext(ExpandableCardContext);
+	const [, setStateWellCard] = useContext(WellCardContext);
 
 	// function state
-	const [target, setTarget] = useState(null);
 	const [wellData, setWellData] = useState(null);
 	const [source, setSource] = useState(null);
 
-	// theme / styles
-	const theme = useTheme();
 	const classes = useStyles();
 
 	// queries
-	const [getWellSummaryDetail, { loading: loadingWellSummary, data: dataWellSummary }] =
-		useLazyQuery(WELLSUMMARYDETAILQUERY);
-
-	// const [
-	//   getTenantWell,
-	//   { loading: loadingTenantWell, data: dataTenantWell },
-	// ] = useLazyQuery(TENANTWELL);
-
-	const [getWellFilesCount, { data: dataWellFiles }] = useLazyQuery(GET_PARCELS_FILES_COUNT, {
-		fetchPolicy: 'cache-and-network',
-	});
-	const documentCount = dataWellFiles?.getParcelFilesCount || 0;
+	const [getWellSummaryDetail, { data: dataWellSummary }] = useLazyQuery(WELLSUMMARYDETAILQUERY);
 
 	const { selectedWell, stateValues } = popupController.useState(['expandedCard', 'selectedWell']);
 
@@ -199,9 +176,6 @@ function WellCard() {
 		getWellSummaryDetail({
 			variables: { id: selectedWellVal.id },
 		});
-		// getTenantWell({
-		//   variables: { globalWellId: selectedWellVal.id },
-		// })
 	}, [selectedWell]);
 
 	useEffect(() => {
@@ -215,30 +189,6 @@ function WellCard() {
 			setWellData(null);
 		}
 	}, [dataWellSummary]);
-
-	// useEffect(() => {
-	//   if (dataTenantWell?.tenantWell?.tenantWellId &&
-	//     selectedWellVal.tenantWellId !== dataTenantWell?.tenantWell?.tenantWellId) {
-	//     setStateApp((state) => ({
-	//       ...state,
-	//       selectedWell: {
-	//         ...state.selectedWell,
-	//         tenantWellId: dataTenantWell?.tenantWell?.tenantWellId
-	//       }
-	//     }));
-	//   }
-	// }, [dataTenantWell]);
-
-	useEffect(() => {
-		if (selectedWellVal.tenantWellId) {
-			getWellFilesCount({
-				variables: {
-					relatedObjectId: selectedWellVal.tenantWellId,
-					relatedObjectType: 'Well',
-				},
-			});
-		}
-	}, [selectedWell.tenantWellId]);
 
 	const handleOpenDetails = isOwner => {
 		popupController.updateState({
@@ -340,35 +290,6 @@ function WellCard() {
 									</Typography>
 								</div>
 							</Button>
-
-							{/* <Button
-              className={classes.button}
-              onClick={() => { handleOpenDetails(3) }}
-            >
-              <div className={classes.iconContainer}>
-                <DescriptionIcon
-                  htmlColor="black"
-                  viewBox="5 0 17 26"
-                  fontSize="large"
-                />
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
-                  Documents
-                </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
-                  {documentCount}
-
-                </Typography>
-              </div>
-            </Button>
-   */}
 						</CardActions>
 						<CardContent className={classes.content}>
 							<Table className={classes.table} size="small" aria-label="well table">
@@ -452,7 +373,7 @@ function WellCard() {
 										</TableCell>
 									</TableRow>
 
-									{wellData?.WellStatus == 'P&A' ? (
+									{wellData?.WellStatus === 'P&A' ? (
 										<TableRow className={classes.rowGrey}>
 											<TableCell className={classes.cell1} align="left">
 												Plug Date
@@ -608,10 +529,10 @@ function WellCard() {
 					</Card>
 				</div>
 			) : (
-				<div style={{ height: '100%' }}>
+				<div style={{ height: wellCardHeight }}>
 					<Card className={classes.card}>
 						<CardContent className={classes.content}>
-							<WellCardDetails target={target} summary={wellData} />
+							<WellCardDetails summary={wellData} />
 						</CardContent>
 					</Card>
 				</div>
@@ -746,10 +667,10 @@ function WellCard() {
 					</Card>
 				</div>
 			) : (
-				<div style={{ height: '100%' }}>
+				<div style={{ height: wellCardHeight, paddingBottom: '9px' }}>
 					<Card className={classes.card} data-testid="well-card">
 						<CardContent className={classes.content}>
-							<WellCardDetails target={target} summary={wellData} />
+							<WellCardDetails summary={wellData} />
 						</CardContent>
 					</Card>
 				</div>

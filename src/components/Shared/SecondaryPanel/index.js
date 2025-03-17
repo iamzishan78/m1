@@ -9,7 +9,7 @@ import NewLayerManager from 'components/MapControls/components/Layer/NewLayerMan
 import SourceLayerManager from 'components/MapControls/components/SourceLayerManager';
 import TransferDataManager from 'components/MapControls/components/TransferDataManager';
 
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({

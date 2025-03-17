@@ -23,6 +23,10 @@ steps:
     displayName: 'Yarn Install'
 
   - script: |
+      npx update-browserslist-db@latest || true
+    displayName: "Update Browserslist"
+
+  - script: |
       echo $NODE_OPTIONS
       yarn run build
     failOnStderr: true

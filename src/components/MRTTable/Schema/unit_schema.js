@@ -17,8 +17,8 @@ import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { CURRENCY_TO_FIXED } from 'utils/consts';
 import { copy } from 'utils/helper';

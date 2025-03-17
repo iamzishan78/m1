@@ -6,7 +6,7 @@ import { useApolloClient } from '@apollo/client';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
-import { popupController } from 'hookstate/popupStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 function WellClick() {
 	const { paramId } = useParams();

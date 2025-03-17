@@ -15,8 +15,8 @@ import { formatDate } from 'components/Shared/functions';
 
 import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
 
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const esIndex = 'documents_flat';
 

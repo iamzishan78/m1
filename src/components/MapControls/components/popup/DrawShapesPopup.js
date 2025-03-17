@@ -4,8 +4,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
-import { drawController } from 'hookstate/drawStateController';
-import { layerController } from 'hookstate/layerStateController';
+import { drawController } from 'stateManagement/drawStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 import CheckCircle from '../../../Shared/svgIcons/check-circle';
 import MouseClicked from '../../../Shared/svgIcons/MouseClicked';

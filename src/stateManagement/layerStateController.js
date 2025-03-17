@@ -22,8 +22,8 @@ import {
 } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
-import { getLayerKey } from 'hookstate/helpers';
-import { hookStateController } from 'hookstate/hookStateController';
+import { getLayerKey } from 'stateManagement/helpers';
+import { hookStateController } from 'stateManagement/hookStateController';
 
 import { drawController } from './drawStateController';
 import { globalStateController } from './globalStateController';

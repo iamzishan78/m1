@@ -19,10 +19,10 @@ import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import Tags from 'components/Shared/Tagger';
 
-import { drawController } from 'hookstate/drawStateController';
-import { globalStateController } from 'hookstate/globalStateController';
-
 import { getMapFilters } from 'utils/helper';
+
+import { drawController } from 'stateManagement/drawStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 const useStyles = makeStyles(theme => ({
 	root: {

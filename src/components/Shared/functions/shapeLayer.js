@@ -3,8 +3,8 @@ import * as turf from '@turf/turf';
 
 import { calculateShapeCenter } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
-import { drawController } from 'hookstate/drawStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { drawController } from 'stateManagement/drawStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 export const showIfUserDefinedLayer = () => {
 	const currentFeature = drawController.getValue('currentFeature');
@@ -132,10 +132,7 @@ export const deckGlDataLayerIdentifiers = [
 	'My Wells',
 ];
 export const deckGlLandGridIdentifiers = ['AbstractGeo', 'Pls', 'Land Grid'];
-export const deckGlLayerIdentifiers = [
-	...deckGlDataLayerIdentifiers,
-	'Wells'
-];
+export const deckGlLayerIdentifiers = [...deckGlDataLayerIdentifiers, 'Wells'];
 export const isCustomLayerCopy = identifier =>
 	deckGlLayerIdentifiers.some(layer => identifier.toLowerCase().includes(layer.toLowerCase()));
 export const mapBoxLayerIdentifiers = ['Search'];
@@ -157,15 +154,15 @@ export const modifyExandableCardStyle = selectedShape => {
 		backgroundColor = 'white';
 		headerIcons = {
 			'& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary, & .MuiIconButton-label ':
-			{
-				// "&:hover": {
-				//   backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
-				// },
-				color: '#7f7f7f !important',
-				svg: {
-					fill: '#7f7f7f !important',
+				{
+					// "&:hover": {
+					//   backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
+					// },
+					color: '#7f7f7f !important',
+					svg: {
+						fill: '#7f7f7f !important',
+					},
 				},
-			},
 			'& .MuiIconButton-root, & .MuiButtonBase-root': {
 				'&:hover': {
 					backgroundColor: 'rgba(0, 0, 0, 0.08) !important',
@@ -201,7 +198,7 @@ export const calculateLandArea = selectedFeature => {
 			return `${formatNumber(Math.round(distanceInMiles * 100) / 100)} miles`;
 		}
 	}
-	return null
+	return null;
 };
 
 export const parseUserDefinedLayerFeature = (feature, layer) => {

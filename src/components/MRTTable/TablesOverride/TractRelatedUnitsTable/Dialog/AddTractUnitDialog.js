@@ -16,7 +16,7 @@ import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteS
 
 import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(theme => ({
 	dialogFooter: {

@@ -26,9 +26,8 @@ import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
 import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
 import { GET_JOB_UPLOAD_URI } from 'graphQL/useQueryGetJobUploadUri';
 
-import { jobController } from 'hookstate/jobStateController';
-
 import { showErrorMessage } from 'actions';
+import { jobController } from 'stateManagement/jobStateController';
 
 import CSVFileReader from './CSVFileReader';
 import RevenueStatementInfoForm from './Fields/RevenueStatementInfoForm';

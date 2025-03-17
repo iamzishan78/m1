@@ -4,7 +4,7 @@ import AnalyticsCards from 'components/Land/components/Common/AnalyticsCards';
 import MRTTable from 'components/MRTTable';
 import TabPanels from 'components/Shared/TabPanels';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 

@@ -32,9 +32,9 @@ import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-
 
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { popupController } from 'hookstate/popupStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { AppContext } from '../../../AppContext';
 import { ADDSEARCHHISTORY } from '../../../graphQL/useMutationAddSearchHistory';
@@ -733,12 +733,12 @@ function Search({ stateApp, setStateApp, isDocument }) {
 			(newValue &&
 				(value.Id !== newValue.Id ||
 					value.Source !== newValue.Source ||
-					value.Primary !== newValue.Primary ||
+					value?.Primary !== newValue?.Primary ||
 					value.Secondary !== newValue.Secondary))
 		) {
 			//// setting search history
 			const setSearchHistory = search => {
-				if (search.searchId) {
+				if (search?.searchId) {
 					///update
 					updateSearchHistory({
 						variables: {
@@ -966,7 +966,7 @@ function Search({ stateApp, setStateApp, isDocument }) {
 					if (option?.Source === 'places') {
 						return option?.Secondary || option?.Primary || searchValue;
 					}
-					return option.Primary || searchValue;
+					return option?.Primary || searchValue;
 				}}
 				forcePopupIcon
 				filterOptions={x => x}
@@ -1169,7 +1169,8 @@ function Search({ stateApp, setStateApp, isDocument }) {
 													{searchHistoryList && searchHistoryList.length > 0 ? (
 														searchHistoryList.map((search, i) => {
 															let option = search.searchData;
-															const parts = parse(option.Primary, []);
+															if (!option) return;
+															const parts = parse(option?.Primary, []);
 
 															/// THIS IS THEI LIST FOR THE SEARCH HISTORY
 															return (
@@ -1294,7 +1295,7 @@ function Search({ stateApp, setStateApp, isDocument }) {
 					if (option.Source === 'header' || option.group === 'loader') {
 						return null;
 					}
-					const parts = parse(option.Primary, []);
+					const parts = parse(option?.Primary, []);
 
 					return (
 						<Grid container spacing={0} id={'cognitive-search-options-' + index}>

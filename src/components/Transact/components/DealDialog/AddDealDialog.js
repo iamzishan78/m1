@@ -21,10 +21,11 @@ import MapProvider from 'components/Map/MapProvider';
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 import { drawBoundaries } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import CommentComponent from 'components/Shared/CommentComponent';
 import Documents from 'components/Shared/Documents';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 import { getRandomColor } from 'components/Shared/functions/ui';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
-import DealComments from 'components/Transact/components/DealComments';
 import DealDialogHeader from 'components/Transact/components/DealDialog/DealDialogHeader';
 import Drawer from 'components/Transact/components/Drawer';
 import { TransactContext } from 'components/Transact/TransactContext';
@@ -45,21 +46,19 @@ import { GET_DEAL_SETTINGS } from 'graphQL/useQueryGetDealSettings';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { showErrorMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerFiltersController } from 'stateManagement/layerFiltersController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { mapStateController } from 'stateManagement/mapStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import DealTasksDetails from '../DealTasksDetails';
 import ExistingDeal from './ExistingDeal';
 import AssociatedFlowDealDetails from '../AssociatedFlowDealDetails';
 
 import './dialog.css';
-import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
 const THREE = 3;
 const FIVE = 5;
@@ -437,6 +436,7 @@ function AddDealDialog(props) {
 	const [label, setLabel] = useState('');
 	const [closedPrice, setClosedPrice] = useState('');
 	const [totalNRA, setTotalNRA] = useState('');
+	const [totalNMA, setTotalNMA] = useState('');
 	const [stageId, setStageId] = useState(null);
 	const [dealPosition, setDealPosition] = useState(null);
 	const [dealState, setDealState] = useState(null);
@@ -449,6 +449,7 @@ function AddDealDialog(props) {
 	const [bidDate, setBidDate] = useState('');
 	const [dueDate, setDueDate] = useState('');
 	const [closeDate, setCloseDate] = useState('');
+	const [internalId, setInternalId] = useState('');
 
 	const [nameAutValue, setNameAutValue] = useState({ name: '', id: 0, _id: 0 });
 	const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -714,11 +715,13 @@ function AddDealDialog(props) {
 			}
 			const deal = {
 				name: title ? title.trim() : null,
+				internalId: internalId,
 				offerPrice: label,
 				notes: description ? description.trim() : null,
 				status: dealState ? dealState : 'open',
 				closedPrice: closedPrice,
 				totalNRA: totalNRA,
+				totalNMA: totalNMA,
 				receivedDate:
 					selectedReceivedDate && selectedReceivedDate !== ''
 						? new Date(`${selectedReceivedDate}T08:00`).toUTCString()
@@ -1003,11 +1006,13 @@ function AddDealDialog(props) {
 
 		if (cardId && laneId && stateApp.dealDialog) {
 			const card = stateApp.activeDeal;
+			setInternalId(card.internalId ?? '');
 			setTitle(card.name ? card.name : '');
 			setDealState(card.status ? card.status : null);
 			setLabel(card.offerPrice ? card.offerPrice : '');
 			setClosedPrice(card.closedPrice ? card.closedPrice : '');
 			setTotalNRA(card.totalNRA ? card.totalNRA : '');
+			setTotalNMA(card.totalNMA ? card.totalNMA : '');
 			setDescription(card.notes ? card.notes : '');
 			// setPipelineId
 			settingNewPipeWithDefaultStage(card.pipeline ? card.pipeline : null, false);
@@ -1400,6 +1405,7 @@ function AddDealDialog(props) {
 								setTitleFocus={setTitleFocus}
 								isTransactPage={props.isTransactPage}
 								handleClickDialogClose={handleClickDialogClose}
+								addUpdateDeal={addUpdateDeal}
 							/>
 							{addDealLoading ? (
 								<div
@@ -1507,6 +1513,39 @@ function AddDealDialog(props) {
 													</Grid>
 												</FormControl>
 											</div>
+
+											<FormControl variant="outlined" fullWidth size="small">
+												<Grid container className={classes.gridStyle}>
+													<Grid item xs={3}>
+														<div>Internal ID</div>
+													</Grid>
+													<Grid item xs={9}>
+														<TextField
+															margin="dense"
+															type="text"
+															variant="outlined"
+															value={internalId}
+															placeholder=""
+															fullWidth
+															className={classes.inputFieldDate}
+															onChange={e => {
+																setInternalId(e.target.value);
+															}}
+															onBlur={() => addUpdateDeal()}
+															InputLabelProps={{
+																shrink: true,
+															}}
+															InputProps={{
+																classes: {
+																	root: classes.dateRoot,
+																	focused: classes.focused,
+																	notchedOutline: classes.notchedOutline,
+																},
+															}}
+														/>
+													</Grid>
+												</Grid>
+											</FormControl>
 
 											{selectedPipe.flowLineType === 'general' && (
 												<FormControl variant="outlined" fullWidth size="small">
@@ -1716,6 +1755,34 @@ function AddDealDialog(props) {
 															</Grid>
 														</Grid>
 													</FormControl>
+													<FormControl variant="outlined" fullWidth size="small">
+														<Grid container className={classes.gridStyle}>
+															<Grid item xs={3}>
+																<div>Total NMA</div>
+															</Grid>
+															<Grid item xs={9}>
+																<TextField
+																	margin="dense"
+																	variant="outlined"
+																	value={totalNMA}
+																	error={isNaN(totalNMA)}
+																	helperText={isNaN(totalNMA) ? 'Total NMA must be a valid number' : ''}
+																	className={classes.inputFieldCustomTextInput}
+																	fullWidth
+																	onChange={e => {
+																		setTotalNMA(e.target.value);
+																	}}
+																	InputProps={{
+																		classes: {
+																			root: classes.customDataTextInputRoot,
+																			focused: classes.focused,
+																			notchedOutline: classes.notchedOutline,
+																		},
+																	}}
+																/>
+															</Grid>
+														</Grid>
+													</FormControl>
 												</>
 											)}
 
@@ -1850,11 +1917,13 @@ function AddDealDialog(props) {
 								</div>
 							)}
 							{['Deal', 'Map'].includes(stateApp.transactBarView) && (
-								<div style={{ marginTop: 2 }}>
-									<DealComments
+								<div style={{ marginTop: 2, height: '40vh', width: '25vw' }}>
+									<CommentComponent
 										setNewCommentId={setNewCommentId}
 										targetLabel="deal"
 										targetSourceId={stateApp.activeDeal?.cardId}
+										activityLog={stateApp?.activeDeal?.activity}
+										showCommentType
 									/>
 								</div>
 							)}

@@ -20,8 +20,8 @@ import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 
 import { MERGE_CONTACTS } from 'graphQL/useMutationMergeContact';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { Modals } from 'styles/Modal';
 

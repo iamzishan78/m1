@@ -174,7 +174,7 @@ export const contactManagementRoutes = {
 
 export const analyticsManagementRoutes = {
 	ACTIVITY: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'CRM',
 		customTitle: 'Activity Dashboard',
 		link: '/analytics',
@@ -185,7 +185,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: false,
 	},
 	LEADS: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Land',
 		link: '/analytics/land',
 		component: 'Land',
@@ -195,7 +195,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: false,
 	},
 	PROSPECTS: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Revenue',
 		link: '/analytics/revenues',
 		component: 'Revenue',
@@ -207,7 +207,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: true,
 	},
 	RIGS: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Rigs by Region ',
 		link: '/analytics/rigs',
 		component: 'RigsCard',
@@ -217,7 +217,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: true,
 	},
 	PERMITS: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Permits by State/County',
 		link: '/analytics/permits',
 		component: 'PermitsCard',
@@ -238,7 +238,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: false,
 	},
 	PRODUCTION: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Production by State/County',
 		link: '/analytics/production',
 		component: 'ProdCard',
@@ -248,7 +248,7 @@ export const analyticsManagementRoutes = {
 		hideSearch: true,
 	},
 	// ADVANCED_SEARCH: {
-	// 	featureFlag: 'CONTACTSUBMENU',
+	// 	featureFlag: 'ANALYTICS',
 	// 	title: 'Advanced Search',
 	// 	link: '/analytics/advancedSearch',
 	// 	component: 'AdvancedSearch',
@@ -258,7 +258,7 @@ export const analyticsManagementRoutes = {
 	// 	hideSearch: true,
 	// },
 	REVENUE_PROPERTY_DETAILS: {
-		featureFlag: 'CONTACTSUBMENU',
+		featureFlag: 'ANALYTICS',
 		title: 'Revenue',
 		link: '/analytics/property/details/:id',
 		component: 'RevenuePropertyDetails',
@@ -567,6 +567,13 @@ export const AdminManagementRoutes = {
 		noCheck: true,
 		showSettingString: false,
 	},
+	INTEGRATION: {
+		featureFlag: 'DIALPAD_INTEGRATION',
+		title: 'Integrations',
+		link: '/admin/integrations',
+		component: 'Integrations',
+		showSettingString: false,
+	},
 	// CUSTOMIZATIONS: {
 	//   featureFlag: "CONTACTSUBMENU",
 	//   title: "Customization",
@@ -727,6 +734,9 @@ export const bypassTenants = [
 	'm1cypress',
 	'm1staging',
 	'wildbasin',
+	'covenant',
+	'sansaba',
+	'farmers',
 	// "m1Production",
 	// "m1Development",
 	// "GHR",
@@ -803,4 +813,45 @@ export const PaymentFeatureTenants = ['m1dev', 'frontier', 'localhost'];
 export const statusData = [
 	{ label: 'Not in Pay', value: 'NotInPay' },
 	{ label: 'In Pay', value: 'InPay' },
+];
+
+export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost'];
+
+export const NavigationFeatures = [
+	{
+		name: 'Dashboard',
+		featureFlag: 'dashboardModule',
+	},
+	{
+		name: 'Map',
+		featureFlag: 'mapModule',
+	},
+	{
+		name: 'Contacts',
+		featureFlag: 'ContactsSubMenu',
+	},
+	{
+		name: 'Flow',
+		featureFlag: 'flowModule',
+	},
+	{
+		name: 'Assets',
+		featureFlag: 'landModule',
+	},
+	{
+		name: 'Revenue',
+		featureFlag: 'revenueModule',
+	},
+	{
+		name: 'Files',
+		featureFlag: 'filesModule',
+	},
+	{
+		name: 'Calendar',
+		featureFlag: 'calendarModule',
+	},
+	{
+		name: 'Analytics',
+		featureFlag: 'analyticsModule',
+	},
 ];

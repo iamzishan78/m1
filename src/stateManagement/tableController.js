@@ -23,8 +23,8 @@ import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compo
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { hookStateController } from 'hookstate/hookStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { hookStateController } from 'stateManagement/hookStateController';
 
 import { compareObjects, validateUrl } from 'utils/helper';
 

@@ -16,8 +16,8 @@ import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableController } from 'hookstate/tableController';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableController } from 'stateManagement/tableController';
 
 import ActivitiesEvent from './components/ActivitiesEvent';
 import ActivitiesToolbar from './components/ActivitiesToolbar';
@@ -28,7 +28,7 @@ import { GETALLACTIVITIES } from '../../graphQL/useQueryGetAllActivities';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './index.css';
 
-import { slidoutState } from 'hookstate/initialStates';
+import { slidoutState } from 'stateManagement/initialStates';
 
 const localizer = momentLocalizer(moment);
 

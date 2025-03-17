@@ -4,7 +4,7 @@ import Avatar from 'react-avatar';
 import { useDispatch } from 'react-redux';
 import ReactTimeAgo from 'react-time-ago';
 
-import { CircularProgress, Menu, MenuItem, Tooltip } from '@material-ui/core';
+import { CircularProgress, Menu, MenuItem, Tab, Tabs, Tooltip } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
@@ -14,12 +14,12 @@ import {
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
 
-import { useMutation, useLazyQuery } from '@apollo/client';
+import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
 import DOMPurify from 'dompurify';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ru from 'javascript-time-ago/locale/ru';
-import { get } from 'lodash';
+import { get, uniqBy } from 'lodash';
 import moment from 'moment';
 
 import CommentField from 'components/Shared/components/Fields/CommentField';
@@ -32,12 +32,14 @@ import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { slidoutState } from 'hookstate/initialStates';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { slidoutState } from 'stateManagement/initialStates';
 
 import { updatePinComments } from 'store/actions/commonActions';
 
 import { UserSession } from 'utils/user';
+import { GET_COMMENT_TYPES } from 'graphQL/useQueryCommentType';
+import CommentsAutoComplete from './CommentsAutoComplete';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -150,7 +152,38 @@ const useStyles = makeStyles(theme => ({
 		hyphens: 'auto',
 		margin: '0px !Important',
 	},
+	customTabs: {
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		float: 'right',
+		marginBottom: 'auto',
+		paddingRight: '30px',
+		'& .MuiTab-root': {
+			minWidth: '60px',
+		},
+		'& .Mui-selected': {
+			color: '#18AADD',
+		},
+	},
+	autocomplete: {
+		flexShrink: '1',
+		marginTop: '10px',
+		marginRight: '-20px',
+		paddingLeft: '10px',
+	},
 }));
+
+const typeOptions = [
+	{ label: 'All', value: 'all' },
+	{ label: 'Call', value: 'call' },
+	{ label: 'Meeting', value: 'meeting' },
+	{ label: 'Task', value: 'task' },
+	{ label: 'Deadline', value: 'deadline' },
+	{ label: 'Email', value: 'email' },
+	{ label: 'Text Message', value: 'text_message' },
+	{ label: 'Mailer', value: 'mailer' },
+];
 
 function urlify(text) {
 	const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -309,6 +342,11 @@ export default function CommentComponent(props) {
 	const [loadingComments, setLoadingComments] = useState(true);
 	const [scrollIntoView, setScrollIntoView] = useState(false);
 	const commentContainerRef = useRef(null);
+	const [tab, setTab] = useState(0);
+	const [activityType, setActivityType] = useState('all');
+	const [activityTypes, setActivityTypes] = useState([{ label: 'All', value: 'all' }]);
+	const [commentTypes, setCommentTypes] = useState([{ label: 'All', value: 'All' }]);
+	const [commentType, setCommentType] = useState('All');
 
 	const [removeComment] = useMutation(REMOVECOMMENT);
 	const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
@@ -325,6 +363,21 @@ export default function CommentComponent(props) {
 	const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, {
 		fetchPolicy: 'no-cache',
 	});
+
+	const { data: commentResponse } = useQuery(GET_COMMENT_TYPES);
+
+	useEffect(() => {
+		if (commentResponse && Array.isArray(commentResponse.commentsType)) {
+			const commentsType = commentResponse?.commentsType || [];
+			const uniqueCommonType = uniqBy(commentsType, e => {
+				return e.commentType;
+			});
+			const formattedOptions = uniqueCommonType.map(c => ({ label: c.commentType, value: c.commentType }));
+			formattedOptions.push({ label: 'All', value: 'All' });
+			setCommentTypes(formattedOptions);
+		}
+	}, [commentResponse]);
+
 	useEffect(() => {
 		getAllMongoUsers();
 	}, [getAllMongoUsers]);
@@ -360,37 +413,72 @@ export default function CommentComponent(props) {
 	useEffect(() => {
 		let allComments = [];
 		if (dataComments && dataComments.commentsByObjectId) {
-			if (props.activityLog && props.activityLog.length > 0) {
-				let activityData = [];
-				props.activityLog.forEach(element => {
-					const timestamp = element?.createAt
-						? new Date(new Date(element.createAt).toUTCString()).getTime()
-						: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime();
-					activityData.push({
-						user: { name: element.ownerName, email: element.ownerName },
-						activityData: element,
-						comment: element.notes,
-						outcome: element.outcome,
-						ts: timestamp,
-						isActivity: true,
-						isEdited: false,
-						public: true,
-						__typename: 'Comment',
-					});
+			let activityData = [];
+
+			if (commentResponse?.commentsType) {
+				const commentsType = commentResponse.commentsType;
+				const uniqueCommonType = uniqBy(commentsType, e => {
+					return e.commentType;
 				});
+				const formattedOptions = uniqueCommonType.map(c => ({ label: c.commentType, value: c.commentType }));
+				formattedOptions.push({ label: 'All', value: 'All' });
+				setCommentTypes(
+					formattedOptions.filter(
+						type =>
+							dataComments.commentsByObjectId?.some(
+								ct => ct?.commentType?.commentType === type.value || ct?.commentType === type.value
+							) || type.value === 'All'
+					)
+				);
+			}
+			if (props.activityLog && props.activityLog.length > 0) {
+				setActivityTypes(
+					typeOptions.filter(t => props.activityLog?.some(act => act?.type === t.value) || t.value === 'all')
+				);
+				props.activityLog
+					.filter(act => (activityType === 'all' ? true : act?.type === activityType))
+					.forEach(element => {
+						const user = element.isExternal
+							? { name: 'Dialpad' }
+							: { name: element.ownerName, email: element.ownerName };
+
+						activityData.push({
+							user,
+							activityData: element,
+							comment: element.notes,
+							outcome: element.outcome,
+							ts: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime(),
+							isActivity: true,
+							isEdited: false,
+							public: true,
+							__typename: 'Comment',
+						});
+					});
 				allComments = dataComments.commentsByObjectId.concat(activityData);
 			} else {
 				allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId]);
 			}
 			allComments = sortArrayBasedOnTs(allComments);
-			setCommentsArray(allComments);
+			if (tab === 0) {
+				setCommentsArray(allComments);
+			} else if (tab === 1) {
+				allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId]);
+				if (commentType !== 'All') {
+					allComments = allComments.filter(
+						c => c?.commentType?.commentType === commentType || c?.commentType === commentType
+					);
+				}
+				setCommentsArray(allComments);
+			} else if (tab === 2) {
+				setCommentsArray(activityData);
+			}
 		}
 		setLoadingComments(false);
-	}, [dataComments, props.activityLog]);
+	}, [dataComments, props.activityLog, tab, activityType, commentType]);
 
 	useEffect(() => {
 		setLoadingComments(false);
-		if (!targetSourceId && newlyAddedComment?.upsertComment?.comment && props.targetLabel !== 'activity') {
+		if (!targetSourceId && newlyAddedComment?.upsertComment?.comment) {
 			const comments = JSON.parse(JSON.stringify(commentsArray));
 			comments.push({
 				...newlyAddedComment.upsertComment.comment,
@@ -729,6 +817,38 @@ export default function CommentComponent(props) {
 	return (
 		<>
 			<div className={classes.container}>
+				<div className={classes.customTabs}>
+					<Tabs
+						variant="scrollable"
+						value={tab}
+						textColor="primary"
+						onChange={(e, newValue) => {
+							setTab(newValue);
+						}}
+					>
+						<Tab label="All" disabled={editCommentId} />
+						<Tab label="Comments" disabled={editCommentId} />
+						<Tab label="Activities" disabled={editCommentId} />
+					</Tabs>
+					{tab === 2 && (
+						<div style={{ flexGrow: 0.5 }}>
+							<CommentsAutoComplete
+								options={activityTypes}
+								onChange={value => setActivityType(value)}
+								value={typeOptions.find(option => option.value === activityType) || null}
+							/>
+						</div>
+					)}
+					{tab === 1 && (
+						<div style={{ flexGrow: 0.5 }}>
+							<CommentsAutoComplete
+								options={commentTypes}
+								onChange={value => setCommentType(value)}
+								value={commentTypes?.find(option => option.value === commentType) || null}
+							/>
+						</div>
+					)}
+				</div>
 				<div className={classes.comment} id="commentsContainer">
 					{!loadingComments ? (
 						<>
@@ -756,8 +876,11 @@ export default function CommentComponent(props) {
 
 							{commentsArray.map((eachComment, index) => {
 								let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
+
+								const commentorText = eachComment?.user?.name || eachComment?.user?.email;
+
 								return (
-									eachComment?.user?.name && (
+									commentorText && (
 										<Fragment key={index}>
 											{(showAllComments || index >= indexToShow) && (
 												<Grid
@@ -781,7 +904,7 @@ export default function CommentComponent(props) {
 																	round
 																/>
 															) : (
-																<Avatar name={eachComment?.user?.name} size="38" round />
+																<Avatar name={commentorText} size="38" round />
 															)}
 														</IconButton>
 													</Grid>
@@ -793,7 +916,7 @@ export default function CommentComponent(props) {
 														}
 													>
 														<div>
-															<span className={classes.bold}>{eachComment?.user?.name}</span>
+															<span className={classes.bold}>{commentorText}</span>
 															{eachComment?.commentType?.commentType === 'unitCreation' && (
 																<span style={{ display: 'inline-block', marginLeft: '8px' }}>
 																	{eachComment?.comment}
@@ -907,7 +1030,7 @@ export default function CommentComponent(props) {
 					)}
 					<div id="checkIf" ref={commentContainerRef} />
 				</div>
-				{!editCommentId && (
+				{!editCommentId && tab !== 2 && (
 					<div
 						style={{
 							paddingBottom: '20px',

@@ -599,16 +599,15 @@ export default function Comments(props) {
 												/>
 											)}
 											{/* //// name and date line //// */}
-											<h5 className={classes.nameAndDateLine}>{`${comment?.user?.name} · ${new Intl.DateTimeFormat(
-												'en-US',
-												{
-													year: 'numeric',
-													month: 'long',
-													day: '2-digit',
-													hour: '2-digit',
-													minute: '2-digit',
-												}
-											).format(comment.ts)}`}</h5>
+											<h5
+												className={classes.nameAndDateLine}
+											>{`${comment?.user?.name || comment?.user?.email} · ${new Intl.DateTimeFormat('en-US', {
+												year: 'numeric',
+												month: 'long',
+												day: '2-digit',
+												hour: '2-digit',
+												minute: '2-digit',
+											}).format(comment.ts)}`}</h5>
 
 											{/* //// comment line //// */}
 											<div style={{ marginTop: '7px', marginBottom: '7px' }}>
@@ -637,7 +636,7 @@ export default function Comments(props) {
 										<ListItem key={index} className={classes.listItem} alignItems="flex-start">
 											<ListItemAvatar className={classes.avatar}>
 												<Avatar
-													name={comment?.user?.name}
+													name={comment?.user?.name || comment?.user?.email}
 													color={Avatar.getRandomColor(comment?.user?.email, [
 														'#b5d2f6',
 														'#ade2e9',
@@ -653,7 +652,7 @@ export default function Comments(props) {
 											<ListItemText
 												className={classes.listItemText}
 												primary={<CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />}
-												secondary={`${comment?.user?.name}${
+												secondary={`${comment?.user?.name || comment?.user?.email}${
 													comment.ids
 														? ''
 														: ` - ${new Intl.DateTimeFormat('en-US', {

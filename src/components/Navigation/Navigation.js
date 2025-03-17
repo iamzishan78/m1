@@ -25,12 +25,11 @@ import RevenueAppBar from 'components/Navigation/AppBar/Revenue';
 import ProfileMenu from 'components/Profile/ProfileMenu';
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
 
-import { navController } from 'hookstate/navStateController';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-
 import { contactManagementRoutes } from 'utils/data';
 
 import { AppContext } from 'AppContext';
+import { navController } from 'stateManagement/navStateController';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import DataAppBar from './AppBar/DataAppBar';
 import LandAppBar from './AppBar/Land';

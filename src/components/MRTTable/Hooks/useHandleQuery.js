@@ -7,9 +7,9 @@ import { mergeArrays } from 'components/Shared/functions';
 
 import { GET_DB_AGGS, GET_DB_DATA_TOTAL, GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
-import { drawController } from 'hookstate/drawStateController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { drawController } from 'stateManagement/drawStateController';
+import { layerFiltersController } from 'stateManagement/layerFiltersController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
 

@@ -9,16 +9,14 @@ import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loader from 'components/Loaders';
 import BuyContactsInfoDialogContent from 'components/MRTTable/Common/Components/BuyContactsInfoDialogContent';
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
+import Comments from 'components/Shared/Comments';
 
 import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
 
-import { globalStateController } from 'hookstate/globalStateController';
-
-import Comments from "components/Shared/Comments";
-
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import DeleteConfirmationDialog from './ConfirmationDialog/DeleteConfirmationDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmationDialog';
@@ -115,9 +113,14 @@ function AllDialogs(props) {
 					/>
 				</Dialog>
 			)}
-			{type === "commentsWithTags" && (
+			{type === 'commentsWithTags' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<Comments {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck} containsComments={true} isHelperTextAllow={true} isSaveAllowed={false}
+					<Comments
+						{...rest}
+						hideSharedCommentCheck={props.hideSharedCommentCheck}
+						containsComments={true}
+						isHelperTextAllow={true}
+						isSaveAllowed={false}
 						refetch={isClientSide ? tableGlobalController.refetchAdditionalQueries : tableGlobalController.refetch}
 					/>
 				</Dialog>

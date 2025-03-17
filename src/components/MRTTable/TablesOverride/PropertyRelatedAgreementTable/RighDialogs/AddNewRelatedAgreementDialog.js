@@ -19,7 +19,7 @@ import { UPSERT_RELATED_AGREEMENT_DESSCRIPTOR } from 'graphQL/useMutationsRelate
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const agreementParams = [
 	{ key: 'agreementNumber', label: 'Agreement Number' },

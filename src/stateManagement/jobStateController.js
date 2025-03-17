@@ -1,4 +1,4 @@
-import { hookStateController } from 'hookstate/hookStateController';
+import { hookStateController } from 'stateManagement/hookStateController';
 
 import { jobInitialState, jobState } from './initialStates';
 

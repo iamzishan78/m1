@@ -10,9 +10,10 @@ import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED, TO_FIXED } from 'utils/consts';
+import NavigationFlagField from '../Common/TableCells/NavigationFlagField';
 
 const ACTION_COLUMN = {
 	header: ' ',
@@ -300,6 +301,25 @@ export const CommonSchema = {
 			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(toFixed)) : 0}</div>;
 		},
 	}),
+	NAVIGATION_CHECK_COLUMN: featureName => {
+		const column = {
+			isPinned: false,
+			hidden: false,
+			filter: false,
+			isSearchField: false,
+			enableSorting: false,
+			enableColumnActions: false,
+			enableHiding: false,
+			type: 'string',
+			enableColumnFilter: false,
+			enableColumnOrdering: true,
+			enableResizing: true,
+			Cell: ({ row }) => {
+				return <NavigationFlagField featureName={featureName} row={row?.original} />;
+			},
+		};
+		return column;
+	},
 };
 
 export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);

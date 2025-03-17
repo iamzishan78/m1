@@ -18,9 +18,9 @@ import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/Co
 
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { sideDialogController } from 'hookstate/sideDialogController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { sideDialogController } from 'stateManagement/sideDialogController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(theme => ({
 	dialogContent: {

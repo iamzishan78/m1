@@ -9,8 +9,8 @@ import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { PLSSSECONDDIVISIONGEO } from 'graphQL/useQueryPLSSSecondDivisionGeo';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 const queries = {
 	Wells: {
@@ -44,7 +44,7 @@ const handleQuery = (queryHandler, onData) => {
 		return;
 	}
 
-	return new Promise((resolve) => {
+	return new Promise(resolve => {
 		const query = client.watchQuery({
 			query: queryString,
 			variables: queryHandler.variables,
@@ -69,7 +69,7 @@ const handleQuery = (queryHandler, onData) => {
 
 				return resolve(data);
 			}
-			return null
+			return null;
 		});
 	});
 };

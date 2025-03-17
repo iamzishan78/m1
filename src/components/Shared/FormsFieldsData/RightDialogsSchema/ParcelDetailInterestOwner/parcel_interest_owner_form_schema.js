@@ -10,8 +10,8 @@ import { addTrailingZeros } from 'components/Shared/functions';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-import { popupController } from 'hookstate/popupStateController';
-import { sideDialogController } from 'hookstate/sideDialogController';
+import { popupController } from 'stateManagement/popupStateController';
+import { sideDialogController } from 'stateManagement/sideDialogController';
 
 import { calculateStandardNraForTract, safeParseFloat } from 'utils/calculatedNraHelper';
 

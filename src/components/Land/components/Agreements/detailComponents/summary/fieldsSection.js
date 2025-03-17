@@ -34,8 +34,8 @@ import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoComple
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { KEYBOARD_KEYS, TO_FIXED } from 'utils/consts';
 import { copy } from 'utils/helper';
@@ -82,7 +82,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 
 	useEffect(() => {
 		document.addEventListener('keydown', onGlobalKeyDown, false);
-		document.addEventListener('blur', () => { });
+		document.addEventListener('blur', () => {});
 	}, []);
 
 	useEffect(() => {
@@ -223,131 +223,131 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 										field.type === 'dropdown' ||
 										field.type === 'multiselect' ||
 										field.type === 'select') && (
-											<Controller
-												control={control}
-												name={field.key}
-												render={params => {
-													return (
-														<Fragment>
-															{field.type === 'text' && (
-																<CustomTextField
-																	{...params}
-																	id={`field-${field.key}`}
-																	index={index}
-																	field={field}
-																	fieldKey={field.key}
-																	defaultValue={get(agreementDetails, `${field.key}`, '')}
-																	showLinkPopup={true}
-																	offClickHandler={(key, value) => {
-																		offClickHandler(key, value);
-																	}}
-																	InputProps={{
-																		...field.InputProps,
-																		endAdornment,
-																	}}
-																/>
-															)}
-															{field.type === 'number' && (
-																<NumberField
-																	{...params}
-																	id={`field-${field.key}`}
-																	index={index}
-																	field={field}
-																	fieldKey={field.key}
-																	defaultValue={get(agreementDetails, `${field.key}`, '')}
-																	offClickHandler={(key, value) => {
-																		offClickHandler(key, value);
-																	}}
-																	InputProps={{
-																		...field.InputProps,
-																		endAdornment,
-																	}}
-																/>
-															)}
-															{field.type === 'date' && (
-																<DateField
-																	{...params}
-																	id={`field-${field.key}`}
-																	index={index}
-																	field={field}
-																	fieldKey={field.key}
-																	defaultValue={get(agreementDetails, `${field.key}`, '')}
-																	offClickHandler={(key, value) => {
-																		offClickHandler(key, value);
-																	}}
-																	InputProps={{
-																		...field.InputProps,
-																		endAdornment,
-																	}}
-																/>
-															)}
-															{field.type === 'dropdown' && (
-																<div
-																	style={{
-																		margin: '8px 0px 4px',
-																	}}
-																>
-																	<ReactSelectField
-																		id={`field-${field.title}`}
-																		isSingleSelect={true}
-																		fullWidth
-																		variant="outlined"
-																		dropdownOptions={field.options}
-																		column={field}
-																		onCustomKeyChange={value => {
-																			offClickHandler(field.key, value, field.isCustom);
-																		}}
-																		disabled={field.disabled}
-																		value={get(agreementDetails, `${field.key}`, '')}
-																	/>
-																</div>
-															)}
-															{field.type === 'select' && (
-																<Select
-																	{...params}
-																	id={`field-${field.key}`}
-																	variant="outlined"
+										<Controller
+											control={control}
+											name={field.key}
+											render={params => {
+												return (
+													<Fragment>
+														{field.type === 'text' && (
+															<CustomTextField
+																{...params}
+																id={`field-${field.key}`}
+																index={index}
+																field={field}
+																fieldKey={field.key}
+																defaultValue={get(agreementDetails, `${field.key}`, '')}
+																showLinkPopup={true}
+																offClickHandler={(key, value) => {
+																	offClickHandler(key, value);
+																}}
+																InputProps={{
+																	...field.InputProps,
+																	endAdornment,
+																}}
+															/>
+														)}
+														{field.type === 'number' && (
+															<NumberField
+																{...params}
+																id={`field-${field.key}`}
+																index={index}
+																field={field}
+																fieldKey={field.key}
+																defaultValue={get(agreementDetails, `${field.key}`, '')}
+																offClickHandler={(key, value) => {
+																	offClickHandler(key, value);
+																}}
+																InputProps={{
+																	...field.InputProps,
+																	endAdornment,
+																}}
+															/>
+														)}
+														{field.type === 'date' && (
+															<DateField
+																{...params}
+																id={`field-${field.key}`}
+																index={index}
+																field={field}
+																fieldKey={field.key}
+																defaultValue={get(agreementDetails, `${field.key}`, '')}
+																offClickHandler={(key, value) => {
+																	offClickHandler(key, value);
+																}}
+																InputProps={{
+																	...field.InputProps,
+																	endAdornment,
+																}}
+															/>
+														)}
+														{field.type === 'dropdown' && (
+															<div
+																style={{
+																	margin: '8px 0px 4px',
+																}}
+															>
+																<ReactSelectField
+																	id={`field-${field.title}`}
+																	isSingleSelect={true}
 																	fullWidth
-																	InputLabelProps={{
-																		shrink: true,
+																	variant="outlined"
+																	dropdownOptions={field.options}
+																	column={field}
+																	onCustomKeyChange={value => {
+																		offClickHandler(field.key, value, field.isCustom);
 																	}}
-																	style={{ margin: '8px 0px 4px' }}
-																	onChange={event => offClickHandler(field.key, event.target.value, field.isCustom)}
 																	disabled={field.disabled}
 																	value={get(agreementDetails, `${field.key}`, '')}
-																>
-																	{field.options.map(option => (
-																		<MenuItem value={option.value ? option.value : option}>
-																			{option.label ? option.label : option}
-																		</MenuItem>
-																	))}
-																</Select>
-															)}
-															{field.type === 'multiselect' && (
-																<div
-																	style={{
-																		margin: '8px 0px 4px',
+																/>
+															</div>
+														)}
+														{field.type === 'select' && (
+															<Select
+																{...params}
+																id={`field-${field.key}`}
+																variant="outlined"
+																fullWidth
+																InputLabelProps={{
+																	shrink: true,
+																}}
+																style={{ margin: '8px 0px 4px' }}
+																onChange={event => offClickHandler(field.key, event.target.value, field.isCustom)}
+																disabled={field.disabled}
+																value={get(agreementDetails, `${field.key}`, '')}
+															>
+																{field.options.map(option => (
+																	<MenuItem value={option.value ? option.value : option}>
+																		{option.label ? option.label : option}
+																	</MenuItem>
+																))}
+															</Select>
+														)}
+														{field.type === 'multiselect' && (
+															<div
+																style={{
+																	margin: '8px 0px 4px',
+																}}
+															>
+																<ReactSelectField
+																	id={`field-${field.key}`}
+																	variant="outlined"
+																	margin="dense"
+																	fullWidth
+																	dropdownOptions={field.options}
+																	column={field}
+																	value={get(agreementDetails, `${field.key}`) ?? []}
+																	onCustomKeyChange={value => {
+																		offClickHandler(field.key, value, field.isCustom);
 																	}}
-																>
-																	<ReactSelectField
-																		id={`field-${field.key}`}
-																		variant="outlined"
-																		margin="dense"
-																		fullWidth
-																		dropdownOptions={field.options}
-																		column={field}
-																		value={get(agreementDetails, `${field.key}`) ?? []}
-																		onCustomKeyChange={value => {
-																			offClickHandler(field.key, value, field.isCustom);
-																		}}
-																	/>
-																</div>
-															)}
-														</Fragment>
-													);
-												}}
-											/>
-										)}
+																/>
+															</div>
+														)}
+													</Fragment>
+												);
+											}}
+										/>
+									)}
 									{field.type === 'autocomplete' && field.key !== 'approvalStatus' && (
 										<AutoCompleteTypeComponent
 											value={agreementDetailCopied?.[field.key]}

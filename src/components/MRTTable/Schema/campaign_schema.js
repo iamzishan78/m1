@@ -12,7 +12,7 @@ import CampaignIcon from 'components/Shared/svgIcons/campaign';
 
 import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
 

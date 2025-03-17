@@ -8,8 +8,8 @@ import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedDa
 import { ADD_PAYMENT } from 'graphQL/useMutationAddPayment';
 import { UPDATE_PAYMENT } from 'graphQL/useMutationUpdatePayment';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 

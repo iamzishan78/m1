@@ -2,9 +2,9 @@ import React, { memo } from 'react';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 
-import { tableGlobalController } from 'hookstate/tableController';
-
 import { ConvertOwnerToContactContainer } from 'store/containers/entity';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import InterestDetailForm from './InterestDetailForm';
 

@@ -11,9 +11,9 @@ import { findBoundsMap } from 'components/MapControls/commonHelper';
 
 import { OWNERSLATSLONS } from 'graphQL/useQueryOwnerLatsLonsArray';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 const useStyles = makeStyles(() => ({
 	icons: {

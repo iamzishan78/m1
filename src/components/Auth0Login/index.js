@@ -9,9 +9,6 @@ import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 import { BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
 import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapStateController } from 'hookstate/mapStateController';
-
 import { setUserAction } from 'store/actions/appActions';
 import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';
 
@@ -19,6 +16,8 @@ import { apolloClientEndpointDev, isDev } from 'utils/helper';
 import { UserSession } from 'utils/user';
 
 import { setApolloHeaders } from 'AppContext';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { mapStateController } from 'stateManagement/mapStateController';
 
 const Auth0Login = props => {
 	const dispatch = useDispatch();

@@ -6,7 +6,7 @@ import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import MRTTable from 'components/MRTTable';
 import useTabedTablesUnmount from 'components/MRTTable/Hooks/useTabedTablesUnmount';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import DatasetsAutoCompleteFilter from './DatasetsAutoCompleteFilter';
 
@@ -73,7 +73,8 @@ const ShapeFile = () => {
 				<Box
 					sx={{
 						display: 'flex',
-						justifyContent: 'space-evenly',
+						justifyContent: 'flex-start',
+						pl: 4,
 					}}
 				>
 					<DatasetsAutoCompleteFilter sx={{ width: '35%' }} value={dataset} setValue={setDataset} />

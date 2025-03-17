@@ -31,7 +31,7 @@ import UserList from 'components/Shared/UserList';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { KEYBOARD_KEYS, INTEREST_TO_FIXED } from 'utils/consts';
 import { US_STATES_CODES } from 'utils/data';
@@ -75,7 +75,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 						}
 					}
 				}}
-				onWheel={onWheel ? onWheel : () => { }}
+				onWheel={onWheel ? onWheel : () => {}}
 				onBlur={() => {
 					onBlur(data, type);
 				}}
@@ -675,8 +675,8 @@ export default function SummaryTableInfo({
 													{data.type === 'date' &&
 														(get(properties, `${data.key}`, '')
 															? moment(get(properties, `${data.key}`, ''))
-																.utc(true)
-																.format('DD/MM/yyyy')
+																	.utc(true)
+																	.format('DD/MM/yyyy')
 															: '-')}
 													{data.type === 'custom' && (
 														<>{['qualifier', 'reviewer'].includes(data.key) && (properties[data.key]?.name || '-')}</>

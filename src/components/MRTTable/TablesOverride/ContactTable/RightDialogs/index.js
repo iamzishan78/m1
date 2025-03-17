@@ -5,8 +5,8 @@ import MergeContactDrawer from 'components/MRTTable/Common/Components/MergeConta
 import SendMailersDialogContent from 'components/MRTTable/Common/Components/SendMailersDialogContent';
 import AddContactDialogContent from 'components/MRTTable/TablesOverride/ContactTable/RightDialogs/addContact';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import MetaField from 'utils/MetaField';
 

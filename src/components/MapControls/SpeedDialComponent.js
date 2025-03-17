@@ -11,12 +11,11 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 
-import { drawController } from 'hookstate/drawStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { popupController } from 'hookstate/popupStateController';
-
-import { layerRefs } from 'hookstate';
+import { layerRefs } from 'stateManagement';
+import { drawController } from 'stateManagement/drawStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { mapStateController } from 'stateManagement/mapStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { clearMapAndCloseShapeActionsPopup } from './commonHelper';
 import { AppContext } from '../../AppContext';

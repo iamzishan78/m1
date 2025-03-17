@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import { Grid, Box, FormControlLabel, FormGroup, Switch, InputAdornment, IconButton } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -26,7 +27,7 @@ import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import FieldContent from '../ContactDetailCard/components/FieldContent';
 
@@ -321,6 +322,7 @@ export default function DetailInfo(props) {
 							<span
 								className={`${classes.tab} ${selectedTab === tab ? classes.selectedTab : ''}`}
 								onClick={() => setSelectedTab(tab)}
+								key={tab}
 							>
 								{tab}
 							</span>
@@ -336,7 +338,7 @@ export default function DetailInfo(props) {
 						>
 							{props.purchaseData.map(purchaseData => {
 								return (
-									<MenuItem value={purchaseData._id}>
+									<MenuItem value={purchaseData._id} key={purchaseData._id}>
 										M1 Data - {moment(purchaseData.sysDateTime).format('MM/DD/YYYY hh:mm:ss a')}
 									</MenuItem>
 								);
@@ -379,7 +381,7 @@ export default function DetailInfo(props) {
 							Object.entries(getBasicInfoContent(props.contactData)).map(([key, row]) => {
 								if (showEmpty) {
 									return (
-										<React.Fragment>
+										<React.Fragment key={key}>
 											<Grid item xs={3} className="fieldName">
 												<p className="dataLabels">{featureFlagChanges(showGenericPhones, key)}</p>
 											</Grid>
@@ -410,7 +412,7 @@ export default function DetailInfo(props) {
 										row.data[objName] != null
 									) {
 										return (
-											<React.Fragment>
+											<React.Fragment key={key}>
 												<Grid item xs={3} className="fieldName">
 													<p className="dataLabels">{featureFlagChanges(showGenericPhones, key)}</p>
 												</Grid>
@@ -428,6 +430,7 @@ export default function DetailInfo(props) {
 											</React.Fragment>
 										);
 									}
+									return null;
 								}
 							})}
 
@@ -458,7 +461,10 @@ export default function DetailInfo(props) {
 																aria-label="Edit Meta"
 																style={{ padding: '6px' }}
 																onClick={() => {
-																	globalStateController.updateState({ showFieldModal: true, selectedMeta: row?.rawMeta });
+																	globalStateController.updateState({
+																		showFieldModal: true,
+																		selectedMeta: row?.rawMeta,
+																	});
 																}}
 															>
 																<EditIcon />
@@ -519,7 +525,10 @@ export default function DetailInfo(props) {
 																	aria-label="Edit Meta"
 																	style={{ padding: '6px' }}
 																	onClick={() => {
-																		globalStateController.updateState({ showFieldModal: true, selectedMeta: row?.rawMeta });
+																		globalStateController.updateState({
+																			showFieldModal: true,
+																			selectedMeta: row?.rawMeta,
+																		});
 																	}}
 																>
 																	<EditIcon />
@@ -544,6 +553,7 @@ export default function DetailInfo(props) {
 												</React.Fragment>
 											);
 										}
+										return null;
 									}
 								})}
 							</>
@@ -581,7 +591,7 @@ export default function DetailInfo(props) {
 							).map(([key, row]) => {
 								if (showEmpty) {
 									return (
-										<React.Fragment>
+										<React.Fragment key={key}>
 											<Grid item xs={3} className="fieldName">
 												<p className="dataLabels">{key}</p>
 											</Grid>
@@ -609,7 +619,7 @@ export default function DetailInfo(props) {
 										row.data[objName] != null
 									) {
 										return (
-											<React.Fragment>
+											<React.Fragment key={key}>
 												<Grid item xs={3} className="fieldName">
 													<p className="dataLabels">{key}</p>
 												</Grid>
@@ -627,6 +637,7 @@ export default function DetailInfo(props) {
 											</React.Fragment>
 										);
 									}
+									return null;
 								}
 							})}
 
@@ -654,6 +665,7 @@ export default function DetailInfo(props) {
 														isPurchased
 														row={row}
 														handleQuickActionActivity={props.handleQuickActionActivity}
+														purchaseDataId={selectedPurchaseData}
 													>
 														{row.inner}
 													</FieldContent>
@@ -687,6 +699,7 @@ export default function DetailInfo(props) {
 															isPurchased
 															row={row}
 															handleQuickActionActivity={props.handleQuickActionActivity}
+															purchaseDataId={selectedPurchaseData}
 														>
 															{row.inner}
 														</FieldContent>
@@ -694,6 +707,7 @@ export default function DetailInfo(props) {
 												</React.Fragment>
 											);
 										}
+										return null;
 									}
 								})}
 							</>
@@ -719,3 +733,26 @@ export default function DetailInfo(props) {
 		</div>
 	);
 }
+
+DetailInfo.propTypes = {
+	contactData: PropTypes.shape({
+		_id: PropTypes.string.isRequired,
+		entity: PropTypes.string,
+		mergedContacts: PropTypes.bool,
+	}).isRequired,
+	purchaseData: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string.isRequired,
+			sysDateTime: PropTypes.string.isRequired,
+		})
+	).isRequired,
+	handleQuickActionActivity: PropTypes.func,
+	user: PropTypes.shape({
+		features: PropTypes.arrayOf(
+			PropTypes.shape({
+				name: PropTypes.string.isRequired,
+			})
+		),
+	}),
+	publicLeftBottom: PropTypes.bool,
+};

@@ -8,10 +8,10 @@ import SelectFilter from 'components/Shared/ui/SelectFilter';
 import ToggleSwitch from 'components/Shared/ui/ToggleSwitch';
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-
 import { calculateStandardNraForUnit } from 'utils/calculatedNraHelper';
 import { LOD_YEAR, LOD_YEAR_OPTIONS } from 'utils/consts';
+
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 const PotentialOwnersToolbar = ({ table, tableKey }) => {
 	const Controller = tableController(tableKey);

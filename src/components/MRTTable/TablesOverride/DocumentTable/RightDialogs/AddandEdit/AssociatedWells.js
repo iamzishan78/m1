@@ -33,7 +33,7 @@ import WellSearchApiFieldES from 'components/Shared/Forms/Fields/WellSearchApiFi
 import { ADD_WELL_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddWellToFileDescriptor';
 import { DELETEWELLFROMFILEDESCRIPTOR } from 'graphQL/useMutationDeleteWellFromFileDescriptor';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 const useStyles = makeStyles(theme => ({
 	rootPadding: {
