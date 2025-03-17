@@ -20,6 +20,7 @@ import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
 import { globalStateController } from 'stateManagement/globalStateController';
 
 import EditionPopover from '../EditionPopover';
+import DailpadIcon from 'components/Shared/components/svgIcons/DailpadIcon';
 
 function PencilEditIcon({
 	onClick,
@@ -32,10 +33,18 @@ function PencilEditIcon({
 	setEditContent,
 	row,
 	handleQuickActionActivity,
+	isPurchased,
 }) {
 	const classes = useStyles();
 	const [copied, setCopied] = useState(false); // Add new state for updating copy icon tooltip value
-	const { globalState } = globalStateController.useState(['contactData', 'user'], 'globalState');
+	const { globalState } = globalStateController.useState(['contactData', 'user', 'dialpadContact'], 'globalState');
+	const dialpadContact = globalState?.dialpadContact ?? {}; // Default to an empty object
+
+	const { basicInfo: basicPhoneKeys = [], purchasedData: purchasedPhoneKeys = [] } = dialpadContact?.phoneKeys || {};
+	const { basicInfo: basicEmailKeys = [], purchasedData: purchasedEmailKeys = [] } = dialpadContact?.emailKeys || {};
+
+	const phoneKeys = isPurchased ? purchasedPhoneKeys : basicPhoneKeys;
+	const emailKeys = isPurchased ? purchasedEmailKeys : basicEmailKeys;
 
 	const feature = globalState?.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION);
 
@@ -44,6 +53,7 @@ function PencilEditIcon({
 
 	// Show voicemail and text SMS icons if the field is a non-empty phone field
 	const isPhoneField = editFieldKey && row?.isPhoneNumber && editFieldValue;
+	const fieldKey = Object.keys(editContent || {})?.[0] || '';
 	return (
 		<React.Fragment>
 			<EditionPopover anchorEl={anchorEl} setAnchorEl={setAnchorEl}>
@@ -82,6 +92,14 @@ function PencilEditIcon({
 					))}
 				</Grid>
 			</EditionPopover>
+
+			{(phoneKeys?.includes(fieldKey) || emailKeys?.includes(fieldKey)) && (
+				<DailpadIcon
+					id="dialpad-icon"
+					style={{ marginLeft: '5px', marginRight: '5px', transform: 'translateY(2px)' }}
+				/>
+			)}
+
 			{isCopy && (
 				<Tooltip title={copied ? 'Copied' : 'Copy'} placement="top">
 					<IconButton
@@ -129,23 +147,25 @@ function PencilEditIcon({
 							<TextSmsIcon id="textSmsIcon" className={classes.pencilIcon} />
 						</IconButton>
 					</Tooltip>
-					<Tooltip title={'Call'} placement="top">
-						<IconButton
-							size="small"
-							href={globalState?.contactData?.dialpadIds?.length && feature ? '' : `tel: ${editFieldValue}`}
-							className={classes.emailAdornment}
-							onClick={() => {
-								globalState?.contactData?.dialpadIds?.length &&
-									feature &&
-									handleQuickActionActivity({
-										phoneNumber: editFieldValue,
-										type: 'dialpad',
-									});
-							}}
-						>
-							<AddIcCallIcon htmlColor="#757575" id={'dialpad'} />
-						</IconButton>
-					</Tooltip>
+					{phoneKeys?.includes(fieldKey) && (
+						<Tooltip title={'Call'} placement="top">
+							<IconButton
+								size="small"
+								href={globalState?.contactData?.dialpadIds?.length && feature ? '' : `tel: ${editFieldValue}`}
+								className={classes.emailAdornment}
+								onClick={() => {
+									globalState?.contactData?.dialpadIds?.length &&
+										feature &&
+										handleQuickActionActivity({
+											phoneNumber: editFieldValue,
+											type: 'dialpad',
+										});
+								}}
+							>
+								<AddIcCallIcon htmlColor="#757575" id={'dialpad'} />
+							</IconButton>
+						</Tooltip>
+					)}
 				</>
 			)}
 		</React.Fragment>
