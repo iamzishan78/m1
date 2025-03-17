@@ -36,6 +36,7 @@ import { popupController } from 'controllers/popupStateController';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
+import { GET_RECORD_FROM_RUN_TIME_MODEL } from 'graphQL/useQueryRunTimeModel';
 
 import { baseTenantsMaps } from 'utils/data';
 import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
@@ -48,7 +49,6 @@ import { SRMode } from './MapBoxDrawRotate/index';
 import { AppContext } from '../../AppContext';
 import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
-import { GET_RECORD_FROM_RUN_TIME_MODEL } from 'graphQL/useQueryRunTimeModel';
 import { copy } from '../Shared/functions';
 import ZoomFault from './components/ZoomFault';
 import { extractUniqueFilters } from './DeckGL/helpers/common';
@@ -419,8 +419,11 @@ function Map({
 			const interval = setInterval(() => {
 				if (window.mapRef) {
 					findBoundsMap([feature], window.mapRef);
-					if (feature?.geometry?.type === 'Point') drawWellBoundary(feature?.geometry?.coordinates);
-					else drawBoundary(feature);
+					if (feature?.geometry?.type === 'Point') {
+						drawWellBoundary(feature?.geometry?.coordinates);
+					} else {
+						drawBoundary(feature);
+					}
 					layerController.updateState({ clickedFeature: { object: { id: paramId } } });
 					popupController.updateState({
 						selectedShape: feature,
@@ -485,7 +488,7 @@ function Map({
 		window.mapRef.fitBounds(
 			[
 				[bbox[0] - 0.03, bbox[1] - 0.03], // Southwest coordinates
-				[bbox[0] + 0.03, bbox[1] + 0.03], // Northeast coordinates
+				[bbox[2] + 0.03, bbox[3] + 0.03], // Northeast coordinates
 			],
 			{ padding: { top: 100, bottom: 200, left: 10, right: 100 }, easing: () => 1 }
 		);

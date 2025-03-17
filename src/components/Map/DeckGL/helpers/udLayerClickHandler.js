@@ -42,7 +42,7 @@ const udLayerClickHandler = (feature, stateLayer) => {
 			expandedCard: true,
 			selectedShape: { ...feature.properties, feature: selectedUserDefinedLayer },
 		};
-	} else if (stateLayer.layerType === 'dynamic data layer') {
+	} else if (stateLayer?.layerType === 'dynamic data layer') {
 		const layerName = feature.properties.type || stateLayer.layerName.replaceAll(' ', '').toLowerCase();
 
 		const newPath = `/map/${layerName}/${feature.properties.id}`;
