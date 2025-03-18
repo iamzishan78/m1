@@ -21,7 +21,7 @@ function CustomAutoComplete({
 	control = null,
 	watch = null,
 	error = null,
-	fieldEvents: { onChange = null, onInputSearchChange = null } = {},
+	fieldEvents: { onChange = null, onBlur = () => {}, onInputSearchChange = null } = {},
 	fieldConfig: {
 		margin = '',
 		size = 'small',
@@ -193,6 +193,10 @@ function CustomAutoComplete({
 				options={getOptionsArray(field?.value)}
 				noOptionsText={loading ? <CircularProgress size={20} /> : 'No options'}
 				onChange={(_, newValue) => autoCompleteChnage(newValue, field?.value, field?.onChange)}
+				onBlur={event => {
+					onBlur?.(event);
+					field?.onBlur?.(event);
+				}}
 				renderInput={params => (
 					<TextField
 						{...params}

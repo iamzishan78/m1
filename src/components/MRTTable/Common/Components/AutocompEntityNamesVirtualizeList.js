@@ -247,51 +247,47 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 	};
 
 	return (
-		<>
-			<CustomAutoComplete
-				disableListWrap
-				classes={classes}
-				ListboxProps={ListboxProps}
-				onInputChange={onInputChange}
-				ListboxComponent={ListboxComponent}
-				id="autocompEntityNamesVirtualizeList"
-				fieldConfig={{
-					margin,
-					variant,
-					renderOptionComp,
-					allowNewOptions: props?.addNew,
-					textFiledInputProps: getParams,
-				}}
-				fieldAttributes={{
-					size,
-					label,
-					margin,
-					placeholder,
-					value: nameAutValue,
-					defaultValue: nameAutValue,
-					defaultOptions: mongoEntitiesArray,
-				}}
-				fieldEvents={{
-					onChange: newValue => {
-						if (newValue) {
-							if (newValue?._id) {
-								setNameAutValue(newValue);
+		<CustomAutoComplete
+			disableListWrap
+			classes={classes}
+			ListboxProps={ListboxProps}
+			onInputChange={onInputChange}
+			ListboxComponent={ListboxComponent}
+			id="autocompEntityNamesVirtualizeList"
+			fieldConfig={{
+				margin,
+				variant,
+				renderOptionComp,
+				allowNewOptions: props?.addNew,
+				textFiledInputProps: getParams,
+			}}
+			fieldAttributes={{
+				label,
+				placeholder,
+				value: nameAutValue,
+				defaultValue: nameAutValue,
+				defaultOptions: mongoEntitiesArray,
+			}}
+			fieldEvents={{
+				onChange: newValue => {
+					if (newValue) {
+						if (newValue?._id) {
+							setNameAutValue(newValue);
+						} else {
+							if (addNewOnClick) {
+								addNewOnClick(newValue.name);
 							} else {
-								if (addNewOnClick) {
-									addNewOnClick(newValue.name);
-								} else {
-									setNameAutValue({
-										_id: 'newEntity',
-										name: newValue.name,
-									});
-								}
+								setNameAutValue({
+									_id: 'newEntity',
+									name: newValue.name,
+								});
 							}
-						} else setNameAutValue(null);
-					},
-				}}
-				{...other}
-			/>
-		</>
+						}
+					} else setNameAutValue(null);
+				},
+			}}
+			{...other}
+		/>
 	);
 }
 
@@ -300,25 +296,25 @@ ListboxComponent.displayName = 'ListboxComponent';
 
 ListboxComponent.propTypes = {
 	children: PropTypes.node,
-	isItemLoaded: PropTypes.func.isRequired,
-	loadMoreItems: PropTypes.func.isRequired,
-	itemCount: PropTypes.number.isRequired,
+	isItemLoaded: PropTypes.func,
+	loadMoreItems: PropTypes.func,
+	itemCount: PropTypes.number,
 };
 AutocompEntityNamesVirtualizeList.propTypes = {
 	addNewOnClick: PropTypes.func,
-	mongoEntitiesArray: PropTypes.arrayOf(PropTypes.object).isRequired,
+	mongoEntitiesArray: PropTypes.arrayOf(PropTypes.object),
 	nameAutValue: PropTypes.object,
-	setNameAutValue: PropTypes.func.isRequired,
+	setNameAutValue: PropTypes.func,
 	nameAutInputValue: PropTypes.string,
-	setNameAutInputValue: PropTypes.func.isRequired,
+	setNameAutInputValue: PropTypes.func,
 	variant: PropTypes.string,
 	label: PropTypes.string,
 	placeholder: PropTypes.string,
 	margin: PropTypes.string,
 	size: PropTypes.string,
-	hasNextPage: PropTypes.bool.isRequired,
-	isNextPageLoading: PropTypes.bool.isRequired,
-	loadNextPage: PropTypes.func.isRequired,
+	hasNextPage: PropTypes.bool,
+	isNextPageLoading: PropTypes.bool,
+	loadNextPage: PropTypes.func,
 	withContactCard: PropTypes.bool,
 	addNew: PropTypes.bool,
 	InputProps: PropTypes.object,
