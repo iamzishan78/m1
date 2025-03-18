@@ -112,7 +112,8 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 	const { user } = useSelector(state => state.app);
 
 	const globalState = globalStateController.useState(['dialpadContact'], 'globalStateValues');
-	const { basicInfo = [] } = globalState?.globalStateValues?.dialpadContact?.phoneKeys ?? {}; // Default to an empty object
+	const { basicInfo: basicPhoneKeys = [] } = globalState?.globalStateValues?.dialpadContact?.phoneKeys ?? {}; // Default to an empty object
+	const { basicInfo: basicEmailKeys = [] } = globalState?.globalStateValues?.dialpadContact?.emailKeys ?? {}; // Default to an empty object
 
 	const [updateContact] = useMutation(UPDATECONTACT, {
 		onCompleted: data => {
@@ -324,18 +325,26 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 																	: undefined,
 														endAdornment:
 															field.type === 'email' && contactData[field.key] ? (
-																<InputAdornment position="end">
-																	{/* Email quick actions icons */}
-																	<Tooltip title={'Email'} placement="top">
-																		<IconButton
-																			id="mail-icon"
-																			href={`mailto: ${contactData.primaryEmail}`}
-																			className={classes.emailAdornment}
-																		>
-																			<EmailOutlinedIcon htmlColor="#757575" />
-																		</IconButton>
-																	</Tooltip>
-																</InputAdornment>
+																<>
+																	<InputAdornment position="end">
+																		{/* Email quick actions icons */}
+																		<Tooltip title={'Email'} placement="top">
+																			<IconButton
+																				id="mail-icon"
+																				href={`mailto: ${contactData.primaryEmail}`}
+																				className={classes.emailAdornment}
+																			>
+																				<EmailOutlinedIcon htmlColor="#757575" />
+																			</IconButton>
+																		</Tooltip>
+																	</InputAdornment>
+
+																	{basicEmailKeys.includes(field.key) && (
+																		<InputAdornment id="dialpad-icon" position="end">
+																			<DailpadIcon htmlColor="#757575" />
+																		</InputAdornment>
+																	)}
+																</>
 															) : field.isPhoneNumber && contactData[field.key] ? (
 																<>
 																	{/* Phone quick actions icons */}
@@ -373,7 +382,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 																		</Tooltip>
 																	</InputAdornment>
 
-																	{basicInfo.includes(field.key) && (
+																	{basicPhoneKeys.includes(field.key) && (
 																		<>
 																			<InputAdornment position="end">
 																				<Tooltip title={'Call'} placement="top">
