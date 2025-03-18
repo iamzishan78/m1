@@ -61,7 +61,11 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 								control={control}
 								watch={watch}
 								error={error || errors?.[item.name]}
-								fieldConfig={{ margin: 'dense', allowNewOptions: item.renderField === 'autoCompleteNewOption' }}
+								fieldConfig={{
+									margin: 'dense',
+									allowNewOptions: item.renderField === 'autoCompleteNewOption',
+									required: item.required,
+								}}
 								fieldEvents={{ onChange: item.onChange }}
 								fieldAttributes={{
 									name: item.name,
