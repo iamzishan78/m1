@@ -50,6 +50,20 @@ export default function Legend() {
 	const layers = layerController.getValue('layers');
 	const visibleLayers = layers.filter(layer => layer.layerSettings?.visiable);
 
+	const wellsBasedOnDict = {
+		'Well Type/Status': {
+			'': '#3A3A3A',
+			OIL: '#02CF35',
+			'OIL AND GAS': '#02CF35',
+			GAS: '#E60F0F',
+			WATER: '#4AD3F2',
+			PERMIT: '#FB9828',
+			'PERMIT - NEW DRILL': '#FB9828',
+			'PERMIT - EXISTING WELL': '#FB9828',
+			PERMITTED: '#FB9828',
+		},
+	};
+
 	return (
 		<ThemeProvider theme={darkTheme}>
 			<Paper
@@ -126,6 +140,7 @@ export default function Legend() {
 										typography={'Stroke Based On'}
 										index={index}
 										isColor={true}
+										isAggLayer={aggregationLayers.includes(layer.layerType)}
 									/>
 
 									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
@@ -143,6 +158,7 @@ export default function Legend() {
 										typography={'Fill Style Based On'}
 										index={index}
 										isImage={true}
+										isAggLayer={aggregationLayers.includes(layer.layerType)}
 									/>
 
 									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
@@ -160,6 +176,25 @@ export default function Legend() {
 										typography={'Line Style Based On'}
 										index={index}
 										isImage={true}
+										isAggLayer={aggregationLayers.includes(layer.layerType)}
+									/>
+
+									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
+								</>
+							)}
+
+							{/* Line Style based on */}
+
+							{layer?.layerIdentifier === 'Wells' && (
+								<>
+									<LegendCollapse
+										layer={layer}
+										basedOnKey={{ label: 'Well Type/Status' }}
+										basedOnDict={wellsBasedOnDict}
+										typography={'Color Based On'}
+										index={index}
+										isColor={true}
+										isAggLayer={aggregationLayers.includes(layer.layerType)}
 									/>
 
 									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />

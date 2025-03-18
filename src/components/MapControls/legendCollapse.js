@@ -20,14 +20,17 @@ export default function LegendCollapse({ layer, basedOnKey, basedOnDict, typogra
 	const handleToggle = () => setOpen(!open);
 
 	const attroptions = (layerController.getValue('bins') || []).map((key, index) => {
-		const hexColors = layerStylingController
-			.getValue('selectedPalette')
-			.map(rgb => `#${rgb.map(c => c.toString(16).padStart(2, '0')).join('')}`);
+		if (isAggLayer) {
+			const hexColors = layerStylingController
+				?.getValue('selectedPalette')
+				?.map(rgb => `#${rgb.map(c => c.toString(16).padStart(2, '0')).join('')}`);
 
-		return {
-			label: key,
-			color: hexColors[index],
-		};
+			return {
+				label: key,
+				color: hexColors[index],
+			};
+		}
+		return null;
 	});
 
 	const Row = ({ index, style }) => {
