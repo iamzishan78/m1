@@ -192,7 +192,7 @@ export default (props) => {
         "projectName": "",
         "sdNotes": "",
         "sdGrossAcres": "",
-        "shapeArea": calculateLandArea(abstractShape),
+        "shapeArea": calculateLandArea(abstractShape, true),
         "shapeCenter": calculateShapeCenter(abstractShape.geometry),
         "shapeLabelLayer": "",
         "id": featureId
@@ -224,7 +224,7 @@ export default (props) => {
         projectName: '',
         sdNotes: '',
         sdGrossAcres: '',
-        shapeArea: calculateLandArea(abstractShape),
+        shapeArea: calculateLandArea(abstractShape, true),
         // needs to be a string to be consistent with queried data
         shapeCenter: JSON.stringify(calculateShapeCenter(abstractShape.geometry)),
         shapeLabelLayer: '',

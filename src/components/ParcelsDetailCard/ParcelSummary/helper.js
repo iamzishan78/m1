@@ -264,7 +264,7 @@ export const handleLayerChangeOnQtr = (stateApp, layerData, qtrQtr, qtr) => {
     }
     if (newShape) {
         layerDataCopy.shape.geometry = newShape.geometry;
-        layerDataCopy.shape.properties.shapeArea = calculateLandArea(newShape);
+        layerDataCopy.shape.properties.shapeArea = calculateLandArea(newShape, true);
     }
     return layerDataCopy
 };

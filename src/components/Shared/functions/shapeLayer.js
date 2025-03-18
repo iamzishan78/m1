@@ -154,18 +154,19 @@ const formatNumber = (number) => {
     return number.toLocaleString("en-US", { maximumFractionDigits: 2 });
 };
 
-export const calculateLandArea = (selectedFeature) => {
+export const calculateLandArea = (selectedFeature, returnNumber = true) => {
     if (selectedFeature) {
         if (selectedFeature.geometry.type === "Polygon" || selectedFeature.geometry.type === "MultiPolygon") {
             const areaInSqMeters = area(selectedFeature);
-            const areaInAcres = convertArea(areaInSqMeters, "meters", "acres");
-            return `${formatNumber(Math.round(areaInAcres * 100) / 100)}`;
+            const areaInAcres = Math.round(convertArea(areaInSqMeters, "meters", "acres") * 100) / 100;
+            return returnNumber ? areaInAcres : `${formatNumber(areaInAcres)}`;
         }
         if (selectedFeature.geometry.type === "LineString") {
-            const distanceInMiles = length(selectedFeature, { units: "miles" });
-            return `${formatNumber(Math.round(distanceInMiles * 100) / 100)} miles`;
+            const distanceInMiles = Math.round(length(selectedFeature, { units: "miles" }) * 100) / 100;
+            return returnNumber ? distanceInMiles : `${formatNumber(distanceInMiles)} miles`;
         }
     }
+    return returnNumber ? 0 : "0";
 };
 
 export const parseUserDefinedLayerFeature = (feature, layer) => {
