@@ -75,7 +75,7 @@ export const getURL = () => {
 	let tenantName = UserSession.getStorageItem('tenantName');
 	if (tenantName) {
 		let tenant = tenantsCredentials(tenantName);
-		return isDev ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
+		return isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
 	}
 	return null;
 };
