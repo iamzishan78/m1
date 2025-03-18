@@ -34,6 +34,8 @@ function CustomAutoComplete({
 		variant = 'standard',
 		titleComponent = 'h3',
 		allowNewOptions = false,
+		textFieldInputProps = {},
+		renderOptionComp = null,
 	} = {},
 	fieldAttributes: {
 		name = '',
@@ -42,6 +44,7 @@ function CustomAutoComplete({
 		value = null,
 		query = null,
 		variables = {},
+		placeholder = '',
 		isESSearch = false,
 		defaultValue = null,
 		defaultOptions = null,
@@ -51,7 +54,7 @@ function CustomAutoComplete({
 	...propsRest
 }) {
 	const client = useApolloClient();
-	const filter = createFilterOptions({ stringify: option => option.value || option });
+	const filter = createFilterOptions();
 	const [options, setOptions] = useState(Array.isArray(defaultOptions) ? defaultOptions : []);
 	const [loading, setLoading] = useState(false);
 	const watchValue = watch ? watch(name) : '';
@@ -100,14 +103,14 @@ function CustomAutoComplete({
 		if (option?._id && value._id) {
 			return option._id === value._id;
 		} else {
-			return option.value == value.value;
+			return option.value === value.value || option.name === value.name;
 		}
 	};
 
 	const autoCompleteChnage = (newOpt, oldOpt, fieldOnChange) => {
-		let val = onChange?.(newOpt?.value || newOpt, oldOpt);
-		val = newOpt ? (val ?? (newOpt.value || newOpt)) : null;
-		fieldOnChange?.(val);
+		const value = newOpt ? newOpt.value || newOpt : null;
+		onChange?.(value, oldOpt);
+		fieldOnChange?.(value);
 	};
 
 	const textFieldChange = event => {
@@ -125,7 +128,9 @@ function CustomAutoComplete({
 	};
 
 	const getOptionsArray = value => {
-		if (!multiple) {return options;}
+		if (!multiple) {
+			return options;
+		}
 		const optArray = options.filter(opt => !value?.some(selected => getOptionLabel(selected) === getOptionLabel(opt)));
 		return optArray;
 	};
@@ -149,10 +154,18 @@ function CustomAutoComplete({
 		if (option?.id === 'newEntity') {
 			return (
 				<Typography
+					{...props}
 					style={{ color: 'midnightblue', paddingLeft: '12px' }}
 				>{`Add '${option.value || option}'`}</Typography>
 			);
 		}
+
+		if (renderOptionComp)
+			return (
+				<Grid container spacing={0} {...props}>
+					{renderOptionComp(option)}
+				</Grid>
+			);
 
 		return (
 			<Grid container spacing={0} {...props}>
@@ -184,15 +197,20 @@ function CustomAutoComplete({
 					<TextField
 						{...params}
 						size={size}
-						value={(inputSearchText ?? params?.inputProps?.value) || ''}
 						label={label}
 						margin={margin}
 						variant={variant}
 						onBlur={field?.onBlur}
+						placeholder={placeholder}
 						onChange={textFieldChange}
+						className={inputClassName}
 						helperText={error?.message}
 						error={required && !watchValue && error}
-						className={inputClassName}
+						value={(inputSearchText ?? params?.inputProps?.value) || ''}
+						InputProps={{
+							...params.InputProps,
+							...textFieldInputProps,
+						}}
 					/>
 				)}
 				renderTags={(value, getTagProps) => {

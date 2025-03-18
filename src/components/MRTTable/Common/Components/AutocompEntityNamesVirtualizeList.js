@@ -6,8 +6,6 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import { IconButton, Typography, Grid } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
@@ -16,9 +14,8 @@ import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 import ContactCardDisabledIcon from 'components/Shared/svgIcons/contact_card_disabled';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
-import { fuzzySearch } from 'utils/helper';
-
 import { AppContext } from 'AppContext';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 const LISTBOX_PADDING = 8; // px
 
@@ -29,7 +26,6 @@ const OuterElementType = React.forwardRef((props, ref) => {
 	return <div ref={ref} {...props} {...outerProps} />;
 });
 
-// Adapter for react-window
 const ListboxComponent = React.forwardRef((props, ref) => {
 	const { children, isItemLoaded, loadMoreItems, itemCount, ...other } = props;
 
@@ -98,10 +94,6 @@ const ListboxComponent = React.forwardRef((props, ref) => {
 		</div>
 	);
 });
-
-ListboxComponent.propTypes = {
-	children: PropTypes.node,
-};
 
 const useStyles = makeStyles({
 	inputRoot: props =>
@@ -210,150 +202,124 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 		[]
 	);
 
-	const getParams = params => {
-		return props.withContactCard
-			? {
-					InputLabelProps: {
-						...params.InputLabelProps,
-						shrink: true,
-					},
-					InputProps: {
-						...params.InputProps,
-						endAdornment: (
-							<React.Fragment>
-								{params.InputProps.endAdornment}
-								<IconButton
-									style={{ padding: 0 }}
-									size={'medium'}
-									color={nameAutValue?._id ? 'primary' : 'secondary'}
-									className={paramClasses.contactCardIcon}
-									onClick={e => {
-										if (nameAutValue?._id) {
-											e.stopPropagation();
-											history.push(`/contact/details/${nameAutValue._id}`);
-											setStateApp(stateApp => ({
-												...stateApp,
-												selectedContact: nameAutValue._id,
-											}));
-										}
-									}}
-									aria-label="show contact"
-								>
-									{nameAutValue?._id ? <ContactCardIcon /> : <ContactCardDisabledIcon />}
-								</IconButton>
-							</React.Fragment>
-						),
-					},
-				}
-			: {
-					InputProps: {
-						...params.InputProps,
-						...props.InputProps,
-						endAdornment: (
-							<>
-								{isNextPageLoading ? <CircularProgress color="inherit" size={20} /> : null}
-								{params.InputProps.endAdornment}
-							</>
-						),
-					},
-				};
+	const getParams = props.withContactCard
+		? {
+				endAdornment: (
+					<React.Fragment>
+						<IconButton
+							style={{ padding: 0 }}
+							size={'medium'}
+							color={nameAutValue?._id ? 'primary' : 'secondary'}
+							className={paramClasses.contactCardIcon}
+							onClick={e => {
+								if (nameAutValue?._id) {
+									e.stopPropagation();
+									history.push(`/contact/details/${nameAutValue._id}`);
+									setStateApp(stateApp => ({
+										...stateApp,
+										selectedContact: nameAutValue._id,
+									}));
+								}
+							}}
+							aria-label="show contact"
+						>
+							{nameAutValue?._id ? <ContactCardIcon /> : <ContactCardDisabledIcon />}
+						</IconButton>
+					</React.Fragment>
+				),
+			}
+		: {
+				...props.InputProps,
+				endAdornment: <>{isNextPageLoading ? <CircularProgress color="inherit" size={20} /> : null}</>,
+			};
+
+	const renderOptionComp = option => {
+		return (
+			<Grid container item xs={12} alignItems="center">
+				<Grid item xs>
+					<span style={{ fontWeight: 400 }}>{option.name}</span>
+					<Typography variant="body2" color="textSecondary">
+						{joinAddress(option)}
+					</Typography>
+				</Grid>
+			</Grid>
+		);
 	};
+
 	return (
-		<Autocomplete
-			id="autocompEntityNamesVirtualizeList"
-			defaultValue={nameAutValue}
-			value={nameAutValue}
-			disableListWrap
-			classes={classes}
-			// className={props.withContactCard ? paramUseStyles.adornmentAutocomplete : ""}
-			ListboxComponent={ListboxComponent}
-			ListboxProps={ListboxProps}
-			options={mongoEntitiesArray}
-			getOptionLabel={option => {
-				// Value selected with enter, right from the input
-				if (props.addNew && typeof option === 'string') {
-					return option;
-				}
-				// Add "xxx" option created dynamically
-				if (props.addNew && option.inputValue) {
-					return option.name;
-				}
-
-				if (option?.name) {
-					return option.name;
-				} else {
-					return '';
-				}
-			}}
-			getOptionSelected={(option, value) => {
-				return option?._id === value?._id;
-			}}
-			renderOption={option => {
-				if (option._id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
-				}
-
-				return (
-					<Grid container spacing={0}>
-						<Grid container item xs={12} alignItems="center">
-							<Grid item xs>
-								<span style={{ fontWeight: 400 }}>{option.name}</span>
-								<Typography variant="body2" color="textSecondary">
-									{joinAddress(option)}
-								</Typography>
-							</Grid>
-						</Grid>
-					</Grid>
-				);
-			}}
-			onInputChange={onInputChange}
-			filterOptions={(options, params) => {
-				if (props.addNew) {
-					const filtered = fuzzySearch(options, params.inputValue);
-
-					// Suggest the creation of a new value
-					if (params.inputValue !== '') {
-						filtered.unshift({
-							name: params.inputValue,
-							_id: 'newEntity',
-						});
-					}
-					return filtered;
-				} else {
-					return options;
-				}
-			}}
-			onChange={(event, newValue) => {
-				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') {
-						setNameAutValue(newValue);
-					} else {
-						if (addNewOnClick) {
-							addNewOnClick(newValue.name);
-						} else {
-							setNameAutValue({
-								_id: 'newEntity',
-								name: newValue.name,
-							});
-						}
-					}
-				} else {
-					setNameAutValue(null);
-				}
-			}}
-			renderInput={params => (
-				<TextField
-					margin={margin}
-					{...params}
-					label={label}
-					placeholder={placeholder}
-					variant={variant}
-					{...getParams(params)}
-					size={size}
-					// placeholder="E.g. Jacob"
-				/>
-			)}
-			{...other}
-		/>
+		<>
+			<CustomAutoComplete
+				disableListWrap
+				classes={classes}
+				ListboxProps={ListboxProps}
+				onInputChange={onInputChange}
+				ListboxComponent={ListboxComponent}
+				id="autocompEntityNamesVirtualizeList"
+				fieldConfig={{
+					margin,
+					variant,
+					renderOptionComp,
+					allowNewOptions: props?.addNew,
+					textFiledInputProps: getParams,
+				}}
+				fieldAttributes={{
+					size,
+					label,
+					margin,
+					placeholder,
+					value: nameAutValue,
+					defaultValue: nameAutValue,
+					defaultOptions: mongoEntitiesArray,
+				}}
+				fieldEvents={{
+					onChange: newValue => {
+						if (newValue) {
+							if (newValue?._id) {
+								setNameAutValue(newValue);
+							} else {
+								if (addNewOnClick) {
+									addNewOnClick(newValue.name);
+								} else {
+									setNameAutValue({
+										_id: 'newEntity',
+										name: newValue.name,
+									});
+								}
+							}
+						} else setNameAutValue(null);
+					},
+				}}
+				{...other}
+			/>
+		</>
 	);
 }
+
+OuterElementType.displayName = 'OuterElementType';
+ListboxComponent.displayName = 'ListboxComponent';
+
+ListboxComponent.propTypes = {
+	children: PropTypes.node,
+	isItemLoaded: PropTypes.func.isRequired,
+	loadMoreItems: PropTypes.func.isRequired,
+	itemCount: PropTypes.number.isRequired,
+};
+AutocompEntityNamesVirtualizeList.propTypes = {
+	addNewOnClick: PropTypes.func,
+	mongoEntitiesArray: PropTypes.arrayOf(PropTypes.object).isRequired,
+	nameAutValue: PropTypes.object,
+	setNameAutValue: PropTypes.func.isRequired,
+	nameAutInputValue: PropTypes.string,
+	setNameAutInputValue: PropTypes.func.isRequired,
+	variant: PropTypes.string,
+	label: PropTypes.string,
+	placeholder: PropTypes.string,
+	margin: PropTypes.string,
+	size: PropTypes.string,
+	hasNextPage: PropTypes.bool.isRequired,
+	isNextPageLoading: PropTypes.bool.isRequired,
+	loadNextPage: PropTypes.func.isRequired,
+	withContactCard: PropTypes.bool,
+	addNew: PropTypes.bool,
+	InputProps: PropTypes.object,
+};
