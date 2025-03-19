@@ -1305,7 +1305,7 @@ function Map({
 				<div
 					style={{
 						position: 'absolute',
-						width: '320px',
+						width: '340px',
 						right: '100px',
 						top: '300px',
 						maxHeight: '500px',
