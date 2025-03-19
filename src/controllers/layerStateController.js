@@ -266,6 +266,27 @@ const LayerMeta = {
 			getProps: layerId => {
 				return {
 					data: deckLayers[layerId].getData([]),
+					onHover: info => {
+						const selectedHex = popupController.getValue('selectedHex');
+
+						if (_.isEqual(info.object?.position, selectedHex?.position)) {
+							return;
+						}
+
+						const popUps = document.getElementsByClassName('mapboxgl-popup');
+						if (popUps[0]) {
+							popUps[0].remove();
+						}
+
+						// Create new popup if not exists
+						new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+							.setLngLat(info?.coordinate)
+							.setMaxWidth('none')
+							.setHTML('<div id="popupContainer"></div>')
+							.addTo(window.mapRef);
+
+						popupController.setState({ selectedHex: info.object, popupOpen: true });
+					},
 				};
 			},
 		},

@@ -374,6 +374,7 @@ function LayerStyling() {
 								<FormControlLabel
 									control={
 										<Switch
+											key={layerClickability}
 											checked={layerClickability}
 											onChange={() => layerStylingController.setLayerClickability(!layerClickability)}
 											size="small"
@@ -393,6 +394,7 @@ function LayerStyling() {
 								<FormControlLabel
 									control={
 										<Switch
+											key={isExtruded}
 											checked={isExtruded}
 											onChange={() => layerStylingController.setLayerExtrusion(!isExtruded)}
 											size="small"
@@ -418,6 +420,7 @@ function LayerStyling() {
 									<FormControlLabel
 										control={
 											<Switch
+												key={enablefillColor}
 												checked={enablefillColor}
 												onChange={() => layerStylingController.setEnableFillColor(!enablefillColor)}
 												size="small"
@@ -460,7 +463,7 @@ function LayerStyling() {
 											options={['linear', 'quantize', 'quantile', 'ordinal']}
 											setAggregation={layerStylingController.setColorScaleType}
 										/>
-										<ColorScaleDropdown />
+										{/* <ColorScaleDropdown /> */}
 										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
 
 										<>
