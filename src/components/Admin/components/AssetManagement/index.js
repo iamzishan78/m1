@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { isEmpty } from 'lodash';
 
@@ -29,6 +29,15 @@ export default function AssetManagement() {
 		}),
 		[selectedAsset]
 	);
+
+	// Clean up the selectedAsset on unmount
+	useEffect(() => {
+		return () => {
+			tableGlobalController.updateState({
+				selectedAsset: {},
+			});
+		};
+	}, []);
 
 	return (
 		<>
