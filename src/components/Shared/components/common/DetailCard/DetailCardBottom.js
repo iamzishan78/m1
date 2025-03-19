@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
+import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
-
-import { detailCardController } from 'hookstate/detailCardController';
 
 import MRTTable from 'components/MRTTable';
-import { TabPanel } from 'components/Shared/TabPanels';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { tableGlobalController } from 'hookstate/tableController';
+import { TabPanel } from 'components/Shared/TabPanels';
+
+import { detailCardController } from 'controllers/detailCardController';
+import { tableGlobalController } from 'controllers/tableController';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -112,9 +112,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ComponentRender = ({ props: { component, isMRTTable, tableKey, props } }) => {
-	if (component) return <>{component}</>;
+	if (component) {
+		return <>{component}</>;
+	}
 
-	if (isMRTTable) return <MRTTable key={`MRTTable-${tableKey}`} name={tableKey} {...props} />;
+	if (isMRTTable) {
+		return <MRTTable key={`MRTTable-${tableKey}`} name={tableKey} {...props} />;
+	}
 
 	return null;
 };

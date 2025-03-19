@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import LeftDialog from 'components/Shared/LeftDialog';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import ViewItem from './components/ViewItem';
 
@@ -91,7 +91,6 @@ function ViewOptions({ moduleName, buttonRef }) {
 	const classes = useStyles();
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
 
 	const ViewController = viewStateController(moduleName);
 	const { stateValues: viewStateValues } = ViewController.useState([
@@ -100,7 +99,7 @@ function ViewOptions({ moduleName, buttonRef }) {
 		'isViewOpen',
 		'fetchViewSettings',
 	]);
-	const { isTable, allViews, isViewOpen, fetchViewSettings } = viewStateValues;
+	const { allViews, isViewOpen, fetchViewSettings } = viewStateValues;
 
 	const [selectedTab, setSelectedTab] = useState('views');
 	const [filterViews, setfilterViews] = useState(allViews);
@@ -110,15 +109,8 @@ function ViewOptions({ moduleName, buttonRef }) {
 		if (selectedTab === 'views') {
 			setfilterViews(allViews);
 		} else if (selectedTab === 'favorites') {
-			let data = null;
-
-			if (isTable) {
-				data = allViews.filter(view => view.favouriteBy?.includes(getUser?._id));
-			} else {
-				data = allViews.filter(view => view.isFavourite === true);
-			}
-
-			setfilterViews(data);
+			const favViews = allViews.filter(view => view.favouriteBy?.includes(user?._id));
+			setfilterViews(favViews);
 		} else {
 			setfilterViews([]);
 		}

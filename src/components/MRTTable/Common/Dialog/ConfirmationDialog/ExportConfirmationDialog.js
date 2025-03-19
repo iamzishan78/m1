@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 
 import { excludeFilters } from 'components/MRTTable/Common/CommonToolBarActions';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 
@@ -25,12 +25,12 @@ function ExportConfirmationDialog({ table, tableKey, header, onClose, children, 
 	const client = useApolloClient();
 	const modalClass = Modals();
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const Controller = controller(tableKey);
 
 	const tableState = Controller.useCompleteState();
-	const tableStateValues = tableState?.get({ noproxy: true });
+	const tableStateValues = tableState;
 
 	const handleExport = () => {
 		const rows = table.getSelectedRowModel().flatRows.map(row => row.original);

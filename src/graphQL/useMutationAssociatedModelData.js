@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 
 export const ADD_ASSOCIATED_MODEL_DATA = gql`
 	mutation addAssociatedModelData(
-		$mainModelName: String!
+		$assetTableName: String!
 		$associatedModelName: String!
 		$relatedObject: String!
 		$descriptorObject: String!
@@ -10,7 +10,7 @@ export const ADD_ASSOCIATED_MODEL_DATA = gql`
 		$relatedObjectType: String!
 	) {
 		addAssociatedModelData(
-			mainModelName: $mainModelName
+			assetTableName: $assetTableName
 			associatedModelName: $associatedModelName
 			relatedObject: $relatedObject
 			descriptorObject: $descriptorObject

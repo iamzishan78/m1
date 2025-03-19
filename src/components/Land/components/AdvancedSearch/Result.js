@@ -6,7 +6,7 @@ import { debounce } from 'lodash';
 
 import MRTTable from 'components/MRTTable';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'controllers/tableController';
 
 const tableKey = 'GenericTable';
 

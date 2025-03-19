@@ -1,16 +1,17 @@
 import React, { useState, memo } from 'react';
 
-import useStyles from './useStyles';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
-import { popupController } from 'hookstate/popupStateController';
-import { detailCardController } from 'hookstate/detailCardController';
-import { globalStateController } from 'hookstate/globalStateController';
-
-import * as Pages from 'components/Shared/components/common/DetailCard/pages';
-import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 import { removeSpaces } from 'components/MRTTable/utils/helper';
+import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
+import * as Pages from 'components/Shared/components/common/DetailCard/pages';
+
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
+import { popupController } from 'controllers/popupStateController';
+
+import useStyles from './useStyles';
 
 const MainGridRightContainer = () => {
 	const classes = useStyles();
@@ -38,9 +39,11 @@ const MainGridRightContainer = () => {
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	const handleClick = event => setAnchorEl(event.currentTarget);
-	const handleClose = event => setAnchorEl(null);
+	const handleClose = () => setAnchorEl(null);
 
-	if (shrinkRightColumn) return null;
+	if (shrinkRightColumn) {
+		return null;
+	}
 
 	return (
 		<>
@@ -52,10 +55,10 @@ const MainGridRightContainer = () => {
 				setCollapse={() => detailCardController.togglePullout()}
 				targetSourceId={currentAssetRecord?._id}
 				showDescription={false}
-				targetLabel={currentAsset?.tableName}
-				ownerTitle={`${currentAsset?.tableName} Owner`}
+				targetLabel={currentAsset?.name}
+				ownerTitle={`${currentAsset?.name} Owner`}
 				commentsWidth="23vw"
-				pageLink={`/land/customAsset/${removeSpaces(currentAsset?.tableName)}/details/${currentAssetRecord?._id}/documents`}
+				pageLink={`/land/customAsset/${currentAsset?.tableName}/details/${currentAssetRecord?._id}/documents`}
 				viewAllDocuments={!expandedCard}
 				menuComponent={
 					<IconButton className={classes.menuIcon} onClick={handleClick}>
@@ -64,7 +67,7 @@ const MainGridRightContainer = () => {
 				}
 				data={currentAssetRecord}
 				onUpdate={({ owner }) => {
-					callApi('owner', owner);
+					callApi({ key: 'owner', value: owner });
 				}}
 				activityLog={currentAssetRecord?.activityLog || {}}
 				isSource={false}
@@ -87,12 +90,12 @@ const MainGridRightContainer = () => {
 			>
 				<MenuItem
 					className={classes.userMenuItem}
-					onClick={e => {
+					onClick={() => {
 						handleClose();
 						handleExpandClick('deleteConfirmation');
 					}}
 				>
-					{`Delete ${currentAsset?.tableName}`}
+					{`Delete ${currentAsset?.name}`}
 				</MenuItem>
 			</Menu>
 		</>

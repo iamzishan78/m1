@@ -5,12 +5,12 @@ import { dividePolygon, makeGeoJSONFromStrings } from 'components/Map/DeckGL/hel
 import { copy, getPolygonString, processInBatches } from 'components/Shared/functions';
 import { agreementLayerIdentifiers } from 'components/Shared/functions/shapeLayer';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { layerController } from 'controllers/layerStateController';
+
 import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { PLSSSECONDDIVISIONGEO } from 'graphQL/useQueryPLSSSecondDivisionGeo';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
 
 const queries = {
 	Wells: {
@@ -79,6 +79,7 @@ const getBoundsQuery = async ({
 	identifier,
 	layerSettings,
 	isFileLayer,
+	isDynamicLayer,
 	boundingState,
 	onData,
 	geoField,
@@ -204,6 +205,19 @@ const getBoundsQuery = async ({
 				wellName: 1,
 				wellType: 1,
 				wellStatus: 1,
+			});
+		} else if (isDynamicLayer) {
+			Object.assign(variables.project, {
+				'assetShape.shapeJson.geometry': 1,
+				'assetShape.shapeJson.id': 1,
+				'assetShape.shapeJson.type': 1,
+				'assetShape.shapeJson.properties.shapeSubTitle': 1,
+				'assetShape.shapeJson.properties.shapeLabel': 1,
+				'assetShape.shapeJson.properties.layerType': 1,
+				'assetShape.shapeJson.properties.sdType': 1,
+				'assetShape.shapeJson.properties.layerSubType': 1,
+				'assetShape.shapeJson.properties.type': 1,
+				'assetShape.shapeJson.properties.shapeCenter': 1,
 			});
 		} else {
 			Object.assign(variables.project, {

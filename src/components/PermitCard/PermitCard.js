@@ -20,8 +20,8 @@ import moment from 'moment';
 //material-ui components
 
 //custom components
-import { globalStateController } from 'hookstate/globalStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { popupController } from 'controllers/popupStateController';
 
 import OilGasIcon from './components/svgIcons/OilGasIcon';
 import OwnershipIcon from './components/svgIcons/OwnershipIcon';

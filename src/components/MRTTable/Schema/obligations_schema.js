@@ -6,8 +6,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
 
-import { slidoutState } from 'hookstate/initialStates';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
 
 import { getTruncateText } from '../utils/helper';
 
@@ -20,8 +19,10 @@ const onClickedRow = selectedRow => {
 		...selectedRow,
 	};
 	slidoutStateController.showSlideout();
-	slidoutState.selectedActivityId.set(selectedRow._id);
-	slidoutState.selectedActivity.set(formattedActivity);
+	slidoutStateController.updateState({
+		selectedActivityId: selectedRow._id,
+		selectedActivity: formattedActivity,
+	});
 
 	if (window.location.pathname.startsWith('/calendar/obligations')) {
 		window.history.pushState('', '', `/calendar/obligations/${selectedRow._id}`);

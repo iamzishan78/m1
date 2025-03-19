@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
+
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
 import AssetEntityToolbar from '../TablesOverride/AssetCustomEntities/Toolbars/AssetEntity';
 
 const esIndex = 'customentitiesmodelkeys_flat';
@@ -110,6 +112,23 @@ const customAssetMeta = {
 				const isDialogDisplayed = [true, 'true', 'True'].includes(row.getValue('isDialogDisplayed'));
 
 				return <>{isDialogDisplayed ? 'Yes' : 'No'}</>;
+			},
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'isRequired',
+			accessorKey: 'isRequired',
+			header: 'Required Field',
+			isSearchField: false,
+			filterSelectOptions: [
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
+			],
+			type: 'boolean',
+			Cell: ({ row }) => {
+				const isRequired = [true, 'true', 'True'].includes(row.getValue('isRequired'));
+
+				return <>{isRequired ? 'Yes' : 'No'}</>;
 			},
 		},
 	],

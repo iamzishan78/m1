@@ -23,7 +23,7 @@ const zipCopde = inputtxt => {
 	return false;
 };
 
-const contactForm = ({ getValues, setValue }) => {
+const contactForm = ({ setValue }) => {
 	const formFields = [
 		{
 			label: 'First Name',
@@ -135,8 +135,8 @@ const contactForm = ({ getValues, setValue }) => {
 			name: 'isPurchased',
 			renderField: 'autoComplete',
 			defaultOptions: [
-				{ label: 'Yes', value: 'true' },
-				{ label: 'No', value: 'false' },
+				{ label: 'Yes', value: true },
+				{ label: 'No', value: false },
 			],
 			onChange: value => {
 				const booleanValue = value === true || value === 'true';

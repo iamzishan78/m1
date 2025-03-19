@@ -5,48 +5,36 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import PropTypes from 'prop-types';
 import queryString from 'query-string';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { popupController } from 'controllers/popupStateController';
 
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
 import { UserSession } from 'utils/user';
 
 import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConfig';
-import { MSALB2CObj, B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
-import { heatLayers, baseMapLayers } from './LayerConfig';
+import { B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
 
 const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = props => {
 	const [stateApp, setStateApp] = useState({
 		myMSALObj: null,
-		myMSALB2CObj: null,
 
-		baseMapLayers: baseMapLayers, // move to a map context -- will be changed with mepler anyways
-		heatLayers: heatLayers, // move to a map context -- will be changed with mepler anyways
 		apolloClientEndpoint: '',
-		apolloClientFetchOptions: null,
 		graphqlScope: null, /// potentially login context?
 		user: globalStateController.getValue('user') || null, /// potenitally login context or maybe a specific user context??
 		signUpUserType: null, /// potenitally login context or maybe a specific user context??
-		wellDetailCardOpen: null, // move to map data card context
 		wellDetailCardTabIndex: null,
-		parcelDetailCardOpen: false, // move to map data card context
-		trackedwells: null, // move to a grid context or query context
-		trackedOwnerWells: null, // move to a grid context or query context
 		selectedWell: null, // move to a selected object context (maybe flyto)
 		selectedWellId: null, // move to a selected object context (maybe flyto)
 		selectedAbstracts: [], // move to a selected object context (maybe flyto)
 
 		// States for permits
 		selectedPermit: null,
-		selectedPermitDetails: null,
 		selectedPermitId: null,
 		permitSelectedCoordinates: [],
 
 		selectedAoi: null,
-
-		customLayers: [],
 
 		// should be in a draw context
 		editDraw: false,
@@ -55,9 +43,6 @@ const AppProvider = props => {
 		showDrawShapesPopup: false,
 		showShapeActionsPopup: false,
 
-		openDrawShapesControl: false,
-
-		editLayer: true,
 		owners: null,
 		popupOpen: false, //map used in flyto
 		expandedCard: false, // probably need in a map card context
@@ -73,11 +58,8 @@ const AppProvider = props => {
 		filtersDefaultOnoff: null,
 		filterSelectAllAbstract: false,
 		selectedContact: null,
-		trackedWellArray: [],
-		// userSnap: false,
 
 		// MAP CONTEXT vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-		mapStyles: [],
 		wellSelectedCoordinates: [],
 		universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
 
@@ -85,24 +67,7 @@ const AppProvider = props => {
 		mapCircularLoaderAct: false,
 		mapboxglAccessToken: 'pk.eyJ1IjoibTFuZXJhbCIsImEiOiJja2V6MHd2bnQwYzRqMnlwaTV6ejU2cTMyIn0.ghyrh-G8uQtyg4N4VcfTOw',
 		selectedWellApi: null,
-		layers: null,
-		searchLayerIndex: null,
-		trackedOwnersLayerIndex: null,
-		trackedWellsLayerIndex: null,
-		tagsLayerIndex: null,
-		checkedLayers: [2, 5],
-		wellsLayerIndex: null,
-		checkedHeats: [],
-		checkedBaseLayers: [0, 1, 2, 3, 4],
-		checkedUserDefinedLayers: [],
-		checkedFileLayers: [],
-		tempCheckedUserDefinedLayer: null,
-		checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
-		checkedFileLayersInteraction: [],
-		editingUserDefinedLayers: [],
-		checkedLayersInteraction: [0, 1, 2],
 		openWellDetails: false,
-		sourceLoaded: false,
 		map: null, // move to a map context
 		draw: null,
 		zoomFault: null,
@@ -111,20 +76,14 @@ const AppProvider = props => {
 		landGridListFromSearch: [],
 		wellListFromTagsFilter: [],
 		viewportWells: null,
-		minZoomToQueryViewport: 12.5,
-		activateWellDetailsFromTable: false,
 		contactUpdated: null,
 		currentContatcAtivities: [],
 		dealDisplayType: 'board',
 		activityDisplayType: 'calendar',
-		prevAOIVisible: false,
-		prevParcelVisible: false,
-		prevBasinVisible: false,
 		DocumentDrawer: false,
 		selectedDocument: {},
 		transactBarView: 'Deal',
 		multiSelectLandGrids: false,
-		isAbstractedLayersPolygon: false,
 		contactSearchQuery: '',
 		activitySearchQuery: '',
 		documentSearchQuery: '',
@@ -135,6 +94,7 @@ const AppProvider = props => {
 		pdfView: null,
 		selectedAgreement: null,
 		selectedView: null,
+		revenueSearchQuery: '',
 		filtersData: [],
 		shapeEditMode: '',
 		landSearchFilters: {
@@ -143,44 +103,6 @@ const AppProvider = props => {
 			relatedWells: [],
 			relatedAgreements: [],
 			relatedDocuments: [],
-		},
-
-		toggleLayersActivity: (identifier, activityValue) => {
-			if (identifier) {
-				let res;
-				setStateApp(stateApp => {
-					if (stateApp.layers && Array.isArray(stateApp.layers)) {
-						const currentLayers = [...stateApp.layers];
-						const index = currentLayers.findIndex(l => l.identifier === identifier);
-
-						if (index === -1) {
-							return stateApp;
-						}
-
-						const updatedLayer = {
-							...currentLayers[index],
-							layerSettings: {
-								...currentLayers[index].layerSettings,
-								visiable: activityValue !== undefined ? activityValue : !currentLayers[index].layerSettings.visiable,
-							},
-						};
-						res = updatedLayer.layerSettings.visiable;
-
-						//// saving to stateApp
-						currentLayers[index] = updatedLayer;
-
-						return {
-							...stateApp,
-							layers: [...currentLayers],
-							toggleLayerActivityValue: activityValue,
-							mapCircularLoaderAct: false,
-						};
-					}
-					return stateApp;
-				});
-				return res;
-			}
-			return null;
 		},
 
 		selectedShape: popupController.getValue('selectedShape'),
@@ -225,19 +147,13 @@ const AppProvider = props => {
 			if (B2CTenantName) {
 				let tenant = B2CTenantCredentials(B2CTenantName);
 				if (tenant) {
-					let myMSALB2CObjInt = MSALB2CObj(tenant.tenantId, tenant.clientId);
 					setStateApp(state => {
 						return {
 							...state,
-							myMSALB2CObj: myMSALB2CObjInt,
 							apolloClientEndpoint: tenant.apolloClientEndpoint,
 						};
 					});
 				}
-			} else {
-				setStateApp(state => {
-					return { ...state, myMSALB2CObj: false };
-				});
 			}
 		}
 		wait();

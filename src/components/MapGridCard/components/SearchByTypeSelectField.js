@@ -15,7 +15,7 @@ import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
 
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { mapControlsController } from 'controllers/mapControlsController';
 
 import { platformDataInitialData, userDefinedInitialData } from './data';
 

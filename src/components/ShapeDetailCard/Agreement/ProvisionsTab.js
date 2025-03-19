@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Controller, useForm, useFieldArray } from 'react-hook-form';
+import PropTypes from 'prop-types';
 
 import {
 	Grid,
@@ -30,7 +31,7 @@ import {
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
 import { Autocomplete } from '@material-ui/lab';
-import { KeyboardDatePicker } from '@material-ui/pickers';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import debounce from 'lodash/debounce';
@@ -40,11 +41,11 @@ import Loader from 'components/Loaders';
 import CommentsWithIcon from 'components/Shared/CommentsWithIcon';
 import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
 
+import { detailCardController } from 'controllers/detailCardController';
+
 import { CREATE_AGREEMENT_PROVISION } from 'graphQL/useMutationCreateAgreementProvision';
 import { GET_PROVISION_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetProvisionAutoCompleteList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-
-import { detailCardController } from 'hookstate/detailCardController';
 
 import ResponsibleParty from './ResponsibleParty';
 import { AppContext } from '../../../AppContext';
@@ -79,16 +80,6 @@ const styles = makeStyles(() => ({
 	},
 	provisionCardSelected: {
 		borderLeft: '4px solid #4dc7f4',
-	},
-	marginNormal: {
-		marginTop: '0px',
-		marginBottom: '0px',
-		'& .MuiIconButton-label': {
-			'& .MuiSvgIcon-root': {
-				color: '#7f7f7f !important',
-				fill: '#7f7f7f !important',
-			},
-		},
 	},
 	unchecked: { opacity: 0.5 },
 	checked: { opacity: 1 },
@@ -296,7 +287,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 							{standardProvisions?.map(provision => {
 								const isFound = !!fields.find(p => p.type === provision.type);
 								return (
-									<Grid item md={4}>
+									<Grid item md={4} key={provisions?._id}>
 										<FormControlLabel
 											className={isFound ? classes.checked : classes.unchecked}
 											control={
@@ -445,63 +436,51 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 							<Grid item>
 								<Grid container direction="row" spacing={2}>
 									<Grid item md={2}>
-										<Controller
+										<CustomDatePicker
+											id={`start-date-picker-${index}`}
 											control={control}
-											name={`provisions[${index}].startDate`}
-											render={({ field: { onChange, value, ref } }) => (
-												<KeyboardDatePicker
-													className={classes.marginNormal}
-													disableToolbar
-													fullWidth
-													label={'Start Date'}
-													inputVariant="outlined"
-													variant="inline"
-													format="MM/DD/YYYY"
-													margin="normal"
-													id={`start-date-picker-${index}`}
-													ref={ref}
-													value={value || null}
-													onChange={date => {
-														onChange(date);
-														handleChange(item, index);
-													}}
-													KeyboardButtonProps={{ 'aria-label': 'change date' }}
-												/>
-											)}
+											watch={watch}
+											fieldAttributes={{
+												name: `provisions[${index}].startDate`,
+												label: 'Start Date',
+												format: 'MM/DD/YYYY',
+											}}
+											fieldConfig={{
+												margin: 'small',
+												variant: 'outlined',
+												fullWidth: true,
+											}}
+											fieldEvents={{
+												onChange: handleChange(item, index),
+											}}
 										/>
 									</Grid>
 									<Grid item md={2}>
-										<Controller
+										<CustomDatePicker
+											id={`last-date-picker-${index}`}
 											control={control}
-											name={`provisions[${index}].endDate`}
-											render={({ field: { onChange, value, ref } }) => (
-												<KeyboardDatePicker
-													className={classes.marginNormal}
-													disableToolbar
-													fullWidth
-													minDate={watch(`provisions[${index}].startDate`)}
-													label={'End Date'}
-													inputVariant="outlined"
-													variant="inline"
-													format="MM/DD/YYYY"
-													margin="normal"
-													id={`last-date-picker-${index}`}
-													ref={ref}
-													value={value || null}
-													onChange={date => {
-														onChange(date);
-														handleChange(item, index);
-													}}
-													KeyboardButtonProps={{ 'aria-label': 'change date' }}
-												/>
-											)}
+											watch={watch}
+											fieldAttributes={{
+												name: `provisions.${index}.endDate`,
+												label: 'End Date',
+												format: 'MM/DD/YYYY',
+												minDate: watch(`provisions[${index}].startDate`),
+											}}
+											fieldConfig={{
+												margin: 'small',
+												variant: 'outlined',
+												fullWidth: true,
+											}}
+											fieldEvents={{
+												onChange: handleChange(item, index),
+											}}
 										/>
 									</Grid>
 
 									<Grid item md={2} id={`frequency-${index}`}>
 										<Controller
 											control={control}
-											name={`provisions[${index}].frequency`}
+											name={`provisions.${index}.frequency`}
 											defaultValue={item.frequency}
 											render={({ field: { onChange, value } }) => (
 												<AutoCompleteWithNewOption
@@ -642,3 +621,31 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 		</Grid>
 	);
 }
+
+ProvisionsTab.propTypes = {
+	provisions: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string,
+			templateRef: PropTypes.string,
+			type: PropTypes.string,
+			applicable: PropTypes.bool,
+			value: PropTypes.string,
+			startDate: PropTypes.string,
+			endDate: PropTypes.string,
+			frequency: PropTypes.string,
+			responsibleParty: PropTypes.shape({
+				name: PropTypes.string,
+			}),
+			ownerId: PropTypes.string,
+			description: PropTypes.string,
+			isTemplate: PropTypes.bool,
+		})
+	),
+	standardProvisions: PropTypes.arrayOf(
+		PropTypes.shape({
+			type: PropTypes.string,
+		})
+	),
+	id: PropTypes.string,
+	setPCounts: PropTypes.func,
+};

@@ -1,4 +1,5 @@
-import React, { memo, useCallback, useEffect, useMemo, useContext } from 'react';
+/* eslint-disable react/prop-types */
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { Flipper } from 'react-flip-toolkit';
 import Sortly, { findDescendants, findParent } from 'react-sortly';
 
@@ -7,13 +8,13 @@ import { Box, Paper } from '@material-ui/core';
 import { useMutation } from '@apollo/client';
 import update from 'immutability-helper';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { layerController } from 'controllers/layerStateController';
+
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 import { UPDATEUSERLAYERMETA } from 'graphQL/useMutationupdateLayersMeta';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
 
 import { useStyles } from '../style';
 import LayerItem from './LayerItem';
@@ -36,7 +37,7 @@ const FileTree = ({ layerMap, panelItems }) => {
 	const classes = useStyles();
 
 	const updateStateLayers = currentLayers => {
-		globalStateController.updateState({ layers: currentLayers, previousLayers: currentLayers });
+		layerController.updateState({ layers: currentLayers, previousLayers: currentLayers });
 	};
 	const checkforUpdate = (updateFn, previous, current, key) => {
 		if (previous[key] !== current[key]) {
@@ -332,6 +333,8 @@ const FileTree = ({ layerMap, panelItems }) => {
 				});
 				return null;
 			}
+
+			return null;
 		},
 		[items]
 	);

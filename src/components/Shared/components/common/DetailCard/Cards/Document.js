@@ -1,18 +1,21 @@
 import React, { useState, useContext } from 'react';
-
-import { AppContext } from 'AppContext';
 import { useParams } from 'react-router-dom';
+
+import { Dialog, DialogTitle, CircularProgress, DialogActions, DialogContent, Button } from '@material-ui/core';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+
 import { useMutation } from '@apollo/client';
 
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { Dialog, DialogTitle, CircularProgress, DialogActions, DialogContent, Button } from '@material-ui/core';
+import ViewDocuments from 'components/ViewDocuments/ViewDocuments';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { globalStateController } from 'hookstate/globalStateController';
+import { detailCardController } from 'controllers/detailCardController';
+import { globalStateController } from 'controllers/globalStateController';
+
+import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
 
 import { Modals } from 'styles/Modal';
-import ViewDocuments from 'components/ViewDocuments/ViewDocuments';
-import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
+
+import { AppContext } from 'AppContext';
 
 export default function DocumentsCard() {
 	const { id, paramId } = useParams();
@@ -54,11 +57,11 @@ export default function DocumentsCard() {
 	return (
 		<>
 			{currentAssetRecord ? (
-				<div variant="outlined" style={{ height: '100%', marginTop: '10px' }}>
+				<div style={{ height: '100%', marginTop: '10px' }}>
 					{/* Height as 100% and marginTop as 30px*/}
 					<ViewDocuments
 						contactId={id ?? paramId}
-						relatedObjectType={currentAsset?.tableName}
+						relatedObjectType={currentAsset?.name}
 						user_id={stateApp.user.email}
 						openDeleteConfirmDialog={openDeleteConfirmDialog}
 						handleClose={handleDeleteCancel}

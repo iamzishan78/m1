@@ -6,8 +6,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import debounce from 'lodash/debounce';
 
-import { copy } from 'components/Shared/functions';
 import { AutoCompleteFilter } from 'components/Common/AutoCompleteFilter';
+import { copy } from 'components/Shared/functions';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 

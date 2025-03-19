@@ -19,10 +19,10 @@ import OwnersPerUnitToolBar from 'components/MRTTable/TablesOverride/OwnersPerUn
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 
-import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 
 import { copy } from 'utils/helper';
 

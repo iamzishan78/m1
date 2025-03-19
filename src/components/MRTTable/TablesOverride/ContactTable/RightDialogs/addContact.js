@@ -16,11 +16,11 @@ import { extractValueRecursively } from 'components/MRTTable/utils/helper';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 
-import { ADDCONTACT } from 'graphQL/useMutationAddContact';
+import { globalStateController } from 'controllers/globalStateController';
+import { sideDialogController } from 'controllers/sideDialogController';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { sideDialogController } from 'hookstate/sideDialogController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 
 const useStyles = makeStyles(theme => ({
 	dialogContent: {
@@ -65,10 +65,9 @@ const useStyles = makeStyles(theme => ({
 export default function AddContactDialogContent(props) {
 	const Controller = sideDialogController('contactDialog');
 	const formState = Controller.useCompleteState();
-	const formStateValues = formState?.get({ noproxy: true });
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const { control, reset, getValues, setValue, watch } = useForm();
 
@@ -96,15 +95,20 @@ export default function AddContactDialogContent(props) {
 			...contactFormValues,
 		});
 
+		const updatedFormStateValues = Controller.getAllValues();
+
 		// got required contact values
 		const contact = extractValueRecursively({
-			...formStateValues,
-			ownerType: formStateValues?.ownerType ?? null,
+			...updatedFormStateValues,
+			ownerType: updatedFormStateValues?.ownerType ?? null,
 			createBy: getUser?._id,
 			lastUpdateBy: getUser?._id,
 		});
+
+		const { DialogKey, ...filteredContact } = contact;
+
 		await addContact({
-			variables: { contact },
+			variables: { contact: filteredContact },
 			refetchQueries: ['getPaginatedContacts', 'getContact', 'getESContacts', 'getDbData'],
 			awaitRefetchQueries: true,
 		});

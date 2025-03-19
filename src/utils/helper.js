@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import { wellsKeys } from 'utils/data';
 import { UserSession } from 'utils/user';

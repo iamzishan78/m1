@@ -18,9 +18,9 @@ import PropTypes from 'prop-types';
 // Internal imports
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { mapStateController } from 'controllers/mapStateController';
 
 import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';
@@ -139,8 +139,8 @@ const LayerItem = React.memo(props => {
 
 		// In case of shape files
 		const fileId = dataSourceName.substring(0, dataSourceName.indexOf('_'));
-		const layerShapeName = dataSourceName.substring(dataSourceName.indexOf('_') + 1);
-		if (fileId === data?.file && layerShapeName === data?.layerShapeName) {
+		const layerIdentifier = dataSourceName.substring(dataSourceName.indexOf('_') + 1);
+		if (fileId === data?.file && layerIdentifier === data?.layerIdentifier) {
 			return true;
 		}
 
@@ -212,11 +212,15 @@ const LayerItem = React.memo(props => {
 									)}
 								</Box>
 								<div className="zoom-section">
-									{type !== 'group' && data.visiable && data.file && data.defaultSettings?.bbox && (
-										<ListItemIcon onClick={() => handleLayerZoomClick(data.defaultSettings.bbox)}>
-											<ZoomInIcon htmlColor="#ffff" />
-										</ListItemIcon>
-									)}
+									{type !== 'group' &&
+										data.visiable &&
+										data.file &&
+										data.defaultSettings?.bbox &&
+										data.defaultSettings.bbox.length >= 4 && (
+											<ListItemIcon onClick={() => handleLayerZoomClick(data.defaultSettings.bbox)}>
+												<ZoomInIcon htmlColor="#ffff" />
+											</ListItemIcon>
+										)}
 								</div>
 								{layerFilters?.length ? (
 									<IconButton>
@@ -307,7 +311,7 @@ LayerItem.propTypes = {
 		collapsed: PropTypes.bool,
 		name: PropTypes.string,
 		file: PropTypes.string,
-		layerShapeName: PropTypes.string,
+		layerIdentifier: PropTypes.string,
 		identifier: PropTypes.string,
 		layerName: PropTypes.string,
 		emptyLayer: PropTypes.bool,

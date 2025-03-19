@@ -6,7 +6,7 @@ import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import MRTTable from 'components/MRTTable';
 import useTabedTablesUnmount from 'components/MRTTable/Hooks/useTabedTablesUnmount';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import DatasetsAutoCompleteFilter from './DatasetsAutoCompleteFilter';
 
@@ -30,7 +30,6 @@ const ShapeFile = () => {
 			_id: dataset._id,
 			fileName: dataset.fileName,
 			file: dataset.file,
-			originalFile: dataset.originalFile,
 		};
 
 		if (!Array.isArray(dataset.categories)) {
@@ -40,7 +39,7 @@ const ShapeFile = () => {
 		return dataset.categories.map(category => ({
 			...ds,
 			layerGeometry: category.layerGeometry,
-			layerShapeName: category.layerShapeName,
+			layerIdentifier: category.layerIdentifier,
 		}));
 	}, [dataset]);
 
@@ -53,10 +52,10 @@ const ShapeFile = () => {
 			tableGlobalController.reInitialized();
 
 			return {
-				filterLayerType: fileLayer.layerShapeName,
+				filterLayerType: fileLayer.layerIdentifier,
 				defaultFilters: fileQuery.variables.filters,
 				advanceSearch: fileQuery.variables.search.advanceSearch,
-				...(subFiles.length > 1 && { tabLabels: subFiles.map(f => f.layerShapeName) }),
+				...(subFiles.length > 1 && { tabLabels: subFiles.map(f => f.layerIdentifier) }),
 			};
 		}
 

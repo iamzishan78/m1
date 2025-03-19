@@ -9,9 +9,9 @@ import PropTypes from 'prop-types';
 
 import vf_number, { vf_number_to_precision } from 'components/Shared/valueformatters/vf_number';
 
-import { GET_CAMPAIGN_ANALYTICS } from 'graphQL/useQueryCampaignAnalytics';
+import { tableController } from 'controllers/tableController';
 
-import { tableController } from 'hookstate/tableController';
+import { GET_CAMPAIGN_ANALYTICS } from 'graphQL/useQueryCampaignAnalytics';
 
 import { getActivityAnalyticsFilters } from 'utils/helper';
 
@@ -23,7 +23,10 @@ const useStyles = makeStyles(() => ({
 	},
 	cardNumberTypography: {
 		fontWeight: 900,
-		fontSize: 'xx-large',
+		fontSize: 'x-large',
+		wordBreak: 'break-word', // Allows breaking long words
+		overflowWrap: 'break-word', // Ensures wrapping inside a container
+		whiteSpace: 'normal', // Prevents single-line overflow
 	},
 	cardContent: {
 		display: 'flex',

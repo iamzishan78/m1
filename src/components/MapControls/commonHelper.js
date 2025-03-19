@@ -1,10 +1,9 @@
 import * as turf from '@turf/turf';
 import gjv from 'geojson-validation';
 
-import { drawController } from 'hookstate/drawStateController';
-import { popupController } from 'hookstate/popupStateController';
-
-import { layerRefs } from 'hookstate';
+import { drawController } from 'controllers/drawStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { popupController } from 'controllers/popupStateController';
 
 export const clearMapAndCloseShapeActionsPopup = () => {
 	const currentFeature = drawController.getValue('currentFeature');
@@ -21,7 +20,7 @@ export const clearMapAndCloseShapeActionsPopup = () => {
 	popupController.reset();
 	drawController.reset();
 
-	const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+	const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
 
 	if (!sourceId) {
 		return;
@@ -124,6 +123,7 @@ export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
 								left: 1200,
 								right: 0,
 							},
+					maxZoom: 14, // Max zoom value
 				}
 			);
 		} catch (err) {
@@ -170,7 +170,13 @@ export const drawShapeStyles = [
 	{
 		id: 'gl-draw-polygon-fill-inactive',
 		type: 'fill',
-		filter: ['all', ['==', 'active', 'false'], ['==', '$type', 'Polygon'], ['!=', 'mode', 'static'], ['!=', 'user_isdragMode', true],],
+		filter: [
+			'all',
+			['==', 'active', 'false'],
+			['==', '$type', 'Polygon'],
+			['!=', 'mode', 'static'],
+			['!=', 'user_isdragMode', true],
+		],
 		paint: {
 			'fill-color': '#3bb2d0',
 			'fill-outline-color': '#3bb2d0',
@@ -236,7 +242,13 @@ export const drawShapeStyles = [
 	{
 		id: 'gl-draw-line-inactive',
 		type: 'line',
-		filter: ['all', ['==', 'active', 'false'], ['==', '$type', 'LineString'], ['!=', 'mode', 'static'], ['!=', 'user_meta', 'radiusLine']],
+		filter: [
+			'all',
+			['==', 'active', 'false'],
+			['==', '$type', 'LineString'],
+			['!=', 'mode', 'static'],
+			['!=', 'user_meta', 'radiusLine'],
+		],
 		layout: {
 			'line-cap': 'round',
 			'line-join': 'round',
@@ -249,7 +261,13 @@ export const drawShapeStyles = [
 	{
 		id: 'gl-draw-line-inactive',
 		type: 'line',
-		filter: ['all', ['==', 'active', 'false'], ['==', '$type', 'LineString'], ['!=', 'mode', 'static'], ['==', 'user_meta', 'radiusLine']],
+		filter: [
+			'all',
+			['==', 'active', 'false'],
+			['==', '$type', 'LineString'],
+			['!=', 'mode', 'static'],
+			['==', 'user_meta', 'radiusLine'],
+		],
 		layout: {
 			'line-cap': 'round',
 			'line-join': 'round',
@@ -332,12 +350,7 @@ export const drawShapeStyles = [
 	{
 		id: 'gl-draw-active-cirle-center-point',
 		type: 'circle',
-		filter: [
-			'all',
-			['==', '$type', 'Point'],
-			['==', 'meta', 'feature'],
-			['==', 'user_meta', 'labelPoint'],
-		],
+		filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'feature'], ['==', 'user_meta', 'labelPoint']],
 		paint: {
 			'circle-radius': 5,
 			'circle-color': '#FFFF00',
@@ -452,12 +465,7 @@ export const drawShapeStyles = [
 	{
 		id: 'gl-draw-polygon-circle-edit-fill',
 		type: 'fill',
-		filter: [
-			'all', 
-			['==', '$type', 'Polygon'], 
-			['==', 'user_shapeEdit', false],
-			['==', 'user_isdragMode', true],
-		],
+		filter: ['all', ['==', '$type', 'Polygon'], ['==', 'user_shapeEdit', false], ['==', 'user_isdragMode', true]],
 		paint: {
 			'fill-color': '#ffff00',
 			'fill-outline-color': '#ffff00',
@@ -472,7 +480,7 @@ export const drawShapeStyles = [
 			['==', '$type', 'Polygon'],
 			// ['!=', 'mode', 'static'],
 			['==', 'user_shapeEdit', false],
-			['!=', 'user_isdragMode', true] // Exclude dragging mode
+			['!=', 'user_isdragMode', true], // Exclude dragging mode
 		],
 		layout: {
 			'line-cap': 'round',
@@ -612,14 +620,14 @@ export const drawShapeStyles = [
 			'icon-text-fit': 'both', // Fit icon width to text
 			'icon-allow-overlap': true,
 			'text-allow-overlap': true,
-			'icon-image': 'rounded', 
-			'icon-anchor': 'center', 
+			'icon-image': 'rounded',
+			'icon-anchor': 'center',
 			'icon-offset': [0, 8], // Center the icon
 			'text-anchor': 'center', // Center the text within icon
 			'text-field': ['get', 'user_labelText'],
 			'text-offset': [0, -2], // Center the text
-			'text-font': ['Open Sans Bold'], 
-			'icon-size': 1.32
+			'text-font': ['Open Sans Bold'],
+			'icon-size': 1.32,
 		},
 	},
 ];

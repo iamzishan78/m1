@@ -6,10 +6,10 @@ import { MyLocation } from '@material-ui/icons';
 
 import { useMutation } from '@apollo/client';
 
-import { TOGGLETRACK } from 'graphQL/useMutationToggleCreateRemoveTrack';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { TOGGLETRACK } from 'graphQL/useMutationToggleCreateRemoveTrack';
 
 function IsTracked({ id, targetLabel, isTracked }) {
 	const [toggleCreateRemoveTrack] = useMutation(TOGGLETRACK, {

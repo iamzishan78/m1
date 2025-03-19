@@ -19,18 +19,18 @@ import { userDefinedInitialData } from 'components/MapGridCard/components/data';
 import DeleteConfirmationDialogContent from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import FilterAltIcon from 'components/Shared/svgIcons/FilterAltIcon';
 
+import { drawController } from 'controllers/drawStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { jobController } from 'controllers/jobStateController';
+import { layerController } from 'controllers/layerStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+import { mapStateController } from 'controllers/mapStateController';
+import { popupController } from 'controllers/popupStateController';
+
 import { DELETE_SHAPEFILE_FEEATURE } from 'graphQL/useMutationShapeFile';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_SHAPE_FEATURE } from 'graphQL/useQueryGetShapeFeature';
 
-import { drawController } from 'hookstate/drawStateController';
-import { jobController } from 'hookstate/jobStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { popupController } from 'hookstate/popupStateController';
-
-import { layerRefs } from 'hookstate';
 import { history } from 'store';
 
 import { AppContext } from '../../AppContext';
@@ -146,7 +146,7 @@ function UdLayerCard(props) {
 	const handleCloseShapeDrawer = () => {
 		drawController.reset();
 
-		const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+		const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
 
 		if (!sourceId) {
 			return;

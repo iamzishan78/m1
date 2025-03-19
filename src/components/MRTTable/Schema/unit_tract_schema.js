@@ -5,7 +5,7 @@ import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import TractPerUnitToolBar from 'components/MRTTable/TablesOverride/TractPerUnit/TractPerUnitToolBar';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 const esIndex = 'shapetracts_flat';
 

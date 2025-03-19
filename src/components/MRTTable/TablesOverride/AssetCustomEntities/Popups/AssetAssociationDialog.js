@@ -9,10 +9,10 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 
 import Loader from 'components/Loaders';
 
+import { tableGlobalController } from 'controllers/tableController';
+
 import { UPSERT_ASSOCIATED_MODELS } from 'graphQL/useMutationUpsertCustomAssetInfo';
 import { GET_ALL_MODELS } from 'graphQL/useQueryModels';
-
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { showInfoMessage } from 'actions';
 
@@ -33,6 +33,7 @@ function AssetAssociationDialog() {
 			isControlColumn: false,
 			isGridDisplayed: true,
 			isDialogDisplayed: true,
+			isRequired: false,
 		},
 	];
 
@@ -58,11 +59,14 @@ function AssetAssociationDialog() {
 	const [getAllModels, { data: allModels }] = useLazyQuery(GET_ALL_MODELS, {
 		fetchPolicy: 'no-cache',
 		onCompleted: () => {
-			const models = allModels?.getAllModels?.models || [];
+			let models = allModels?.getAllModels?.models || [];
+
+			// Filter Selected Asset
+			models = models.filter(model => model.tableName !== selectedAsset?.tableName);
 
 			// Filter already associated models
-			const currentAsssociations = selectedAsset?.associatedModels?.map(model => model.modelName);
-			const options = models.filter(model => !currentAsssociations?.includes(model.modelName));
+			const currentAsssociations = selectedAsset?.associatedModels?.map(model => model.tableName);
+			const options = models.filter(model => !currentAsssociations?.includes(model.tableName));
 
 			setModelsOptions(options);
 		},
@@ -92,7 +96,7 @@ function AssetAssociationDialog() {
 		});
 		reset({
 			associatedModels: '',
-			fields: defaultFields,
+			fields: [],
 		});
 	};
 
@@ -126,7 +130,7 @@ function AssetAssociationDialog() {
 
 		upsertAssociatedModels({
 			variables: {
-				tableName: selectedAsset.tableName,
+				name: selectedAsset.name,
 				associatedModels: resultantModels, // Use the updated array
 			},
 		}).then(res => {
@@ -166,7 +170,7 @@ function AssetAssociationDialog() {
 					<div className={classes.header}>
 						<Grid container justify="space-between" direction="row" display="flex">
 							<Grid item>
-								<h3>Associate Models to {selectedAsset?.tableName}</h3>
+								<h3>Associate Models to {selectedAsset?.name}</h3>
 							</Grid>
 							<Grid item xs={6} className={classes.dialogActions}>
 								<IconButton onClick={handleClose}>
@@ -187,7 +191,7 @@ function AssetAssociationDialog() {
 										{selectedAsset.associatedModels.map(model => (
 											<Chip
 												key={model._id}
-												label={model.modelName}
+												label={model.name}
 												onClick={() => handleChipClick(model)} // Handle chip click
 												style={{ margin: 2, cursor: 'pointer' }}
 											/>
@@ -228,20 +232,28 @@ function AssetAssociationDialog() {
 												SelectProps={{
 													renderValue: selected => {
 														// If there's no selection, show a placeholder
-														if (!selected || !selected.modelName) {
+														if (!selected || !selected.name) {
 															return '';
 														}
 														return (
 															<div style={{ display: 'flex', flexWrap: 'wrap' }}>
-																<Chip key={selected._id} label={selected.modelName} style={{ margin: 2 }} />
+																<Chip key={selected._id} label={selected.name} style={{ margin: 2 }} />
 															</div>
 														);
+													},
+													MenuProps: {
+														PaperProps: {
+															style: {
+																maxHeight: 300,
+																overflowY: 'auto',
+															},
+														},
 													},
 												}}
 											>
 												{modelsOptions?.map(option => (
 													<MenuItem key={option._id} value={option}>
-														{option.label}
+														{option.name}
 													</MenuItem>
 												))}
 											</TextField>
@@ -249,7 +261,7 @@ function AssetAssociationDialog() {
 									/>
 								</Grid>
 							</Grid>
-							{fields?.length > 1 && (
+							{fields?.length > 0 && (
 								<>
 									<Grid item>
 										<h3>Associated Model Keys</h3>
@@ -270,7 +282,7 @@ function AssetAssociationDialog() {
 								</Button>
 								<Button
 									type="submit"
-									className={hasAtLeastOneKey ? classes.btnColor : ''}
+									className={hasAtLeastOneKey ? classes.btnColor_active : ''}
 									style={{ margin: '25px 25px 25px 5px' }}
 									variant="outlined"
 									disabled={hasAtLeastOneKey ? false : true}

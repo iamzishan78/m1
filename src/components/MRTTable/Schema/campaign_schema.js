@@ -10,9 +10,9 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CampaignIcon from 'components/Shared/svgIcons/campaign';
 
-import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
 
 import { copy } from 'utils/helper';
 

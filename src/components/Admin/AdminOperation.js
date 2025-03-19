@@ -9,10 +9,10 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 
 import { copy } from 'components/Shared/functions';
 
+import { adminOperationsController } from 'controllers/adminOperationsController';
+
 import { TRIGGER_ADMIN_OPERATIONS } from 'graphQL/useMutationadminESOperations';
 import { GET_DB_OPERATIONS } from 'graphQL/useQueryadminDBOperations';
-
-import { adminOperationsController } from 'hookstate/adminOperationsController';
 
 import { getHeaders } from 'utils/helper';
 

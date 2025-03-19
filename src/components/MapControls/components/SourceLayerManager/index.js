@@ -1,7 +1,6 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { Grid, Typography, Divider, Tooltip, Input } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
+import { Grid, Typography, Divider, Tooltip, Input, IconButton } from '@material-ui/core';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -12,13 +11,11 @@ import { useMutation } from '@apollo/client';
 
 import { copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
 
+import { layerController } from 'controllers/layerStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-
-import { AppContext } from 'AppContext';
 
 import LayerManager from './LayerManager';
 import SourceManager from './SourceManager';
@@ -119,12 +116,11 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function SourceLayerManager(props) {
+export default function SourceLayerManager() {
 	const classes = useStyles();
 	const [selectedType, setSelectedType] = useState('source');
 
-	const [stateApp] = useContext(AppContext);
-	const { layers, stateValues } = globalStateController.useState(['layers']);
+	const { layers, stateValues } = layerController.useState(['layers']);
 	const [currentLayers, setCurrentLayers] = React.useState([]);
 
 	const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
@@ -158,8 +154,7 @@ export default function SourceLayerManager(props) {
 	};
 
 	const updateStateLayers = currentLayers => {
-		stateApp.layers = currentLayers;
-		globalStateController.updateState({ layers: currentLayers });
+		layerController.updateState({ layers: currentLayers });
 	};
 
 	const handleApplyChange = () => {

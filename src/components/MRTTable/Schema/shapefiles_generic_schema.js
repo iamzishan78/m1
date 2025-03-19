@@ -7,8 +7,8 @@ import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawS
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { popupController } from 'controllers/popupStateController';
 
 const COLUMN_SIZE = 250;
 const ID_COLUMN_SIZE = 150;
@@ -53,13 +53,22 @@ const ShapesFilesGenericMeta = {
 					size: 70,
 					Cell: ({ row }) => {
 						const id = row.getValue('_id');
+						const hasValidGeometry =
+							row.original.geometry &&
+							Array.isArray(row.original.geometry.coordinates) &&
+							row.original.geometry.coordinates.length > 0;
+
+						// If geometry is invalid, don't show the FlyToMap icon
+						if (!hasValidGeometry) {
+							return null;
+						}
 						const Action = history => {
 							const flyTo = () => {
 								drawBoundary(row.original);
 								popupController.updateState({ selectedShapeFile: row.original });
 							};
 
-							if (history && !history.location.pathname.includes('map')) {
+							if (history && history.location.pathname !== '/') {
 								history.push('/');
 
 								globalStateController.updateState({

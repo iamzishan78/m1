@@ -4,7 +4,7 @@ import React from 'react';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import RelatedPaymentsToolbar from '../TablesOverride/RelatedPaymentsTable/RelatedPaymentsToolbar';
 

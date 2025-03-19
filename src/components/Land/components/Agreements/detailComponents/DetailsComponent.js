@@ -41,16 +41,16 @@ import { copy } from 'components/Shared/functions';
 import MapImgViewIcon from 'components/Shared/svgIcons/MapImgViewIcon';
 import Tags from 'components/Shared/Tagger';
 
+import { detailCardController } from 'controllers/detailCardController';
+import { jobController } from 'controllers/jobStateController';
+import { popupController } from 'controllers/popupStateController';
+import { tableGlobalController } from 'controllers/tableController';
+
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
 import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
-
-import { detailCardController } from 'hookstate/detailCardController';
-import { jobController } from 'hookstate/jobStateController';
-import { popupController } from 'hookstate/popupStateController';
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { PaymentFeatureTenants } from 'utils/data';
 import { UserSession } from 'utils/user';

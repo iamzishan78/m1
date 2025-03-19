@@ -10,9 +10,9 @@ import PropTypes from 'prop-types';
 import MetaFieldList from 'components/MRTTable/Common/MetaData/MetaFieldList';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'controllers/globalStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 import MetaField from 'utils/MetaField';
 

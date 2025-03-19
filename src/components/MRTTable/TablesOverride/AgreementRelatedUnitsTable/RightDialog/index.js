@@ -12,9 +12,9 @@ import Loaders from 'components/Loaders';
 import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
 import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { ADD_RELATED_SHAPE } from 'graphQL/useMutationAddUnitToAgreement';
+import { tableGlobalController } from 'controllers/tableController';
 
-import { tableGlobalController } from 'hookstate/tableController';
+import { ADD_RELATED_SHAPE } from 'graphQL/useMutationAddUnitToAgreement';
 
 // Styles
 const useStyles = makeStyles(() => ({

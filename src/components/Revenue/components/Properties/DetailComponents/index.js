@@ -33,12 +33,12 @@ import DocViewer from 'components/Shared/DocViewer';
 import { copy } from 'components/Shared/functions';
 import Tags from 'components/Shared/Tagger';
 
+import { detailCardController } from 'controllers/detailCardController';
+
 import { UPDATE_PROPERTY } from 'graphQL/useMutationUpdateProperty';
 import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
 import { GET_PROPERTY } from 'graphQL/useQueryGetProperty';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
-
-import { detailCardController } from 'hookstate/detailCardController';
 
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import { ConvertOwnerToContactContainer } from 'store/containers/entity';

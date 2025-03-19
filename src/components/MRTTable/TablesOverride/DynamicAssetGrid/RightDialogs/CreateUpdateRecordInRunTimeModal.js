@@ -1,9 +1,10 @@
 import React, { memo, useState } from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from '@mui/material';
+
 import PropTypes from 'prop-types';
 
-const CreateUpdateRecordInRunTimeModal = ({ open, columns, onClose, onSubmit, tableName }) => {
+const CreateUpdateRecordInRunTimeModal = ({ open, columns, onClose, onSubmit, name }) => {
 	const [values, setValues] = useState(() =>
 		columns.reduce((acc, column) => {
 			const key = column.accessorKey ?? column.id ?? '';
@@ -21,7 +22,7 @@ const CreateUpdateRecordInRunTimeModal = ({ open, columns, onClose, onSubmit, ta
 
 	return (
 		<Dialog open={open}>
-			<DialogTitle textAlign="center"> {`Create New ${tableName}`}</DialogTitle>
+			<DialogTitle textAlign="center"> {`Create New ${name}`}</DialogTitle>
 			<DialogContent>
 				<form onSubmit={e => e.preventDefault()}>
 					<Stack
@@ -47,7 +48,7 @@ const CreateUpdateRecordInRunTimeModal = ({ open, columns, onClose, onSubmit, ta
 			<DialogActions sx={{ p: '1.25rem' }}>
 				<Button onClick={onClose}>Cancel</Button>
 				<Button color="secondary" onClick={handleSubmit} variant="contained">
-					{`Create New ${tableName}`}
+					{`Create New ${name}`}
 				</Button>
 			</DialogActions>
 		</Dialog>
@@ -59,7 +60,7 @@ CreateUpdateRecordInRunTimeModal.propTypes = {
 	columns: PropTypes.arrayOf(PropTypes.object).isRequired,
 	onClose: PropTypes.func.isRequired,
 	onSubmit: PropTypes.func.isRequired,
-	tableName: PropTypes.string.isRequired,
+	name: PropTypes.string.isRequired,
 };
 
 export default memo(CreateUpdateRecordInRunTimeModal);

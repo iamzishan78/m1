@@ -5,8 +5,8 @@ import EditIcon from '@material-ui/icons/Edit';
 
 import PropTypes from 'prop-types';
 
-import { detailCardController } from 'hookstate/detailCardController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { detailCardController } from 'controllers/detailCardController';
+import { tableGlobalController } from 'controllers/tableController';
 
 import { PaymentRightDialog } from './RightDialog';
 

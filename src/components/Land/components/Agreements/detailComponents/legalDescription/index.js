@@ -11,7 +11,7 @@ import _ from 'underscore';
 import RelatedTractsTable from 'components/Common/RelatedTables/Tracts';
 import AgreementLegalDescriptionFields from 'components/Land/components/Agreements/detailComponents/legalDescription/FieldsSection';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'controllers/tableController';
 
 import { useStyles as customStyles } from '../style';
 

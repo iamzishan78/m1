@@ -17,7 +17,7 @@ import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
 
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 
-import { jobController } from 'hookstate/jobStateController';
+import { jobController } from 'controllers/jobStateController';
 
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 

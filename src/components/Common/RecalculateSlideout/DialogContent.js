@@ -7,12 +7,10 @@ import { CloseSharp } from '@material-ui/icons';
 
 import { useMutation } from '@apollo/client';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { tableGlobalController } from 'controllers/tableController';
+
 import { RESET_OWNERS_CALCULATED_VALUES } from 'graphQL/useMutationResetOwnersCalculatedValues';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
-
-import { hookStateApp } from 'hookstate';
 
 const useStyles = makeStyles(theme => ({
 	root: {

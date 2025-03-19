@@ -24,9 +24,9 @@ import {
 } from 'components/ContactDetailedInfo/helper';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { globalStateController } from 'controllers/globalStateController';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
 import FieldContent from '../ContactDetailCard/components/FieldContent';
 

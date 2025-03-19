@@ -3,13 +3,13 @@ import { useEffect } from 'react';
 import { useApolloClient } from '@apollo/client';
 import { isEqual } from 'lodash';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { tableGlobalController } from 'controllers/tableController';
+
 import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
 import { IS_TRACKED_BY_IDS } from 'graphQL/useQueryTrackByObjectId';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableGlobalController } from 'hookstate/tableController';
 
 const useHandleAdditionalQueries = ({ Controller, tableState, tableStateValues }) => {
 	const { stateValues } = Controller.useState(['alreadyCheckedOwnersLength']);

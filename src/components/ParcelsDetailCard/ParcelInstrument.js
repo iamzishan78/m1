@@ -28,13 +28,16 @@ import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete
 import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 import loadashFilter from 'lodash/filter';
+import PropTypes from 'prop-types';
 
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
-import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import UploadZone from 'components/Shared/UploadZone';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
+
+import { tableGlobalController } from 'controllers/tableController';
 
 import { ADD_PARCEL_AGREEMENT } from 'graphQL/useMutationAddParcelAgreement';
 import { DELETEDESCRIPTORRELATEDFILE } from 'graphQL/useMutationDeleteDescriptorFile';
@@ -44,8 +47,6 @@ import { GET_VIEW_TOKEN_URI } from 'graphQL/useQueryGetViewTokenUri';
 import { INSTRUMENT_TYPE } from 'graphQL/useQueryInstrumentType';
 import { RECORD_TYPE } from 'graphQL/useQueryRecordType';
 import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-
-import { tableGlobalController } from 'hookstate/tableController';
 
 import { AppContext } from 'AppContext';
 
@@ -270,6 +271,10 @@ export default function ParcelInstrument(props) {
 		},
 	});
 
+	const [viewFiles, { data: viewFileSResult }] = useLazyQuery(VIEWFILESQUERY, {
+		fetchPolicy: 'no-cache',
+	});
+
 	useEffect(() => {
 		getInstrumentTypes();
 		getRecordTypes();
@@ -429,10 +434,6 @@ export default function ParcelInstrument(props) {
 		}));
 		setNewInstrument(instrumentInitial);
 	};
-
-	const [viewFiles, { data: viewFileSResult }] = useLazyQuery(VIEWFILESQUERY, {
-		fetchPolicy: 'no-cache',
-	});
 
 	const LightTooltip = withStyles(theme => ({
 		tooltip: {
@@ -687,13 +688,22 @@ export default function ParcelInstrument(props) {
 							}}
 						>
 							<h4>Effective Date</h4>
-							<GenericDateField
-								value={newInstrument?.effectiveDate}
-								onChange={value => {
-									setNewInstrument({
-										...newInstrument,
-										effectiveDate: value,
-									});
+							<CustomDatePicker
+								fieldAttributes={{
+									value: newInstrument?.effectiveDate,
+									placeholder: 'MM/DD/YYYY',
+									format: 'MM/DD/YYYY',
+								}}
+								fieldEvents={{
+									onChange: value => {
+										setNewInstrument({
+											...newInstrument,
+											effectiveDate: value,
+										});
+									},
+								}}
+								fieldConfig={{
+									variant: 'standard',
 								}}
 							/>
 						</ListItem>
@@ -705,13 +715,22 @@ export default function ParcelInstrument(props) {
 							}}
 						>
 							<h4>Instrument Date</h4>
-							<GenericDateField
-								value={newInstrument?.executionDate}
-								onChange={value => {
-									setNewInstrument({
-										...newInstrument,
-										executionDate: value,
-									});
+							<CustomDatePicker
+								fieldAttributes={{
+									value: newInstrument?.executionDate,
+									placeholder: 'MM/DD/YYYY',
+									format: 'MM/DD/YYYY',
+								}}
+								fieldEvents={{
+									onChange: value => {
+										setNewInstrument({
+											...newInstrument,
+											executionDate: value,
+										});
+									},
+								}}
+								fieldConfig={{
+									variant: 'standard',
 								}}
 							/>
 						</ListItem>
@@ -723,13 +742,22 @@ export default function ParcelInstrument(props) {
 							}}
 						>
 							<h4>File Date</h4>
-							<GenericDateField
-								value={newInstrument?.fileDate}
-								onChange={value => {
-									setNewInstrument({
-										...newInstrument,
-										fileDate: value,
-									});
+							<CustomDatePicker
+								fieldAttributes={{
+									value: newInstrument?.fileDate,
+									placeholder: 'MM/DD/YYYY',
+									format: 'MM/DD/YYYY',
+								}}
+								fieldEvents={{
+									onChange: value => {
+										setNewInstrument({
+											...newInstrument,
+											fileDate: value,
+										});
+									},
+								}}
+								fieldConfig={{
+									variant: 'standard',
 								}}
 							/>
 						</ListItem>
@@ -836,11 +864,11 @@ export default function ParcelInstrument(props) {
 					{(newInstrument?.fileId || fileData) && (
 						<ListItem>
 							<div style={{ display: 'flex', justifyContent: 'start' }}>
-								{viewFileSResult?.viewFiles?.map((value, key) => {
+								{viewFileSResult?.viewFiles?.map((value, index) => {
 									let fileExtension = value?.name?.slice(value.name.lastIndexOf('.') + 1)?.toLowerCase();
-									if (key <= 1) {
+									if (index <= 1) {
 										return (
-											<div key={key}>
+											<div key={value.uri}>
 												<LightTooltip
 													title={
 														<div className={classes.IconSection}>
@@ -1065,4 +1093,17 @@ const AutoCompleteField = ({ setValue, value, options, ...other }) => {
 			{...other}
 		/>
 	);
+};
+
+ParcelInstrument.propTypes = {
+	selectedInstrument: PropTypes.object,
+	setSelectedInstrument: PropTypes.func.isRequired,
+	setShowSlider: PropTypes.func.isRequired,
+	parcelId: PropTypes.string,
+};
+
+AutoCompleteField.propTypes = {
+	setValue: PropTypes.func.isRequired,
+	value: PropTypes.string,
+	options: PropTypes.array,
 };

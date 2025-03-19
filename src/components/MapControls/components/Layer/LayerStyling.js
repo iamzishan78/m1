@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 import { Grid, IconButton, Divider, FormControlLabel, Switch, Tooltip, ClickAwayListener } from '@material-ui/core';
 import { Close as CloseIcon } from '@material-ui/icons';
@@ -13,17 +13,15 @@ import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
 import { getLayerColor } from 'components/Shared/SidePanel/compoennts/common';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { getLayerKey } from 'controllers/helpers';
+import { layerStylingController } from 'controllers/layersStylingController';
+import { layerController } from 'controllers/layerStateController';
+import { mapControlsController } from 'controllers/mapControlsController';
+
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { getLayerKey } from 'hookstate/helpers';
-import { layerStylingController } from 'hookstate/layersStylingController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-
-import { AppContext } from 'AppContext';
 
 import { ifRgbaConvt, useStyles, WidthPicker } from './Common';
 import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
@@ -34,13 +32,8 @@ import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerS
 
 function LayerStyling() {
 	const classes = useStyles();
-	const { mapControlsStateValues, ...mapControlStates } = mapControlsController.useState(
-		['selectedLayer'],
-		'mapControlsStateValues'
-	);
-
-	const layerStylingState = layerStylingController.useCompleteState();
-	const layerStylingStateValues = layerStylingState?.get({ noproxy: true });
+	const { selectedLayer } = mapControlsController.useState(['selectedLayer']);
+	const { user } = globalStateController.useState(['user']);
 
 	const {
 		width,
@@ -62,10 +55,9 @@ function LayerStyling() {
 		layerLabelVisibility,
 		layerClickability,
 		strokeColor,
+		layerInitialized,
 		strokeWidth,
-	} = layerStylingStateValues;
-
-	const selectedLayer = mapControlsStateValues.selectedLayer;
+	} = layerStylingController.useCompleteState();
 
 	const layerType = selectedLayer.layerPaintProps?.[0]?.paintType;
 
@@ -95,7 +87,6 @@ function LayerStyling() {
 	}
 
 	const [rows, setRows] = useState(0);
-	const [stateApp] = useContext(AppContext);
 
 	const [layerFeaturesCount, { data: layerDataCount }] = useLazyQuery(LAYERS_FEATURES_COUNT);
 
@@ -119,7 +110,7 @@ function LayerStyling() {
 		if (colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey) {
 			getMetaData({
 				variables: {
-					user: stateApp.user?.mongoId,
+					user: user?.mongoId,
 					category: colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey,
 				},
 			});
@@ -131,8 +122,8 @@ function LayerStyling() {
 	}, [layerDataCount]);
 
 	useEffect(() => {
-		const hookStateAppLayers = globalStateController.getValue('layers');
-		if (!layerStylingStateValues?.layerInitialized) {
+		const hookStateAppLayers = layerController.getValue('layers');
+		if (!layerInitialized) {
 			return null;
 		}
 		if (
@@ -166,13 +157,13 @@ function LayerStyling() {
 
 			const TWOFIFTY = 250;
 			const debouncedUpdate = _.debounce(() => {
-				globalStateController.updateState({ layers: [...currentLayers] });
+				layerController.updateState({ layers: [...currentLayers] });
 				layerController.resetBounds(selectedLayer?.identifier, true);
 				updateLayerSettings({
 					variables: {
 						settings: {
 							_id: currentLayer._id,
-							user: stateApp.user.mongoId,
+							user: user.mongoId,
 							layer: selectedLayer.layerId,
 							layerPaintProps: currentLayer.layerPaintProps,
 							layerSettings: currentLayer.layerSettings,
@@ -221,10 +212,10 @@ function LayerStyling() {
 	useEffect(() => {
 		setRows(0);
 		if (selectedLayer.file) {
-			selectedLayer.layerShapeName = selectedLayer.layerShapeName || selectedLayer.layerCategory;
-			layerFeaturesCount({ variables: { fileId: selectedLayer.file, layerShapeName: selectedLayer.layerShapeName } });
+			selectedLayer.layerIdentifier = selectedLayer.layerIdentifier || selectedLayer.layerCategory;
+			layerFeaturesCount({ variables: { fileId: selectedLayer.file, layerIdentifier: selectedLayer.layerIdentifier } });
 		}
-	}, [mapControlStates.selectedLayer.file, layerFeaturesCount]);
+	}, [selectedLayer.file, layerFeaturesCount]);
 
 	useEffect(() => {
 		layerStylingController.setFillColor(initialFillColor);
@@ -392,16 +383,16 @@ function LayerStyling() {
 										<AttrsAutocomplete
 											options={options}
 											selectedValue={selectedValue}
-											setSelectedValue={layerStylingController.setSelectedValue}
+											setSelectedValue={value => layerStylingController.setSelectedValue(value)}
 											typography={'Color based on'}
 										/>
 										<AttrsValuesDropdown
 											selectedValue={selectedValue}
 											selectedLayer={selectedLayer}
 											fillColor={fillColor}
-											setFillColor={layerStylingController.setFillColor}
+											setFillColor={value => layerStylingController.setFillColor(value)}
 											attributeBasedColors={attributeBasedColors}
-											setAttributeBasedColors={layerStylingController.setAttributeBasedColors}
+											setAttributeBasedColors={value => layerStylingController.setAttributeBasedColors(value)}
 										/>
 									</>
 								)}
@@ -434,7 +425,7 @@ function LayerStyling() {
 										<AttrsAutocomplete
 											options={options}
 											selectedValue={selectedFillStyle}
-											setSelectedValue={layerStylingController.setSelectedFillStyle}
+											setSelectedValue={value => layerStylingController.setSelectedFillStyle(value)}
 											typography={'Style based on'}
 										/>
 										<AttrsFillStyleDropdown
@@ -442,9 +433,9 @@ function LayerStyling() {
 											selectedValue={selectedFillStyle}
 											selectedLayer={selectedLayer}
 											fillStyle={fillStyle}
-											setFillStyle={layerStylingController.setFillStyle}
+											setFillStyle={value => layerStylingController.setFillStyle(value)}
 											attributeBasedStyles={attributeBasedStyles}
-											setAttributeBasedStyles={layerStylingController.setAttributeBasedStyles}
+											setAttributeBasedStyles={value => layerStylingController.setAttributeBasedStyles(value)}
 										/>
 									</>
 								)}
@@ -479,16 +470,16 @@ function LayerStyling() {
 											<AttrsAutocomplete
 												options={options}
 												selectedValue={selectedStrokeValue}
-												setSelectedValue={layerStylingController.setSelectedStrokeValue}
+												setSelectedValue={value => layerStylingController.setSelectedStrokeValue(value)}
 												typography={'Color based on'}
 											/>
 											<AttrsValuesDropdown
 												selectedValue={selectedStrokeValue}
 												selectedLayer={selectedLayer}
 												fillColor={strokeColor}
-												setFillColor={layerStylingController.setStrokeColor}
+												setFillColor={value => layerStylingController.setStrokeColor(value)}
 												attributeBasedColors={attributeBasedStrokeColors}
-												setAttributeBasedColors={layerStylingController.setAttributeBasedStrokeColors}
+												setAttributeBasedColors={value => layerStylingController.setAttributeBasedStrokeColors(value)}
 											/>
 										</>
 									)}
@@ -520,7 +511,7 @@ function LayerStyling() {
 												<AttrsAutocomplete
 													options={options}
 													selectedValue={selectedLineStyle}
-													setSelectedValue={layerStylingController.setSelectedLineStyle}
+													setSelectedValue={value => layerStylingController.setSelectedLineStyle(value)}
 													typography={'Style based on'}
 												/>
 												<AttrsFillStyleDropdown
@@ -528,9 +519,9 @@ function LayerStyling() {
 													selectedValue={selectedLineStyle}
 													selectedLayer={selectedLayer}
 													fillStyle={lineStyle}
-													setFillStyle={layerStylingController.setLineStyle}
+													setFillStyle={value => layerStylingController.setLineStyle(value)}
 													attributeBasedStyles={attributeBasedLineStyles}
-													setAttributeBasedStyles={layerStylingController.setAttributeBasedLineStyles}
+													setAttributeBasedStyles={value => layerStylingController.setAttributeBasedLineStyles(value)}
 												/>
 											</>
 										)}

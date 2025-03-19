@@ -11,10 +11,10 @@ import { CommonSchema, editFieldProps, validateRequiredString } from 'components
 import { copy, formatDate } from 'components/Shared/functions';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { UPDATE_CHECK_DETAIL, UPDATE_CHECK_DETAILS } from 'graphQL/useMutationUpdateCheckDetail';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { UPDATE_CHECK_DETAIL, UPDATE_CHECK_DETAILS } from 'graphQL/useMutationUpdateCheckDetail';
 
 import { TO_FIXED } from 'utils/consts';
 
@@ -46,6 +46,7 @@ const CheckDetailsMeta = {
 		table.setCreatingRow(null);
 	},
 	onCreatingRowSave: async ({ row, table, values, exitCreatingMode }) => {
+		const activeStatement = globalStateController.getValue('activeStatement');
 		const client = globalStateController.getValue('client');
 
 		const Controller = tableController('CheckDetailsTable');
@@ -77,7 +78,7 @@ const CheckDetailsMeta = {
 		}
 
 		await client.mutate({
-			variables: { checkDetail: { ...obj } },
+			variables: { checkDetail: { ...obj, check: activeStatement?._id } },
 			mutation: UPDATE_CHECK_DETAIL,
 		});
 

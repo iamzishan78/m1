@@ -8,10 +8,10 @@ import PropTypes from 'prop-types';
 
 import Loader from 'components/Loaders';
 
+import { tableGlobalController } from 'controllers/tableController';
+
 import { UPSERT_CHECK_PROPERTY } from 'graphQL/useMutationCheckPropertyUpdate';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
-
-import { tableGlobalController } from 'hookstate/tableController';
 
 function UpdateProperty(props) {
 	const [propertiesNumbers, setPropertiesNumbers] = useState([]);

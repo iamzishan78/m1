@@ -5,7 +5,6 @@ import { Switch, Route, useLocation } from 'react-router-dom';
 import AdminOperation from 'components/Admin/AdminOperation';
 import AssetManagement from 'components/Admin/components/AssetManagement';
 import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
-
 import Integrations from 'components/Integrations';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 import AdminSettings from 'components/Shared/AdminSettings';

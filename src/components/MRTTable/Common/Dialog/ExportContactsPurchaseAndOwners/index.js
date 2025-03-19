@@ -16,7 +16,7 @@ import { useApolloClient } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 
@@ -80,7 +80,7 @@ const ExportContactsAndPurchase = ({
 	const classes = useStyles();
 	const modalClass = Modals();
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 	const client = useApolloClient();
 	const dispatch = useDispatch();
 	const { control } = useForm();

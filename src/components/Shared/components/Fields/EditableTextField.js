@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from 'react';
 
-import { TextField, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import EditIcon from '@material-ui/icons/Edit';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
+import { Edit as EditIcon, ExpandLess, ExpandMore } from '@mui/icons-material';
+import { Grid, IconButton } from '@mui/material';
+import { styled } from '@mui/system';
 
-import { truncate } from 'components/Shared/functions';
+import PropTypes from 'prop-types';
+
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
+
 import NameWithTooltip from '../../SidePanel/compoennts/Common/NameWithTooltip';
 
-const useStyles = makeStyles(theme => ({
-	heading: ({ type }) => ({
-		marginTop: type === 'group' ? '8px' : '6px',
-	}),
-	textField: {
+const StyledGrid = styled(Grid)(({ type }) => ({
+	'& .editIcon': {
+		top: type === 'group' ? '10px' : '7px',
+		left: '7px',
+		position: 'relative',
+	},
+	'& .expandIcon': {
+		margin: '9px 0px 0px 9px',
+	},
+	'& .textField': {
 		height: '100%',
 		width: '100%',
 		paddingTop: '15px',
@@ -26,18 +31,9 @@ const useStyles = makeStyles(theme => ({
 			display: 'flex',
 		},
 	},
-	editIcon: type => ({
-		top: type === 'group' ? '10px' : '7px',
-		left: '7px',
-		position: 'relative',
-	}),
-	expandIcon: {
-		margin: '9px 0px 0px 9px',
-	},
-	textFieldInput: {
+	'& .textFieldInput': {
 		height: '40px',
 	},
-	textFieldLabel: {},
 }));
 
 function EditableTextField({
@@ -50,7 +46,6 @@ function EditableTextField({
 	openEditField,
 }) {
 	const [isEdit, setEdit] = useState({});
-	const classes = useStyles({ isEdit, type: item.type });
 
 	useEffect(() => {
 		if (typeof openEditField !== 'undefined') {
@@ -58,25 +53,24 @@ function EditableTextField({
 		}
 	}, [openEditField]);
 
-	useEffect(() => {
-		//  console.log(isEdit)
-	}, [isEdit]);
 	return (
-		<Grid
+		<StyledGrid
 			id={'editable-field-' + item.sourceName}
 			container
 			onMouseOver={() => !isEdit.mode && setEdit({ ...isEdit, able: true })}
 			onMouseLeave={() => setEdit({ ...isEdit, able: false })}
+			type={item.type}
 		>
 			<Grid
 				item
-				style={
+				sx={
 					isEdit.mode
 						? { width: '89%' }
 						: {
 								textAlign: 'left',
 								display: 'flex',
 								flexDirection: 'row',
+								alignItems: 'center',
 							}
 				}
 			>
@@ -89,52 +83,65 @@ function EditableTextField({
 						height={'100%'}
 					/>
 				) : (
-					<TextField
-						fullWidth={true}
-						placeholder="Project Name..."
-						className={classes.textField}
-						variant="outlined"
-						id="reddit-input"
-						defaultValue={name}
-						autoFocus
-						required
-						helperText={'Return to save'}
-						InputProps={{
-							className: classes.textFieldInput,
-							disableUnderline: true,
+					<CustomTextField
+						fieldEvents={{
+							onKeyDown: e => {
+								if (e.key === 'Enter') {
+									e.preventDefault();
+									onChange(item, e.target.value);
+									setEdit({ able: false, mode: false });
+								}
+							},
+							onBlur: () => setEdit({ able: false, mode: false }),
 						}}
-						onClick={e => e.stopPropagation()}
-						InputLabelProps={{ className: classes.textFieldLabel }}
-						onKeyDown={e => {
-							if (e.keyCode === 13) {
-								e.preventDefault();
-								onChange(item, e.target.value);
-								setEdit({ able: false, mode: false });
-							}
+						fieldConfig={{
+							variant: 'outlined',
+							autoFocus: true,
+							required: true,
+							customStyleClass: 'textField',
 						}}
-						onBlur={() => setEdit({ able: false, mode: false })}
+						fieldAttributes={{
+							name: 'projectName',
+							value: name,
+							placeholder: 'Project Name...',
+							label: 'Project Name',
+							InputProps: { disableUnderline: true, className: 'textFieldInput' },
+							helperText: 'Return to save',
+						}}
 					/>
 				)}
 			</Grid>
 			{/* Hover Edit Icon */}
-			<Grid item className={classes.editIcon}>
+			<Grid item className="editIcon">
 				{typeof openEditField === 'undefined' && isEdit.able && isEditable && (
-					<EditIcon
-						fontSize="small"
+					<IconButton
+						size="small"
 						onClick={e => {
 							e.stopPropagation();
 							setEdit({ able: false, mode: true });
 						}}
-					/>
+					>
+						<EditIcon fontSize="small" />
+					</IconButton>
 				)}
 			</Grid>
 			{showExpandIcon && (
-				<Grid item className={classes.expandIcon}>
+				<Grid item className="expandIcon">
 					{openUd ? <ExpandLess /> : <ExpandMore />}
 				</Grid>
 			)}
-		</Grid>
+		</StyledGrid>
 	);
 }
+
+EditableTextField.propTypes = {
+	item: PropTypes.object.isRequired,
+	onChange: PropTypes.func.isRequired,
+	name: PropTypes.string.isRequired,
+	isEditable: PropTypes.bool,
+	showExpandIcon: PropTypes.bool,
+	openUd: PropTypes.bool,
+	openEditField: PropTypes.bool,
+};
 
 export default EditableTextField;

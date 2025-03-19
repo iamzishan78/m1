@@ -9,10 +9,10 @@ import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckD
 import AnalyticsCards from 'components/Revenue/components/Statements/AnalyticsCards';
 import { copy } from 'components/Shared/functions';
 
-import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController } from 'controllers/tableController';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController } from 'hookstate/tableController';
+import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -65,16 +65,6 @@ export default function RevenueStatements() {
 
 	const onGettingPotentialIssues = count => setPotentialIssuesCount(count);
 
-	const getCounts = async () => {
-		const approvedCounts = await getDBCounts('approvalStatus.keyword', 'Approved');
-		const unApprovedCounts = await getDBCounts('approvalStatus.keyword', 'Unapproved');
-		const potentialIssuesCounts = await getDBCounts('isAmountValidated', false, 'term');
-
-		setApprovedCount(approvedCounts);
-		setUnapprovedCount(unApprovedCounts);
-		onGettingPotentialIssues(potentialIssuesCounts);
-	};
-
 	useEffect(() => {
 		return () => {
 			globalStateController.updateState({ globalSearch: '' });
@@ -111,6 +101,16 @@ export default function RevenueStatements() {
 		}
 		setESFilters(filters);
 		setFilterToggle(!filterToggle);
+	};
+
+	const getCounts = async () => {
+		const approvedCounts = await getDBCounts('approvalStatus.keyword', 'Approved');
+		const unApprovedCounts = await getDBCounts('approvalStatus.keyword', 'Unapproved');
+		const potentialIssuesCounts = await getDBCounts('isAmountValidated', false, 'term');
+
+		setApprovedCount(approvedCounts);
+		setUnapprovedCount(unApprovedCounts);
+		onGettingPotentialIssues(potentialIssuesCounts);
 	};
 
 	return (

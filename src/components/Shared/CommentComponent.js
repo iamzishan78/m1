@@ -24,6 +24,9 @@ import PropTypes from 'prop-types';
 
 import CommentField from 'components/Shared/components/Fields/CommentField';
 
+import { globalStateController } from 'controllers/globalStateController';
+import { slidoutStateController } from 'controllers/slidoutStateController';
+
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
@@ -31,9 +34,6 @@ import { GET_COMMENT_TYPES } from 'graphQL/useQueryCommentType';
 import { GET_PROFILES_IMAGES, GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
-
-import { globalStateController } from 'hookstate/globalStateController';
-import { slidoutState } from 'hookstate/initialStates';
 
 import { updatePinComments } from 'store/actions/commonActions';
 
@@ -691,7 +691,7 @@ export default function CommentComponent(props) {
 		};
 
 		if (props.targetLabel === 'activity') {
-			slidoutState.newComments.set([...slidoutState.newComments.get(), comment]);
+			slidoutStateController.updateState({ newComments: [...slidoutStateController.getValue('newComments'), comment] });
 		}
 
 		upsertComment({

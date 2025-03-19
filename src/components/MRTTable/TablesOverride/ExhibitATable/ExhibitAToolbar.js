@@ -4,7 +4,7 @@ import { Box, Switch } from '@mui/material';
 
 import PropTypes from 'prop-types';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController } from 'controllers/tableController';
 
 function ExhibitAToolbar({ tableKey }) {
 	const [inactiveAgreementToggle, setInactiveAgreementToggle] = useState(false);

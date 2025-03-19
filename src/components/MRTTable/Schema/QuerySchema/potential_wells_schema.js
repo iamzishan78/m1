@@ -9,9 +9,9 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import PotentialWellToolbar from 'components/MRTTable/TablesOverride/PotentialWellTable/PotentialWellToolbar';
 import { getPolygonString } from 'components/Shared/functions';
 
-import { SHAPEWELLS } from 'graphQL/useQueryPaginatedShapeWells';
+import { tableController } from 'controllers/tableController';
 
-import { tableController } from 'hookstate/tableController';
+import { SHAPEWELLS } from 'graphQL/useQueryPaginatedShapeWells';
 
 const PotentialWellsMeta = {
 	query: SHAPEWELLS,

@@ -6,8 +6,8 @@ import PropTypes from 'prop-types';
 
 import { copy } from 'components/Shared/functions';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'controllers/globalStateController';
+import { tableController, tableGlobalController } from 'controllers/tableController';
 
 import { SCHEMA } from './Schema';
 import Table from './Table';
@@ -86,7 +86,12 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 		);
 	}
 
-	return <Table tableKey={tableKey || name} />;
+	return (
+		<Table
+			tableKey={tableKey || name}
+			muiTableBodyRowProps={name === 'ShapesFilesGenericTable' ? { sx: { minHeight: '65px' } } : undefined}
+		/>
+	);
 }
 
 // Define prop types for MRTTable

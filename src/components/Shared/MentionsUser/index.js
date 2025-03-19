@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Avatar from 'react-avatar';
-
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
 import { MentionsInput, Mention } from 'react-mentions';
+
 import { ClickAwayListener, Grid, TextField } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+
 import classNames from './mention.module.css';
 
 const useStyles = makeStyles(theme => ({

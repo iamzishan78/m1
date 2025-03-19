@@ -25,6 +25,8 @@ import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
 import { CommonCommentText } from 'components/Shared/CommentComponent';
 import CommentType from 'components/Shared/components/Comment/CommentType';
 
+import { tableGlobalController } from 'controllers/tableController';
+
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
@@ -37,10 +39,9 @@ import { COMMENTSBYOBJECTIDQUERY } from '../../graphQL/useQueryCommentsByObjectI
 import { COMMENTSBYOBJECTSIDS } from '../../graphQL/useQueryCommentsByObjectsIds';
 
 // import value formatters
+import MentionsUser from '../Shared/MentionsUser';
 import capitalizeFirstLetter from '../Shared/valueformatters/capitalize-first-letter.js';
 import CommentField from './components/Fields/CommentField';
-import MentionsUser from '../Shared/MentionsUser';
-import { tableGlobalController } from 'hookstate/tableController';
 
 const AntSwitch = withStyles(theme => ({
 	root: {

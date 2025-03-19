@@ -4,19 +4,17 @@ import { toast, ToastContainer } from 'react-toastify';
 
 import { CircularProgress } from '@material-ui/core';
 import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
-import MomentUtils from '@date-io/moment';
 import { split } from 'apollo-link';
 import { BatchHttpLink } from 'apollo-link-batch-http';
 import { HttpLink } from 'apollo-link-http';
 import PropTypes from 'prop-types';
 
-import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'controllers/globalStateController';
 
 import { UserSession } from 'utils/user';
 
@@ -198,12 +196,10 @@ function Providers({ children }) {
               <UsersnapProvider />
             </FeatureFlag> */}
 						<MuiThemeProvider theme={theme}>
-							<MuiPickersUtilsProvider utils={MomentUtils}>
-								<LocalizationProvider dateAdapter={AdapterDayjs}>
-									{!stateValues?.cypress?.disableContactBulkProgress && <ContactBulkProgress />}
-									{children}
-								</LocalizationProvider>
-							</MuiPickersUtilsProvider>
+							<LocalizationProvider dateAdapter={AdapterDayjs}>
+								{!stateValues?.cypress?.disableContactBulkProgress && <ContactBulkProgress />}
+								{children}
+							</LocalizationProvider>
 						</MuiThemeProvider>
 					</ApolloProvider>
 				) : (

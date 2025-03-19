@@ -4,8 +4,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { Grid, Typography, FormControl, InputLabel, InputBase, Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapStateController } from 'hookstate/mapStateController';
+import { globalStateController } from 'controllers/globalStateController';
+import { mapStateController } from 'controllers/mapStateController';
 
 import { useStyles } from './style';
 

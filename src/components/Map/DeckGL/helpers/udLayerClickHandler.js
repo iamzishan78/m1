@@ -5,9 +5,9 @@ import { findBoundsMap } from 'components/MapControls/commonHelper';
 import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { ifDefaultIdentifier, ifGenericShapeIdentifier } from 'components/Shared/functions/shapeLayer';
 
-import { drawController } from 'hookstate/drawStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { popupController } from 'hookstate/popupStateController';
+import { drawController } from 'controllers/drawStateController';
+import { layerController } from 'controllers/layerStateController';
+import { popupController } from 'controllers/popupStateController';
 
 const udLayerClickHandler = (feature, stateLayer) => {
 	const history = layerController.getValue('history');
@@ -41,6 +41,18 @@ const udLayerClickHandler = (feature, stateLayer) => {
 		popupStateVal = {
 			expandedCard: true,
 			selectedShape: { ...feature.properties, feature: selectedUserDefinedLayer },
+		};
+	} else if (stateLayer?.layerType === 'dynamic data layer') {
+		const layerName = feature.properties.type || stateLayer.layerName.replaceAll(' ', '').toLowerCase();
+
+		const newPath = `/map/${layerName}/${feature.properties.id}`;
+		if (history?.location.pathname !== newPath) {
+			history?.replace(newPath);
+		}
+
+		popupStateVal = {
+			expandedCard: true,
+			selectedShape: { ...feature.properties, feature: selectedUserDefinedLayer, isGenericAssetShape: true },
 		};
 	} else if (isAoi) {
 		let drawStateVal;

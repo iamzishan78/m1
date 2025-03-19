@@ -7,18 +7,17 @@ import PropTypes from 'prop-types';
 
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
-import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
-import CustomTextField from 'components/Shared/FormsFieldsData/Fields/CustomTextField';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 
-import { sideDialogController } from 'hookstate/sideDialogController';
+import { sideDialogController } from 'controllers/sideDialogController';
 
-import AutoCompleteNewOption from './Fields/AutoCompleteNewOption';
-import DatePicker from './Fields/DatePicker';
 import StartEndDate from './Fields/StartEndDate';
+import CustomDatePicker from '../components/Fields/CustomDatePicker';
 
-function CommonForm({ formSchema, control, watch, dialogKey, error }) {
-	const getFormattedFieldProps = ({ item, watch, error, key }) => {
+function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
+	const getTextFieldProps = ({ item, watch, error, key }) => {
 		const fieldProps = {
 			key,
 			control,
@@ -35,7 +34,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 			},
 			fieldAttributes: {
 				name: item.name,
-				label: item.label,
+				title: item.label,
 				defaultValue: item.defaultValue,
 				InputProps: item.InputProps,
 				isValueOverridden: item.isValueOverridden,
@@ -55,7 +54,31 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 				let renderedField;
 				switch (item.renderField) {
 					case 'autoComplete':
-						renderedField = <AutoCompleteComponent item={item} control={control} watch={watch} error={error} />;
+					case 'autoCompleteNewOption':
+						renderedField = (
+							<CustomAutoComplete
+								key={item.name}
+								control={control}
+								watch={watch}
+								error={error || errors?.[item.name]}
+								fieldConfig={{
+									margin: 'dense',
+									allowNewOptions: item.renderField === 'autoCompleteNewOption',
+									required: item.required,
+								}}
+								fieldEvents={{ onChange: item.onChange }}
+								fieldAttributes={{
+									name: item.name,
+									title: item.label,
+									label: item.label,
+									defaultOptions: item.defaultOptions,
+									getOptions: item.getOptions,
+									query: item.query,
+									variables: item.variables,
+									isESSearch: item.isESSearch || false,
+								}}
+							/>
+						);
 						break;
 
 					case 'campaigns':
@@ -109,25 +132,46 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 						break;
 
 					case 'radioButton':
+					case 'boolean':
 						renderedField = (
 							<RadioGroup key={JSON.stringify(item)} item={item} control={control} dialogKey={dialogKey} />
 						);
 						break;
 
-					case 'autoCompleteNewOption':
-						renderedField = <AutoCompleteNewOption item={item} control={control} />;
-						break;
-
 					case 'datePicker':
-						renderedField = <DatePicker item={item} control={control} />;
+						renderedField = (
+							<CustomDatePicker
+								control={control}
+								fieldAttributes={{
+									name: item?.name,
+									value: item?.value,
+									title: item?.label,
+								}}
+								fieldEvents={{
+									onChange: item?.onChange,
+								}}
+								fieldConfig={{
+									disabled: item?.disabled,
+									variant: 'standard',
+								}}
+							/>
+						);
+
 						break;
 
 					case 'startEndDate':
-						renderedField = <StartEndDate item={item} control={control} watch={watch} error={error} />;
+						renderedField = (
+							<StartEndDate item={item} control={control} watch={watch} error={error || errors?.[item.name]} />
+						);
 						break;
 
 					default: {
-						const formattedFieldProps = getFormattedFieldProps({ item, watch, error, key: index });
+						const formattedFieldProps = getTextFieldProps({
+							item,
+							watch,
+							error: error || errors?.[item.name],
+							key: index,
+						});
 						renderedField = <CustomTextField {...formattedFieldProps} />;
 						break;
 					}
@@ -174,6 +218,7 @@ CommonForm.propTypes = {
 		})
 	).isRequired,
 	error: PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.bool]),
+	errors: PropTypes.object,
 };
 
 export default CommonForm;
