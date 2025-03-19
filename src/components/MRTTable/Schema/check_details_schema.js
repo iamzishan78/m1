@@ -429,6 +429,19 @@ const CheckDetailsMeta = {
 			}),
 		},
 		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'detailLineNotation',
+			id: 'detailLineNotation',
+			header: 'Detail Line Notation',
+
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'text',
+				validate: validateRequiredString,
+			}),
+		},
+		{
 			...CommonSchema.HIDDEN,
 			name: 'propertyId',
 			id: 'propertyId',
