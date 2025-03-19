@@ -214,6 +214,8 @@ export default function DetailComponents(props) {
 	const dispatch = useDispatch();
 	const { statements } = useSelector(({ Revenue }) => Revenue);
 
+	const { globalStateValues } = globalStateController.useState(['user', 'showFieldModal'], 'globalStateValues');
+
 	const [tab, setTab] = useState(0);
 	const [checksFlatData, setChecksFlatData] = useState({});
 	const selectedTabRef = useRef(null);
@@ -245,7 +247,9 @@ export default function DetailComponents(props) {
 	});
 
 	useEffect(() => {
-		if (getCheckResult?.getCheck?.check) setChecksFlatData(getCheckResult.getCheck.check);
+		if (getCheckResult?.getCheck?.check) {
+			setChecksFlatData(getCheckResult.getCheck.check);
+		}
 	}, [getCheckResult]);
 
 	const handleDeleteCancel = () => {
@@ -280,9 +284,9 @@ export default function DetailComponents(props) {
 	};
 
 	useEffect(() => {
-		if (getCheckResult?.getCheck?.check)
+		if (getCheckResult?.getCheck?.check) {
 			dispatch(setRevenueKey('statements', { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		}
 	}, [getCheckResult, dispatch]);
 
 	useEffect(() => {
