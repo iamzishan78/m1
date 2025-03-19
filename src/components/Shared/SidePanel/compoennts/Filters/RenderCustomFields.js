@@ -245,7 +245,7 @@ const RenderCustomFields = ({
 					const option = options.find(opt => opt.value === value);
 					setFieldNameObj(option);
 				},
-				onInputSearchChange: value => isSearch && handleChange(value),
+				onTextFieldChange: value => isSearch && handleChange(value),
 			}}
 		/>
 	);

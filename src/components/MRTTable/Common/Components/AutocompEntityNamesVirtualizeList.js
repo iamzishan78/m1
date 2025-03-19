@@ -233,7 +233,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 				endAdornment: <>{isNextPageLoading ? <CircularProgress color="inherit" size={20} /> : null}</>,
 			};
 
-	const renderOptionComp = option => {
+	const renderOptionComp = ({ option }) => {
 		return (
 			<Grid container item xs={12} alignItems="center">
 				<Grid item xs>
@@ -255,6 +255,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 			ListboxComponent={ListboxComponent}
 			id="autocompEntityNamesVirtualizeList"
 			fieldConfig={{
+				size,
 				margin,
 				variant,
 				renderOptionComp,

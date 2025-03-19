@@ -73,7 +73,7 @@ const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
 		onSelect(value);
 	};
 
-	const renderOptionComp = option => {
+	const renderOptionComp = ({ option }) => {
 		return (
 			<Grid container item xs={12} alignItems="center">
 				<Grid item xs>

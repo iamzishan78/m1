@@ -21,11 +21,12 @@ function CustomAutoComplete({
 	control = null,
 	watch = null,
 	error = null,
-	fieldEvents: { onChange = null, onBlur = () => {}, onInputSearchChange = null } = {},
+	fieldEvents: { onChange = null, onBlur = () => {}, onTextFieldChange = null } = {},
 	fieldConfig: {
 		margin = '',
 		size = 'small',
 		chipStyles = {},
+		loading = false,
 		required = false,
 		disabled = false,
 		multiple = false,
@@ -34,8 +35,10 @@ function CustomAutoComplete({
 		variant = 'standard',
 		titleComponent = 'h3',
 		allowNewOptions = false,
-		textFieldInputProps = {},
 		renderOptionComp = null,
+		textfieldRestProps = {},
+		textFieldInputProps = {},
+		getCustomOptionLabel = null,
 	} = {},
 	fieldAttributes: {
 		name = '',
@@ -56,18 +59,22 @@ function CustomAutoComplete({
 	const client = useApolloClient();
 	const filter = createFilterOptions();
 	const [options, setOptions] = useState(Array.isArray(defaultOptions) ? defaultOptions : []);
-	const [loading, setLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(loading);
 	const watchValue = watch ? watch(name) : '';
 
 	useEffect(() => {
 		setOptions(defaultOptions);
 	}, [defaultOptions]);
 
+	useEffect(() => {
+		setIsLoading(loading);
+	}, [loading]);
+
 	const fetchOptions = debounce(async value => {
 		if (!query) {
 			return;
 		}
-		setLoading(true);
+		setIsLoading(true);
 		setOptions([]);
 		try {
 			const res = await client.query({
@@ -82,7 +89,7 @@ function CustomAutoComplete({
 		} catch (err) {
 			console.error('Error fetching options:', err);
 		}
-		setLoading(false);
+		setIsLoading(false);
 	}, 500);
 
 	useEffect(() => {
@@ -90,13 +97,10 @@ function CustomAutoComplete({
 	}, []);
 
 	const getOptionLabel = option => {
-		if (!option) {
-			return '';
-		}
-		if (typeof option === 'string') {
-			return option;
-		}
-		return option.label || option.value || option.name || '';
+		if (!option) return '';
+		if (typeof option === 'string') return option;
+		if (getCustomOptionLabel) return getCustomOptionLabel(option);
+		else return option.label || option.value || option.name || '';
 	};
 
 	const getOptionSelected = (option, value) => {
@@ -116,7 +120,7 @@ function CustomAutoComplete({
 	const textFieldChange = event => {
 		const value = event.target.value;
 		isESSearch && fetchOptions(value);
-		onInputSearchChange?.(value);
+		onTextFieldChange?.(value);
 	};
 
 	const getValue = fieldValue => {
@@ -163,7 +167,7 @@ function CustomAutoComplete({
 		if (renderOptionComp)
 			return (
 				<Grid container spacing={0} {...props}>
-					{renderOptionComp(option)}
+					{renderOptionComp({ props, option })}
 				</Grid>
 			);
 
@@ -181,7 +185,7 @@ function CustomAutoComplete({
 	const renderAutoComplete = ({ field } = {}) => {
 		return (
 			<Autocomplete
-				loading={loading}
+				loading={isLoading}
 				disabled={disabled}
 				defaultValue={defaultValue}
 				renderOption={renderOption}
@@ -191,7 +195,7 @@ function CustomAutoComplete({
 				getOptionSelected={getOptionSelected}
 				value={getValue(field?.value ?? null)}
 				options={getOptionsArray(field?.value)}
-				noOptionsText={loading ? <CircularProgress size={20} /> : 'No options'}
+				noOptionsText={isLoading ? <CircularProgress size={20} /> : 'No options'}
 				onBlur={event => {
 					onBlur?.(event);
 					field?.onBlur?.(event);
@@ -233,6 +237,7 @@ function CustomAutoComplete({
 							...params.InputProps,
 							...textFieldInputProps,
 						}}
+						{...textfieldRestProps}
 					/>
 				)}
 				{...propsRest}
@@ -267,12 +272,14 @@ CustomAutoComplete.propTypes = {
 	error: PropTypes.object,
 	fieldEvents: PropTypes.shape({
 		onChange: PropTypes.func,
-		onInputSearchChange: PropTypes.func,
+		onBlur: PropTypes.func,
+		onTextFieldChange: PropTypes.func,
 	}),
 	fieldConfig: PropTypes.shape({
 		margin: PropTypes.string,
 		size: PropTypes.string,
 		chipStyles: PropTypes.object,
+		loading: PropTypes.bool,
 		required: PropTypes.bool,
 		disabled: PropTypes.bool,
 		multiple: PropTypes.bool,
@@ -281,14 +288,19 @@ CustomAutoComplete.propTypes = {
 		variant: PropTypes.string,
 		titleComponent: PropTypes.string,
 		allowNewOptions: PropTypes.bool,
+		renderOptionComp: PropTypes.func,
+		textfieldRestProps: PropTypes.object,
+		textFieldInputProps: PropTypes.object,
+		getCustomOptionLabel: PropTypes.func,
 	}),
 	fieldAttributes: PropTypes.shape({
 		name: PropTypes.string,
 		label: PropTypes.string,
-		title: PropTypes.string,
+		title: PropTypes.node,
 		value: PropTypes.any,
 		query: PropTypes.object,
 		variables: PropTypes.object,
+		placeholder: PropTypes.string,
 		isESSearch: PropTypes.bool,
 		defaultValue: PropTypes.any,
 		defaultOptions: PropTypes.array,
