@@ -174,7 +174,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 											defaultOptions: partyTypes,
 										}}
 										fieldEvents={{
-											onChange: value => {
+											onChange: ({ value }) => {
 												if (!value || typeof value === 'string') {
 													handleUpdateParty({ type: value }, index);
 												} else {

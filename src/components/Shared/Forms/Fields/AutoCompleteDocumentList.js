@@ -68,7 +68,7 @@ const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
 		setSearch('');
 	};
 
-	const onChange = value => {
+	const onChange = ({ value }) => {
 		setValue(value);
 		onSelect(value);
 	};

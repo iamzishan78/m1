@@ -41,7 +41,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 			},
 			fieldEvents: {
 				onBlur: item.onBlur,
-				onChange: item.onChange,
+				onChange: ({ value }) => item.onChange(value),
 			},
 		};
 

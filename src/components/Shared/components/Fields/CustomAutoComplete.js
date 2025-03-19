@@ -107,9 +107,9 @@ function CustomAutoComplete({
 		}
 	};
 
-	const autoCompleteChnage = (newOpt, oldOpt, fieldOnChange) => {
-		const value = newOpt ? newOpt.value || newOpt : null;
-		onChange?.(value, oldOpt);
+	const autoCompleteChnage = ({ reason, newValue, oldValue, fieldOnChange }) => {
+		const value = newValue ? newValue.value || newValue : null;
+		onChange?.({ value, oldValue, reason });
 		fieldOnChange?.(value);
 	};
 
@@ -192,10 +192,28 @@ function CustomAutoComplete({
 				value={getValue(field?.value ?? null)}
 				options={getOptionsArray(field?.value)}
 				noOptionsText={loading ? <CircularProgress size={20} /> : 'No options'}
-				onChange={(_, newValue) => autoCompleteChnage(newValue, field?.value, field?.onChange)}
 				onBlur={event => {
 					onBlur?.(event);
 					field?.onBlur?.(event);
+				}}
+				onChange={(_, value, reason) =>
+					autoCompleteChnage({
+						reason,
+						newValue: value,
+						oldValue: field?.value,
+						fieldOnChange: field?.onChange,
+					})
+				}
+				renderTags={(value, getTagProps) => {
+					return value?.map((option, index) => (
+						<Chip
+							key={option}
+							style={chipStyles}
+							{...getTagProps({ index })}
+							label={getOptionLabel(option)}
+							deleteIcon={<CloseIcon style={{ color: 'white' }} />}
+						/>
+					));
 				}}
 				renderInput={params => (
 					<TextField
@@ -217,17 +235,6 @@ function CustomAutoComplete({
 						}}
 					/>
 				)}
-				renderTags={(value, getTagProps) => {
-					return value?.map((option, index) => (
-						<Chip
-							key={option}
-							style={chipStyles}
-							{...getTagProps({ index })}
-							label={getOptionLabel(option)}
-							deleteIcon={<CloseIcon style={{ color: 'white' }} />}
-						/>
-					));
-				}}
 				{...propsRest}
 			/>
 		);

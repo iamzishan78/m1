@@ -239,10 +239,10 @@ const RenderCustomFields = ({
 				inputSearchText: searchText,
 			}}
 			fieldEvents={{
-				onChange: (newVal, oldVal) => {
+				onChange: ({ value, oldValue }) => {
 					handleChange('');
-					onChange?.({ value: newVal, previousValue: oldVal });
-					const option = options.find(opt => opt.value === newVal);
+					onChange?.({ value, previousValue: oldValue });
+					const option = options.find(opt => opt.value === value);
 					setFieldNameObj(option);
 				},
 				onInputSearchChange: value => isSearch && handleChange(value),

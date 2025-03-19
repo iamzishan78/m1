@@ -269,17 +269,17 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 				defaultOptions: mongoEntitiesArray,
 			}}
 			fieldEvents={{
-				onChange: newValue => {
-					if (newValue) {
-						if (newValue?._id) {
-							setNameAutValue(newValue);
+				onChange: ({ value }) => {
+					if (value) {
+						if (value?._id) {
+							setNameAutValue(value);
 						} else {
 							if (addNewOnClick) {
-								addNewOnClick(newValue.name);
+								addNewOnClick(value.name);
 							} else {
 								setNameAutValue({
 									_id: 'newEntity',
-									name: newValue.name,
+									name: value.name,
 								});
 							}
 						}
