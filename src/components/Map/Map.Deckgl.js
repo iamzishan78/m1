@@ -13,12 +13,13 @@ import * as turf from '@turf/turf';
 import gjv from 'geojson-validation';
 import _, { debounce } from 'lodash';
 import mapboxgl from 'mapbox-gl';
-import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
+import { CircleMode } from 'mapbox-gl-draw-circle';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import parseLinkHeader from 'parse-link-header';
 import PropTypes from 'prop-types';
 
 import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
+import Legend from 'components/MapControls/legend';
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
@@ -39,7 +40,11 @@ import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 import { GET_RECORD_FROM_RUN_TIME_MODEL } from 'graphQL/useQueryRunTimeModel';
 
 import { baseTenantsMaps } from 'utils/data';
+import DirectMode from 'utils/direct-mode';
+import DragCircleMode from 'utils/drag-circle-mode';
 import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
+import DragRadiusCircleMode from 'utils/radius-mode';
+import SimpleSelectMode from 'utils/simple-select-mode';
 
 import HugeRequest from './components/HugeRequest';
 import DeckGL from './DeckGL';
@@ -47,6 +52,8 @@ import DefaultFiltersTest from './filtersDefaultTest';
 import { setMainMapState } from '../../actions';
 import { SRMode } from './MapBoxDrawRotate/index';
 import { AppContext } from '../../AppContext';
+import backgroundIcon from './sprites/draw-radius-label-background.png';
+import lightBackgroundIcon from './sprites/draw-radius-label-light-background-.png';
 import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { copy } from '../Shared/functions';
@@ -64,7 +71,6 @@ import MapGridCardProvider from '../MapGridCard/MapGridProvider';
 
 import './Map.css';
 import './popup.css';
-import Legend from 'components/MapControls/legend';
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -490,7 +496,7 @@ function Map({
 		window.mapRef.fitBounds(
 			[
 				[bbox[0] - 0.03, bbox[1] - 0.03], // Southwest coordinates
-				[bbox[0] + 0.03, bbox[1] + 0.03], // Northeast coordinates
+				[bbox[2] + 0.03, bbox[3] + 0.03], // Northeast coordinates
 			],
 			{ padding: { top: 100, bottom: 200, left: 10, right: 100 }, easing: () => 1 }
 		);
@@ -823,6 +829,7 @@ function Map({
 					static: StaticMode,
 					draw_circle: CircleMode,
 					drag_circle: DragCircleMode,
+					radius_circle: DragRadiusCircleMode,
 					direct_select: DirectMode,
 					simple_select: SimpleSelectMode,
 					draw_rectangle: CostumDrawRectangle,
@@ -851,6 +858,21 @@ function Map({
 					}
 					// add image to the active style and make it SDF-enabled
 					newMap.addImage('marker-icon', image, { sdf: true });
+				});
+
+				let labelIcon = backgroundIcon;
+				if (mapStateValues.mapVars.styleId === 'Dark') {
+					labelIcon = lightBackgroundIcon;
+				}
+				newMap.loadImage(labelIcon, (error, image) => {
+					if (error) {
+						throw error;
+					}
+					newMap.addImage('rounded', image, {
+						content: [3, 3, 13, 13],
+						stretchX: [[7, 9]],
+						stretchY: [[7, 9]],
+					});
 				});
 
 				// FOR aoi_labels

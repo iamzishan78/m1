@@ -86,7 +86,12 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 		);
 	}
 
-	return <Table tableKey={tableKey || name} />;
+	return (
+		<Table
+			tableKey={tableKey || name}
+			muiTableBodyRowProps={name === 'ShapesFilesGenericTable' ? { sx: { minHeight: '65px' } } : undefined}
+		/>
+	);
 }
 
 // Define prop types for MRTTable

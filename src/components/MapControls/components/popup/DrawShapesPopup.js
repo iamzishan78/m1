@@ -43,7 +43,7 @@ const DrawShapesPopup = props => {
 			},
 			{
 				title: 'Circle',
-				mode: 'drag_circle',
+				mode: 'radius_circle',
 				icon: <RadioButtonUncheckedIcon id="mapCircle" fontSize="small" />,
 				disable: drawStateValues.multiSelectLandGrids,
 			},
