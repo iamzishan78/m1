@@ -23,6 +23,7 @@ import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
 import { tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
+import DailpadIcon from 'components/Shared/components/svgIcons/DailpadIcon';
 
 const esIndex = 'contacts_flat';
 
@@ -119,6 +120,7 @@ const ContactMeta = {
 			size: 450,
 			Cell: ({ renderedCellValue, row }) => {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+				const dialpadIds = row?.original?.dialpadIds || [];
 
 				const NAME_SPLICE_LENGTH = 2;
 
@@ -171,6 +173,12 @@ const ContactMeta = {
 										}}
 									/>
 								</FeatureFlag>
+							)}
+
+							{dialpadIds.length > 0 && (
+								<span style={{ marginLeft: '5px', marginRight: '5px', marginTop: '5px' }}>
+									<DailpadIcon htmlColor="#757575" />
+								</span>
 							)}
 						</p>
 					</div>
