@@ -77,7 +77,7 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
 								label="Supervisor"
 								placeholder="Assign Supervisor"
 								selectedUserId={get(campaign, 'owner._id')}
-								onChangeUser={user => updateCampaignInformation('owner', user.value)}
+								onChangeUser={user => updateCampaignInformation('owner', user?.value || null)}
 								fieldSize={8}
 							/>
 						</Grid>

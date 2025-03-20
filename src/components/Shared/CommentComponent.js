@@ -239,7 +239,6 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 						return (
 							<>
 								{splittedWord.map(sWord => {
-									console.log('sWord', sWord);
 									const idRegex = /\{\{(.*?)\}\}/g;
 									let match;
 									let parts = [];
