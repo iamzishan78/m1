@@ -1,13 +1,27 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { Tooltip } from '@material-ui/core';
-import { Grid, TextField, Card, CardContent, Typography, Switch, FormControlLabel, Button } from '@material-ui/core';
+
+import {
+	Tooltip,
+	Grid,
+	TextField,
+	Card,
+	CardContent,
+	Typography,
+	Switch,
+	FormControlLabel,
+	Button,
+	InputAdornment,
+} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
+
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 import { useLazyQuery } from '@apollo/client';
 import { get, isEqual } from 'lodash';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import CommonFieldList from 'components/Shared/Forms/Fields/CommonFieldList';
 import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
@@ -74,6 +88,7 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
 
 							<Grid item md={8}>
 								<TextField
+									disabled
 									style={{ marginTop: 0 }}
 									size="small"
 									margin="dense"
@@ -83,17 +98,17 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
 									fullWidth
 									value={moment(get(campaign, 'createdAt')).format('yyyy-MM-DD')}
 									onChange={event => {
-										updateCampaignInformation('createdAt', event ? String(event.target.value) : null);
+										updateCampaignInformation('createAt', event ? String(event.target.value) : null);
 									}}
 									InputLabelProps={{
 										shrink: true,
 									}}
 									InputProps={{
-										classes: {
-											root: classes.dateRoot,
-											focused: classes.focused,
-											notchedOutline: classes.notchedOutline,
-										},
+										startAdornment: (
+											<InputAdornment>
+												<CalendarTodayIcon color="disabled" style={{ width: '16px' }} />
+											</InputAdornment>
+										),
 									}}
 								/>
 							</Grid>
@@ -209,6 +224,22 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
 			</Grid>
 		</Grid>
 	);
+};
+
+CampaignHeader.propTypes = {
+	campaign: PropTypes.shape({
+		custom_data: PropTypes.object,
+		owner: PropTypes.shape({
+			_id: PropTypes.string,
+		}),
+		createdAt: PropTypes.string,
+		status: PropTypes.string,
+		unitCount: PropTypes.number,
+		tractCount: PropTypes.number,
+		contacts: PropTypes.number,
+		totalNra: PropTypes.number,
+	}),
+	updateCampaignInformation: PropTypes.func.isRequired,
 };
 
 export default CampaignHeader;
