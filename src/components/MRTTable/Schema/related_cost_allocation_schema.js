@@ -69,15 +69,6 @@ const RelatedCostAllocationsMeta = {
 			header: 'Cost Allocation',
 			type: 'number',
 			isArrayKey: true,
-			handleArrayExport: {
-				esType: 'array',
-				// field in data array that will be matched
-				referenceKey: 'paymentId',
-				// field in customprops that will be matched
-				referenceValueKey: 'paymentId',
-				// field that needs to be exported from matched object
-				actualKey: 'allocation',
-			},
 			Cell: ({ row }) => {
 				const value = row.original?.costAllocations?.allocation;
 				return value ? `${Number(value).toFixed(TO_FIXED)}%` : value === 0 ? '0%' : '';
@@ -90,15 +81,6 @@ const RelatedCostAllocationsMeta = {
 			header: 'Cost Allocation Amount',
 			type: 'number',
 			isArrayKey: true,
-			handleArrayExport: {
-				esType: 'array',
-				// field in data array that will be matched
-				referenceKey: 'paymentId',
-				// field in customprops that will be matched
-				referenceValueKey: 'paymentId',
-				// field that needs to be exported from matched object
-				actualKey: 'amount',
-			},
 		},
 	],
 };

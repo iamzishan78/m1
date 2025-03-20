@@ -11,15 +11,14 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-// queries
 
 import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
 
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 
-import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
-
 import { jobController } from 'stateManagement/jobStateController';
+
+import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 
 const useStyles = makeStyles({
 	root: {
@@ -87,7 +86,7 @@ const headers_input = {
 	color: '#a6a6a6',
 };
 
-const StyledTableCell = withStyles(theme => ({
+const StyledTableCell = withStyles(() => ({
 	head: {
 		fontWeight: 'bold',
 		border: '1px solid #ddd',
@@ -135,21 +134,6 @@ export default function M1neralHeaders() {
 		jobController.updateState({
 			mappedHeadersFromCSV: CSV_headers,
 		});
-	};
-
-	const handleChange_select = async (event, index) => {
-		const selectedHeader = data.find(el => el?.actual_key === event.target.value);
-		CSV_headers[index].actual_key = selectedHeader?.actual_key;
-		CSV_headers[index].label = selectedHeader?.label;
-		CSV_headers[index].required = true;
-		await changeDataToSendState();
-		UpdateState();
-	};
-
-	const handleChange_checkBox = async (event, index) => {
-		CSV_headers[index].required = event.target.checked;
-		await changeDataToSendState();
-		UpdateState();
 	};
 
 	const createLeadSource = () => {
@@ -206,12 +190,6 @@ export default function M1neralHeaders() {
 						return_obj[key] = return_obj[key].toString();
 					}
 				});
-			}
-			if (['CHECKDETAILS'].includes(jobStateValues.jobType)) {
-				if (!return_obj['lineNumber'] || !return_obj['date']) {
-					filtered_data_to_send.push(null);
-					continue;
-				}
 			}
 			if (['PARCELINTERESTS'].includes(jobStateValues.jobType)) {
 				if (!return_obj['parcel._id'] || !return_obj['parcel.name']) {
@@ -297,6 +275,21 @@ export default function M1neralHeaders() {
 		workspaceSettings,
 	]);
 
+	const handleChange_select = async (event, index) => {
+		const selectedHeader = data.find(el => el?.actual_key === event.target.value);
+		CSV_headers[index].actual_key = selectedHeader?.actual_key;
+		CSV_headers[index].label = selectedHeader?.label;
+		CSV_headers[index].required = true;
+		await changeDataToSendState();
+		UpdateState();
+	};
+
+	const handleChange_checkBox = async (event, index) => {
+		CSV_headers[index].required = event.target.checked;
+		await changeDataToSendState();
+		UpdateState();
+	};
+
 	const shapeTransferOptions = [
 		{ key: 'Both', label: 'Create new and update existing' },
 		{ key: 'New', label: 'Only create new' },
@@ -327,7 +320,7 @@ export default function M1neralHeaders() {
 							<TableBody>
 								{CSV_headers.map((row, index) => {
 									return (
-										<TableRow key={index}>
+										<TableRow key={row.actual_key}>
 											<StyledTableCell key={columns[0].label}>
 												<Checkbox
 													id={`checkbox-${index}`}
@@ -358,9 +351,9 @@ export default function M1neralHeaders() {
 														</option>
 														{[...data]
 															.sort((a, b) => (a.label.toUpperCase() < b.label.toUpperCase() ? -1 : 1))
-															.map((option, i) => {
+															.map(option => {
 																return (
-																	<option value={option.actual_key} key={i}>
+																	<option value={option.actual_key} key={option.actual_key}>
 																		{(() => {
 																			return option.label;
 																		})()}
@@ -414,6 +407,7 @@ export default function M1neralHeaders() {
 													style={{
 														display: jobStateValues.selectedShapeLayerOption === option ? 'none' : 'inherit',
 													}}
+													key={option.key}
 													value={option.key}
 												>
 													{option.label}
@@ -446,12 +440,6 @@ export default function M1neralHeaders() {
 								//   uploading properties.
 								// </div>
 								<></>
-							);
-						case 'CHECKDETAILS':
-							return (
-								<div style={{ ...text_grey }}>
-									* Line Number and Sales Date is required to be <br /> populated before uploading check details.
-								</div>
 							);
 						default:
 							if (!['CHECKDETAILS'].includes(jobStateValues.jobType)) {
