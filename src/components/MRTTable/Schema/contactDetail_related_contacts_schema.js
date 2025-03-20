@@ -133,15 +133,6 @@ const ContactDetailRelatedContactMeta = {
 			id: 'relatedContacts.relationshipType',
 			header: 'Relationship Type',
 			isArrayKey: true,
-			handleArrayExport: {
-				esType: 'array',
-				// field in data array that will be matched
-				referenceKey: 'relatedObject',
-				// field in customprops that will be matched
-				referenceValueKey: 'contactId',
-				// field that needs to be exported from matched object
-				actualKey: 'relationshipType',
-			},
 		},
 	],
 };
