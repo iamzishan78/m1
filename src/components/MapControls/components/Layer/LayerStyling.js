@@ -4,7 +4,7 @@ import { Grid, IconButton, Divider, FormControlLabel, Switch, Tooltip, ClickAway
 import { Close as CloseIcon } from '@material-ui/icons';
 import GridOnIcon from '@material-ui/icons/GridOn';
 
-import { Typography, Slider, TextField, Box, Button } from '@mui/material';
+import { Typography, Slider, TextField, Box, Tabs, Tab } from '@mui/material';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import _ from 'lodash';
@@ -482,22 +482,24 @@ function LayerStyling() {
 											<Typography variant="h6" style={{ marginBottom: '10px' }}>
 												Color Palette
 											</Typography>
-											<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-												<Button
-													variant={!isCustomPalette ? 'contained' : 'outlined'}
-													size="small"
-													onClick={() => layerStylingController.setIsCustomPalette(false)}
+											<Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+												<Tabs
+													value={isCustomPalette ? 1 : 0}
+													onChange={(_, newValue) => layerStylingController.setIsCustomPalette(Boolean(newValue))}
+													variant="fullWidth"
+													sx={{
+														minHeight: 40,
+														'& .MuiTab-root': {
+															minHeight: 40,
+															textTransform: 'none',
+															fontSize: '0.875rem',
+														},
+													}}
 												>
-													Predefined
-												</Button>
-												<Button
-													variant={isCustomPalette ? 'contained' : 'outlined'}
-													size="small"
-													onClick={() => layerStylingController.setIsCustomPalette(true)}
-												>
-													Custom
-												</Button>
-											</div>
+													<Tab label="Predefined" />
+													<Tab label="Custom" />
+												</Tabs>
+											</Box>
 
 											{!isCustomPalette ? (
 												<ColorPaletteGrid
