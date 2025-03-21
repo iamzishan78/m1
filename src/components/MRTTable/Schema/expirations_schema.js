@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import CheckIcon from '@material-ui/icons/Check';
@@ -6,7 +5,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { getTruncateText } from '../utils/helper';
 

@@ -12,11 +12,12 @@ import IdentityIcon from '@material-ui/icons/PermIdentity';
 
 import { get } from 'lodash';
 
+
 import { AppContext } from '../../../AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {
-		height: '100vh',
+		height: 'calc(100vh - 143px)',
 		padding: '10px',
 		position: 'absolute',
 		right: 0,
@@ -63,17 +64,15 @@ export default function Drawer(props) {
 	const { dealSettingsNumber } = props;
 
 	const onClick = key => {
-		if (key === 'Grid') {
-			setStateApp(stateApp => ({
+		if (key === 'Grid')
+			{setStateApp(stateApp => ({
 				...stateApp,
 				transactBarShowGrid: !stateApp.transactBarShowGrid,
-			}));
-		} else if (key === 'Map') {
+			}));}
+		else if (key === 'Map')
 			// Toggle map
-			setStateApp(stateApp => ({ ...stateApp, transactBarView: stateApp?.transactBarView === 'Map' ? 'Deal' : 'Map' }));
-		} else {
-			setStateApp(stateApp => ({ ...stateApp, transactBarView: key }));
-		}
+			{setStateApp(stateApp => ({ ...stateApp, transactBarView: stateApp?.transactBarView === 'Map' ? 'Deal' : 'Map' }));}
+		else {setStateApp(stateApp => ({ ...stateApp, transactBarView: key }));}
 	};
 
 	const getClass = (classes, key) => {

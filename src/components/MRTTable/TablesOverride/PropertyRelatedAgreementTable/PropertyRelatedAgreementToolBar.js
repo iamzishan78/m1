@@ -5,7 +5,7 @@ import { Button, ButtonGroup } from '@material-ui/core';
 
 import PropertyRevenueDetailDialog from 'components/MRTTable/TablesOverride/PropertyRelatedAgreementTable/RighDialogs';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { getIdFromPath } from 'utils/helper';
 

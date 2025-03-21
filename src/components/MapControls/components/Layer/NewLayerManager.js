@@ -20,11 +20,12 @@ import { v4 as uuid } from 'uuid';
 
 import { copy } from 'components/Shared/functions';
 
-import { layerController } from 'controllers/layerStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-
 import { ADDLAYER } from 'graphQL/useMutationAddLayer';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { AppContext } from 'AppContext';
 

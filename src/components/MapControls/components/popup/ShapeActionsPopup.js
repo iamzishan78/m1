@@ -24,22 +24,25 @@ import PropTypes from 'prop-types';
 import LimitExceedPopUp from 'components/MapControls/components/popup/LimitExceedPopup';
 import ShapeEditActions from 'components/MapControls/components/popup/ShapeEditActions';
 import DeleteConfirmationDialogContent from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import AddCustomAssetDialog from 'components/Shared/components/common/DetailCard/RightDialogs/AddCustomAssetDialog';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import { getPolygonString } from 'components/Shared/functions';
 import { shapeTypeLayers, calculateLandArea } from 'components/Shared/functions/shapeLayer';
 import ConvertContact from 'components/Shared/svgIcons/convert_contact';
 
-import { drawController } from 'controllers/drawStateController';
-import { globalStateController } from 'controllers/globalStateController';
-import { layerController } from 'controllers/layerStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-
 import { ADD_RECORD_IN_RUN_TIME_MODEL, UPDATE_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 import { ALL_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
+
+import { detailCardController } from 'stateManagement/detailCardController';
+import { drawController } from 'stateManagement/drawStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { resetShapeOwnerAction } from 'store/actions/ownerActions';
 import { ConvertTaxOwnerToContactContainer, ExportWellsOwnersContainer } from 'store/containers';
@@ -48,9 +51,6 @@ import ShapeTypeMenu from './ShapeTypeMenu';
 import CheckCircle from '../../../Shared/svgIcons/check-circle';
 import FilterAltIcon from '../../../Shared/svgIcons/FilterAltIcon';
 import { drawBoundary, clearSelectedAbstracts } from '../DrawShapes/drawShapesHelpers';
-import { tableGlobalController } from 'controllers/tableController';
-import AddCustomAssetDialog from 'components/Shared/components/common/DetailCard/RightDialogs/AddCustomAssetDialog';
-import { detailCardController } from 'controllers/detailCardController';
 
 const ShapeActionsPopup = props => {
 	const dispatch = useDispatch();
@@ -693,8 +693,11 @@ const ShapeActionsPopup = props => {
 											shapeEditMode === 'redraw' ||
 											shapeEditMode === 'fullEdit'
 										) {
-											if (currentAssetRecord) updateAndOpenMapAssetShape();
-											else drawController.confirmShapeEditing({ updateCustomLayer, dispatch, history });
+											if (currentAssetRecord) {
+												updateAndOpenMapAssetShape();
+											} else {
+												drawController.confirmShapeEditing({ updateCustomLayer, dispatch, history });
+											}
 										}
 									}}
 								>

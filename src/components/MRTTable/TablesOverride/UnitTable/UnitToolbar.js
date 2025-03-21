@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import { BulkUpdate } from 'components/MRTTable/Common/CommonToolBarActions';
 
-import { tableController } from 'controllers/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {

@@ -10,7 +10,7 @@ import { getRotateAbleShapeFromSelectedQuarters } from 'components/MapControls/c
 import HighlightAltIcon from 'components/Shared/svgIcons/highlightAlt';
 import DrawPoly from 'components/Shared/svgIcons/polygon';
 
-import { drawController } from 'controllers/drawStateController';
+import { drawController } from 'stateManagement/drawStateController';
 
 import { copy } from 'utils/helper';
 

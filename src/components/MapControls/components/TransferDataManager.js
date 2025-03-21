@@ -17,11 +17,11 @@ import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { snapGridSideBarData } from 'components/MapGridCard/components/data';
 import { truncate } from 'components/Shared/functions';
 
-import { jobController } from 'controllers/jobStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { jobController } from 'stateManagement/jobStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { history } from 'store';
 

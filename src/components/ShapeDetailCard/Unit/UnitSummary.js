@@ -10,8 +10,6 @@ import PersonIcon from '@material-ui/icons/Person';
 
 import { useLazyQuery } from '@apollo/client';
 
-// import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
-
 import QtrQtrSelectorNew from 'components/ShapeDetailCard/Common/QtrQtrSelectorNew';
 import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
 import unitDefaultData from 'components/ShapeDetailCard/Common/SummaryTable/unitDefaultData';
@@ -20,10 +18,10 @@ import CommentComponent from 'components/Shared/CommentComponent';
 import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
 import WellIcon from 'components/Shared/svgIcons/well';
 
-import { globalStateController } from 'controllers/globalStateController';
-
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { copy } from 'utils/helper';
 import MetaField from 'utils/MetaField';
@@ -215,7 +213,7 @@ export default function UnitSummary(props) {
 							/>
 						</Grid>
 						<Grid item md={12}>
-							<CommentComponent targetLabel={'unit'} targetSourceId={props.id} />
+							<CommentComponent targetLabel={'unit'} targetSourceId={props.id} showCommentType />
 						</Grid>
 					</Grid>
 				</Grid>

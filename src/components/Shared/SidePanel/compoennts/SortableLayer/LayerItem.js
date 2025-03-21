@@ -15,12 +15,11 @@ import { Badge, IconButton } from '@mui/material';
 
 import PropTypes from 'prop-types';
 
-// Internal imports
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-import { mapStateController } from 'controllers/mapStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { mapStateController } from 'stateManagement/mapStateController';
 
 import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';

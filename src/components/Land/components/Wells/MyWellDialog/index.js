@@ -24,12 +24,12 @@ import get from 'lodash/get';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { DELETE_MY_WELL } from 'graphQL/useMutationDeleteMyWell';
 import { GET_MY_WELL_BY_GLOBAL_ID } from 'graphQL/useQueryMyWellByGlobalId';
 import { WELL_SUMMARY_WITH_HEADER } from 'graphQL/useQueryWellWithHeader';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import AddMyWell from './AddMyWell';
 import Agreements from './Agreements';

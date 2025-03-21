@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/styles';
 import MRTTable from 'components/MRTTable';
 import RelatedAgreementToolbar from 'components/MRTTable/TablesOverride/RelatedAgreementTable/RelatedAgreementToolbar';
 
-import { tableController, tableGlobalController } from 'controllers/tableController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { useStyles as customStyles } from '../style';
 
@@ -94,7 +94,6 @@ const RelatedAgreements = props => {
 			},
 			customValue: { parentRecord: uniObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 

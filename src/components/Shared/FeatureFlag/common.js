@@ -24,8 +24,13 @@ export const FEATURES = {
 	TRACKEDWELLSLAYER: 'showTrackedWellsLayer',
 	USERTAGSLAYER: 'showUserTagsLayer',
 	SEARCHLAYER: 'showSearchLayer',
-	DIALPAD_INTEGRATION: 'DialPadIntegration',
 	DATA: 'dataModule',
+	DASHBOARD: 'dashboardModule',
+	MAP: 'mapModule',
+	FLOW: 'flowModule',
+	FILES: 'filesModule',
+	CALENDAR: 'calendarModule',
+	DIALPAD_INTEGRATION: 'DialPadIntegration',
 };
 
 export const ROUTES = {

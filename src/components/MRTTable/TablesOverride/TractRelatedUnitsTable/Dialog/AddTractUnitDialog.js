@@ -14,11 +14,11 @@ import { useMutation } from '@apollo/client';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
 
-const useStyles = makeStyles(() => ({
+import { tableGlobalController } from 'stateManagement/tableController';
+
+const useStyles = makeStyles(theme => ({
 	dialogFooter: {
 		display: 'flex',
 		justifyContent: 'flex-end',

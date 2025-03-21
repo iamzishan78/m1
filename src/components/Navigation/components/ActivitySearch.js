@@ -12,11 +12,13 @@ import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery } from '@apollo/client';
+import { slidoutStateController } from 'controllers/slidoutStateController';
 import debounce from 'lodash/debounce';
 
-import { slidoutStateController } from 'controllers/slidoutStateController';
 
 import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
+
+import { slidoutState } from 'stateManagement/initialStates';
 
 import { AppContext } from 'AppContext';
 

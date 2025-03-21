@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { IconButton, Tooltip } from '@material-ui/core';
@@ -6,7 +6,7 @@ import { IconButton, Tooltip } from '@material-ui/core';
 import Contact_card from 'components/Shared/svgIcons/contact_card';
 import Convert_contact from 'components/Shared/svgIcons/convert_contact';
 
-import { tableController, tableGlobalController } from 'controllers/tableController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { UserSession } from 'utils/user';
 

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import GavelIcon from '@material-ui/icons/Gavel';
@@ -10,7 +9,7 @@ import FileDownload from 'components/MRTTable/TablesOverride/DocumentTable/Table
 import FileView from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/FileView';
 import { formatDate } from 'components/Shared/functions';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import RunsheetToolbar from '../TablesOverride/RunsheetTable/RunsheetToolbar';
 

@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
+import { formStateController } from 'controllers/formStateController';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 
@@ -19,10 +20,10 @@ import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
 import SearchableSelectField from 'components/Shared/Slideout/FieldComponents/searchableSelectField';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
-import { formStateController } from 'controllers/formStateController';
-import { globalStateController } from 'controllers/globalStateController';
-import { slidoutStateController } from 'controllers/slidoutStateController';
-import { tableGlobalController } from 'controllers/tableController';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { AppContext } from '../../../AppContext';
 import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';

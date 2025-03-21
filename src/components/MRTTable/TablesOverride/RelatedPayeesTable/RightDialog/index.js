@@ -5,10 +5,10 @@ import { toNumber } from 'lodash';
 
 import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { ADD_PAYMENT_CONTACT_DESCRIPTOR } from 'graphQL/useMutationAddPaymentContactDescriptor';
+
+import { detailCardController } from 'stateManagement/detailCardController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 // This component is used in the RelatedPayeesTable component for the toolbar
 export const PayeeRightDialog = () => {

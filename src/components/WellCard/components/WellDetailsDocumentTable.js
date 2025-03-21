@@ -9,12 +9,10 @@ import { useLazyQuery } from '@apollo/client';
 import WellFile from 'components/Document/components/WellFile';
 import MRTTable from 'components/MRTTable';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { GET_PARCELS_FILES } from 'graphQL/useQueryGetParcelFiles';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
-// QUERIES
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 
@@ -75,7 +73,6 @@ function WellDetailsDocumentTable(props) {
 				relatedObjectType: 'Well',
 			},
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.selectedWell.tenantWellId, showDocumentSlider, getAllFiles]);
 
 	const onClickAdd = () => {
@@ -125,7 +122,6 @@ function WellDetailsDocumentTable(props) {
 				setShowDocumentSlider(true);
 			},
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[props?.selectedWell?.tenantWellId, props?.selectedWell?.id]
 	);
 

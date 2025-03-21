@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useTabedTablesUnmount = ignoreUnmount => {
 	useEffect(() => {
 		if (ignoreUnmount) {
-			return;
+			return null;
 		}
 
 		return () => {

@@ -18,10 +18,10 @@ import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import { getParcelOriginalProperties } from 'components/ParcelsDetailCard/utils/GetParcelOriginalProps';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
 import { UPDATE_SHAPE_TRACTS } from 'graphQL/useMutationUpdateShapeTracts';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({
 	dialogFooter: {

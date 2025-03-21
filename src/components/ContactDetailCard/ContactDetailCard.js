@@ -27,22 +27,26 @@ import PropTypes from 'prop-types';
 
 import { toggleRightColumn } from 'actions/ContactDetailCard';
 
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 import BuyContactsInfoDialogContent from 'components/MRTTable/Common/Components/BuyContactsInfoDialogContent';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 import DocViewer from 'components/Shared/DocViewer';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import DialpadIcon from 'components/Shared/svgIcons/dialpad-icon';
 import OpenCorporatesIcon from 'components/Shared/svgIcons/OpenCorporatesIcon';
 import RequestPageIcon from 'components/Shared/svgIcons/request_page';
 import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFetchHoc';
 import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
 
-import { globalStateController } from 'controllers/globalStateController';
-
 import { INITIATE_DIALPAD_CALL } from 'graphQL/useMutationInitiateCall';
+import { SYNC_CONTACT_TO_DIALPAD } from 'graphQL/useMutationSyncContactToDialpad';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
+import { GET_DIALPAD_CONTACT } from 'graphQL/useQueryDailpad';
 import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { SMALL_TIMEOUT } from 'utils/consts';
 import { OWNERTYPE } from 'utils/data';
@@ -57,13 +61,11 @@ import ContactDataMissingDialog from './components/ContactDataMissingDialog';
 import ContactDetailedSelector from './components/ContactDetailSelector';
 import FieldContent from './components/FieldContent';
 import RightDialog from './components/RightDialog';
-import { SYNC_CONTACT_TO_DIALPAD } from '../../graphQL/useMutationSyncContactToDialpad';
 import { CONTACT } from '../../graphQL/useQueryContact';
 import AddActivityDialog from '../ContactDetailCard/components/AddActivityDialog';
 import SummaryFields from '../ContactDetailedInfo/components/SummaryFields';
 import { NavigationContext } from '../Navigation/NavigationContext';
 import Comments from '../Shared/Comments';
-import DialpadIcon from '../Shared/svgIcons/dialpad-icon';
 import Tags from '../Shared/Tagger';
 
 const useStyles = makeStyles(theme => ({
@@ -419,13 +421,14 @@ function ContactDetailCard(props) {
 	const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
 	const [showActivityDialog, setActivityDialog] = useState(null);
 	const [purchaseData, setPurchaseData] = useState([]);
-	const [actionActivityData, setActionActivityData] = useState(null); // State for actions activity data
 	const [dialpadConnect, setDialpadConnect] = useState(false);
+	const [actionActivityData, setActionActivityData] = useState(null); // State for actions activity data
 
 	// Fetching global stateValues
 	const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
 
 	const [getContact, { data }] = useLazyQuery(CONTACT);
+	const [getDailpadContact, { data: dailpadContactRes }] = useLazyQuery(GET_DIALPAD_CONTACT);
 	const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
 
 	const [getLastMelissaRecord] = useLazyQuery(LASTMELISSARECORD, {
@@ -491,6 +494,11 @@ function ContactDetailCard(props) {
 					contactId: stateApp.selectedContact,
 				},
 			});
+			getDailpadContact({
+				variables: {
+					contactId: stateApp.selectedContact,
+				},
+			});
 		} else if (contactId) {
 			setStateApp(stateApp => ({
 				...stateApp,
@@ -521,6 +529,14 @@ function ContactDetailCard(props) {
 			}
 		}
 	}, [data, stateApp.contactUpdated]);
+
+	useEffect(() => {
+		if (dailpadContactRes?.getDailpadContact?.dialpadContact) {
+			globalStateController.updateState({ dialpadContact: dailpadContactRes?.getDailpadContact?.dialpadContact });
+		} else {
+			globalStateController.updateState({ dialpadContact: {} });
+		}
+	}, [dailpadContactRes]);
 
 	const StyleBadge = withStyles({
 		badge: {
@@ -612,6 +628,16 @@ function ContactDetailCard(props) {
 			}
 		});
 	};
+
+	const options = [
+		{
+			text: 'Launch Dialpad',
+			isShow: false,
+			action: () => {
+				window.open('https://dialpad.com/app/contacts/frequent', '_blank');
+			},
+		},
+	];
 
 	return contactData ? (
 		<div
@@ -733,32 +759,48 @@ function ContactDetailCard(props) {
 								</div>
 								<div className={classes.metaActions}>
 									<FeatureFlag feature={FEATURES.DIALPAD_INTEGRATION}>
-										<Tooltip
-											title={
-												contactData?.dialpadSyncAt
-													? `Last Synced: ${moment(contactData?.dialpadSyncAt).format('MM/DD/YYYY, h:mm a')}`
-													: 'Sync to Dialpad'
-											}
-											placement="top-start"
-										>
-											<Button
-												color={dialpadConnect ? 'primary' : 'transparent'}
-												className={!dialpadConnect ? classes.contactDataButton : {}}
-												variant={dialpadConnect ? 'contained' : ''}
-												startIcon={<DialpadIcon color={dialpadConnect ? 'white' : 'grey'} />}
-												style={{ color: dialpadConnect ? 'white' : 'grey' }}
-												onClick={() => {
-													if (!dialpadConnect) {
-														handleContactSync();
-													} else {
-														window.open('https://dialpad.com/app/contacts/frequent', '_blank');
-													}
-												}}
-											>
-												{dialpadConnect ? 'Launch Dialpad' : 'Sync to Dialpad'}
-											</Button>
+										<Tooltip title={'Sync to Dialpad'} placement="top-start">
+											<>
+												{!dialpadConnect && (
+													<Button
+														color={'transparent'}
+														className={classes.contactDataButton}
+														variant={''}
+														startIcon={<DialpadIcon color={'grey'} />}
+														style={{ color: 'grey' }}
+														onClick={() => {
+															handleContactSync();
+														}}
+													>
+														{'Sync to Dialpad'}
+													</Button>
+												)}
+												{dialpadConnect && (
+													<ButtonDropDown
+														startIcon={<DialpadIcon color={'white'} />}
+														options={options}
+														tooltipText={`Last Synced: ${moment(contactData?.dialpadSyncAt).format('MM/DD/YYYY, h:mm a')}`}
+														buttonStyles={{
+															color: 'white',
+															transform: 'translateY(6px)',
+															height: '41px',
+														}}
+														style={{
+															backgroundColor: 'transparent',
+															boxShadow: 'none',
+														}}
+														sideButtonStyles={{
+															minWidth: '25px',
+															padding: 0,
+															color: 'white',
+															transform: 'translateY(4px)',
+														}}
+													/>
+												)}
+											</>
 										</Tooltip>
 									</FeatureFlag>
+
 									<FeatureFlag feature={FEATURES.IDICORE}>
 										<Button
 											className={classes.contactDataButton}

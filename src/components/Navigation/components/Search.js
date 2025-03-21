@@ -30,11 +30,11 @@ import TractIcon from 'components/Shared/svgIcons/tract';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
 
-import { layerController } from 'controllers/layerStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-import { popupController } from 'controllers/popupStateController';
-
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { AppContext } from '../../../AppContext';
 import { ADDSEARCHHISTORY } from '../../../graphQL/useMutationAddSearchHistory';
@@ -561,8 +561,6 @@ function Search({ stateApp, setStateApp, isDocument }) {
 				});
 			}
 		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [searchTop, searchValue, callESSearch, callMapboxSearch, searchOption]);
 	//// getting wells data from owners ////
 
@@ -676,10 +674,10 @@ function Search({ stateApp, setStateApp, isDocument }) {
 								fitBounds: true,
 								searchLoader: false,
 								landGridListFromSearch: [
-									...dataLandGridGeom?.getDbData?.hits?.map(hit => ({
+									...(dataLandGridGeom?.getDbData?.hits?.map(hit => ({
 										...hit,
 										shape: JSON.stringify({ geometry: hit?.geoJSON, properties: {} }),
-									})),
+									})) || []),
 								],
 							}
 						: stateApp
@@ -1169,7 +1167,9 @@ function Search({ stateApp, setStateApp, isDocument }) {
 													{searchHistoryList && searchHistoryList.length > 0 ? (
 														searchHistoryList.map((search, i) => {
 															let option = search.searchData;
-															if (!option) return;
+															if (!option) {
+																return;
+															}
 															const parts = parse(option?.Primary, []);
 
 															/// THIS IS THEI LIST FOR THE SEARCH HISTORY

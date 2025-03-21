@@ -22,11 +22,11 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
-import { jobController } from 'controllers/jobStateController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { GET_FEATURE_QUOTA } from 'graphQL/useQueryGetFeatureQuota';
 import { GET_IDICORE_DATA } from 'graphQL/useQueryGetIdiCoreData';
+
+import { jobController } from 'stateManagement/jobStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { Modals } from 'styles/Modal';
 

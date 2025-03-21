@@ -4,12 +4,15 @@ import AddLayerIcon from '@material-ui/icons/Queue';
 
 import { useMutation } from '@apollo/client';
 
-import { layerController } from 'controllers/layerStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+
 import { copy } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
 
 import Panel from './compoennts/Panel';
 
@@ -241,6 +244,7 @@ export default function SidePanel() {
 		if (panelType === 'marketplace') {
 			setDragFunction(() => {});
 			setToggleFunction(() => {});
+			// setPanelItems(stateApp.layers);
 			setPanelTitle('Marketplace');
 			setPanelButton(null);
 			setHeaderFilters(null);

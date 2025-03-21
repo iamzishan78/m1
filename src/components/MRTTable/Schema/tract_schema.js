@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import _ from 'lodash';
@@ -11,10 +10,10 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import TractIcon from 'components/Shared/svgIcons/tract';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
 

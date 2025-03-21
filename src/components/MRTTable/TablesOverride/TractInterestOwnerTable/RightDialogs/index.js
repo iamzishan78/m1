@@ -3,7 +3,7 @@ import React, { memo } from 'react';
 import RecalculateSlideout from 'components/Common/RecalculateSlideout';
 import ExportOwnersAndContacts from 'components/Shared/ExportOwnerAndContacts';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import AddParcelOwnerDialogContent from '../Dialog/AddParcelOwnerDialogContent';
 

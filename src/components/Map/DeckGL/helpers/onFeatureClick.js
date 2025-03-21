@@ -18,9 +18,9 @@ import {
 } from 'components/Shared/functions/shapeLayer';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
 
-import { getLayerKey } from 'controllers/helpers';
-import { layerController } from 'controllers/layerStateController';
-import { popupController } from 'controllers/popupStateController';
+import { getLayerKey } from 'stateManagement/helpers';
+import { layerController } from 'stateManagement/layerStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { copy } from 'utils/helper';
 

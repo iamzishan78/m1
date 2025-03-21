@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
@@ -7,9 +6,9 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import WellOwnersToolbar from 'components/MRTTable/TablesOverride/WellOwners/Toolbar';
 
-import { tableController } from 'controllers/tableController';
-
 import { WELLOWNERSQUERY } from 'graphQL/useQueryWellOwners';
+
+import { tableController } from 'stateManagement/tableController';
 
 const WellOwnersMeta = {
 	query: WELLOWNERSQUERY,

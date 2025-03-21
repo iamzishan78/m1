@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/styles';
 
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 
-import { tableController } from 'controllers/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { useStyles as customStyles } from '../style';
 
@@ -84,7 +84,6 @@ const RelatedDocumets = props => {
 			},
 			customValue: { parentRecord: uniObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 

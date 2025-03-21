@@ -5,11 +5,11 @@ import { get, toNumber } from 'lodash';
 
 import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { ADD_PAYMENT } from 'graphQL/useMutationAddPayment';
 import { UPDATE_PAYMENT } from 'graphQL/useMutationUpdatePayment';
+
+import { detailCardController } from 'stateManagement/detailCardController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 

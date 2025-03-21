@@ -17,7 +17,7 @@ import PropTypes from 'prop-types';
 import MRTTable from 'components/MRTTable';
 import WellDetailsDocumentTable from 'components/WellCard/components/WellDetailsDocumentTable';
 
-import { popupController } from 'controllers/popupStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import TableSummary from './components/TableSummary';
 import { WellCardContext } from './WellCardContext';

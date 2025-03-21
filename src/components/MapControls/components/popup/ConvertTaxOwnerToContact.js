@@ -19,12 +19,12 @@ import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import Tags from 'components/Shared/Tagger';
 
-import { drawController } from 'controllers/drawStateController';
-import { globalStateController } from 'controllers/globalStateController';
+import { drawController } from 'stateManagement/drawStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { getMapFilters } from 'utils/helper';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
 	root: {
 		width: '557px',
 		padding: '10px 30px',

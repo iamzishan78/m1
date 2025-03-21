@@ -2,8 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 
 import { Select, FormControl, Divider } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
-
-//material-ui components
 import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
@@ -15,7 +13,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
-import { popupController } from 'controllers/popupStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { QuadContext } from './QuadContext';
 import useQueryQuadChart from '../../graphQL/useQueryQuadChart';

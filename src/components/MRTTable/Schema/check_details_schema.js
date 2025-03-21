@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -11,10 +10,10 @@ import { CommonSchema, editFieldProps, validateRequiredString } from 'components
 import { copy, formatDate } from 'components/Shared/functions';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { tableController, tableGlobalController } from 'controllers/tableController';
-
 import { UPDATE_CHECK_DETAIL, UPDATE_CHECK_DETAILS } from 'graphQL/useMutationUpdateCheckDetail';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { TO_FIXED } from 'utils/consts';
 
@@ -426,6 +425,19 @@ const CheckDetailsMeta = {
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'number',
+				validate: validateRequiredString,
+			}),
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'detailLineNotation',
+			id: 'detailLineNotation',
+			header: 'Detail Line Notation',
+
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'text',
 				validate: validateRequiredString,
 			}),
 		},

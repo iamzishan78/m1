@@ -10,10 +10,10 @@ import { Box, CircularProgress } from '@material-ui/core';
 import { useLazyQuery } from '@apollo/client';
 import PropTypes from 'prop-types';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { layerController } from 'controllers/layerStateController';
-
 import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 import FileTree from './FileTree';
 

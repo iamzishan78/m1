@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 import AddTractUnitDialog from 'components/MRTTable/TablesOverride/TractRelatedUnitsTable/Dialog/AddTractUnitDialog';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 function TractRelatedUnitsTableDialogs() {
 	const { stateValues } = tableGlobalController.useState(['tractRelatedUnitDialog']);

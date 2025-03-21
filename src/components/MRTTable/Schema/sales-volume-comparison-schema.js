@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+ 
 import React from 'react';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -17,7 +17,7 @@ const SalesVolumeComparisonMeta = {
 	maxTableHeight: 'calc(100vh - 440px)',
 	height: '540px',
 	isInFiniteScroll: true,
-	columnVirtualization: true,
+	columnVirtualization: false,
 	isDeleteDisabled: true, // Disable delete functionality
 	TableSchema: [
 		// MongoDB ID column

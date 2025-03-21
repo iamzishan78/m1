@@ -8,7 +8,7 @@ import AllDialogs from 'components/MRTTable/Common/Dialog';
 import useMRTTable from 'components/MRTTable/Hooks/useMRTTable';
 import MRTFallback from 'components/MRTTable/MRTFallBack';
 
-import { tableController } from 'controllers/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 function Table({ tableKey, muiTableBodyRowProps }) {
 	// Functional component Table accepts tableKey as props.

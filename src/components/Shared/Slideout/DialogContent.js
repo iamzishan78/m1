@@ -5,7 +5,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Contacts from 'components/FlowDrawer/Contacts';
 
-import { slidoutStateController } from 'controllers/slidoutStateController';
+import { slidoutState } from 'stateManagement/initialStates';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import CommentComponent from '../CommentComponent';
 import Documents from '../Documents';
@@ -46,7 +47,7 @@ function DialogContent(props) {
 			>
 				<Component />
 				<div>
-					<CommentComponent targetLabel={'activity'} targetSourceId={parentId} />
+					<CommentComponent targetLabel={'activity'} targetSourceId={parentId} showCommentType />
 				</div>
 			</div>
 		);

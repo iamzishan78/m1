@@ -6,9 +6,7 @@ import MRTTable from 'components/MRTTable';
 import { deepEqual } from 'components/Shared/functions';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 
-import { tableController } from 'controllers/tableController';
-
-// actions
+import { tableController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(theme => ({
 	root: { paddingTop: '65px' },

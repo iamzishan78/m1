@@ -6,11 +6,11 @@ import { useLazyQuery } from '@apollo/client';
 
 import MRTTable from 'components/MRTTable';
 
-import { slidoutStateController } from 'controllers/slidoutStateController';
-import { tableController } from 'controllers/tableController';
-
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
+
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableController } from 'stateManagement/tableController';
 
 import { esIndexDateFilterKeyMap, esIndexFilterKeyMap } from 'utils/data';
 import { getDateFilters } from 'utils/helper';

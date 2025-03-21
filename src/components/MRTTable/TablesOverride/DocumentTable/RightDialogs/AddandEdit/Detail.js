@@ -23,13 +23,13 @@ import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePick
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { tableController, tableGlobalController } from 'controllers/tableController';
-
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
 import { UPDATE_DOCUMENT, UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { CREATED_STATUS, ONE_MB } from 'utils/consts';
 import { convertFile } from 'utils/tesseractHelper';
@@ -383,6 +383,8 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 				// relatedObjectType: null,
 				fileId: selectedDocument?._id,
 			},
+			refetchQueries: ['getRecentContactFiles'],
+			awaitRefetchQueries: true,
 		}).then(res => {
 			if (res?.data?.addFileDescriptor) {
 				const { success, message } = res.data.addFileDescriptor;

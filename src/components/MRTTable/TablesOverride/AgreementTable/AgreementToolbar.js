@@ -4,8 +4,8 @@ import { Button, ButtonGroup } from '@material-ui/core';
 
 import MetaFieldList from 'components/MRTTable/Common/MetaData/MetaFieldList';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { tableController } from 'controllers/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController } from 'stateManagement/tableController';
 
 import MetaField from 'utils/MetaField';
 

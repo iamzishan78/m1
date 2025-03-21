@@ -1,6 +1,6 @@
 import * as msal from '@azure/msal-browser';
 
-import { globalStateController } from 'controllers/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { copy } from 'utils/helper';
 

@@ -1,11 +1,10 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
-import { tableController } from 'controllers/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import FlyToMap from '../Common/TableCells/coordinates_fly_map';
 

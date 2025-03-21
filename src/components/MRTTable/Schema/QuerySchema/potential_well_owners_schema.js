@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
@@ -8,10 +7,10 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import PotentialWellOwnersToolbar from 'components/MRTTable/TablesOverride/PotentialWellOwnersTable/PotentialWellOwnersToolbar';
 import { getPolygonString } from 'components/Shared/functions';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { tableController } from 'controllers/tableController';
-
 import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController } from 'stateManagement/tableController';
 
 const PotentialWellOwnersMeta = {
 	query: SHAPE_WELL_OWNERS,

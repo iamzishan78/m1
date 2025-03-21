@@ -16,15 +16,11 @@ import Typography from '@material-ui/core/Typography';
 
 import { useLazyQuery } from '@apollo/client';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { popupController } from 'controllers/popupStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { WellCardContext } from './WellCardContext';
 import { ExpandableCardContext } from '../ExpandableCard/ExpandableCardContext';
-
-//material-ui components
-
-//custom components
 import OwnershipIcon from './components/svgIcons/OwnershipIcon';
 import ProductionIcon from './components/svgIcons/ProductionIcon';
 import WellIcon from './components/svgIcons/WellIcon';
@@ -32,10 +28,6 @@ import WellCardDetails from './WellCardDetails';
 import { WELLSUMMARYDETAILQUERY } from '../../graphQL/useQueryWellSummaryDetail';
 import convert_date from '../Shared/valueformatters/convert_date.js';
 import formatBOE from '../Shared/valueformatters/format_boe.js';
-
-// queries
-
-// value formatters
 
 const useStyles = makeStyles(() => ({
 	card: {
@@ -104,7 +96,6 @@ const useStyles = makeStyles(() => ({
 		padding: '5px',
 		alignContent: 'center',
 		background: '#F6F6F6',
-		border: '0px',
 	},
 	cell2: {
 		border: '0px',
@@ -145,17 +136,16 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
+const wellCardHeight = 'calc(94vh - 20px)';
+
 function WellCard() {
-	// context
 	const [stateExpandableCard] = useContext(ExpandableCardContext);
 	const [, setStateWellCard] = useContext(WellCardContext);
 
 	// function state
-	const [target] = useState(null);
 	const [wellData, setWellData] = useState(null);
 	const [source, setSource] = useState(null);
 
-	// theme / styles
 	const classes = useStyles();
 
 	// queries
@@ -381,7 +371,7 @@ function WellCard() {
 										</TableCell>
 									</TableRow>
 
-									{wellData?.WellStatus == 'P&A' ? (
+									{wellData?.WellStatus === 'P&A' ? (
 										<TableRow className={classes.rowGrey}>
 											<TableCell className={classes.cell1} align="left">
 												Plug Date
@@ -537,10 +527,10 @@ function WellCard() {
 					</Card>
 				</div>
 			) : (
-				<div style={{ height: '100%' }}>
+				<div style={{ height: wellCardHeight }}>
 					<Card className={classes.card}>
 						<CardContent className={classes.content}>
-							<WellCardDetails target={target} summary={wellData} />
+							<WellCardDetails summary={wellData} />
 						</CardContent>
 					</Card>
 				</div>
@@ -675,10 +665,10 @@ function WellCard() {
 					</Card>
 				</div>
 			) : (
-				<div style={{ height: '100%' }}>
+				<div style={{ height: wellCardHeight, paddingBottom: '9px' }}>
 					<Card className={classes.card} data-testid="well-card">
 						<CardContent className={classes.content}>
-							<WellCardDetails target={target} summary={wellData} />
+							<WellCardDetails summary={wellData} />
 						</CardContent>
 					</Card>
 				</div>

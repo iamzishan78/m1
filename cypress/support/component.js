@@ -33,7 +33,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ConnectedRouter } from 'connected-react-router';
 import { mount } from 'cypress/react';
 
-import { globalStateController } from 'controllers/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import Providers from 'Providers';
 import { history } from 'store';

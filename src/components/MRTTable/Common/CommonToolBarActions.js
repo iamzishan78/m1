@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import Button from '@material-ui/core/Button';
@@ -12,7 +11,7 @@ import { getAllData } from 'components/MRTTable/utils/GetAllData';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import RequestPageIcon from 'components/Shared/svgIcons/request_page';
 
-import { tableController, tableGlobalController } from 'controllers/tableController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 export const excludeFilters = (tableKey, total) => {
 	const rowSelection = tableController(tableKey).getValue('rowSelection');

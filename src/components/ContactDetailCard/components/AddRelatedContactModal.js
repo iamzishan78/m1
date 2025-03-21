@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import React, { useContext, useState, useEffect, useMemo, useRef } from 'react';
 
 import { Button, TextField, IconButton, CircularProgress, FormControl, Grid, makeStyles } from '@material-ui/core';
@@ -11,10 +9,10 @@ import get from 'lodash/get';
 
 import AutoCompleteAddNewField from 'components/Common/AutoCompleteWithAddNew';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { ADD_RELATED_CONTACT } from 'graphQL/useMutationRelatedContact';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import RightDialog from './RightDialog';
 import { AppContext } from '../../../AppContext';
@@ -50,7 +48,7 @@ export default function AddRelatedContactModal(props) {
 		fetchPolicy: 'no-cache',
 	});
 	const [addContact, { data: response, loading: isSubmitting }] = useMutation(ADD_RELATED_CONTACT, {
-		refetchQueries: ['getContactSummary'],
+		refetchQueries: ['getContactSummary', 'getContact'],
 		onCompleted: () => {
 			tableGlobalController.refetch();
 		},
@@ -102,7 +100,7 @@ export default function AddRelatedContactModal(props) {
 				relatedObject: props.relatedObject,
 				userId,
 			},
-			refetchQueries: ['getContactSummary'],
+			refetchQueries: ['getContactSummary', 'getContact'],
 			awaitRefetchQueries: true,
 		});
 	};

@@ -28,7 +28,7 @@ import AutoCompleteAddNewField from 'components/ContactDetailCard/components/Fie
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
 import { workspaceTenantName } from 'components/Shared/functions';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { UserSession } from 'utils/user';
 

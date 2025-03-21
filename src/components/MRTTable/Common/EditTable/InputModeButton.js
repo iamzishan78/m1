@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
-import { tableController } from 'controllers/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 const InputModeButton = ({ tableKey, onClick, label = 'INPUT MODE' }) => {
 	const Controller = tableController(tableKey);

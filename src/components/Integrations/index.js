@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Grid, makeStyles } from '@material-ui/core';
@@ -7,13 +7,13 @@ import { Autocomplete, TextField } from '@mui/material';
 
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 
-import { adminOperationsController } from 'controllers/adminOperationsController';
-import { jobController } from 'controllers/jobStateController';
-
 import { ADD_EXTERNAL_TOOL } from 'graphQL/useMutationAddExternalTool';
 import { SYNC_DIALPAD } from 'graphQL/useMutationSyncDialpad';
 import { ALL_EXTERNAL_TOOLS } from 'graphQL/useQueryAllExternalTools';
 import { EXTERNAL_TOOL_EXISTS } from 'graphQL/useQueryExternalToolExists';
+
+import { adminOperationsController } from 'stateManagement/adminOperationsController';
+import { jobController } from 'stateManagement/jobStateController';
 
 import { getURL } from 'utils/helper';
 
@@ -78,6 +78,13 @@ const Integrations = () => {
 	const [externalToolExists] = useLazyQuery(EXTERNAL_TOOL_EXISTS);
 	const { data: allTools } = useQuery(ALL_EXTERNAL_TOOLS);
 
+	useEffect(() => {
+		const dialpad = allTools?.allExternalTools?.find(tool => tool.toolName === 'dialpad');
+		if (dialpad) {
+			adminOperationsController.updateState({ apiKeys: { ...apiKeys, dialpad: dialpad?.apiKey } });
+		}
+	}, [allTools]);
+
 	const {
 		adminOperationsState: { apiKeys },
 	} = adminOperationsController.useState(['apiKeys'], 'adminOperationsState');
@@ -99,9 +106,6 @@ const Integrations = () => {
 				dispatch(showErrorMessage('Invalid Api Key'));
 			} else {
 				dispatch(showSuccessMessage('Api Key saved successfully'));
-				if (value) {
-					adminOperationsController.updateState({ apiKeys: { ...apiKeys, [fieldName]: '' } });
-				}
 			}
 		});
 	};

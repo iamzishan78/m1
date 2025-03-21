@@ -12,9 +12,9 @@ import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Land/index';
 import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 import LandSearch from 'components/Navigation/components/LandSearch';
 
-import { layerController } from 'controllers/layerStateController';
-
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
+
+import { layerController } from 'stateManagement/layerStateController';
 
 export default function LandAppBar(props) {
 	const { classes, user } = props;

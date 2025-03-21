@@ -6,8 +6,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import WellsFilters from 'components/Land/components/Wells/WellsFilters';
 import MRTTable from 'components/MRTTable';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { tableController, tableGlobalController } from 'controllers/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 

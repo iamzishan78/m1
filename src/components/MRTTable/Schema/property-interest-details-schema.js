@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
@@ -7,8 +6,8 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import PropertyInterestDetailTableTolBar from 'components/MRTTable/TablesOverride/PropertyInterestDetailTable/PropertyInterestDetailTableTolBar';
 import { formatDate } from 'components/Shared/functions';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { tableGlobalController } from 'controllers/tableController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const esIndex = 'propertyinterest_flat';
 

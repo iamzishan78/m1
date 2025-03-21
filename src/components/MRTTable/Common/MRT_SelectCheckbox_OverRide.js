@@ -1,8 +1,10 @@
+import React from 'react';
+
 import Checkbox from '@mui/material/Checkbox';
 import Radio from '@mui/material/Radio';
 import Tooltip from '@mui/material/Tooltip';
 
-import { tableController } from 'controllers/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 function MRT_SelectCheckbox_OverRide({ row, selectAll, table, tableKey }) {
 	const tableState = tableController(tableKey).useState(['rowSelection']);

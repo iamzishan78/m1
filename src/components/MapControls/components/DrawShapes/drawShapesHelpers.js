@@ -4,7 +4,7 @@ import { SRCenter } from 'mapbox-gl-draw-scale-rotate-mode';
 
 import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
 
-import { drawController } from 'controllers/drawStateController';
+import { drawController } from 'stateManagement/drawStateController';
 
 import { spatialDataAttributes } from './constants';
 

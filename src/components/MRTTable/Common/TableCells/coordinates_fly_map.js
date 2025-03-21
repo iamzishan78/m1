@@ -8,7 +8,7 @@ import RoomIcon from '@material-ui/icons/Room';
 
 import PropTypes from 'prop-types';
 
-import { mapControlsController } from 'controllers/mapControlsController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 const useStyles = makeStyles(() => ({
 	icons: {

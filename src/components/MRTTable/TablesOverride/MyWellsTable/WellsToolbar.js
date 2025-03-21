@@ -4,8 +4,8 @@ import { Button } from '@material-ui/core';
 
 import MyWellDialog from 'components/Land/components/Wells/MyWellDialog';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { tableGlobalController } from 'controllers/tableController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 function WellsToolBar() {
 	const { stateValues } = tableGlobalController.useState(['addWellDialog']);

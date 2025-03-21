@@ -28,14 +28,14 @@ import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectF
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
-import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
-
-import { globalStateController } from 'controllers/globalStateController';
-import { popupController } from 'controllers/popupStateController';
+import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { KEYBOARD_KEYS, TO_FIXED } from 'utils/consts';
 import { copy } from 'utils/helper';

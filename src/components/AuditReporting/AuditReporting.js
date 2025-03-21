@@ -10,9 +10,9 @@ import ActivitiesDashboardFilter from 'components/Activities/components/Activiti
 import ActivityAnalytics from 'components/Activities/components/ActivityAnalytics';
 import MRTTable from 'components/MRTTable';
 
-import { tableController } from 'controllers/tableController';
-
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
+
+import { tableController } from 'stateManagement/tableController';
 
 import { getDateFilters } from 'utils/helper';
 

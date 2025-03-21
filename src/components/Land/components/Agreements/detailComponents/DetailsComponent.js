@@ -25,6 +25,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { get, set } from 'lodash';
 import moment from 'moment';
 
+import RelatedFile from 'components/Document/components/RelatedFile';
 import LegalDescription from 'components/Land/components/Agreements/detailComponents/legalDescription';
 import Provisions from 'components/Land/components/Agreements/detailComponents/provisions';
 import RelatedAgreementsTable from 'components/Land/components/Agreements/detailComponents/relatedAgreements';
@@ -41,16 +42,16 @@ import { copy } from 'components/Shared/functions';
 import MapImgViewIcon from 'components/Shared/svgIcons/MapImgViewIcon';
 import Tags from 'components/Shared/Tagger';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { jobController } from 'controllers/jobStateController';
-import { popupController } from 'controllers/popupStateController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
 import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
+
+import { detailCardController } from 'stateManagement/detailCardController';
+import { jobController } from 'stateManagement/jobStateController';
+import { popupController } from 'stateManagement/popupStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { PaymentFeatureTenants } from 'utils/data';
 import { UserSession } from 'utils/user';
@@ -715,31 +716,53 @@ export function DetailComponents(props) {
 					{stateApp.viewDoc && <DocViewer divCondition={true} DocStyle={{ height: 'calc(100vh - 280px)' }} />}
 				</div>
 
-				{drawer === 'meta' && (
-					<MetadataDrawer
-						setCollapse={value => setDrawer(!value)}
-						targetSourceId={agreementId}
-						data={agreementDetails}
-						targetLabel="Shape"
-						showDescription={false}
-						descriptionKey="description"
-						ownerPlaceHolder="Assign Approver"
-						ownerTitle="Approver"
-						onUpdate={data => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
-						isSource={false}
-						shapeType="Agreement"
-						shapeData={activeAgreement}
-						isApproval
-						showCommentType
-					/>
-				)}
-				{drawer === 'agrmt' && (
-					<AddNewRelatedAgreementDialog
-						customLayerId={get(dataCustomLayer, 'customLayer._id')}
-						setDrawer={setDrawer}
-						parentType="Agreement"
-					/>
-				)}
+				<div
+					style={{
+						marginTop: 20,
+						marginRight: 24,
+						height: 'calc(100vh - 270px)',
+						overflow: 'auto',
+						width: drawer ? 620 : 0,
+						background: 'white',
+						overflowY: 'auto',
+					}}
+					id={'agreementDetailsDrawer'}
+				>
+					{drawer === 'meta' && (
+						<MetadataDrawer
+							setCollapse={value => setDrawer(!value)}
+							targetSourceId={agreementId}
+							data={agreementDetails}
+							targetLabel="Shape"
+							showDescription={false}
+							descriptionKey="description"
+							ownerPlaceHolder="Assign Approver"
+							ownerTitle="Approver"
+							onUpdate={data => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
+							isSource={false}
+							shapeType="Agreement"
+							shapeData={activeAgreement}
+							isApproval
+							showCommentType
+							height="100vh"
+						/>
+					)}
+					{drawer === 'agrmt' && (
+						<AddNewRelatedAgreementDialog
+							customLayerId={get(dataCustomLayer, 'customLayer._id')}
+							setDrawer={setDrawer}
+							parentType="Agreement"
+						/>
+					)}
+
+					{drawer === 'dcmnt' && (
+						<RelatedFile
+							relatedObjectType="Shape"
+							relatedObjectId={get(dataCustomLayer, 'customLayer._id')}
+							setShowDocumentSlider={setDrawer}
+						/>
+					)}
+				</div>
 			</div>
 
 			{/**

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
@@ -13,10 +12,10 @@ import FileName from 'components/MRTTable/TablesOverride/DocumentTable/TableCell
 import FileView from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/FileView';
 import { formatDate } from 'components/Shared/functions';
 
-import { slidoutStateController } from 'controllers/slidoutStateController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { history } from 'store';
 

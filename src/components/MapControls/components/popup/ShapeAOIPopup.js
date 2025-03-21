@@ -5,9 +5,9 @@ import TextField from '@material-ui/core/TextField';
 
 import { useMutation } from '@apollo/client';
 
-import { drawController } from 'controllers/drawStateController';
-
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
+import { drawController } from 'stateManagement/drawStateController';
 
 const useStyles = makeStyles(theme => ({
 	root: {

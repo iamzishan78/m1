@@ -189,6 +189,7 @@ const CARD_FIELD_MAPPER = {
 	offerPrice: { label: 'Offer Price', format: value => vf_currency(value) },
 	closedPrice: { label: 'Closed Price', format: value => vf_currency(value) },
 	totalNRA: { label: 'Total NRA', format: value => vf_number(value) },
+	totalNMA: { label: 'Total NMA', format: value => vf_number(value) },
 };
 
 const Transact = () => {
@@ -260,11 +261,12 @@ const Transact = () => {
 			if (pipelineData.pipeline) {
 				let laneId = '';
 				let cardId = '';
+				const paths = history.location.pathname.split('/');
 				if (history.location.pathname.includes('lane')) {
-					laneId = history.location.pathname.split('/')[FOUR];
+					laneId = paths[FOUR];
 				}
 				if (history.location.pathname.includes('card')) {
-					cardId = history.location.pathname.split('/')[SIX];
+					cardId = paths[SIX];
 				}
 
 				let deals = [];
@@ -274,7 +276,11 @@ const Transact = () => {
 						...lane,
 						cards: lane.cards?.map(card => {
 							if (!card.metadata.IsDeleted) {
-								if (lane.id === laneId && cardId === card.id) {
+								if (cardId === card.id) {
+									if (lane.id !== laneId) {
+										laneId = paths[4] = lane.id;
+										history.replace(paths.join('/'));
+									}
 									setStateApp(stateApp => ({
 										...stateApp,
 										dealDialog: true,
@@ -378,6 +384,37 @@ const Transact = () => {
 			}));
 		};
 	}, []);
+
+	const summaryData = useMemo(() => {
+		if (!filteredBoardTransactData || pipeToShow?.flowLineType !== 'deal') {
+			return null;
+		}
+
+		let totalDealCount = 0;
+		let totalPriceSum = 0;
+		let totalForecast = 0;
+
+		filteredBoardTransactData?.lanes?.forEach(lane => {
+			totalDealCount += lane?.cards?.length || 0;
+
+			let laneForecast = 0;
+			lane?.cards?.forEach(card => {
+				const offerPrice = card?.metadata?.offerPrice || 0;
+				laneForecast += offerPrice;
+			});
+			totalPriceSum += laneForecast;
+
+			if (lane?.metadata?.dealProbability > 0 && laneForecast > 0) {
+				totalForecast += laneForecast * (lane.metadata.dealProbability / 100);
+			}
+		});
+
+		return {
+			totalDealCount,
+			totalPriceSum: vf_currency(totalPriceSum),
+			totalForecast: vf_currency(totalForecast),
+		};
+	}, [filteredBoardTransactData, pipeToShow?.flowLineType]);
 
 	const handleCardClick = (cardId, metadata, laneId) => {
 		history.push(`/flow/${selectedPipe._id}/lane/${laneId}/card/${cardId}`);
@@ -728,7 +765,12 @@ const Transact = () => {
 			{!stateApp.transactBarShowGrid && <SidePanel />}
 
 			<main className={classes.content}>
-				<TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} setStateApp={setStateApp} />
+				<TransactAppBar
+					dealFilter={dealFilter}
+					setDealFilter={setDealFilter}
+					setStateApp={setStateApp}
+					summaryData={summaryData}
+				/>
 				{pipeToShow ? (
 					<div className={classes.boardAndTable}>
 						{isPipeLoading === true && (

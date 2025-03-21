@@ -9,11 +9,11 @@ import { useLazyQuery } from '@apollo/client';
 
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { layerController } from 'controllers/layerStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-
 import { OWNERSLATSLONS } from 'graphQL/useQueryOwnerLatsLonsArray';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 const useStyles = makeStyles(() => ({
 	icons: {

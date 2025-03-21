@@ -50,14 +50,14 @@ import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/Currenc
 import { addTrailingZeros } from 'components/Shared/functions';
 import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { ADD_OWNER_TOA_SHAPE } from 'graphQL/useMutationAddOwnerToAShape';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { UPDATE_SHAPE_TRACTS } from 'graphQL/useMutationUpdateShapeTracts';
 import { GET_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetAutoCompleteList';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_TRACT_ABSTRACT_SHAPE } from 'graphQL/useQueryGetTractAbstractShape';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 import { INTEREST_TO_FIXED, TO_FIXED } from 'utils/consts';

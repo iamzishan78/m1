@@ -10,9 +10,9 @@ import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { tableController } from 'controllers/tableController';
-
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+
+import { tableController } from 'stateManagement/tableController';
 
 const MIN_SEARCH_LENGTH = 700;
 const MIN_FILTER_LENGTH = 2;

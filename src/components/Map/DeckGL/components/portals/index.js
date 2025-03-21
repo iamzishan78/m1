@@ -12,11 +12,11 @@ import ShapeDetailCard from 'components/ShapeDetailCard';
 import UdLayerCardProvider from 'components/UdLayerCard/UdLayerCardProvider';
 import WellCardProvider from 'components/WellCard/WellCardProvider';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { layerController } from 'controllers/layerStateController';
-import { popupController } from 'controllers/popupStateController';
-
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import PermitClick from './PermitClick';
 import WellClick from './WellClick';
@@ -147,7 +147,7 @@ function Portals({ hideShape }) {
 				<div /* className={classes.draggable} */>
 					<ExpandableCardProvider
 						expanded
-						handleCloseExpandableCard={() => popupController.reset()}
+						handleCloseExpandableCard={popupController.reset}
 						component={<ShapeDetailCard type={popupVals?.selectedShape?.type || popupVals?.selectedShape?.sdType} />}
 						title={popupVals?.selectedShape?.shapeLabel}
 						subTitle={commonShapeSubTitle}

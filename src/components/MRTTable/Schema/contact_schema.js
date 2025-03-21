@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 import Avatar from 'react-avatar';
 
@@ -15,12 +14,13 @@ import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagCompon
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
+import DailpadIcon from 'components/Shared/components/svgIcons/DailpadIcon';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import Contact from 'components/Shared/svgIcons/contact';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
 
@@ -121,6 +121,7 @@ const ContactMeta = {
 			size: 450,
 			Cell: ({ renderedCellValue, row }) => {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+				const dialpadIds = row?.original?.dialpadIds || [];
 
 				const NAME_SPLICE_LENGTH = 2;
 
@@ -173,6 +174,12 @@ const ContactMeta = {
 										}}
 									/>
 								</FeatureFlag>
+							)}
+
+							{dialpadIds.length > 0 && (
+								<span style={{ marginLeft: '5px', marginRight: '5px', marginTop: '5px' }}>
+									<DailpadIcon htmlColor="#757575" />
+								</span>
 							)}
 						</p>
 					</div>
@@ -334,7 +341,7 @@ const ContactMeta = {
 			...CommonSchema.STRING_COLUMN,
 			name: 'phone1.keyword',
 			id: 'phone1',
-			header: 'Phone 1',
+			header: 'Phone 1 (Purchased Data)',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
@@ -343,7 +350,7 @@ const ContactMeta = {
 			...CommonSchema.STRING_COLUMN,
 			name: 'phone2.keyword',
 			id: 'phone2',
-			header: 'Phone 2',
+			header: 'Phone 2 (Purchased Data)',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
@@ -352,7 +359,7 @@ const ContactMeta = {
 			...CommonSchema.STRING_COLUMN,
 			name: 'phone3.keyword',
 			id: 'phone3',
-			header: 'Phone 3',
+			header: 'Phone 3 (Purchased Data)',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
@@ -361,7 +368,7 @@ const ContactMeta = {
 			...CommonSchema.STRING_COLUMN,
 			name: 'phone4.keyword',
 			id: 'phone4',
-			header: 'Phone 4',
+			header: 'Phone 4 (Purchased Data)',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
@@ -370,7 +377,7 @@ const ContactMeta = {
 			...CommonSchema.STRING_COLUMN,
 			name: 'phone5.keyword',
 			id: 'phone5',
-			header: 'Phone 5',
+			header: 'Phone 5 (Purchased Data)',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},

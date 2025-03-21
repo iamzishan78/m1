@@ -10,7 +10,7 @@ import EditIcon from '@material-ui/icons/Edit';
 
 import { copy } from 'components/Shared/functions';
 
-import { globalStateController } from 'controllers/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { BulletPointMeta } from 'utils/BulletPointMeta';
 import { ChipMeta } from 'utils/ChipMeta';
@@ -44,7 +44,6 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 
 	useEffect(() => {
 		onFilterChange('');
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dropdownOptions]);
 
 	const CustomMenuList = props => {

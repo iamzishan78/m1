@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
 import MRTTable from 'components/MRTTable';
 
-import { globalStateController } from 'controllers/globalStateController';
-
 import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { basic_timeouts } from '../../../cypress/cypressUtils/data';
 import { headers } from '../../cypressUtils/cypressHeaders';

@@ -11,11 +11,11 @@ import CustomFieldSelect from 'components/MRTTable/Common/Components/CustomField
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import LongIcon from 'components/Shared/svgIcons/LongIcon';
 
-import { globalStateController } from 'controllers/globalStateController';
-
 import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import MetaField from 'utils/MetaField';
 

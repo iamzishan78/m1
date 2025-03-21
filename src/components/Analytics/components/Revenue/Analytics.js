@@ -10,10 +10,9 @@ import FilterIcon from 'components/Common/SvgIcons/Filter';
 import { copy } from 'components/Shared/functions';
 import { vf_currency_dollar } from 'components/Shared/valueformatters/vf_currency';
 
-import { tableController } from 'controllers/tableController';
+import { GET_DB_AGGS, GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+import { tableController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -203,7 +202,6 @@ function AnalyticsCards(props) {
 			setMisMatchedInterestsCount(get(revenueComparisonAnalytics, 'isMisMatchedInterest[0].count', 0));
 			setSumPotentialGainLoss(get(revenueComparisonAnalytics, 'sumPotentialGainLoss[0].sumPotentialGainLoss', 0));
 		})();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState?.filters, tableState?.data?.total, searchQuery]);
 
 	useEffect(() => {
@@ -217,7 +215,6 @@ function AnalyticsCards(props) {
 			});
 		}
 		props.setESFilters(filters);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isFiltered]);
 
 	return (

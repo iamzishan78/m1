@@ -16,9 +16,9 @@ import isEmpty from 'lodash/isEmpty';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
-import { jobController } from 'controllers/jobStateController';
-
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { jobController } from 'stateManagement/jobStateController';
 
 import { NavigationContext } from '../Navigation/NavigationContext';
 import Stepper from './components/stepper';

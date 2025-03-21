@@ -21,19 +21,13 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import { useMutation } from '@apollo/client';
 
-//Contexts
 import { DocumentContextProvider, DocumentContext } from 'components/Document/DocumentContext';
-
-//Components
 import WellSearchApiFieldES from 'components/Shared/Forms/Fields/WellSearchApiFieldES';
-
-// Hooks
-
-// Mutations
-import { globalStateController } from 'controllers/globalStateController';
 
 import { ADD_WELL_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddWellToFileDescriptor';
 import { DELETEWELLFROMFILEDESCRIPTOR } from 'graphQL/useMutationDeleteWellFromFileDescriptor';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 const useStyles = makeStyles(theme => ({
 	rootPadding: {

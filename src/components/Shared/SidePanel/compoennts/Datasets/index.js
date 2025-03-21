@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -18,18 +17,19 @@ import { copy } from 'components/Shared/functions';
 import DatabaseIcon from 'components/Shared/svgIcons/DatabaseIcon';
 import FileDatasetIcon from 'components/Shared/svgIcons/FileDatasetIcon';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { layerController } from 'controllers/layerStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 import { GET_DATASETS } from 'graphQL/useQueryDataset';
 import { USER_MAP_SETTINGS_QUERY } from 'graphQL/useQueryUserMapSettings';
 
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+
 import { scrollbarStyle } from 'styles/common';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import DatasetMenu from './Menu';

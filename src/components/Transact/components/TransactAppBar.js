@@ -1,14 +1,16 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { Typography, AppBar, Button, ButtonGroup, Tooltip, IconButton } from '@material-ui/core';
+import { Typography, AppBar, Button, ButtonGroup, Tooltip, IconButton, Icon } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Add from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
 
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+
 import PropTypes from 'prop-types';
 
-import { tableController } from 'controllers/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { setFlowState } from 'actions';
 import { AppContext } from 'AppContext';
@@ -169,9 +171,23 @@ const useStyles = makeStyles(() => ({
 			},
 		},
 	},
+	summaryContainer: {
+		color: 'rgba(51, 51, 51, 0.87)',
+		fontSize: 16,
+		fontWeight: 'bold',
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		gap: '12px',
+	},
+	priceWithIcon: {
+		display: 'flex',
+		alignItems: 'center',
+		gap: '8px',
+	},
 }));
 
-const TransactAppBar = ({ dealFilter, setDealFilter }) => {
+const TransactAppBar = ({ dealFilter, setDealFilter, summaryData }) => {
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const classes = useStyles();
 	const dispatch = useDispatch();
@@ -185,6 +201,26 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
 			activeDeal: { cardId: null, laneId: null },
 		}));
 	};
+
+	const summaryItems = useMemo(() => {
+		if (!summaryData) {
+			return [];
+		}
+
+		return [
+			{ title: 'Sum Total', content: summaryData.totalPriceSum || 0 },
+			{
+				title: 'Forecast Total',
+				content: (
+					<div className={classes.priceWithIcon}>
+						<Icon component={CurrencyExchangeIcon} />
+						<span>{summaryData?.totalForecast || 0}</span>
+					</div>
+				),
+			},
+			{ title: 'Total Deals', content: `${summaryData.totalDealCount || 0} Deals` },
+		];
+	}, [summaryData]);
 
 	return (
 		<>
@@ -200,6 +236,16 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
 
 					{openPipeDialog && <PipelineCustomDialog />}
 					<div className={classes.left}>
+						<div className={classes.summaryContainer}>
+							{summaryItems.map((item, index) => (
+								<React.Fragment key={item.title}>
+									<Tooltip title={item.title}>
+										<span>{item.content}</span>
+									</Tooltip>
+									{index < summaryItems.length - 1 && <span className={classes.separator}>{'·'}</span>}
+								</React.Fragment>
+							))}
+						</div>
 						<div>
 							<Tooltip title={'Flowline Actions'}>
 								{/* Settings Icon Button to open Flowline settings */}
@@ -265,6 +311,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
 TransactAppBar.propTypes = {
 	dealFilter: PropTypes.string.isRequired,
 	setDealFilter: PropTypes.func.isRequired,
+	summaryData: PropTypes.object.isRequired,
 };
 
 export default TransactAppBar;

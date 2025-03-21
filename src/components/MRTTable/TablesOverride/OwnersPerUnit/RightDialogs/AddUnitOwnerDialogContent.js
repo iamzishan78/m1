@@ -22,14 +22,14 @@ import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/UnitDetailInterestOwner/unit_interest_owner_form_schema';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { sideDialogController, unitInterestOwnerState } from 'controllers/sideDialogController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { ADD_OWNER_TOA_SHAPE } from 'graphQL/useMutationAddOwnerToAShape';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { sideDialogController, unitInterestOwnerState } from 'stateManagement/sideDialogController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
 

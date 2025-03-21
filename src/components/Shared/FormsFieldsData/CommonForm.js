@@ -11,9 +11,11 @@ import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoCo
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 
-import { sideDialogController } from 'controllers/sideDialogController';
+import { sideDialogController } from 'stateManagement/sideDialogController';
 
+import DateTimeField from './Fields/DateTimeField';
 import StartEndDate from './Fields/StartEndDate';
+import UserField from './Fields/UserField';
 import CustomDatePicker from '../components/Fields/CustomDatePicker';
 
 function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
@@ -162,6 +164,26 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 					case 'startEndDate':
 						renderedField = (
 							<StartEndDate item={item} control={control} watch={watch} error={error || errors?.[item.name]} />
+						);
+						break;
+
+					case 'owner':
+						renderedField = (
+							<Grid item xs={12}>
+								<h3>{item.label}</h3>
+
+								<UserField dialogKey={dialogKey} item={item} />
+							</Grid>
+						);
+						break;
+
+					case 'dateTime':
+						renderedField = (
+							<Grid item xs={12}>
+								<h3>{item.label}</h3>
+
+								<DateTimeField dialogKey={dialogKey} item={item} />
+							</Grid>
 						);
 						break;
 

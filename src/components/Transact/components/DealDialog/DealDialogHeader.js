@@ -122,6 +122,7 @@ const DealDialogHeader = ({
 	setTitleFocus,
 	isTransactPage,
 	handleClickDialogClose,
+	addUpdateDeal,
 }) => {
 	const classes = useStyles({ title });
 	const [anchorEl, setAnchorEl] = useState();
@@ -283,7 +284,10 @@ const DealDialogHeader = ({
 								notchedOutline: classes.notchedOutline,
 							},
 						}}
-						onBlur={() => setTitleFocus(false)}
+						onBlur={() => {
+							setTitleFocus(false);
+							addUpdateDeal();
+						}}
 					/>
 					{/* <TextareaAutosize aria-label="empty textarea" placeholder="Empty" style={{ width: 200 }} /> */}
 				</FormControl>

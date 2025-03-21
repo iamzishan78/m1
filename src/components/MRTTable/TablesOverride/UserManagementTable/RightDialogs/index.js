@@ -4,7 +4,7 @@ import Dialog from '@material-ui/core/Dialog';
 
 import InviteUserDialog from 'components/MRTTable/Common/Components/InviteUserDialog';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 function UserManagementTableDialogs() {
 	const { stateValues } = tableGlobalController.useState(['dialog']);

@@ -4,15 +4,16 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
-import { drawController } from 'controllers/drawStateController';
-import { layerController } from 'controllers/layerStateController';
+import Line from 'components/Shared/svgIcons/line';
+import Point from 'components/Shared/svgIcons/point';
+
+import { drawController } from 'stateManagement/drawStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 import CheckCircle from '../../../Shared/svgIcons/check-circle';
 import MouseClicked from '../../../Shared/svgIcons/MouseClicked';
 import DrawPoly from '../../../Shared/svgIcons/polygon';
 import Rect from '../../../Shared/svgIcons/rectangle';
-import Point from 'components/Shared/svgIcons/point';
-import Line from 'components/Shared/svgIcons/line';
 
 const DrawShapesPopup = props => {
 	const { classes, children, handleClose } = props;

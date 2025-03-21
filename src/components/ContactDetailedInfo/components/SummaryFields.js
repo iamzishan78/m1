@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment, useRef, useContext } from 'react';
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { Grid } from '@material-ui/core';
+import { Grid, TextField, InputAdornment, CircularProgress, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useMutation } from '@apollo/client';
@@ -11,13 +11,19 @@ import PropTypes from 'prop-types';
 
 import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import { SUMMARY_FIELDS, featureFlagChanges, contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { NumberFormatComma } from 'components/Shared/Forms/Formatting/NumberFormatComma';
-import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
+import { phonenumber } from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+
+import { showErrorMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -49,6 +55,43 @@ const useStyles = makeStyles(() => ({
 			display: 'flex',
 			alignItems: 'center',
 			justifyContent: 'space-between',
+
+			// Show the dialpad icon by default
+			'& #dialpad-icon': {
+				visibility: 'visible',
+				opacity: 1,
+				transition: 'visibility 0.3s, opacity 0.3s ease-in-out',
+			},
+
+			// Hide the quick actions
+			'& #voicemail-icon, & #textsms-icon, & #call-icon, & #mail-icon': {
+				visibility: 'hidden',
+				opacity: 0,
+				transition: 'visibility 0.3s, opacity 0.3s ease-in-out',
+			},
+
+			// On hover: Hide dialpad icon completely and show other quick action icons
+			'&:hover #dialpad-icon': {
+				display: 'none', // Completely removes it from layout
+			},
+
+			// Show the quick actions on hover
+			'&:hover #voicemail-icon, &:hover #textsms-icon, &:hover #call-icon, &:hover #mail-icon': {
+				visibility: 'visible',
+				opacity: 1,
+			},
+		},
+	},
+	emailAdornment: {
+		cursor: 'pointer',
+		padding: '0px', // Remove extra padding
+		margin: '0 2px', // Adjust spacing between icons
+	},
+	baseValueChanged: {
+		width: '100%',
+		'& .MuiInputBase-input': {
+			color: 'dodgerblue',
+			fontWeight: 'bold',
 		},
 	},
 }));
@@ -58,10 +101,22 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 	const { control, reset, watch } = useForm();
 	const [activeLoadingField, setLoading] = useState();
 	const [isFormSet, setFormState] = useState(false);
+	const [stateApp] = useContext(AppContext);
+	const dispatch = useDispatch();
 
 	const { user } = useSelector(state => state.app);
 
-	const [updateContact] = useMutation(UPDATECONTACT);
+	const globalState = globalStateController.useState(['dialpadContact'], 'globalStateValues');
+	const { basicInfo: basicPhoneKeys = [] } = globalState?.globalStateValues?.dialpadContact?.phoneKeys ?? {}; // Default to an empty object
+	const { basicInfo: basicEmailKeys = [] } = globalState?.globalStateValues?.dialpadContact?.emailKeys ?? {}; // Default to an empty object
+
+	const [updateContact] = useMutation(UPDATECONTACT, {
+		onCompleted: data => {
+			if (data?.updateContact && !data.updateContact?.success) {
+				dispatch(showErrorMessage(data?.updateContact?.message));
+			}
+		},
+	});
 
 	const showGenericPhones = React.useMemo(() => {
 		return user.features?.find(f => f.name === 'showGenericPhones');
@@ -124,12 +179,17 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			variables: {
 				contact,
 				ignoreResponse: true,
+				isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 			},
-			refetchQueries: ['getContact'],
+			refetchQueries: ['getContact', 'getDailpadContact'],
 			awaitRefetchQueries: false,
 		})
-			.then(() => setLoading(null))
-			.catch(() => setLoading(null));
+			.then(() => {
+				setLoading(null);
+			})
+			.catch(() => {
+				setLoading(null);
+			});
 	};
 
 	const isChanged = (key, value) => {
@@ -158,7 +218,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 			{SUMMARY_FIELDS(contactData).map(field => (
 				<Grid
 					item
-					key={JSON.stringify(field)}
+					key={field.key}
 					style={{ position: 'relative', width: '100%', marginRight: '30px', maxWidth: '44%', flexBasis: '7%' }}
 				>
 					<Grid container className={classes.gridStyle}>

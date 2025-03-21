@@ -24,15 +24,15 @@ import parcelOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchem
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { sideDialogController, tractInterestOwnerState } from 'controllers/sideDialogController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { ADDOWNERTOAPARCEL } from 'graphQL/useMutationAddOwnerToAParcel';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { sideDialogController, tractInterestOwnerState } from 'stateManagement/sideDialogController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { UserSession } from 'utils/user';
 

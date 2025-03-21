@@ -21,9 +21,9 @@ import MRTTable from 'components/MRTTable';
 import ActivitiesToolbar from 'components/MRTTable/TablesOverride/ContactDetailActivities/ActivitiesToolbar';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
-import { tableController } from 'controllers/tableController';
-
 import { CONTACT_SUMMARY } from 'graphQL/useQueryContactSummary';
+
+import { tableController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 
@@ -303,6 +303,7 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 				parentRecord: { value: contactData?._id },
 			},
 			customValue: { parentRecord: contactData?._id },
+			refetchQueries: ['getContactSummary', 'getRecentContactFiles'],
 		}),
 		[contactData?._id]
 	);

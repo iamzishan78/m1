@@ -1,13 +1,11 @@
 import React, { useMemo } from 'react';
 
-import { Tooltip, FormControlLabel, Switch } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
+import { Tooltip, FormControlLabel, Switch, Grid, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
-import { layerController } from 'controllers/layerStateController.js';
-import { mapControlsController } from 'controllers/mapControlsController.js';
+import { layerController } from 'stateManagement/layerStateController.js';
+import { mapControlsController } from 'stateManagement/mapControlsController.js';
 
 import { deepEqualObjects } from '../../../functions';
 import { ifLayerHaveData } from '../common';

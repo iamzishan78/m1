@@ -24,9 +24,6 @@ import PropTypes from 'prop-types';
 
 import CommentField from 'components/Shared/components/Fields/CommentField';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { slidoutStateController } from 'controllers/slidoutStateController';
-
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
@@ -34,6 +31,10 @@ import { GET_COMMENT_TYPES } from 'graphQL/useQueryCommentType';
 import { GET_PROFILES_IMAGES, GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { slidoutState } from 'stateManagement/initialStates';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import { updatePinComments } from 'store/actions/commonActions';
 
@@ -347,12 +348,13 @@ export default function CommentComponent(props) {
 	const [showCommentActionId, setShowCommentActionId] = useState(null);
 	const [loadingComments, setLoadingComments] = useState(true);
 	const [scrollIntoView, setScrollIntoView] = useState(false);
-	const [tab, setTab] = useState(0);
-	const [activityType, setActivityType] = useState('all');
-	const [commentTypes, setCommentTypes] = useState([]);
-	const [commentType, setCommentType] = useState('All');
 
 	const commentContainerRef = useRef(null);
+	const [tab, setTab] = useState(0);
+	const [activityType, setActivityType] = useState('all');
+	const [activityTypes, setActivityTypes] = useState([{ label: 'All', value: 'all' }]);
+	const [commentTypes, setCommentTypes] = useState([{ label: 'All', value: 'All' }]);
+	const [commentType, setCommentType] = useState('All');
 
 	const [removeComment] = useMutation(REMOVECOMMENT);
 	const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
@@ -374,7 +376,7 @@ export default function CommentComponent(props) {
 
 	useEffect(() => {
 		if (commentResponse && Array.isArray(commentResponse.commentsType)) {
-			const commentsType = commentResponse.commentsType;
+			const commentsType = commentResponse?.commentsType || [];
 			const uniqueCommonType = uniqBy(commentsType, e => {
 				return e.commentType;
 			});
@@ -438,14 +440,30 @@ export default function CommentComponent(props) {
 		let allComments = [];
 		if (dataComments && dataComments.commentsByObjectId) {
 			let activityData = [];
+
+			if (commentResponse?.commentsType) {
+				const commentsType = commentResponse.commentsType;
+				const uniqueCommonType = uniqBy(commentsType, e => {
+					return e.commentType;
+				});
+				const formattedOptions = uniqueCommonType.map(c => ({ label: c.commentType, value: c.commentType }));
+				formattedOptions.push({ label: 'All', value: 'All' });
+				setCommentTypes(
+					formattedOptions.filter(
+						type =>
+							dataComments.commentsByObjectId?.some(
+								ct => ct?.commentType?.commentType === type.value || ct?.commentType === type.value
+							) || type.value === 'All'
+					)
+				);
+			}
 			if (props.activityLog && props.activityLog.length > 0) {
+				setActivityTypes(
+					typeOptions.filter(t => props.activityLog?.some(act => act?.type === t.value) || t.value === 'all')
+				);
 				props.activityLog
 					.filter(act => (activityType === 'all' ? true : act?.type === activityType))
 					.forEach(element => {
-						const timestamp = element?.createAt
-							? new Date(new Date(element.createAt).toUTCString()).getTime()
-							: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime();
-
 						const user = element.isExternal
 							? { name: 'Dialpad' }
 							: { name: element.ownerName, email: element.ownerName };
@@ -455,7 +473,7 @@ export default function CommentComponent(props) {
 							activityData: element,
 							comment: element.notes,
 							outcome: element.outcome,
-							ts: timestamp,
+							ts: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime(),
 							isActivity: true,
 							isEdited: false,
 							public: true,
@@ -478,7 +496,7 @@ export default function CommentComponent(props) {
 					);
 				}
 				setCommentsArray(allComments);
-			} else if (tab === ACTIVITY_TAB) {
+			} else if (tab === 2) {
 				setCommentsArray(activityData);
 			}
 		}
@@ -487,7 +505,7 @@ export default function CommentComponent(props) {
 
 	useEffect(() => {
 		setLoadingComments(false);
-		if (!targetSourceId && newlyAddedComment?.upsertComment?.comment && props.targetLabel !== 'activity') {
+		if (!targetSourceId && newlyAddedComment?.upsertComment?.comment) {
 			const comments = JSON.parse(JSON.stringify(commentsArray));
 			comments.push({
 				...newlyAddedComment.upsertComment.comment,
@@ -823,17 +841,17 @@ export default function CommentComponent(props) {
 						<Tab label="Comments" disabled={editCommentId} />
 						<Tab label="Activities" disabled={editCommentId} />
 					</Tabs>
-					{tab === ACTIVITY_TAB && (
-						<div>
+					{tab === 2 && (
+						<div style={{ flexGrow: 0.5 }}>
 							<CommentsAutoComplete
-								options={typeOptions}
+								options={activityTypes}
 								onChange={value => setActivityType(value)}
 								value={typeOptions.find(option => option.value === activityType) || null}
 							/>
 						</div>
 					)}
 					{tab === 1 && (
-						<div>
+						<div style={{ flexGrow: 0.5 }}>
 							<CommentsAutoComplete
 								options={commentTypes}
 								onChange={value => setCommentType(value)}
@@ -869,6 +887,9 @@ export default function CommentComponent(props) {
 
 							{commentsArray.map((eachComment, index) => {
 								let indexToShow = commentsArray.length > MAX_COMMENTS ? commentsArray.length - MAX_COMMENTS : 0;
+
+								const commentorText = eachComment?.user?.name || eachComment?.user?.email;
+
 								return (
 									eachComment?.user?.name && (
 										<Fragment key={eachComment?._id}>
@@ -894,7 +915,7 @@ export default function CommentComponent(props) {
 																	round
 																/>
 															) : (
-																<Avatar name={eachComment?.user?.name} size="38" round />
+																<Avatar name={commentorText} size="38" round />
 															)}
 														</IconButton>
 													</Grid>
@@ -906,7 +927,7 @@ export default function CommentComponent(props) {
 														}
 													>
 														<div>
-															<span className={classes.bold}>{eachComment?.user?.name}</span>
+															<span className={classes.bold}>{commentorText}</span>
 															{eachComment?.commentType?.commentType === 'unitCreation' && (
 																<span style={{ display: 'inline-block', marginLeft: '8px' }}>
 																	{eachComment?.comment}
@@ -1020,7 +1041,7 @@ export default function CommentComponent(props) {
 					)}
 					<div id="checkIf" ref={commentContainerRef} />
 				</div>
-				{!editCommentId && tab !== ACTIVITY_TAB && (
+				{!editCommentId && tab !== 2 && (
 					<div
 						style={{
 							paddingBottom: '20px',

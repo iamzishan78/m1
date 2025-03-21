@@ -1,10 +1,12 @@
+import React from 'react';
+
 import { InputAdornment } from '@material-ui/core';
 
 import { calculatePercentage } from 'components/Shared/valueformatters/vf_currency';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const billingPartiesForm = ({ setValue }) => {
 	const { paymentAmount } = tableGlobalController.getValue('paymentMultiGrid');

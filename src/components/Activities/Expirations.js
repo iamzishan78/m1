@@ -12,9 +12,9 @@ import PropTypes from 'prop-types';
 
 import MRTTable from 'components/MRTTable';
 
-import { tableController } from 'controllers/tableController';
-
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import { tableController } from 'stateManagement/tableController';
 
 import ActivitiesEvent from './components/ActivitiesEvent';
 import ActivitiesModal from './components/ActivitiesModal';

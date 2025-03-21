@@ -11,12 +11,12 @@ import { useMutation } from '@apollo/client';
 import { get } from 'lodash';
 import PropTypes from 'prop-types'; // Import PropTypes
 
-import { drawController } from 'controllers/drawStateController';
-import { globalStateController } from 'controllers/globalStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-import { popupController } from 'controllers/popupStateController';
-
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
+
+import { drawController } from 'stateManagement/drawStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import DrawShapePopup from '../popup/DrawShapesPopup';
 import ShapeActionsPopup from '../popup/ShapeActionsPopup';

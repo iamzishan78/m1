@@ -13,10 +13,10 @@ import parse from 'autosuggest-highlight/parse';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { UPSERT_MY_WELL } from 'graphQL/useMutationUpsertMyWell';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { wellParams } from './helpers';
 import { addMyWellStyles as useStyles } from './styles';

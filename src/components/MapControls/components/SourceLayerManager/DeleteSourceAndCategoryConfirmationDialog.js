@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -11,11 +10,11 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 import { useMutation } from '@apollo/client';
 
-import { layerController } from 'controllers/layerStateController';
-
 import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 import { REMOVE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+
+import { layerController } from 'stateManagement/layerStateController';
 
 import { Modals } from 'styles/Modal';
 

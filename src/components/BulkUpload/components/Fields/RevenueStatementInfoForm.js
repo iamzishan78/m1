@@ -4,9 +4,9 @@ import { Controller } from 'react-hook-form';
 import { Grid, TextField, Select, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { jobController } from 'controllers/jobStateController';
+import { jobController } from 'stateManagement/jobStateController';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
 	root: {
 		padding: '10px 33%',
 	},

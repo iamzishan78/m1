@@ -35,9 +35,9 @@ import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/Confirma
 import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
 import { modifyExandableCardStyle } from 'components/Shared/functions/shapeLayer';
 
-import { drawController } from 'controllers/drawStateController';
-import { globalStateController } from 'controllers/globalStateController';
-import { popupController } from 'controllers/popupStateController';
+import { drawController } from 'stateManagement/drawStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { showInfoMessage } from 'actions';
 

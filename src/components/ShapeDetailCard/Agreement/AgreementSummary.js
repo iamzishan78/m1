@@ -20,10 +20,10 @@ import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
 import TractIcon from 'components/Shared/svgIcons/tract';
 import WellIcon from 'components/Shared/svgIcons/well';
 
-import { globalStateController } from 'controllers/globalStateController';
-
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { copy } from 'utils/helper';
 import MetaField from 'utils/MetaField';

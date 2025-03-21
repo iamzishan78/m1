@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@material-ui/core';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { tableGlobalController } from 'controllers/tableController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
@@ -25,7 +25,6 @@ const ConvertOwnerToContact = ({
 
 	useEffect(() => {
 		getOwnerEntityDetailAction(propertyDetails?.owner);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [propertyDetails]);
 
 	return (

@@ -14,7 +14,7 @@ import { BatchHttpLink } from 'apollo-link-batch-http';
 import { HttpLink } from 'apollo-link-http';
 import PropTypes from 'prop-types';
 
-import { globalStateController } from 'controllers/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { UserSession } from 'utils/user';
 

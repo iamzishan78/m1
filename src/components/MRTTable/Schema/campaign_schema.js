@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import { isEmpty, pickBy } from 'lodash';
@@ -10,9 +9,9 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CampaignIcon from 'components/Shared/svgIcons/campaign';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
 

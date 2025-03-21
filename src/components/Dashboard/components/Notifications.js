@@ -3,8 +3,16 @@ import Avatar from 'react-avatar';
 import { useHistory } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
 
-import { Grid, Typography } from '@material-ui/core';
-import { CircularProgress, Menu, MenuItem, TextField, InputAdornment, IconButton } from '@material-ui/core';
+import {
+	Grid,
+	Typography,
+	CircularProgress,
+	Menu,
+	MenuItem,
+	TextField,
+	InputAdornment,
+	IconButton,
+} from '@material-ui/core';
 import CardHeader from '@material-ui/core/CardHeader';
 import List from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
@@ -12,8 +20,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Tooltip from '@material-ui/core/Tooltip';
-import { LocalAtm } from '@material-ui/icons';
-import { DescriptionOutlined } from '@material-ui/icons';
+import { LocalAtm, DescriptionOutlined } from '@material-ui/icons';
 import ClearIcon from '@material-ui/icons/Clear';
 import FolderIcon from '@material-ui/icons/Folder';
 import ContactIcon from '@material-ui/icons/Group';
@@ -33,13 +40,13 @@ import MarkUnreadIcon from 'components/Shared/svgIcons/mark-unread';
 import TractIcon from 'components/Shared/svgIcons/tract';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 
-import { globalStateController } from 'controllers/globalStateController';
-
 import { ARCHIVE_ALL_MUTATIONS } from 'graphQL/useMutationArchiverAllMentions';
 import { UPDATE_NOTIFICATION_STATUS } from 'graphQL/useMutationUpdateNotificationStatus';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { dateIsValid } from 'utils/helper';
 

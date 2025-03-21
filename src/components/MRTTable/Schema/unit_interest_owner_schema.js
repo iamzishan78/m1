@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
@@ -19,10 +18,10 @@ import OwnersPerUnitToolBar from 'components/MRTTable/TablesOverride/OwnersPerUn
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { tableController, tableGlobalController } from 'controllers/tableController';
-
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
 

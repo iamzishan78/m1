@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { mapControlsController } from 'controllers/mapControlsController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import MapGridCard from './MapGridCard';
 import { MapGridContextProvider } from './MapGridContext';

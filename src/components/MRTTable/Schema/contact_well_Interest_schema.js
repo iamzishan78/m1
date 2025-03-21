@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
@@ -6,7 +5,7 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import WellInterestToolBar from 'components/MRTTable/TablesOverride/ContactDetailWellInterestTable/WellInterestToolbar';
 
-import { tableController, tableGlobalController } from 'controllers/tableController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 const esIndex = 'wellinterests_flat';
 

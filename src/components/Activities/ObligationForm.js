@@ -13,13 +13,13 @@ import DescriptionField from 'components/Shared/Slideout/FieldComponents/Descrip
 import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
-import { formStateController } from 'controllers/formStateController';
-import { globalStateController } from 'controllers/globalStateController';
-import { slidoutStateController } from 'controllers/slidoutStateController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { DELETEACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import { formStateController } from 'stateManagement/formStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 

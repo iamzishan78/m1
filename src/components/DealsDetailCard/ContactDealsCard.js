@@ -6,10 +6,10 @@ import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
 
-import { globalStateController } from 'controllers/globalStateController';
-
 import { CONTACT } from 'graphQL/useQueryContact';
 import { CONTACTDEALS } from 'graphQL/useQueryContactDeals';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import DealsDetailCard from './DealsDetailCard';
 
@@ -100,7 +100,7 @@ export default function ContactDocumentsCard(props) {
 	}, [data]);
 
 	return contactData ? (
-		<div variant="outlined" className={classes.root}>
+		<div className={classes.root}>
 			<div
 				style={{
 					backgroundColor: '#F2F2F2',

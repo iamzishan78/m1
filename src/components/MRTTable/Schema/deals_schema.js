@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+ 
 import React from 'react';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -72,6 +72,12 @@ const DealsMeta = {
 			header: 'Total NRA',
 			id: 'totalNRA',
 			name: 'totalNRA',
+		},
+		{
+			...CommonSchema.INTEREST_COLUMN,
+			header: 'Total NMA',
+			id: 'totalNMA',
+			name: 'totalNMA',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,

@@ -11,9 +11,9 @@ import PropTypes from 'prop-types';
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { generateRandomColor } from 'components/MapControls/commonHelper';
 
-import { getLayerKey } from 'controllers/helpers';
-
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+
+import { getLayerKey } from 'stateManagement/helpers';
 
 import { ColorPickerStyledBox } from '../Common';
 import { colorBasedAttributes } from './ColorBasedAttributes';

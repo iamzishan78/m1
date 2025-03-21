@@ -4,9 +4,9 @@ import { useLazyQuery } from '@apollo/client';
 
 import MRTTable from 'components/MRTTable';
 
-import { tableController } from 'controllers/tableController';
-
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+
+import { tableController } from 'stateManagement/tableController';
 
 import AnalyticsCharts from './AnalyticsCharts';
 
@@ -40,7 +40,6 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
 				});
 			});
 		})();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState?.data?.total, tableState?.filters]);
 
 	return (

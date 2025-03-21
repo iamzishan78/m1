@@ -12,6 +12,7 @@ import { Close, Delete, Layers, Sync } from '@material-ui/icons';
 
 import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
 import $ from 'jquery';
+import PropTypes from 'prop-types';
 
 import M1neral_headers, { getCustomFieldHeaders } from 'components/BulkUpload/jobHeaders';
 import { clearMapAndCloseShapeActionsPopup } from 'components/MapControls/commonHelper';
@@ -19,23 +20,24 @@ import { userDefinedInitialData } from 'components/MapGridCard/components/data';
 import DeleteConfirmationDialogContent from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import FilterAltIcon from 'components/Shared/svgIcons/FilterAltIcon';
 
-import { drawController } from 'controllers/drawStateController';
-import { globalStateController } from 'controllers/globalStateController';
-import { jobController } from 'controllers/jobStateController';
-import { layerController } from 'controllers/layerStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-import { mapStateController } from 'controllers/mapStateController';
-import { popupController } from 'controllers/popupStateController';
-
 import { DELETE_SHAPEFILE_FEEATURE } from 'graphQL/useMutationShapeFile';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_SHAPE_FEATURE } from 'graphQL/useQueryGetShapeFeature';
 
+import { drawController } from 'stateManagement/drawStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { jobController } from 'stateManagement/jobStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { mapStateController } from 'stateManagement/mapStateController';
+import { popupController } from 'stateManagement/popupStateController';
+
+import { layerRefs } from 'stateManagement';
 import { history } from 'store';
 
 import { AppContext } from '../../AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {},
 	card: {
 		position: props => props.position,
@@ -129,7 +131,6 @@ function UdLayerCard(props) {
 		getShapeFeature({
 			variables: { id: props.selectedUserDefinedLayer._id },
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [getShapeFeature]);
 
 	const selectedUserDefinedLayer = useMemo(() => {
@@ -432,4 +433,10 @@ function UdLayerCard(props) {
 }
 
 UdLayerCard.whyDidYouRender = true;
+
+UdLayerCard.propTypes = {
+	parent: PropTypes.string,
+	selectedUserDefinedLayer: PropTypes.object,
+};
+
 export default React.memo(UdLayerCard);

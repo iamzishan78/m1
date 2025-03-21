@@ -2,7 +2,7 @@ import React from 'react';
 
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const TabHeader = ({ labels }) => {
 	const {

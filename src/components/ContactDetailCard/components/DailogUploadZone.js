@@ -10,6 +10,8 @@ import { DropzoneAreaBase } from 'material-ui-dropzone';
 
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
 
+import { tableGlobalController } from 'stateManagement/tableController';
+
 import { showErrorMessage, showWarningMessage } from '../../../actions';
 
 const useStyles = makeStyles(theme => ({
@@ -33,7 +35,6 @@ const useStyles = makeStyles(theme => ({
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'center',
-		border: '2px dashed rgb(176, 176, 176)',
 		border: '2px dashed #dddddd',
 		marginBottom: '30px',
 		// marginLeft: '20px',
@@ -97,10 +98,11 @@ export default function UploadZone(props) {
 						relatedObjectId: props.relatedObjectId,
 						relatedObjectType: props.relatedObjectType,
 					},
-					refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'getParcelFilesCount'],
+					refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'getParcelFilesCount', 'getContact', 'getDbData'],
 					awaitRefetchQueries: true,
 				}).then(res => {
 					handleUploadFile(res.data);
+					tableGlobalController.refetch();
 				});
 			}
 		}

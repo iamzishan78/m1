@@ -4,7 +4,7 @@ import AnalyticsCards from 'components/Land/components/Common/AnalyticsCards';
 import MRTTable from 'components/MRTTable';
 import TabPanels from 'components/Shared/TabPanels';
 
-import { tableController, tableGlobalController } from 'controllers/tableController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 
@@ -78,7 +78,7 @@ const Tracts = () => {
 				<AnalyticsCards
 					parent="Tracts"
 					esIndex={esIndex[selectedTab]}
-					esFilters={[...tableStateValues.defaultFilters, ...tableStateValues?.filters] || []}
+					esFilters={[...tableStateValues.defaultFilters, ...tableStateValues.filters]}
 					totalCount={tableStateValues?.data?.rows?.length ? tableStateValues?.data?.total : 0}
 					cardsDefault={cardsDefault}
 					searchQuery={searchQuery}

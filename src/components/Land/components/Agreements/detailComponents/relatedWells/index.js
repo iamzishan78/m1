@@ -10,9 +10,9 @@ import PropTypes from 'prop-types';
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import MRTTable from 'components/MRTTable';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { useStyles as customStyles } from '../style';
 

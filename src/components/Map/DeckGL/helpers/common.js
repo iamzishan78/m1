@@ -7,9 +7,9 @@ import { colorBasedAttributes } from 'components/MapControls/components/Layer/La
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { deckGlLandGridIdentifiers, ifDefaultLayers } from 'components/Shared/functions/shapeLayer';
 
-import { getLayerKey } from 'controllers/helpers';
-import { layerController } from 'controllers/layerStateController';
-import { popupController } from 'controllers/popupStateController';
+import { getLayerKey } from 'stateManagement/helpers';
+import { layerController } from 'stateManagement/layerStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 const MAX_COLOR_VALUE_HEX = 0xfffff;
 const COLOR_MULTIPLIER = 1000000;
@@ -772,7 +772,9 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 		};
 		// props.textMaxWidth = 5;
 		props.pointType = 'text';
-		if (dbLayer.layerPaintProps?.[0]?.paintType === 'circle') props.pointType = 'circle+text';
+		if (dbLayer.layerPaintProps?.[0]?.paintType === 'circle') {
+			props.pointType = 'circle+text';
+		}
 
 		props.textFontFamily = 'Poppins';
 		// props.textSizeUnits = 'meters';
@@ -815,8 +817,8 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	return props;
 }
 
-export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true }) => {
-	let features = pickDeckObjects({ x, y, depth });
+export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true, radius }) => {
+	let features = pickDeckObjects({ x, y, depth, radius });
 
 	if (!getLandGrid) {
 		features = features.filter(f => !deckGlLandGridIdentifiers.some(prefix => f.layer.id.startsWith(prefix)));

@@ -7,12 +7,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import * as msal from '@azure/msal-browser';
 import queryString from 'query-string';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { mapStateController } from 'controllers/mapStateController';
-
 import { SIMPLE_BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
 import { GET_LOGGED_IN_USER } from 'graphQL/useMutationLoggedInUser';
 import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { mapStateController } from 'stateManagement/mapStateController';
 
 import { setUserAction } from 'store/actions/appActions';
 import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';
@@ -309,7 +309,6 @@ const Login = props => {
 				setLoading(false);
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [stateApp.myMSALObj, signingIn]);
 
 	const handleAADSignIn = async (tenantName, updateTenantFlags) => {

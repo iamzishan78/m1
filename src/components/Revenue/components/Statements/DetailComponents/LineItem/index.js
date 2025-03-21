@@ -11,9 +11,9 @@ import PropTypes from 'prop-types';
 import MRTTable from 'components/MRTTable';
 import PdfViewer from 'components/Revenue/components/Statements/DetailComponents/LineItem/PdfViewer';
 
-import { tableController } from 'controllers/tableController';
-
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+
+import { tableController } from 'stateManagement/tableController';
 
 const SPACING = 2;
 

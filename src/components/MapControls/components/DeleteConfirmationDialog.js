@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -9,9 +8,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { useMutation } from '@apollo/client';
 
-import { layerController } from 'controllers/layerStateController';
-
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+
+import { layerController } from 'stateManagement/layerStateController';
 
 import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
 

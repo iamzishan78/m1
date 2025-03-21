@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import Grid from '@material-ui/core/Grid';
@@ -13,10 +12,10 @@ import AgreementToolBar from 'components/MRTTable/TablesOverride/AgreementTable/
 import { formatDate } from 'components/Shared/functions';
 import Agreements from 'components/Shared/svgIcons/agreements';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
 

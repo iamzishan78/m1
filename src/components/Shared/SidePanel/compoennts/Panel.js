@@ -31,21 +31,18 @@ import LayerFilters from 'components/Shared/SidePanel/compoennts/Filters/LayerFi
 import MapPositions from 'components/Shared/SidePanel/compoennts/MapPositions';
 import FilterAltIcon from 'components/Shared/svgIcons/FilterAltIcon';
 
-// Contexts
-
-import { globalStateController } from 'controllers/globalStateController';
-import { layerController } from 'controllers/layerStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-import { mapStateController } from 'controllers/mapStateController';
-import { navController } from 'controllers/navStateController';
-
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
+import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { mapStateController } from 'stateManagement/mapStateController';
+import { navController } from 'stateManagement/navStateController';
 
 import { setActiveModule } from 'store/actions/commonActions';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
-
-// actions
 
 import AddGroup from './AddGroup';
 import Layer from './Layer';
@@ -413,7 +410,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		'aria-controls': `full-width-tabpanel-${index}`,
 	});
 
-	// eslint-disable-next-line no-unused-vars
 	const clearSearch = () => {
 		setTimeout(() => {
 			setSearch('');
@@ -421,7 +417,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 			filterLayers();
 		}, SEARCH_DELAY);
 	};
-	// eslint-disable-next-line no-unused-vars
+
 	const setSearchValue = value => {
 		setSearch(value);
 		filterLayers(value);

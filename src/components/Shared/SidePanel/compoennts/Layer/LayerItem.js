@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 
 import { Tooltip, FormControlLabel, Switch } from '@material-ui/core';
@@ -13,10 +12,10 @@ import DragIndicator from '@material-ui/icons/DragIndicator';
 
 import { useMutation } from '@apollo/client';
 
-import { layerController } from 'controllers/layerStateController.js';
-import { mapControlsController } from 'controllers/mapControlsController.js';
-
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
+
+import { layerController } from 'stateManagement/layerStateController.js';
+import { mapControlsController } from 'stateManagement/mapControlsController.js';
 
 import { copy } from 'utils/helper';
 

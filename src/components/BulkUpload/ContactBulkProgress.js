@@ -1,19 +1,18 @@
 import React, { useEffect, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useQuery, useApolloClient } from '@apollo/client';
-import { useMutation } from '@apollo/client';
+import { useQuery, useApolloClient, useMutation } from '@apollo/client';
 import { debounce } from 'lodash';
 
 import Loader from 'components/Loaders/serverLoader';
 import useRefetchHelper from 'components/Shared/Hooks/useRefetchHelper';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { jobController } from 'controllers/jobStateController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
 import { GET_JOBS_STATUS } from 'graphQL/useQueryGetJobStatus';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { jobController } from 'stateManagement/jobStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { setReduxKey } from 'store/actions/commonActions';
 
@@ -24,7 +23,6 @@ const ContactBulkProgress = () => {
 	const jobState = jobController.useState(['bulkUpload', 'storeJobOutput'], 'jobStateValues');
 	const { jobStateValues } = jobState;
 
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const refetchHelperDebounced = useMemo(() => debounce(requestPayload => refetchHelper(requestPayload), 1000), []);
 
 	const dispatch = useDispatch();
@@ -65,7 +63,6 @@ const ContactBulkProgress = () => {
 			stopPolling();
 			refetch();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [jobState.bulkUpload, bulkUpload]);
 
 	useEffect(() => {
@@ -86,7 +83,6 @@ const ContactBulkProgress = () => {
 		} else {
 			stopPolling();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataJobs?.getJobsStatus]);
 
 	// useEffect hook to run side-effects when `dataJobs?.getJobsStatus` changes
@@ -104,7 +100,6 @@ const ContactBulkProgress = () => {
 				isJobFailed: targetJobOutput?.status === 'Failed',
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataJobs?.getJobsStatus]); // Dependency array to rerun the effect when dataJobs?.getJobsStatus changes
 
 	const onCloseToast = jobId => {
@@ -120,13 +115,14 @@ const ContactBulkProgress = () => {
 
 	const downloadResults = async (job, onCloseToast) => {
 		if (job?.resultsPayload?.datasets) {
-			for (const dataset of job?.resultsPayload?.datasets) {
+			for (const dataset of job?.resultsPayload?.datasets || []) {
 				// job?.resultsPayload?.datasets.map(async (dataset) => {
 				let a = document.createElement('a');
 				a.href = dataset.uri;
 				a.download = dataset.fileName;
 				a.click();
 
+				// eslint-disable-next-line no-await-in-loop
 				await new Promise(resolve => setTimeout(resolve, 1 * 2000));
 			}
 			onCloseToast(job._id);
@@ -177,6 +173,8 @@ const ContactBulkProgress = () => {
 				if (name === 'idiCore') {
 					message = lastMessage;
 					refetchHelper(['getContactPurchaseData']);
+				} else if (name === 'Sync Dialpad Contacts') {
+					message = lastMessage;
 				} else if (type === 'contacts') {
 					message =
 						status === 'Created'

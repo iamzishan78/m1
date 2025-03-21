@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 
 import { excludeFilters } from 'components/MRTTable/Common/CommonToolBarActions';
 
-import { globalStateController } from 'controllers/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 

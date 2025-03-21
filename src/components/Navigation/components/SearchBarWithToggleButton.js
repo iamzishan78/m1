@@ -9,9 +9,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import GridOnIcon from '@material-ui/icons/GridOn';
 import PostAddOutlinedIcon from '@material-ui/icons/PostAddOutlined';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-import { popupController } from 'controllers/popupStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import Search from './Search';
 import { AppContext } from '../../../AppContext';

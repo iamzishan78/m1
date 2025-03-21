@@ -83,6 +83,7 @@ const dealFlowLine = [
 	{ name: 'Offer Price', isSelected: false, key: 'offerPrice' },
 	{ name: 'Closed Price', isSelected: false, key: 'closedPrice' },
 	{ name: 'Total NRA', isSelected: false, key: 'totalNRA' },
+	{ name: 'Total NMA', isSelected: false, key: 'totalNMA' },
 ];
 const generalFlowLine = [{ name: 'Due Date', isSelected: false, key: 'dueDate' }];
 

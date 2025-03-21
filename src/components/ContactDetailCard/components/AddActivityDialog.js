@@ -22,11 +22,11 @@ import moment from 'moment';
 
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { ADDACTIVITY, UPDATEACTIVITY, DELETEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { OPENDEALS } from 'graphQL/useQueryOpenDeals';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { UserSession } from 'utils/user';
 

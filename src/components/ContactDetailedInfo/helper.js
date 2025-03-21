@@ -1,3 +1,5 @@
+import React from 'react';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
@@ -16,6 +18,28 @@ export const entityTypeOptions = [
 	{ label: 'TRUST', value: 'TRUST' },
 	{ label: 'UNKNOWN', value: 'UNKNOWN' },
 ];
+
+export const activityTypeOptions = [
+	{ label: 'Call', value: 'call' },
+	{ label: 'Text Message', value: 'text_messgae' },
+	{ label: 'Email', value: 'email' },
+	{ label: 'Mailer', value: 'mailer' },
+	{ label: 'Meeting', value: 'meeting' },
+	{ label: 'Task', value: 'task' },
+	{ label: 'Deadline', value: 'deadline' },
+];
+
+export const activityStatusOptions = [
+	{
+		label: 'Open',
+		value: false,
+	},
+	{
+		label: 'Completed',
+		value: true,
+	},
+];
+export const phoneStatusOptions = ['Disconnected', 'Good Number', 'Unknown', 'Wrong Number'];
 
 export const contactStatusOptions = [
 	// {
@@ -444,6 +468,10 @@ export const getBasicPurchaseInfoExpContent = contactData => {
 			},
 			linkType: LinkTypes.None,
 		},
+		'Phone 1 Status': {
+			data: { phone1Status: contactData?.phone1Status || null },
+			linkType: LinkTypes.None,
+		},
 		'Phone 2': {
 			data: { phone2: contactData?.phone2 },
 			linkType: LinkTypes.None,
@@ -457,6 +485,10 @@ export const getBasicPurchaseInfoExpContent = contactData => {
 			data: {
 				phone2LastSeen: contactData?.phone2LastSeen ? moment(contactData.phone2LastSeen).format('MM/DD/YYYY') : null,
 			},
+			linkType: LinkTypes.None,
+		},
+		'Phone 2 Status': {
+			data: { phone2Status: contactData?.phone2Status || null },
 			linkType: LinkTypes.None,
 		},
 		'Phone 3': {
@@ -474,6 +506,10 @@ export const getBasicPurchaseInfoExpContent = contactData => {
 			},
 			linkType: LinkTypes.None,
 		},
+		'Phone 3 Status': {
+			data: { phone3Status: contactData?.phone3Status || null },
+			linkType: LinkTypes.None,
+		},
 		'Phone 4': {
 			data: { phone4: contactData?.phone4 },
 			linkType: LinkTypes.None,
@@ -489,6 +525,10 @@ export const getBasicPurchaseInfoExpContent = contactData => {
 			},
 			linkType: LinkTypes.None,
 		},
+		'Phone 4 Status': {
+			data: { phone4Status: contactData?.phone4Status || null },
+			linkType: LinkTypes.None,
+		},
 		'Phone 5': {
 			data: { phone5: contactData?.phone5 },
 			linkType: LinkTypes.None,
@@ -502,6 +542,10 @@ export const getBasicPurchaseInfoExpContent = contactData => {
 			data: {
 				phone5LastSeen: contactData?.phone5LastSeen ? moment(contactData.phone5LastSeen).format('MM/DD/YYYY') : null,
 			},
+			linkType: LinkTypes.None,
+		},
+		'Phone 5 Status': {
+			data: { phone5Status: contactData?.phone5Status || null },
 			linkType: LinkTypes.None,
 		},
 		'Email 1': {

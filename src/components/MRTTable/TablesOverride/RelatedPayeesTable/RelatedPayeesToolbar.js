@@ -2,8 +2,8 @@ import React, { memo } from 'react';
 
 import { Button } from '@material-ui/core';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { tableController } from 'controllers/tableController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { tableController } from 'stateManagement/tableController';
 
 import { PayeeRightDialog } from './RightDialog';
 

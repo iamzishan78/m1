@@ -5,8 +5,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import PropTypes from 'prop-types';
 import queryString from 'query-string';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { popupController } from 'controllers/popupStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
 import { UserSession } from 'utils/user';

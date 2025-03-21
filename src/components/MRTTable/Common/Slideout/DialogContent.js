@@ -2,7 +2,7 @@ import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import { slidoutStateController } from 'controllers/slidoutStateController';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 const useStyles = makeStyles(theme => ({
 	homeRoot: {
@@ -19,7 +19,7 @@ function DialogContent(props) {
 	const slideOutState = slidoutStateController.useState(['parentId', 'view']);
 	const slideOutStateValues = slideOutState.stateValues;
 
-	const { Component } = slideOutStateValues?.view;
+	const { Component } = slideOutStateValues.view;
 
 	return <Component />;
 }

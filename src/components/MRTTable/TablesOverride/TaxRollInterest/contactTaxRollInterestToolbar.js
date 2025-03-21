@@ -6,9 +6,9 @@ import PropTypes from 'prop-types';
 
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
-import { tableController } from 'controllers/tableController';
-
 import { ADD_MULTI_WELLINTEREST_TO_CONTACT } from 'graphQL/useMutationAddMultiWellInterestToContact';
+
+import { tableController } from 'stateManagement/tableController';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';

@@ -11,10 +11,10 @@ import BuyContactsInfoDialogContent from 'components/MRTTable/Common/Components/
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
 import Comments from 'components/Shared/Comments';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { tableController, tableGlobalController } from 'controllers/tableController';
-
 import { REMOVECOMMONGRIDFUNCTIONALITY } from 'graphQL/useMutationCommonGridRemove';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
@@ -120,6 +120,7 @@ function AllDialogs(props) {
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
 					<Comments
 						{...rest}
+						hideSharedCommentCheck={props.hideSharedCommentCheck}
 						containsComments={true}
 						isHelperTextAllow={true}
 						isSaveAllowed={false}

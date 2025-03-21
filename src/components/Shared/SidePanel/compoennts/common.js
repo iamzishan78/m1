@@ -1,4 +1,4 @@
-import { layerController } from 'controllers/layerStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 export const getLayerColor = (layer, type, colors) => {
 	// seting layer color to disabled if selectedAttribute is selected

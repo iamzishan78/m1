@@ -1,9 +1,9 @@
 import * as turf from '@turf/turf';
 import gjv from 'geojson-validation';
 
-import { drawController } from 'controllers/drawStateController';
-import { globalStateController } from 'controllers/globalStateController';
-import { popupController } from 'controllers/popupStateController';
+import { drawController } from 'stateManagement/drawStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 export const clearMapAndCloseShapeActionsPopup = () => {
 	const currentFeature = drawController.getValue('currentFeature');

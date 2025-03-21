@@ -17,11 +17,11 @@ import { useLazyQuery } from '@apollo/client';
 import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
 import CommentComponent from 'components/Shared/CommentComponent';
 
-import { globalStateController } from 'controllers/globalStateController';
-
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
 import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { copy } from 'utils/helper';
 import MetaField from 'utils/MetaField';

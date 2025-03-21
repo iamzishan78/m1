@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom';
 
 import { useApolloClient } from '@apollo/client';
 
-import { popupController } from 'controllers/popupStateController';
-
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
+
+import { popupController } from 'stateManagement/popupStateController';
 
 function WellClick() {
 	const { paramId } = useParams();
@@ -89,7 +89,6 @@ function WellClick() {
 				}
 			}
 		})();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [wellSelectedCoordinates, selectedWellId, paramId]);
 
 	return null;

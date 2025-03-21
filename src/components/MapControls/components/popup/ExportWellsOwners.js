@@ -16,7 +16,7 @@ import { useApolloClient } from '@apollo/client';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { drawController } from 'controllers/drawStateController';
+import { drawController } from 'stateManagement/drawStateController';
 
 import { getMapFilters } from 'utils/helper';
 

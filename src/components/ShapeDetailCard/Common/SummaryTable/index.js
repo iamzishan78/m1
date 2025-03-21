@@ -20,18 +20,18 @@ import CountyField from 'components/Revenue/components/Properties/DetailComponen
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { summaryTableStyles } from 'components/ShapeDetailCard/style';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
-import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
-import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import CustomTypography from 'components/Shared/components/Fields/CustomTypography';
+import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
+import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import { copy } from 'components/Shared/functions';
 import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
 import UserList from 'components/Shared/UserList';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { globalStateController } from 'controllers/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { KEYBOARD_KEYS, INTEREST_TO_FIXED } from 'utils/consts';
 import { US_STATES_CODES } from 'utils/data';

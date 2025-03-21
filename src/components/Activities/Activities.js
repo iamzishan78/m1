@@ -13,11 +13,11 @@ import PropTypes from 'prop-types';
 
 import MRTTable from 'components/MRTTable';
 
-import { slidoutStateController } from 'controllers/slidoutStateController';
-import { tableController } from 'controllers/tableController';
-
 import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableController } from 'stateManagement/tableController';
 
 import ActivitiesEvent from './components/ActivitiesEvent';
 import ActivitiesToolbar from './components/ActivitiesToolbar';

@@ -5,11 +5,11 @@ import { useApolloClient, useLazyQuery } from '@apollo/client';
 
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
-import { popupController } from 'controllers/popupStateController';
-
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { PERMITDETAILQUERY } from 'graphQL/useQueryRecentPermitDetails';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
+
+import { popupController } from 'stateManagement/popupStateController';
 
 const PermitClick = () => {
 	const { id: paramId } = useParams();

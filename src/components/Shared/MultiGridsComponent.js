@@ -10,10 +10,10 @@ import { useLazyQuery } from '@apollo/client';
 import MRTTable from 'components/MRTTable';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
-import { mapControlsController } from 'controllers/mapControlsController';
-import { tableController } from 'controllers/tableController';
-
 import { AGREEMENT_PAYMENT_SUMMARY } from 'graphQL/useQueryAgreementPaymentSummary';
+
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { tableController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 
@@ -291,7 +291,7 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 						</Grid>
 
 						<Grid item md={10} style={{ padding: '0px' }}>
-							<div style={{ position: 'relative' }} classes={classes.gridTables}>
+							<div style={{ position: 'relative' }}>
 								{searchTapValue.value === 'payees' && (
 									<MRTTable name={'RelatedPayeesTable'} overrideMeta={overrideMetaRelatedPayees} />
 								)}

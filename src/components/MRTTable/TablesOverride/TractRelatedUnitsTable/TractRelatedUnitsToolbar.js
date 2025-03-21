@@ -4,7 +4,7 @@ import { Button } from '@material-ui/core';
 
 import TractRelatedUnitsTableDialogs from 'components/MRTTable/TablesOverride/TractRelatedUnitsTable/RightDialogs';
 
-import { tableController, tableGlobalController } from 'controllers/tableController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 function TractRelatedUnitsToolBar({ table, tableKey }) {
 	const Controller = tableController(tableKey);

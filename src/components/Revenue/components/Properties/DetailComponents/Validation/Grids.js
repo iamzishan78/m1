@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import MRTTable from 'components/MRTTable';
 import TabPanels from 'components/Shared/TabPanels';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const ValidationGrids = ({ propertyId, associatedWellIds }) => {
 	const {

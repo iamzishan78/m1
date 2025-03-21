@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useContext } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -12,8 +11,7 @@ import moment from 'moment';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-import { CUSTOM_DATES } from 'utils/data';
-import { esIndexFilterKeyMap } from 'utils/data';
+import { CUSTOM_DATES, esIndexFilterKeyMap } from 'utils/data';
 import { getActivityAnalyticsFilters, handleCustomDateTypeChange } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
@@ -83,11 +81,11 @@ export default function CustomDatesActivities({
 }) {
 	const classes = useStyles();
 	const { activeModule } = useSelector(({ common }) => common);
+	const [selectedDate, setSelectedDate] = useState(CUSTOM_DATES.ALL_DATES);
 	useEffect(() => {
 		if (minDate) {
 			handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [minDate]);
 
 	const getFlaggedMoment = moment => {
@@ -117,12 +115,11 @@ export default function CustomDatesActivities({
 				<Grid item xs={2} sm={2} md={2} lg={2} xl={2} style={{ marginTop: '2px' }}>
 					<Autocomplete
 						size="small"
+						value={selectedDate}
 						onChange={(event, newValue) => {
-							if (newValue === null) {
-								handleDateTypeChange('This Month');
-							} else {
-								handleDateTypeChange(newValue);
-							}
+							const updatedValue = newValue === null ? CUSTOM_DATES.ALL_DATES : newValue;
+							setSelectedDate(updatedValue); // Update the state
+							handleDateTypeChange(updatedValue); // Call your function
 						}}
 						options={Object.values(CUSTOM_DATES)}
 						renderInput={params => (

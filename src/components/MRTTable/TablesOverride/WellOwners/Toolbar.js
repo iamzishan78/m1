@@ -4,7 +4,7 @@ import { Box } from '@material-ui/core';
 
 import SelectFilter from 'components/Shared/ui/SelectFilter';
 
-import { tableController } from 'controllers/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { LOD_YEAR, LOD_YEAR_OPTIONS } from 'utils/consts';
 

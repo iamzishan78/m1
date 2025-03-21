@@ -22,15 +22,15 @@ import TabPanels from 'components/Shared/TabPanels';
 import Tags from 'components/Shared/Tagger';
 import Taps from 'components/Shared/Taps';
 
-import { jobController } from 'controllers/jobStateController';
-import { layerController } from 'controllers/layerStateController';
-import { popupController } from 'controllers/popupStateController';
-import { tableController, tableGlobalController } from 'controllers/tableController';
-
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
 import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
+
+import { jobController } from 'stateManagement/jobStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { popupController } from 'stateManagement/popupStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { showSuccessMessage, showErrorMessage, showInfoMessage } from 'actions';
 
@@ -71,7 +71,6 @@ export default function AgreementDetailCard(props) {
 				history.goBack();
 			}
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [history, uniObj]);
 
 	useEffect(() => {
@@ -79,14 +78,12 @@ export default function AgreementDetailCard(props) {
 			getStandardProvisions();
 			getAgreementProvisions({ variables: { agreementId: props.id } });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.id]);
 
 	useEffect(() => {
 		if (selectedTab === 0 || selectedTab === 1) {
 			getAgreementProvisions({ variables: { agreementId: props.id } });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedTab]);
 
 	useEffect(() => {
@@ -114,7 +111,6 @@ export default function AgreementDetailCard(props) {
 			}
 			setProperties(shape.properties);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataCustomLayer?.customLayer]);
 
 	useEffect(() => {
@@ -136,7 +132,6 @@ export default function AgreementDetailCard(props) {
 				dispatch(showErrorMessage('Failed to update unit'));
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [updatedUnit]);
 
 	const updateProperties = (e, field, value) => {
@@ -304,7 +299,6 @@ export default function AgreementDetailCard(props) {
 			},
 			customValue: { parentRecord: uniObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 
@@ -320,7 +314,6 @@ export default function AgreementDetailCard(props) {
 			},
 			customValue: { parentRecord: uniObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 
@@ -336,7 +329,6 @@ export default function AgreementDetailCard(props) {
 			},
 			customValue: { parentRecord: uniObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 
@@ -359,7 +351,6 @@ export default function AgreementDetailCard(props) {
 			isDeleteDisabled: true,
 			isExportDisabled: true,
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 

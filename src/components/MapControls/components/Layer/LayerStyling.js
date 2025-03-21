@@ -13,15 +13,17 @@ import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
 import { getLayerColor } from 'components/Shared/SidePanel/compoennts/common';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { getLayerKey } from 'controllers/helpers';
-import { layerStylingController } from 'controllers/layersStylingController';
-import { layerController } from 'controllers/layerStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { getLayerKey } from 'stateManagement/helpers';
+import { layerStylingController } from 'stateManagement/layersStylingController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+
+import { AppContext } from 'AppContext';
 
 import { ifRgbaConvt, useStyles, WidthPicker } from './Common';
 import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';

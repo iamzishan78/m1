@@ -3,7 +3,7 @@ import { Controller } from 'react-hook-form';
 
 import { Grid, Radio, RadioGroup, FormControlLabel, TextField } from '@mui/material';
 
-import { sideDialogController } from 'controllers/sideDialogController';
+import { sideDialogController } from 'stateManagement/sideDialogController';
 
 function RadioComponent({ control, item, dialogKey }) {
 	const { name, label, options = [] } = item;

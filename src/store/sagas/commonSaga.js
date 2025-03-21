@@ -1,9 +1,9 @@
 import { takeLatest, put } from 'redux-saga/effects';
 
-import { jobController } from 'controllers/jobStateController';
-
 import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
 import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
+
+import { jobController } from 'stateManagement/jobStateController';
 
 import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 import { EXEC_COMMON_ASYNC_EXPORT_JOB } from 'store/type';

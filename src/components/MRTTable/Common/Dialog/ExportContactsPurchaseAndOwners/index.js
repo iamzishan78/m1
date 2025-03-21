@@ -16,7 +16,7 @@ import { useApolloClient } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 
-import { globalStateController } from 'controllers/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 

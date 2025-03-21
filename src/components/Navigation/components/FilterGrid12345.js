@@ -9,7 +9,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery } from '@apollo/client';
 
-import { navController } from 'controllers/navStateController';
+import { navController } from 'stateManagement/navStateController';
 
 import { WELLGRID } from '../../../graphQL/useQueryWellGrId12345';
 import { NavigationContext } from '../NavigationContext';

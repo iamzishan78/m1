@@ -20,7 +20,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import get from 'lodash/get';
 import MaterialTable from 'material-table';
 
-import { jobController } from 'controllers/jobStateController';
+import { jobController } from 'stateManagement/jobStateController';
 
 import { AppContext } from '../../../AppContext';
 

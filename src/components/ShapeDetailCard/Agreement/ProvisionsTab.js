@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Controller, useForm, useFieldArray } from 'react-hook-form';
-import PropTypes from 'prop-types';
 
 import {
 	Grid,
@@ -31,21 +30,22 @@ import {
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
 import { Autocomplete } from '@material-ui/lab';
-import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import debounce from 'lodash/debounce';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import PropTypes from 'prop-types';
 
 import Loader from 'components/Loaders';
 import CommentsWithIcon from 'components/Shared/CommentsWithIcon';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
-
-import { detailCardController } from 'controllers/detailCardController';
 
 import { CREATE_AGREEMENT_PROVISION } from 'graphQL/useMutationCreateAgreementProvision';
 import { GET_PROVISION_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetProvisionAutoCompleteList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import { detailCardController } from 'stateManagement/detailCardController';
 
 import ResponsibleParty from './ResponsibleParty';
 import { AppContext } from '../../../AppContext';

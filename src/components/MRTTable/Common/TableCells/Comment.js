@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import ChatIcon from '@material-ui/icons/Chat';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 function CommentCell({ rowNumber, value, id, targetLabel, hideShareCommentsToggle, tableKey, type }) {
 	return (

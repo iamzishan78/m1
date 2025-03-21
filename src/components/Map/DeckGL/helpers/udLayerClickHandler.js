@@ -5,9 +5,9 @@ import { findBoundsMap } from 'components/MapControls/commonHelper';
 import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { ifDefaultIdentifier, ifGenericShapeIdentifier } from 'components/Shared/functions/shapeLayer';
 
-import { drawController } from 'controllers/drawStateController';
-import { layerController } from 'controllers/layerStateController';
-import { popupController } from 'controllers/popupStateController';
+import { drawController } from 'stateManagement/drawStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 const udLayerClickHandler = (feature, stateLayer) => {
 	const history = layerController.getValue('history');

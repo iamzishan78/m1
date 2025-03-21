@@ -11,7 +11,7 @@ import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectF
 import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 
-import { globalStateController } from 'controllers/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 const useStyles = makeStyles(() => ({
 	text: {

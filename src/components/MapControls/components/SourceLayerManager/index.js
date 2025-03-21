@@ -11,11 +11,11 @@ import { useMutation } from '@apollo/client';
 
 import { copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
 
-import { layerController } from 'controllers/layerStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
+
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import LayerManager from './LayerManager';
 import SourceManager from './SourceManager';

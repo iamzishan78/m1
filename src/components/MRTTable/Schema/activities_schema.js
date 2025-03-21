@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import CheckIcon from '@material-ui/icons/Check';
@@ -7,7 +6,8 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { activityType } from 'components/MRTTable/utils/enums';
 import { formatDate } from 'components/Shared/functions';
 
-import { slidoutStateController } from 'controllers/slidoutStateController';
+import { slidoutState } from 'stateManagement/initialStates';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import { getTruncateText } from '../utils/helper';
 

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
@@ -9,9 +8,9 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import PotentialWellToolbar from 'components/MRTTable/TablesOverride/PotentialWellTable/PotentialWellToolbar';
 import { getPolygonString } from 'components/Shared/functions';
 
-import { tableController } from 'controllers/tableController';
-
 import { SHAPEWELLS } from 'graphQL/useQueryPaginatedShapeWells';
+
+import { tableController } from 'stateManagement/tableController';
 
 const PotentialWellsMeta = {
 	query: SHAPEWELLS,

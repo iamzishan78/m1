@@ -15,16 +15,14 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from '@material-ui/icons';
 
-// Contexts
-
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
-//Components
 import * as LayerFiltersComponents from 'components/Shared/SidePanel/compoennts/Filters';
 
-import { layerFiltersController } from 'controllers/layerFiltersController';
-import { layerController } from 'controllers/layerStateController';
-import { navController } from 'controllers/navStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerFiltersController } from 'stateManagement/layerFiltersController';
+import { layerController } from 'stateManagement/layerStateController';
+import { navController } from 'stateManagement/navStateController';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import { customLayersFieldAccessors } from './consts';

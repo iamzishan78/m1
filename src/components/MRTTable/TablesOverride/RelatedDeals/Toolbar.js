@@ -6,9 +6,9 @@ import PropTypes from 'prop-types';
 
 import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 
-import { tableController } from 'controllers/tableController';
-
 import { GETPIPELINE } from 'graphQL/useQueryPipeline';
+
+import { tableController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
 

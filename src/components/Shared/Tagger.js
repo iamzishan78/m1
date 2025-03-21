@@ -19,10 +19,9 @@ import { UPSERTTAG } from '../../graphQL/useMutationUpsertTag';
 import { TAGSBYOBJECTIDQUERY } from '../../graphQL/useQueryTagsByObjectId';
 import { TAGSBYOBJECTSIDS } from '../../graphQL/useQueryTagsByObjectsIds';
 import { USERAVAILABLETAGSQUERY } from '../../graphQL/useQueryUserAvailableTags';
-import './Tagger.css';
-
-// import value formatters
 import capitalizeFirstLetter from '../Shared/valueformatters/capitalize-first-letter.js';
+
+import './Tagger.css';
 
 const AntSwitch = withStyles(theme => ({
 	root: {
@@ -302,6 +301,7 @@ export default function Tags(props) {
 						'getWellsIdsFromTagsArray',
 						'getOwnersIdsFromTagsArray',
 						'getDbData',
+						'getContact',
 					],
 					awaitRefetchQueries: true,
 				});

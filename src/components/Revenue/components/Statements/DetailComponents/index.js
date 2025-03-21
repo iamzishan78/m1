@@ -33,12 +33,12 @@ import NavHeader from 'components/Revenue/components/Common/NavHeader';
 import DocViewer from 'components/Shared/DocViewer';
 import Tags from 'components/Shared/Tagger';
 
-import { globalStateController } from 'controllers/globalStateController';
-
 import { REMOVE_CHECKS } from 'graphQL/useMutationRemoveChecks';
 import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
 import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
 import { GETCHECK } from 'graphQL/useQueryCheck';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import MetaField from 'utils/MetaField';
 
@@ -67,7 +67,7 @@ const useStyles = makeStyles(() => ({
 	highlighter: {
 		background: '#263451',
 		padding: '5px 16px',
-		borderRadius: 5,
+		borderRadius: 16,
 		width: '160px',
 		transform: 'translateX(5px) translateY(11px)',
 		height: '32px',
@@ -81,7 +81,7 @@ const useStyles = makeStyles(() => ({
 		height: 80,
 		width: 80,
 		backgroundColor: '#d5f4ff',
-		borderRadius: 4,
+		borderRadius: 12,
 		'& svg': {
 			fontSize: '3.1875rem',
 			fill: '#263451',
@@ -217,13 +217,14 @@ export default function DetailComponents(props) {
 	const dispatch = useDispatch();
 	const { statements } = useSelector(({ Revenue }) => Revenue);
 
+	const { globalStateValues } = globalStateController.useState(['user', 'showFieldModal'], 'globalStateValues');
+
 	const [tab, setTab] = useState(0);
 	const [checksFlatData, setChecksFlatData] = useState({});
 	const selectedTabRef = useRef(null);
 	const [isButtonScroll, setButtonScroll] = useState(false);
 	const [collapse, setCollapse] = useState(true);
 	const [stateApp, setStateApp] = useContext(AppContext);
-	const { globalStateValues } = globalStateController.useState(['showFieldModal', 'user'], 'globalStateValues');
 	const [anchorEl, setAnchorEl] = useState();
 	const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 	const [loader, setLoader] = useState(false);
@@ -467,6 +468,7 @@ export default function DetailComponents(props) {
 										height: 'calc(100vh - 270px)',
 										width: '620px',
 										maxWidth: '620px',
+										overflowY: 'auto',
 									}}
 								>
 									<MetadataDrawer
@@ -480,6 +482,7 @@ export default function DetailComponents(props) {
 										isApproval={true}
 										ownerTitle="Approver"
 										ownerPlaceHolder="Assign Approver"
+										height="100vh"
 										showCommentType
 									/>
 								</div>

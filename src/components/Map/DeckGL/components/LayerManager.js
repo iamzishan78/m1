@@ -7,9 +7,9 @@ import { debounce } from 'lodash';
 import { deepEqual } from 'components/Shared/functions';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
 
-import { drawController } from 'controllers/drawStateController';
-import { layerFiltersController } from 'controllers/layerFiltersController';
-import { layerController } from 'controllers/layerStateController';
+import { drawController } from 'stateManagement/drawStateController';
+import { layerFiltersController } from 'stateManagement/layerFiltersController';
+import { layerController } from 'stateManagement/layerStateController';
 
 const updateState = debounce((zoom, bbox, center) => {
 	layerController.updateState({
@@ -54,7 +54,7 @@ function LayerManager() {
 		}
 		move(moveRef);
 		window.mapRef?.on?.('move', () => move(moveRef));
-		// eslint-disable-next-line consistent-return
+		 
 		return () => {
 			window.mapRef?.off('move', () => move(moveRef));
 		};

@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+ 
 /* eslint-disable no-undef */
 import React from 'react';
 
@@ -9,13 +9,13 @@ import { v4 as uuid } from 'uuid';
 import MapProvider from 'components/Map/MapProvider';
 import { getUdLayerCardTitle } from 'components/UdLayerCard/UdLayerCard';
 
-import { popupController } from 'controllers/popupStateController';
-
 import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 import { UPDATE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
+
+import { popupController } from 'stateManagement/popupStateController';
 
 import { headers } from '../../cypressUtils/cypressHeaders';
 import { basic_timeouts } from '../../cypressUtils/data';

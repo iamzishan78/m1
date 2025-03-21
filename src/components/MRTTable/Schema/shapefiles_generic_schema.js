@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import { get } from 'lodash';
@@ -7,13 +6,12 @@ import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawS
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { popupController } from 'controllers/popupStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 const COLUMN_SIZE = 250;
 const ID_COLUMN_SIZE = 150;
 
-// eslint-disable-next-line no-unused-vars
 const onClickedRow = selectedRow => {};
 
 const ShapesFilesGenericMeta = {

@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import ParcelInstrument from 'components/ParcelsDetailCard/ParcelInstrument';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { getIdFromPath } from 'utils/helper';
 

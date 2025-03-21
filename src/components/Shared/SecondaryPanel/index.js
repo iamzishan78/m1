@@ -9,7 +9,7 @@ import NewLayerManager from 'components/MapControls/components/Layer/NewLayerMan
 import SourceLayerManager from 'components/MapControls/components/SourceLayerManager';
 import TransferDataManager from 'components/MapControls/components/TransferDataManager';
 
-import { mapControlsController } from 'controllers/mapControlsController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({
@@ -32,7 +32,6 @@ const Secondarypanel = () => {
 
 	const leftPixels = useMemo(() => {
 		return get(document.getElementById('layer-side-panel'), 'style.minWidth', '0px');
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [get(document.getElementById('layer-side-panel'), 'style.minWidth', '0px')]);
 
 	const classes = useStyles({ leftPixels });

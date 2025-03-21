@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
@@ -16,7 +15,7 @@ import TractInterestOwnerToolBar from 'components/MRTTable/TablesOverride/TractI
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import TractIcon from 'components/Shared/svgIcons/tract';
 
-import { tableController, tableGlobalController } from 'controllers/tableController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 const esIndex = 'shapeowners_flat';
 

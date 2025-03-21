@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { Typography, Grid, TextField, Link, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -21,11 +22,13 @@ import {
 import MergeHistory from 'components/ContactDetailCard/components/FieldContent/MergeHistory';
 import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { contactStatusOptions, phoneStatusOptions } from 'components/ContactDetailedInfo/helper';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
-import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import CustomTypography from 'components/Shared/components/Fields/CustomTypography';
+import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import { phonenumber } from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 import { formatDate } from 'components/Shared/functions';
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
 import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
@@ -37,6 +40,7 @@ import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
 import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
 
+import { showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
 import AutoCompleteAddNewField from './AutoCompleteAddNewField';
@@ -48,7 +52,7 @@ const filter = createFilterOptions();
 export default function FieldContent({
 	children,
 	id,
-	isPurchased,
+	isPurchased = false,
 	entity,
 	melissaRecordId = null,
 	melissaAddressRecordId = null,
@@ -66,6 +70,7 @@ export default function FieldContent({
 	row,
 	handleQuickActionActivity,
 	metafields,
+	purchaseDataId = null,
 }) {
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 	const [edit, setEdit] = useState(null);
@@ -73,6 +78,7 @@ export default function FieldContent({
 	const [showContent, setShowContent] = useState(content);
 	const [isCurEdited, setIsCurEdited] = useState(isEdited);
 	const [fieldsCount, setFieldsCount] = useState(0);
+	const dispatch = useDispatch();
 
 	const [updateContact, { loading }] = useMutation(UPDATECONTACT);
 	const [updateContactPurchaseData, { loading: loadingPurchaseData }] = useMutation(UPDATE_CONTACT_PURCHASE_DATA);
@@ -138,20 +144,26 @@ export default function FieldContent({
 				if (isPurchased) {
 					updateContactPurchaseData({
 						variables: {
-							purchaseData: trimmedEditContent,
+							purchaseData: { ...trimmedEditContent, ...(purchaseDataId && { purchaseDataId }) },
+							isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 						},
-						refetchQueries: ['getContactPurchaseData'],
+						refetchQueries: ['getContactPurchaseData', 'getDailpadContact'],
 						awaitRefetchQueries: false,
+					}).then(({ data }) => {
+						if (data?.updateContactPurchaseData && !data.updateContactPurchaseData?.success) {
+							dispatch(showErrorMessage(data?.updateContactPurchaseData?.message));
+						}
 					});
 				} else {
 					updateContact({
 						variables: {
 							contact: trimmedEditContent,
 							ignoreResponse: true,
+							isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 						},
-						refetchQueries: ['getPaginatedContacts', 'getContact', 'getparcelOwners'],
+						refetchQueries: ['getPaginatedContacts', 'getContact', 'getparcelOwners', 'getDailpadContact'],
 						awaitRefetchQueries: false,
-					}).then(() => {
+					}).then(({ data }) => {
 						let entries = Object.entries(editContent);
 						entries.forEach(entry => {
 							content = { ...content, [entry[0]]: entry[1] };
@@ -159,6 +171,9 @@ export default function FieldContent({
 						setShowContent({ ...content });
 						setEditContent({ ...content });
 						setStateApp({ ...stateApp, contactUpdated: id });
+						if (data?.updateContact && !data.updateContact?.success) {
+							dispatch(showErrorMessage(data?.updateContact?.message));
+						}
 					});
 				}
 			}
@@ -502,6 +517,39 @@ export default function FieldContent({
 						);
 						break;
 
+					case 'phone1Status':
+					case 'phone2Status':
+					case 'phone3Status':
+					case 'phone4Status':
+					case 'phone5Status':
+						component = (
+							<Autocomplete
+								id={'fieldContentInput' + fieldName}
+								key={'fieldContentInput' + fieldName}
+								options={phoneStatusOptions}
+								onChange={(e, data) => {
+									e.persist();
+									setEditContent(editContent => ({
+										...editContent,
+										[fieldName]: data || '',
+									}));
+								}}
+								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+								autoComplete
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+								onBlur={() => onBlurHandler([fieldName])}
+								style={{ width: '100%' }}
+								renderInput={params => (
+									<TextField
+										{...params}
+										label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+										className={classes.editTextField}
+									/>
+								)}
+							/>
+						);
+						break;
+
 					default:
 						if (fieldName.startsWith('custom_data')) {
 							switch (metaField?.type) {
@@ -596,7 +644,7 @@ export default function FieldContent({
 										onChange: value => {
 											setEditContent(editContent => ({
 												...editContent,
-												[fieldName]: value,
+												[fieldName]: row?.isPhoneNumber && !phonenumber(value) ? '' : value,
 											}));
 										},
 										onKeyDown: event => keyDownHandler(event, [fieldName]),
@@ -710,6 +758,7 @@ export default function FieldContent({
 							editContent={content}
 							row={row}
 							handleQuickActionActivity={handleQuickActionActivity}
+							isPurchased={isPurchased}
 						/>
 					)}
 					{fieldType === FieldTypes.Contact && isMerged && (

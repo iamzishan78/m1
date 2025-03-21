@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Tooltip } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
@@ -19,6 +20,8 @@ const ButtonDropDown = ({
 	buttonStyles = {},
 	sideButtonStyles = {},
 	data_test_id,
+	startIcon,
+	tooltipText,
 	...rest
 }) => {
 	const [open, setOpen] = React.useState(false);
@@ -52,10 +55,18 @@ const ButtonDropDown = ({
 	return (
 		<>
 			<ButtonGroup variant="contained" color="primary" ref={anchorRef} aria-label="split button" {...rest}>
-				<Button onClick={handleClick} id="addButton" style={buttonStyles} data-testid={data_test_id}>
-					<>{children}</>
-					{options[selectedIndex].text}
-				</Button>
+				<Tooltip title={tooltipText || ''} placement="top-start">
+					<Button
+						onClick={handleClick}
+						id="addButton"
+						style={buttonStyles}
+						data-testid={data_test_id}
+						startIcon={startIcon}
+					>
+						<>{children}</>
+						{options[selectedIndex].text}
+					</Button>
+				</Tooltip>
 				{options?.length > 1 && (
 					<Button
 						color="primary"
@@ -123,6 +134,8 @@ ButtonDropDown.propTypes = {
 	buttonStyles: PropTypes.object,
 	sideButtonStyles: PropTypes.object,
 	data_test_id: PropTypes.string,
+	startIcon: PropTypes.string,
+	tooltipText: PropTypes.string,
 };
 
 export default ButtonDropDown;

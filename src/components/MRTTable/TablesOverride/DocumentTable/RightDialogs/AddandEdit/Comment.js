@@ -23,15 +23,14 @@ import moment from 'moment';
 
 import CommentField from 'components/Shared/components/Fields/CommentField';
 
-import { globalStateController } from 'controllers/globalStateController';
-
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
-import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
-import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
+import { GET_PROFILES_IMAGES, GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { updatePinComments } from 'store/actions/commonActions';
 

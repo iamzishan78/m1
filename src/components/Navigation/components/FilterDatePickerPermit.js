@@ -7,7 +7,7 @@ import { Clear } from '@material-ui/icons';
 
 import moment from 'moment';
 
-import { navController } from 'controllers/navStateController';
+import { navController } from 'stateManagement/navStateController';
 
 import { NavigationContext } from '../NavigationContext';
 

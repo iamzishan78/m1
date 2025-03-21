@@ -22,9 +22,9 @@ import CommonFieldList from 'components/Shared/Forms/Fields/CommonFieldList';
 import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { globalStateController } from 'controllers/globalStateController';
-
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import MetaField from 'utils/MetaField';
 

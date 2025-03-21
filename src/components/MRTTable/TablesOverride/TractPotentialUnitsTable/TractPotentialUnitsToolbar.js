@@ -5,9 +5,9 @@ import { Button } from '@material-ui/core';
 import { useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 
-import { tableController, tableGlobalController } from 'controllers/tableController';
-
 import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
+
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 function TractPotentialUnitsToolBar({ table, tableKey }) {
 	const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {

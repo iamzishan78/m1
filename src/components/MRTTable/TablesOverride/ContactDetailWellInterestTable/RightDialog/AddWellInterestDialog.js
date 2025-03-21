@@ -31,14 +31,14 @@ import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import { CurrencyFormatCustom, NumberFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { ADDWELLINTEREST } from 'graphQL/useMutationAddWellInterest';
 import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { INTERESTOWNERTYPESQUERY } from 'graphQL/useQueryInterestOwnerTypes';
 import { INTERESTTYPESQUERY } from 'graphQL/useQueryInterestTypes';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { INTEREST_TO_FIXED } from 'utils/consts';
 
@@ -114,7 +114,7 @@ function AddWellInterestDialog(props) {
 			handleClose();
 			refetchTable();
 		},
-		refetchQueries: ['getContactWells', 'getContactWellCardDetail', 'getDbData'],
+		refetchQueries: ['getContactWells', 'getContactWellCardDetail', 'getDbData', 'getContactSummary', 'getContact'],
 		awaitRefetchQueries: true,
 	});
 	const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, {
@@ -284,7 +284,7 @@ function AddWellInterestDialog(props) {
 						nra: formRoyaltyAcres,
 					},
 				},
-				refetchQueries: ['getContactWells', 'getContactWellCardDetail', 'getDbData', 'getContactSummary'],
+				refetchQueries: ['getContactWells', 'getContactWellCardDetail', 'getDbData', 'getContactSummary', 'getContact'],
 				awaitRefetchQueries: true,
 			});
 		}

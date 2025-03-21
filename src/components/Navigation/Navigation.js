@@ -25,8 +25,8 @@ import RevenueAppBar from 'components/Navigation/AppBar/Revenue';
 import ProfileMenu from 'components/Profile/ProfileMenu';
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
 
-import { navController } from 'controllers/navStateController';
-import { slidoutStateController } from 'controllers/slidoutStateController';
+import { navController } from 'stateManagement/navStateController';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import { contactManagementRoutes } from 'utils/data';
 

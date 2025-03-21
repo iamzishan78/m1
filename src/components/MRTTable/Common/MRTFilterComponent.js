@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import PropTypes from 'prop-types';
 
-import { tableController } from 'controllers/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 const MRTFilterComponent = ({ tableKey, filterColumn }) => {
 	const { stateValues } = tableController(tableKey).useState(['TableSchema', 'mrtTableRef', 'filters']);

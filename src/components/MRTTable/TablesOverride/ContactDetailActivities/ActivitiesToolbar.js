@@ -1,13 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { memo, useContext, useEffect } from 'react';
 
 import { useLazyQuery } from '@apollo/client';
+import { slidoutStateController } from 'controllers/slidoutStateController';
 
 import ActivitiesSlideout from 'components/Activities/components/ActivitiesSlideout';
 
-import { slidoutStateController } from 'controllers/slidoutStateController';
 
 import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
+
+import { slidoutState } from 'stateManagement/initialStates';
 
 import { AppContext } from 'AppContext';
 

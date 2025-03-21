@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const UPDATECONTACT = gql`
-	mutation UpdateContact($contact: ContactInput, $ignoreResponse: Boolean) {
-		updateContact(contact: $contact, ignoreResponse: $ignoreResponse) {
+	mutation UpdateContact($contact: ContactInput, $ignoreResponse: Boolean, $isDialpadEnabled: Boolean) {
+		updateContact(contact: $contact, ignoreResponse: $ignoreResponse, isDialpadEnabled: $isDialpadEnabled) {
 			success
 			message
 			error

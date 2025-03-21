@@ -8,7 +8,7 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import { debounce } from 'lodash';
 
-import { tableController } from 'controllers/tableController';
+import { tableController } from 'stateManagement/tableController';
 
 import { AppContext } from '../../../AppContext';
 

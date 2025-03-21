@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 
-import { globalStateController } from 'controllers/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { wellsKeys } from 'utils/data';
 import { UserSession } from 'utils/user';
@@ -75,7 +75,7 @@ export const getURL = () => {
 	let tenantName = UserSession.getStorageItem('tenantName');
 	if (tenantName) {
 		let tenant = tenantsCredentials(tenantName);
-		return isDev ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
+		return isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
 	}
 	return null;
 };

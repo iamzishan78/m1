@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
@@ -21,12 +20,12 @@ import PropTypes from 'prop-types';
 
 import { getDateWithoutTime } from 'components/Shared/functions';
 
-import { jobController } from 'controllers/jobStateController';
-
 import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
 import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
 import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
 import { GET_JOB_UPLOAD_URI } from 'graphQL/useQueryGetJobUploadUri';
+
+import { jobController } from 'stateManagement/jobStateController';
 
 import { showErrorMessage } from 'actions';
 

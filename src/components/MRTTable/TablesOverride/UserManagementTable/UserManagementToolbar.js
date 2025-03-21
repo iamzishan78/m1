@@ -3,7 +3,7 @@ import React from 'react';
 import UserManagementTableDialogs from 'components/MRTTable/TablesOverride/UserManagementTable/RightDialogs';
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const UserManagementToolbar = ({ table, tableKey }) => {
 	const isSomeRowsSelected = table.getIsSomeRowsSelected();

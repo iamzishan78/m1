@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import MRTTable from 'components/MRTTable';
 import useTabedTablesUnmount from 'components/MRTTable/Hooks/useTabedTablesUnmount';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { campaignInitialData } from './data';
 
@@ -83,6 +83,7 @@ function CamapignRelatedGrids({ campaign }) {
 			},
 			customValue: { campaign: campaign },
 			maxTableHeight: '35vh',
+			columnVirtualization: false,
 		}),
 		[campaign?._id]
 	);
@@ -123,6 +124,7 @@ function CamapignRelatedGrids({ campaign }) {
 			},
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
+			columnVirtualization: false,
 		}),
 		[campaign?._id]
 	);
@@ -147,6 +149,7 @@ function CamapignRelatedGrids({ campaign }) {
 			isCampaignRefetch: true,
 			showAddContactButton: false,
 			maxTableHeight: '35vh',
+			columnVirtualization: false,
 		}),
 		[campaign?._id]
 	);
@@ -178,6 +181,7 @@ function CamapignRelatedGrids({ campaign }) {
 			customValue: { parentRecord: campaign?._id, campaign: campaign },
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
+			columnVirtualization: false,
 			gridViewSettings: null,
 			fetchMetaData: null,
 		}),
@@ -203,6 +207,7 @@ function CamapignRelatedGrids({ campaign }) {
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
 			gridViewSettings: null,
+			columnVirtualization: false,
 			fetchMetaData: null,
 		}),
 		[campaign?.name]

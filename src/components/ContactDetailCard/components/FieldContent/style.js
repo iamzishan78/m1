@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	fieldContentP: {
 		visibility: ({ loading }) => (loading ? 'hidden' : 'visible'),
 		margin: ({ noMargin }) => (noMargin ? '0' : '5px 10px'),
@@ -8,15 +8,28 @@ const useStyles = makeStyles(theme => ({
 			if (noMargin) {
 				return 'fit-content';
 			}
+			return '';
 		},
 		borderRadius: '4px',
 		'& #contPencilIcon, & #mergeTypeIcon, & #copyIcon, & #voiceMailIcon, & #textSmsIcon, & #dialpad': {
 			display: 'none', // use display none to remove extra space between icon and title
 		},
+		// Show the dialpad icon by default
+		'& #dialpad-icon': {
+			visibility: 'visible',
+			opacity: 1,
+			transition: 'visibility 0.3s, opacity 0.3s ease-in-out',
+		},
+
 		'&:hover #contPencilIcon, &:hover #mergeTypeIcon, &:hover #copyIcon, &:hover #voiceMailIcon, &:hover #textSmsIcon, &:hover #dialpad':
 			{
 				display: 'block',
 			},
+
+		// On hover: Hide dialpad icon completely and show other quick action icons
+		'&:hover #dialpad-icon': {
+			display: 'none', // Completely removes it from layout
+		},
 		'& #GoogleMapIcon': {
 			marginLeft: '-11px !Important', // Remove space between contact title and icon
 		},

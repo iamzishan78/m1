@@ -19,9 +19,9 @@ import { useMutation } from '@apollo/client';
 
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
-import { globalStateController } from 'controllers/globalStateController';
-
 import { UPLOADRECIPIENTS } from 'graphQL/useMutationUploadStorefrontRecipientsList';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { Modals } from 'styles/Modal';
 

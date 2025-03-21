@@ -1,11 +1,20 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import UserManagementToolbar from 'components/MRTTable/TablesOverride/UserManagementTable/UserManagementToolbar';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { GET_ALL_USERS } from 'graphQL/userManagement';
 
-import { UserRole, RolePrivilege } from 'utils/data';
+import { tableGlobalController } from 'stateManagement/tableController';
+
+import { UserRole, RolePrivilege, NavigationFeatures } from 'utils/data';
+
+const getNavigationColumns = () => {
+	return NavigationFeatures.map(feat => {
+		return {
+			...CommonSchema.NAVIGATION_CHECK_COLUMN(feat.featureFlag),
+			header: feat.name,
+		};
+	});
+};
 
 const onClickedRow = selectedRow => {
 	if (selectedRow?._id) {
@@ -66,6 +75,7 @@ const UserManagementMeta = {
 			name: 'rolePrivileges',
 			accessorFn: row => RolePrivilege[row?.rolePrivileges] || '',
 		},
+		...getNavigationColumns(),
 		{
 			...CommonSchema.SELECT_DATE_COLUMN,
 			header: 'Last Login',

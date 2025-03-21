@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+ 
 import React from 'react';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
@@ -39,15 +39,6 @@ const RelatedBillingPartiesMeta = {
 			id: 'billingParties.name',
 			header: 'Billing Party Name',
 			isArrayKey: true,
-			handleArrayExport: {
-				esType: 'array',
-				// field in data array that will be matched
-				referenceKey: 'paymentId',
-				// field in customprops that will be matched
-				referenceValueKey: 'paymentId',
-				// field that needs to be exported from matched object
-				actualKey: 'name',
-			},
 			Cell: ({ row }) => {
 				const value = row.original?.billingParties?.name || '';
 				return (
@@ -74,15 +65,6 @@ const RelatedBillingPartiesMeta = {
 			id: 'billingParties.address',
 			header: 'Billing Party Address',
 			isArrayKey: true,
-			handleArrayExport: {
-				esType: 'array',
-				// field in data array that will be matched
-				referenceKey: 'paymentId',
-				// field in customprops that will be matched
-				referenceValueKey: 'paymentId',
-				// field that needs to be exported from matched object
-				actualKey: 'address',
-			},
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
@@ -91,15 +73,6 @@ const RelatedBillingPartiesMeta = {
 			header: 'Billing Party Allocation',
 			type: 'number',
 			isArrayKey: true,
-			handleArrayExport: {
-				esType: 'array',
-				// field in data array that will be matched
-				referenceKey: 'paymentId',
-				// field in customprops that will be matched
-				referenceValueKey: 'paymentId',
-				// field that needs to be exported from matched object
-				actualKey: 'allocation',
-			},
 			Cell: ({ row }) => {
 				const value = row.original?.billingParties?.allocation;
 				return value ? `${Number(value).toFixed(TO_FIXED)}%` : value === 0 ? '0%' : '';
@@ -112,15 +85,6 @@ const RelatedBillingPartiesMeta = {
 			header: 'Billing Party Amount',
 			type: 'number',
 			isArrayKey: true,
-			handleArrayExport: {
-				esType: 'array',
-				// field in data array that will be matched
-				referenceKey: 'paymentId',
-				// field in customprops that will be matched
-				referenceValueKey: 'paymentId',
-				// field that needs to be exported from matched object
-				actualKey: 'amount',
-			},
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
@@ -128,15 +92,6 @@ const RelatedBillingPartiesMeta = {
 			id: 'billingParties.status',
 			header: 'Status',
 			isArrayKey: true,
-			handleArrayExport: {
-				esType: 'array',
-				// field in data array that will be matched
-				referenceKey: 'paymentId',
-				// field in customprops that will be matched
-				referenceValueKey: 'paymentId',
-				// field that needs to be exported from matched object
-				actualKey: 'status',
-			},
 		},
 	],
 };

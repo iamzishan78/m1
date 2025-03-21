@@ -31,12 +31,12 @@ import { workspaceTenantName } from 'components/Shared/functions';
 import Analytics from 'components/Shared/svgIcons/analytics';
 import LandScapeIcon from 'components/Shared/svgIcons/LandscapeBlackIcon';
 
-import { mapControlsController } from 'controllers/mapControlsController';
-import { navController } from 'controllers/navStateController';
-
 import { GET_NOTIFICATIONS } from 'graphQL/useQueryGetNotifications';
 import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 import { GET_WORKSPACE_SETTINGS } from 'graphQL/useQueryWorkspaceSettings';
+
+import { mapControlsController } from 'stateManagement/mapControlsController';
+import { navController } from 'stateManagement/navStateController';
 
 import { AppContext } from 'AppContext';
 
@@ -169,28 +169,30 @@ const SideNavigation = ({ openDrawer, handleListItemClick, handleDrawerClose, ha
 					</IconButton>
 				</div>
 				<List className={classes.menuList}>
-					<ListItem
-						classes={{
-							root: classes.menuListItem,
-							selected: classes.menuListItemSelected,
-						}}
-						button
-						selected={selectedModule === ROUTES.DASHBOARD.module}
-						onClick={() => handleListItemClick('/dashboard')}
-						key="dashboard"
-					>
-						<div className={classes.tabContent}>
-							<Tooltip title="Dashboard" placement="right" classes={{ tooltip: classes.iconTooltip }}>
-								<ListItemIcon className={classes.sideNavIcon}>
-									{/* TODO: Add actual notification count here */}
-									<Badge badgeContent={notificationsLength} color="secondary">
-										<DashboardIcon />
-									</Badge>
-								</ListItemIcon>
-							</Tooltip>
-							<ListItemText className={`${classes.sideNavText} uppercase`} primary="Dashboard" />
-						</div>
-					</ListItem>
+					<FeatureFlag feature={FEATURES.DASHBOARD}>
+						<ListItem
+							classes={{
+								root: classes.menuListItem,
+								selected: classes.menuListItemSelected,
+							}}
+							button
+							selected={selectedModule === ROUTES.DASHBOARD.module}
+							onClick={() => handleListItemClick('/dashboard')}
+							key="dashboard"
+						>
+							<div className={classes.tabContent}>
+								<Tooltip title="Dashboard" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+									<ListItemIcon className={classes.sideNavIcon}>
+										{/* TODO: Add actual notification count here */}
+										<Badge badgeContent={notificationsLength} color="secondary">
+											<DashboardIcon />
+										</Badge>
+									</ListItemIcon>
+								</Tooltip>
+								<ListItemText className={`${classes.sideNavText} uppercase`} primary="Dashboard" />
+							</div>
+						</ListItem>
+					</FeatureFlag>
 
 					<ListItem
 						classes={{
@@ -211,63 +213,64 @@ const SideNavigation = ({ openDrawer, handleListItemClick, handleDrawerClose, ha
 							<ListItemText className={`${classes.sideNavText} uppercase`} primary="Map" />
 						</div>
 					</ListItem>
-
-					<ListItem
-						classes={{
-							root: classes.menuListItem,
-							selected: classes.menuListItemSelected,
-						}}
-						button
-						selected={selectedModule === ROUTES.CONTACT.module}
-						onClick={() => {
-							window.setStateApp(stateApp => ({
-								...stateApp,
-								selectedContact: null,
-								contactSearchQuery: null,
-							}));
-							window.setStateNav(stateApp => ({
-								...stateApp,
-								contactFromMap: false,
-							}));
-							handleListItemClick('/contacts');
-						}}
-						key="contacts"
-					>
-						<div className={classes.tabContent}>
-							<Tooltip title="Contacts" placement="right" classes={{ tooltip: classes.iconTooltip }}>
-								<ListItemIcon className={classes.sideNavIcon}>
-									<PersonIcon />
-								</ListItemIcon>
-							</Tooltip>
-							<ListItemText className={`${classes.sideNavText} uppercase`} primary="Contacts" />
-						</div>
-					</ListItem>
-
-					<ListItem
-						classes={{
-							root: classes.menuListItem,
-							selected: classes.menuListItemSelected,
-						}}
-						button
-						selected={selectedModule === ROUTES.FLOW.module}
-						onClick={() => handleListItemClick('/flow')}
-						key="flow"
-					>
-						<div className={classes.tabContent}>
-							<Tooltip title="Flow" placement="right" classes={{ tooltip: classes.iconTooltip }}>
-								<ListItemIcon className={classes.sideNavIcon}>
-									<FlowIcon />
-								</ListItemIcon>
-							</Tooltip>
-							<ListItemText className={`${classes.sideNavText} uppercase`} primary="Flow" />
-							<ListItemSecondaryAction className={classes.sideNavAction}>
-								{/* <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+					<FeatureFlag feature={FEATURES.CONTACTSUBMENU}>
+						<ListItem
+							classes={{
+								root: classes.menuListItem,
+								selected: classes.menuListItemSelected,
+							}}
+							button
+							selected={selectedModule === ROUTES.CONTACT.module}
+							onClick={() => {
+								window.setStateApp(stateApp => ({
+									...stateApp,
+									selectedContact: null,
+									contactSearchQuery: null,
+								}));
+								window.setStateNav(stateApp => ({
+									...stateApp,
+									contactFromMap: false,
+								}));
+								handleListItemClick('/contacts');
+							}}
+							key="contacts"
+						>
+							<div className={classes.tabContent}>
+								<Tooltip title="Contacts" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+									<ListItemIcon className={classes.sideNavIcon}>
+										<PersonIcon />
+									</ListItemIcon>
+								</Tooltip>
+								<ListItemText className={`${classes.sideNavText} uppercase`} primary="Contacts" />
+							</div>
+						</ListItem>
+					</FeatureFlag>
+					<FeatureFlag feature={FEATURES.FLOW}>
+						<ListItem
+							classes={{
+								root: classes.menuListItem,
+								selected: classes.menuListItemSelected,
+							}}
+							button
+							selected={selectedModule === ROUTES.FLOW.module}
+							onClick={() => handleListItemClick('/flow')}
+							key="flow"
+						>
+							<div className={classes.tabContent}>
+								<Tooltip title="Flow" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+									<ListItemIcon className={classes.sideNavIcon}>
+										<FlowIcon />
+									</ListItemIcon>
+								</Tooltip>
+								<ListItemText className={`${classes.sideNavText} uppercase`} primary="Flow" />
+								<ListItemSecondaryAction className={classes.sideNavAction}>
+									{/* <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                   beta
                 </Button>*/}
-							</ListItemSecondaryAction>
-						</div>
-					</ListItem>
-
+								</ListItemSecondaryAction>
+							</div>
+						</ListItem>
+					</FeatureFlag>
 					<FeatureFlag feature={FEATURES.LANDMODULE}>
 						<ListItem
 							classes={{
@@ -326,30 +329,31 @@ const SideNavigation = ({ openDrawer, handleListItemClick, handleDrawerClose, ha
 						</ListItem>
 					</FeatureFlag>
 
-					<ListItem
-						classes={{
-							root: classes.menuListItem,
-							selected: classes.menuListItemSelected,
-						}}
-						button
-						selected={selectedModule === ROUTES.FILES.module}
-						onClick={() => {
-							window.setStateApp(stateApp => ({
-								...stateApp,
-								selectedContact: null,
-							}));
-							handleListItemClick('/documents');
-						}}
-						key="documents"
-					>
-						<div className={classes.tabContent}>
-							<Tooltip title="Files" placement="right" classes={{ tooltip: classes.iconTooltip }}>
-								<ListItemIcon className={classes.sideNavIcon}>
-									<DescriptionIcon />
-								</ListItemIcon>
-							</Tooltip>
-							<ListItemText className={`${classes.sideNavText} uppercase`} primary="Files" />
-							{/* <ListItemSecondaryAction className={classes.sideNavAction}>
+					<FeatureFlag feature={FEATURES.FILES}>
+						<ListItem
+							classes={{
+								root: classes.menuListItem,
+								selected: classes.menuListItemSelected,
+							}}
+							button
+							selected={selectedModule === ROUTES.FILES.module}
+							onClick={() => {
+								window.setStateApp(stateApp => ({
+									...stateApp,
+									selectedContact: null,
+								}));
+								handleListItemClick('/documents');
+							}}
+							key="documents"
+						>
+							<div className={classes.tabContent}>
+								<Tooltip title="Files" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+									<ListItemIcon className={classes.sideNavIcon}>
+										<DescriptionIcon />
+									</ListItemIcon>
+								</Tooltip>
+								<ListItemText className={`${classes.sideNavText} uppercase`} primary="Files" />
+								{/* <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button
                   disabled
                   className={`${classes.betaSideNav3} uppercase`}
@@ -359,33 +363,35 @@ const SideNavigation = ({ openDrawer, handleListItemClick, handleDrawerClose, ha
                   beta
                 </Button>
               </ListItemSecondaryAction> */}
-						</div>
-					</ListItem>
-					<ListItem
-						classes={{
-							root: classes.menuListItem,
-							selected: classes.menuListItemSelected,
-						}}
-						button
-						selected={selectedModule === ROUTES.CALENDER.module}
-						onClick={() => handleListItemClick('/calendar/activities')}
-						key="calendar"
-					>
-						<div className={classes.tabContent}>
-							<Tooltip title="Calendar" placement="right" classes={{ tooltip: classes.iconTooltip }}>
-								<ListItemIcon className={classes.sideNavIcon}>
-									<ActivityIcon />
-								</ListItemIcon>
-							</Tooltip>
-							<ListItemText className={`${classes.sideNavText} uppercase`} primary="Calendar" />
-							{/* <ListItemSecondaryAction className={classes.sideNavAction}>
+							</div>
+						</ListItem>
+					</FeatureFlag>
+					<FeatureFlag feature={FEATURES.CALENDAR}>
+						<ListItem
+							classes={{
+								root: classes.menuListItem,
+								selected: classes.menuListItemSelected,
+							}}
+							button
+							selected={selectedModule === ROUTES.CALENDER.module}
+							onClick={() => handleListItemClick('/calendar/activities')}
+							key="calendar"
+						>
+							<div className={classes.tabContent}>
+								<Tooltip title="Calendar" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+									<ListItemIcon className={classes.sideNavIcon}>
+										<ActivityIcon />
+									</ListItemIcon>
+								</Tooltip>
+								<ListItemText className={`${classes.sideNavText} uppercase`} primary="Calendar" />
+								{/* <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                   beta
                 </Button>
               </ListItemSecondaryAction> */}
-						</div>
-					</ListItem>
-
+							</div>
+						</ListItem>
+					</FeatureFlag>
 					{/* TEMP REMOVAL */}
 					{/* <ListItem
             classes={{

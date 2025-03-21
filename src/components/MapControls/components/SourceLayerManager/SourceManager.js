@@ -35,17 +35,18 @@ import PropTypes from 'prop-types';
 import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
 import { copy, deepEqual } from 'components/Shared/functions';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { layerController } from 'controllers/layerStateController';
-import { mapControlsController } from 'controllers/mapControlsController';
-
 import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 import { LAYERS_BY_DATASET_ID } from 'graphQL/useQueryAllLayerSettingsByUser';
 
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { mapControlsController } from 'stateManagement/mapControlsController';
+
 import { showInfoMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 import CategorySection from './CategorySection';
 import DeleteSourceAndCategoryConfirmationDialog from './DeleteSourceAndCategoryConfirmationDialog';
