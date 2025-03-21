@@ -19,6 +19,8 @@ class LayerStylingStateController extends StateController {
 			width,
 			aggregation,
 			selectedPalette,
+			colorSteps,
+			isCustomPalette,
 			colorScaleType,
 			fillColor,
 			fillStyle,
@@ -71,6 +73,8 @@ class LayerStylingStateController extends StateController {
 			layer.layerSettings?.aggregation !== aggregation ||
 			layer.layerSettings?.isExtruded !== isExtruded ||
 			!_.isEqual(layer.layerSettings?.selectedPalette, selectedPalette) ||
+			!_.isEqual(layer.layerSettings?.isCustomPalette, isCustomPalette) ||
+			!_.isEqual(layer.layerSettings?.colorSteps, colorSteps) ||
 			layer.layerSettings?.colorScaleType !== colorScaleType
 		) {
 			let currentLayer = { ...layer };
@@ -140,6 +144,8 @@ class LayerStylingStateController extends StateController {
 
 			layerSettings.colorScaleType = colorScaleType;
 			layerSettings.selectedPalette = selectedPalette;
+			layerSettings.colorSteps = colorSteps;
+			layerSettings.isCustomPalette = isCustomPalette;
 			layerSettings.isExtruded = isExtruded;
 
 			if (
@@ -430,6 +436,8 @@ class LayerStylingStateController extends StateController {
 
 		const initialAggregation = layer.layerSettings?.aggregation || 'SUM';
 		const initialSelectedPalette = layer.layerSettings?.selectedPalette || colorPalettes[0];
+		const intialColorSteps = layer.layerSettings?.colorSteps || 5;
+		const initialIsCustomPalette = layer.layerSettings?.isCustomPalette || false;
 		const initialColorScaleType = layer.layerSettings?.colorScaleType || 'quantize';
 
 		const initialFillColor =
@@ -463,6 +471,8 @@ class LayerStylingStateController extends StateController {
 			fillColor: initialFillColor,
 			aggregation: initialAggregation,
 			selectedPalette: initialSelectedPalette,
+			colorSteps: intialColorSteps,
+			isCustomPalette: initialIsCustomPalette,
 			colorScaleType: initialColorScaleType,
 
 			fillStyle: layer.layerSettings?.fillStyle || null,
@@ -511,6 +521,14 @@ class LayerStylingStateController extends StateController {
 
 	setSelectedPalette(newSelectedPalette) {
 		this.updateState({ selectedPalette: newSelectedPalette });
+	}
+
+	setIsCustomPalette(isCustomPalette) {
+		this.updateState({ isCustomPalette: isCustomPalette });
+	}
+
+	setColorSteps(newColorSteps) {
+		this.updateState({ colorSteps: newColorSteps });
 	}
 
 	setFillStyle(newFillStyle) {

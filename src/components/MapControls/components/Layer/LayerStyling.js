@@ -4,7 +4,7 @@ import { Grid, IconButton, Divider, FormControlLabel, Switch, Tooltip, ClickAway
 import { Close as CloseIcon } from '@material-ui/icons';
 import GridOnIcon from '@material-ui/icons/GridOn';
 
-import { Typography, Slider, TextField, Box } from '@mui/material';
+import { Typography, Slider, TextField, Box, Button } from '@mui/material';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import _ from 'lodash';
@@ -31,7 +31,7 @@ import AttrsFillStyleDropdown from './LayerAttributes/AttrsFillStyleDropdown';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
 import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
 import ColorPaletteGrid, { colorPalettes } from './LayerAttributes/ColorPaletteGrid';
-import ColorScaleDropdown from './LayerAttributes/ColorScaleDropdown';
+import CustomColorPalette from './LayerAttributes/CustomColorPalette';
 import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
 
 function LayerStyling() {
@@ -44,6 +44,8 @@ function LayerStyling() {
 		fillColor,
 		aggregation,
 		selectedPalette,
+		isCustomPalette,
+		colorSteps,
 		colorScaleType,
 		fillStyle,
 		lineStyle,
@@ -68,6 +70,8 @@ function LayerStyling() {
 		binsWidth,
 		elevationScale,
 	} = layerStylingController.useCompleteState();
+	console.log(colorSteps);
+
 	const isAggLayer = aggregationLayers.includes(selectedLayer?.layerType);
 	const isHeatMap = selectedLayer?.layerType === 'heatmap layer';
 	const layerType = selectedLayer.layerPaintProps?.[0]?.paintType;
@@ -87,6 +91,8 @@ function LayerStyling() {
 	const initialAggregation = selectedLayer.layerSettings?.aggregation || 'SUM';
 	const initialColorScaleType = selectedLayer.layerSettings?.colorScaleType || 'quantize';
 	const initialSelectedPalette = selectedLayer.layerSettings?.selectedPalette || colorPalettes[0];
+	const initialIsCustom = selectedLayer.layerSettings?.isCustomPalette || false;
+	const initialColorSteps = selectedLayer.layerSettings?.colorSteps || 5;
 
 	let initialWidth;
 	if (layerType === 'circle') {
@@ -168,7 +174,8 @@ function LayerStyling() {
 			selectedLayer.layerSettings?.aggregation !== aggregation ||
 			selectedLayer.layerSettings?.colorScaleType !== colorScaleType ||
 			selectedLayer.layerSettings?.isExtruded !== isExtruded ||
-			!_.isEqual(selectedLayer.layerSettings?.selectedPalette, selectedPalette)
+			!_.isEqual(selectedLayer.layerSettings?.selectedPalette, selectedPalette) ||
+			!_.isEqual(selectedLayer.layerSettings?.isCustomPalette, isCustomPalette)
 		) {
 			let { currentLayer } = layerStylingController.handleLayerChange(selectedLayer);
 			const currentLayers = [...hookStateAppLayers];
@@ -228,6 +235,7 @@ function LayerStyling() {
 		fillColor,
 		aggregation,
 		selectedPalette,
+		isCustomPalette,
 		colorScaleType,
 		fillStyle,
 		lineStyle,
@@ -248,6 +256,8 @@ function LayerStyling() {
 		layerStylingController.setAggregation(initialAggregation);
 		layerStylingController.setColorScaleType(initialColorScaleType);
 		layerStylingController.setSelectedPalette(initialSelectedPalette);
+		layerStylingController.setColorSteps(initialColorSteps);
+		layerStylingController.setIsCustomPalette(initialIsCustom);
 		layerStylingController.setStrokeColor(initialStrokeColor);
 		layerStylingController.setFillStyle(selectedLayer.layerSettings?.fillStyle);
 		layerStylingController.setLineStyle(selectedLayer.layerSettings?.lineStyle);
@@ -259,6 +269,8 @@ function LayerStyling() {
 		layerStylingController.setAggregation(initialAggregation);
 		layerStylingController.setColorScaleType(initialColorScaleType);
 		layerStylingController.setSelectedPalette(initialSelectedPalette);
+		layerStylingController.setColorSteps(initialColorSteps);
+		layerStylingController.setIsCustomPalette(initialIsCustom);
 		layerStylingController.setStrokeColor(initialStrokeColor);
 		layerStylingController.setFillStyle(selectedLayer.layerSettings?.fillStyle);
 		layerStylingController.setLineStyle(selectedLayer.layerSettings?.lineStyle);
@@ -470,10 +482,36 @@ function LayerStyling() {
 											<Typography variant="h6" style={{ marginBottom: '10px' }}>
 												Color Palette
 											</Typography>
-											<ColorPaletteGrid
-												selectedPalette={selectedPalette || colorPalettes[0]}
-												setSelectedPalette={layerStylingController.setSelectedPalette}
-											/>
+											<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+												<Button
+													variant={!isCustomPalette ? 'contained' : 'outlined'}
+													size="small"
+													onClick={() => layerStylingController.setIsCustomPalette(false)}
+												>
+													Predefined
+												</Button>
+												<Button
+													variant={isCustomPalette ? 'contained' : 'outlined'}
+													size="small"
+													onClick={() => layerStylingController.setIsCustomPalette(true)}
+												>
+													Custom
+												</Button>
+											</div>
+
+											{!isCustomPalette ? (
+												<ColorPaletteGrid
+													selectedPalette={selectedPalette || colorPalettes[0]}
+													setSelectedPalette={layerStylingController.setSelectedPalette}
+												/>
+											) : (
+												<CustomColorPalette
+													selectedPalette={selectedPalette}
+													setSelectedPalette={layerStylingController.setSelectedPalette}
+													steps={colorSteps}
+													setSteps={layerStylingController.setColorSteps}
+												/>
+											)}
 										</>
 									</>
 								)}
@@ -699,7 +737,7 @@ function LayerStyling() {
 										)}
 									</Grid>
 									<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
-										Bins Width
+										Stroke Width
 									</Typography>
 									<Box display="flex" alignItems="center" justifyContent="space-between">
 										<Slider
