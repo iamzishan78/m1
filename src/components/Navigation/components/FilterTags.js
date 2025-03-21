@@ -6,10 +6,10 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery } from '@apollo/client';
 
-import { globalStateController } from 'controllers/globalStateController';
-import { layerController } from 'controllers/layerStateController';
-
 import { USERAVAILABLEFILTERTAGSQUERY } from 'graphQL/useQueryUserAvailableFilterTags';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 import { NavigationContext } from '../NavigationContext';
 

@@ -1,4 +1,4 @@
-import { StateController } from 'controllers/stateController';
+import { StateController } from 'stateManagement/stateController';
 
 export const metaDataColumnInitialState = {
 	tableKey: null,

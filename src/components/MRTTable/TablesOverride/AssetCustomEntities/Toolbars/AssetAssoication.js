@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 
-import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 import AssociationDialog from 'components/Shared/components/common/DetailCard/AssociationDialog';
+import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 function AssetAssociationToolbar() {
 	const associatedDataHandler = () => {

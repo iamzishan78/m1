@@ -7,9 +7,9 @@ import { removeSpaces } from 'components/MRTTable/utils/helper';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { globalStateController } from 'controllers/globalStateController';
-import { popupController } from 'controllers/popupStateController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import useStyles from './useStyles';
 

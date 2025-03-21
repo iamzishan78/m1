@@ -8,8 +8,8 @@ import MRTTable from 'components/MRTTable';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import { TabPanel } from 'components/Shared/TabPanels';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { tableGlobalController } from 'controllers/tableController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -191,7 +191,7 @@ function DetailCardBottom({ data }) {
 							</Grid>
 
 							<Grid item md={10} style={{ padding: '0px' }}>
-								<div style={{ position: 'relative' }} classes={classes.gridTables}>
+								<div style={{ position: 'relative' }}>
 									<ComponentRender props={searchTapValue} />
 								</div>
 							</Grid>

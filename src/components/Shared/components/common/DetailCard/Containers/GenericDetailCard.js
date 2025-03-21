@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 
 import NavHeader from 'components/Land/components/Common/NavHeader';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { globalStateController } from 'controllers/globalStateController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import GenericDetail from '../Cards/GenericDetail';
 

@@ -3,7 +3,7 @@ import Avatar from 'react-avatar';
 
 import { IconButton } from '@material-ui/core';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 function OwnerTypeCell({ contactOwner }) {
 	// Getting users from global table state

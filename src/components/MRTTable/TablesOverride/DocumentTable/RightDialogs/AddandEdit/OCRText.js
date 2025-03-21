@@ -6,10 +6,10 @@ import { useApolloClient, useMutation, useQuery } from '@apollo/client';
 import { isEqual } from 'lodash';
 import PropTypes from 'prop-types';
 
-import { slidoutStateController } from 'controllers/slidoutStateController';
-
 import { UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
 import { GET_FILE_OCR_TEXT, VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
+
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import { convertFile } from 'utils/tesseractHelper';
 
@@ -152,7 +152,6 @@ const OCRText = ({ selectedDocument }) => {
 				}}
 			>
 				{Array.from({ length: 8 }).map((_, i) => (
-					// eslint-disable-next-line react/no-array-index-key
 					<Skeleton key={i} height={24} sx={{ marginBottom: '8px' }} />
 				))}
 			</Box>

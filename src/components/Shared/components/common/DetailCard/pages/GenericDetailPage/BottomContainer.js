@@ -5,8 +5,8 @@ import DetailCardBottom from 'components/Shared/components/common/DetailCard/Det
 import ContactInformationIcon from 'components/Shared/svgIcons/ContactPhone';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { globalStateController } from 'controllers/globalStateController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import DetailInfo from './DetailInfoSection';
 

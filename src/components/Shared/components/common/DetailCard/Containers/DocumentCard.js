@@ -3,8 +3,8 @@ import { useHistory } from 'react-router-dom';
 
 import NavHeader from 'components/Land/components/Common/NavHeader';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { globalStateController } from 'controllers/globalStateController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import DocumentsCard from '../Cards/Document';
 

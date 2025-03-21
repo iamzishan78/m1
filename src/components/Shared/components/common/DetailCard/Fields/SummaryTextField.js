@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+
 import { InputAdornment, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Autorenew as AutorenewIcon } from '@material-ui/icons';
 
 import { isEqual } from 'lodash';
-import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
+import PropTypes from 'prop-types';
 
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 
-import { detailCardController } from 'controllers/detailCardController';
+import { detailCardController } from 'stateManagement/detailCardController';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -71,7 +72,7 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 		}
 
 		if (!isMetaField)
-			return callApi({ key: field.key, value: currValue, field, previousValue: fieldData, resetFn: setValue });
+			{return callApi({ key: field.key, value: currValue, field, previousValue: fieldData, resetFn: setValue });}
 
 		const oldCustomData = summaryData.custom_data || {};
 		const customData = {
@@ -79,7 +80,7 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 			[field.key.replaceAll('custom_data.', '')]: value,
 		};
 		if (!isEqual(customData, oldCustomData))
-			callApi({ key: 'custom_data', value: customData, originalKey: field.key, field, fieldData, resetFn: setValue });
+			{callApi({ key: 'custom_data', value: customData, originalKey: field.key, field, fieldData, resetFn: setValue });}
 	};
 
 	const handleBlur = currValue => {

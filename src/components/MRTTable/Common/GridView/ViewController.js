@@ -1,9 +1,9 @@
-import { globalStateController } from 'controllers/globalStateController';
-import { StateController } from 'controllers/stateController';
-import { tableController } from 'controllers/tableController';
-
 import { UPSERT_GRID_VIEW } from 'graphQL/useMutationUpsertGridView';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { StateController } from 'stateManagement/stateController';
+import { tableController } from 'stateManagement/tableController';
 
 class ViewStateController extends StateController {
 	constructor(initialState) {

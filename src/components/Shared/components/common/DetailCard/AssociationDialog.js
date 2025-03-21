@@ -21,12 +21,12 @@ import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { formatDate } from 'components/Shared/functions';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { globalStateController } from 'controllers/globalStateController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { ADD_ASSOCIATED_MODEL_DATA } from 'graphQL/useMutationAssociatedModelData';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+
+import { detailCardController } from 'stateManagement/detailCardController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({
 	maxWidth: {

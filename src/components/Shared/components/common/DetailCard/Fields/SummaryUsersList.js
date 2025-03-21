@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
 
-import { detailCardController } from 'controllers/detailCardController';
+import { detailCardController } from 'stateManagement/detailCardController';
 
 const SummaryUsersList = ({ fieldData, field }) => {
 	const {
@@ -19,7 +19,7 @@ const SummaryUsersList = ({ fieldData, field }) => {
 
 		if (!user) {
 			callApi({ key: field.key, value: null, field, previousValue: fieldData?._id, resetFn: setValue });
-			if (!field?.isRequired) setValue(updatedvalue);
+			if (!field?.isRequired) {setValue(updatedvalue);}
 		} else if (user?.value !== fieldData?._id) {
 			callApi({ key: field.key, value: user?.value, field, previousValue: fieldData?._id, resetFn: setValue });
 			setValue(updatedvalue);

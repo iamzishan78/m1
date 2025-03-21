@@ -1,14 +1,13 @@
 import React, { memo, useContext, useEffect } from 'react';
 
 import { useLazyQuery } from '@apollo/client';
-import { slidoutStateController } from 'controllers/slidoutStateController';
 
 import ActivitiesSlideout from 'components/Activities/components/ActivitiesSlideout';
-
 
 import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 
 import { slidoutState } from 'stateManagement/initialStates';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import { AppContext } from 'AppContext';
 

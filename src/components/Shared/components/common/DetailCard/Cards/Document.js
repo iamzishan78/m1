@@ -8,10 +8,11 @@ import { useMutation } from '@apollo/client';
 
 import ViewDocuments from 'components/ViewDocuments/ViewDocuments';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { globalStateController } from 'controllers/globalStateController';
-
 import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
+
+import { detailCardController } from 'stateManagement/detailCardController';
+import { globalStateController } from 'stateManagement/globalStateController';
+
 
 import { Modals } from 'styles/Modal';
 

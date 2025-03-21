@@ -10,9 +10,9 @@ import PropTypes from 'prop-types';
 
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 
-import { detailCardController } from 'controllers/detailCardController';
-
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+
+import { detailCardController } from 'stateManagement/detailCardController';
 
 const useStyles = makeStyles({
 	inputRoot: {
@@ -156,7 +156,6 @@ const SummaryAutoComplete = ({ fieldData, fieldKey, defaultOptions = [], payload
 					callApi({
 						key: fieldKey,
 						value: splitKeys.length === 1 ? newValue.name : { [splitKeys[splitKeys.length - 1]]: newValue.name },
-						field,
 						previousValue: fieldData,
 						resetFn: setSearch,
 					});
@@ -165,7 +164,6 @@ const SummaryAutoComplete = ({ fieldData, fieldKey, defaultOptions = [], payload
 					callApi({
 						key: fieldKey,
 						value: splitKeys.length === 1 ? '' : { [splitKeys[splitKeys.length - 1]]: '' },
-						field,
 						previousValue: fieldData,
 						resetFn: setSearch,
 					});

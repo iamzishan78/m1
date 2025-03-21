@@ -6,11 +6,11 @@ import AddIcon from '@material-ui/icons/Add';
 
 import { useLazyQuery } from '@apollo/client';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { globalStateController } from 'controllers/globalStateController';
-import { popupController } from 'controllers/popupStateController';
-
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { detailCardController } from 'stateManagement/detailCardController';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import MetaField from 'utils/MetaField';
 
@@ -89,7 +89,7 @@ export default function CommonSummaryFieldsComponent({ metaDataCategory, formFie
 			return;
 		}
 
-		setFields(fields => [...fields, ...metaDataRes?.getMetaData?.metaData]);
+		setFields(fields => [...fields, ...(metaDataRes?.getMetaData?.metaData || [])]);
 	}, [metaDataRes, currentAsset]);
 
 	return (

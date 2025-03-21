@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 import { CircularProgress } from '@material-ui/core';
 
-import { detailCardController } from 'controllers/detailCardController';
+import { detailCardController } from 'stateManagement/detailCardController';
 
 import Content from './Content';
 import useDetailCardUnmount from './Hooks/useDetailCardUnmount';

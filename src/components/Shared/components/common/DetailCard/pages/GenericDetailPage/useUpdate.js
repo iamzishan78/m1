@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { useMutation } from '@apollo/client';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { globalStateController } from 'controllers/globalStateController';
-
 import { UPDATE_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 
-import { useDispatch } from 'react-redux';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { globalStateController } from 'stateManagement/globalStateController';
+
+
 import { showInfoMessage } from 'actions';
 
 const useUpdate = () => {
@@ -29,7 +30,7 @@ const useUpdate = () => {
 	}, [data]);
 
 	const validateField = (field, value) => {
-		if (!field) return;
+		if (!field) {return;}
 		const isEmpty = value === undefined || value === null || value === '' || value === 0;
 
 		if (field.isRequired && isEmpty) {

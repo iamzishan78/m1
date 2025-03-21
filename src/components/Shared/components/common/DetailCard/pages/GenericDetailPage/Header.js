@@ -7,8 +7,8 @@ import { withStyles } from '@material-ui/core/styles';
 import FieldContent from 'components/ContactDetailCard/components/FieldContent';
 import Tags from 'components/Shared/Tagger';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { globalStateController } from 'controllers/globalStateController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import useStyles from './useStyles';
 

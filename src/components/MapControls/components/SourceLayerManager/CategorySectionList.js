@@ -21,7 +21,7 @@ import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
 
-import { layerController } from 'controllers/layerStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 const StyledListItem = withStyles(theme => ({
 	root: {

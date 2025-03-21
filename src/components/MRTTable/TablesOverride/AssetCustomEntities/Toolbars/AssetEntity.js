@@ -5,7 +5,7 @@ import EditIcon from '@material-ui/icons/Edit';
 
 import PropTypes from 'prop-types';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import AssetAssociationDialog from '../Popups/AssetAssociationDialog';
 import CustomAssetEntityDialog from '../Popups/CustomAssetEntityDialog';

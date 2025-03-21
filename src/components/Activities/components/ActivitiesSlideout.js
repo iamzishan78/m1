@@ -8,10 +8,10 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 
 import Slideout from 'components/Shared/Slideout';
 
-import { slidoutStateController } from 'controllers/slidoutStateController';
-
 import { REMOVECOMMONDESCRIPTOR } from 'graphQL/useMutationRemoveCommonDescriptor';
 import { UPSERTCOMMONDESCRIPTOR } from 'graphQL/useMutationUpsertCommonDescriptor';
+
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import ActivityForm from './ActivityForm';
 import { AppContext } from '../../../AppContext';

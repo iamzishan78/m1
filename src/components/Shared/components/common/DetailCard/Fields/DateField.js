@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 
-import { detailCardController } from 'controllers/detailCardController';
+import { detailCardController } from 'stateManagement/detailCardController';
 
 function DateField({ fieldData, field }) {
 	const {

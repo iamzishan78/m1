@@ -4,9 +4,9 @@ import { isEqual } from 'lodash';
 
 import { drawBoundary, drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
-import { drawController } from 'controllers/drawStateController';
-import { layerController } from 'controllers/layerStateController';
-import { popupController } from 'controllers/popupStateController';
+import { drawController } from 'stateManagement/drawStateController';
+import { layerController } from 'stateManagement/layerStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { getClickedFeature } from './common';
 import M1neralGeojsonLayer from './M1neralGeojsonLayer';
@@ -140,9 +140,11 @@ export default class DeckGlOverlay {
 						return;
 					}
 					if (!getLandGrid) {
-						if (clickedFeature?.object?.geometry?.type === 'Point')
+						if (clickedFeature?.object?.geometry?.type === 'Point') {
 							drawWellBoundary(clickedFeature?.object?.geometry?.coordinates);
-						else drawBoundary(clickedFeature.object);
+						} else {
+							drawBoundary(clickedFeature.object);
+						}
 					}
 
 					layerController.updateState({ clickedFeature });

@@ -24,10 +24,10 @@ import { z } from 'zod';
 import Loader from 'components/Loaders';
 import { entityCreationOptions, entityShapeOptions } from 'components/MRTTable/utils/data';
 
-import { tableGlobalController } from 'controllers/tableController';
-
 import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetInfo';
 import { IS_TABLE_NAME_VALID } from 'graphQL/useQueryAllCustomAssetInfo.js';
+
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { showInfoMessage } from 'actions';
 

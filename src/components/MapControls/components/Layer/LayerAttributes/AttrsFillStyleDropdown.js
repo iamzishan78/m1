@@ -9,9 +9,9 @@ import PropTypes from 'prop-types'; // Import PropTypes for prop validation
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 
-import { getLayerKey } from 'controllers/helpers';
-
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+
+import { getLayerKey } from 'stateManagement/helpers';
 
 import { colorBasedAttributes } from './ColorBasedAttributes';
 import { styleImageMap } from '../Common';

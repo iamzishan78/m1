@@ -2,8 +2,8 @@ import React from 'react';
 
 import { Grid, makeStyles } from '@material-ui/core';
 
-import { detailCardController } from 'controllers/detailCardController';
-import { popupController } from 'controllers/popupStateController';
+import { detailCardController } from 'stateManagement/detailCardController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import * as Pages from './pages';
 

@@ -9,9 +9,9 @@ import { useLazyQuery } from '@apollo/client';
 import { getRandomColor } from 'components/Shared/functions/ui';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 
-import { detailCardController } from 'controllers/detailCardController';
-
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import { detailCardController } from 'stateManagement/detailCardController';
 
 const useStyles = makeStyles(theme => ({
 	gridStyle: {

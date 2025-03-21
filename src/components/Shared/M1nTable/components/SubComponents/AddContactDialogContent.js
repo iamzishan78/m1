@@ -19,7 +19,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
 import { contactStatusOptions, featureFlagChanges } from 'components/ContactDetailedInfo/helper';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { AppContext } from '../../../../../AppContext';
 import { ADDCONTACT } from '../../../../../graphQL/useMutationAddContact';

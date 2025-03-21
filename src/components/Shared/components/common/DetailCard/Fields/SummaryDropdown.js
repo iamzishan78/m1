@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 
-import { detailCardController } from 'controllers/detailCardController';
+import { detailCardController } from 'stateManagement/detailCardController';
 
 const SummaryDropdown = ({ fieldData, field, summaryData, isMetaField }) => {
 	const {
@@ -22,14 +22,14 @@ const SummaryDropdown = ({ fieldData, field, summaryData, isMetaField }) => {
 			return;
 		}
 
-		if (!isMetaField) return callApi({ key: field.key, value: currValue });
+		if (!isMetaField) {return callApi({ key: field.key, value: currValue });}
 
 		const oldCustomData = summaryData.custom_data || {};
 		const customData = {
 			...oldCustomData,
 			[field.key.replaceAll('custom_data.', '')]: currValue,
 		};
-		if (!isEqual(customData, oldCustomData)) callApi({ key: 'custom_data', value: customData, originalKey: field.key });
+		if (!isEqual(customData, oldCustomData)) {callApi({ key: 'custom_data', value: customData, originalKey: field.key });}
 	};
 
 	useEffect(() => {

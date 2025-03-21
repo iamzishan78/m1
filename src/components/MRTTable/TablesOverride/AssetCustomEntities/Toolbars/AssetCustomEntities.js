@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
-import { tableGlobalController } from 'controllers/tableController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import CustomAssetEntityDialog from '../Popups/CustomAssetEntityDialog';
 

@@ -3,7 +3,7 @@ import React, { useContext, memo, useEffect, useState } from 'react';
 import CommonSummaryFieldsComponent from 'components/Shared/components/common/DetailCard/CommonSummaryFields';
 import DocViewer from 'components/Shared/DocViewer';
 
-import { globalStateController } from 'controllers/globalStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 import { AppContext } from 'AppContext';
 

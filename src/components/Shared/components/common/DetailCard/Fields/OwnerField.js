@@ -12,9 +12,10 @@ import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/C
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 
-import { detailCardController } from 'controllers/detailCardController';
-
 import { CONTACT_ENTITY } from 'graphQL/useQueryContactEntity';
+
+import { detailCardController } from 'stateManagement/detailCardController';
+
 
 const useStyles = makeStyles({
 	dateRoot: {
@@ -77,8 +78,8 @@ function OwnerField({ fieldData, field }) {
 			nameAutValue={prevValue?.contactId ? prevValue?.name : ''}
 			className={classes.field}
 			setNameAutValue={value => {
-				if (value) contactEntity(value?._id);
-				else callApi({ key: field.key, value: null, field, previousValue: prevValue?._id });
+				if (value) {contactEntity(value?._id);}
+				else {callApi({ key: field.key, value: null, field, previousValue: prevValue?._id });}
 			}}
 			renderInput={params => (
 				<TextField

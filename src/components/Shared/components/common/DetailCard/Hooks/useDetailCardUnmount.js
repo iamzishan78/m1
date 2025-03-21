@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { detailCardController } from 'controllers/detailCardController';
+import { detailCardController } from 'stateManagement/detailCardController';
 
 const useDetailCardUnmount = ignoreUnmount => {
 	useEffect(() => {

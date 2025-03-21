@@ -7,10 +7,10 @@ import { useLazyQuery } from '@apollo/client';
 
 import MRTTable from 'components/MRTTable';
 
-import { slidoutStateController } from 'controllers/slidoutStateController';
-import { tableGlobalController } from 'controllers/tableController';
-
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(theme => ({
 	root: {
