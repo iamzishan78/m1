@@ -691,7 +691,13 @@ export function getHexLayerProps(dbLayer) {
 	} else {
 		props.getColorValue = points => points.length;
 	}
-	props.getPosition = d => d.geometry.coordinates;
+	props.getPosition = d => {
+		if (d?.properties?.WellName) {
+			return d.geometry.geometries[0].coordinates;
+		} else {
+			return d.geometry.coordinates;
+		}
+	};
 	props.getElevationValue = points => points.length;
 	props.radius = dbLayer.layerSettings?.binsWidth * 10 || 200;
 	props.elevationScale = dbLayer.layerSettings?.elevationScale || 4;
@@ -726,7 +732,13 @@ export function getHeatMapLayerProps(dbLayer) {
 
 	const props = {};
 	props.aggregation = aggregation;
-	props.getPosition = d => d.geometry.coordinates;
+	props.getPosition = d => {
+		if (d?.properties?.WellName) {
+			return d.geometry.geometries[0].coordinates;
+		} else {
+			return d.geometry.coordinates;
+		}
+	};
 	props.radiusPixels = dbLayer.layerSettings?.binsWidth * 10 || 50;
 	props.colorRange = dbLayer.layerSettings?.selectedPalette;
 	return props;
@@ -744,7 +756,13 @@ export function getGridLayerProps(dbLayer) {
 		props.getColorValue = points => points.length;
 	}
 
-	props.getPosition = d => d.geometry.coordinates;
+	props.getPosition = d => {
+		if (d?.properties?.WellName) {
+			return d.geometry.geometries[0].coordinates;
+		} else {
+			return d.geometry.coordinates;
+		}
+	};
 	props.getElevationValue = points => points.length;
 	props.cellSize = dbLayer.layerSettings?.binsWidth * 10 || 200;
 	props.elevationScale = dbLayer.layerSettings?.elevationScale || 4;
