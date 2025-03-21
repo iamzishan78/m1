@@ -109,99 +109,105 @@ export default function Legend() {
 				</Box>
 
 				<List style={{ backgroundColor: 'white' }} disablePadding>
-					{visibleLayers.map((layer, index) => (
-						<>
-							{/* Color based on */}
+					{visibleLayers.length === 0 ? (
+						<Box sx={{ p: 2, textAlign: 'center', color: '#666' }}>
+							<Typography variant="body2">No attributes of any layer selected</Typography>
+						</Box>
+					) : (
+						visibleLayers.map((layer, index) => (
+							<>
+								{/* Color based on */}
 
-							{layer?.layerSettings?.selectedAttribute && (
-								<>
-									<LegendCollapse
-										layer={layer}
-										basedOnKey={layer.layerSettings.selectedAttribute}
-										basedOnDict={layer.layerSettings.attributeBasedColors}
-										typography={'Color Based On'}
-										index={index}
-										isColor={true}
-										isAggLayer={aggregationLayers.includes(layer.layerType)}
-									/>
+								{layer?.layerSettings?.selectedAttribute && (
+									<>
+										<LegendCollapse
+											layer={layer}
+											basedOnKey={layer.layerSettings.selectedAttribute}
+											basedOnDict={layer.layerSettings.attributeBasedColors}
+											typography={'Color Based On'}
+											index={index}
+											isColor={true}
+											isAggLayer={aggregationLayers.includes(layer.layerType)}
+										/>
 
-									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
-								</>
-							)}
+										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
+									</>
+								)}
 
-							{/* Stroke based on */}
+								{/* Stroke based on */}
 
-							{layer?.layerSettings?.selectedStrokeAttribute && (
-								<>
-									<LegendCollapse
-										layer={layer}
-										basedOnKey={layer.layerSettings.selectedStrokeAttribute}
-										basedOnDict={layer.layerSettings.attributeBasedStrokeColors}
-										typography={'Stroke Based On'}
-										index={index}
-										isColor={true}
-										isAggLayer={aggregationLayers.includes(layer.layerType)}
-									/>
+								{layer?.layerSettings?.selectedStrokeAttribute && (
+									<>
+										<LegendCollapse
+											layer={layer}
+											basedOnKey={layer.layerSettings.selectedStrokeAttribute}
+											basedOnDict={layer.layerSettings.attributeBasedStrokeColors}
+											typography={'Stroke Based On'}
+											index={index}
+											isColor={true}
+											isAggLayer={aggregationLayers.includes(layer.layerType)}
+										/>
 
-									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
-								</>
-							)}
+										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
+									</>
+								)}
 
-							{/* Fill Style based on */}
+								{/* Fill Style based on */}
 
-							{layer?.layerSettings?.selectedFillStyle && (
-								<>
-									<LegendCollapse
-										layer={layer}
-										basedOnKey={layer.layerSettings.selectedFillStyle}
-										basedOnDict={layer.layerSettings.attributeBasedStyles}
-										typography={'Fill Style Based On'}
-										index={index}
-										isImage={true}
-										isAggLayer={aggregationLayers.includes(layer.layerType)}
-									/>
+								{layer?.layerSettings?.selectedFillStyle && (
+									<>
+										<LegendCollapse
+											layer={layer}
+											basedOnKey={layer.layerSettings.selectedFillStyle}
+											basedOnDict={layer.layerSettings.attributeBasedStyles}
+											typography={'Fill Style Based On'}
+											index={index}
+											isImage={true}
+											isAggLayer={aggregationLayers.includes(layer.layerType)}
+										/>
 
-									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
-								</>
-							)}
+										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
+									</>
+								)}
 
-							{/* Line Style based on */}
+								{/* Line Style based on */}
 
-							{layer?.layerSettings?.selectedLineStyle && (
-								<>
-									<LegendCollapse
-										layer={layer}
-										basedOnKey={layer.layerSettings.selectedLineStyle}
-										basedOnDict={layer.layerSettings.attributeBasedLineStyles}
-										typography={'Line Style Based On'}
-										index={index}
-										isImage={true}
-										isAggLayer={aggregationLayers.includes(layer.layerType)}
-									/>
+								{layer?.layerSettings?.selectedLineStyle && (
+									<>
+										<LegendCollapse
+											layer={layer}
+											basedOnKey={layer.layerSettings.selectedLineStyle}
+											basedOnDict={layer.layerSettings.attributeBasedLineStyles}
+											typography={'Line Style Based On'}
+											index={index}
+											isImage={true}
+											isAggLayer={aggregationLayers.includes(layer.layerType)}
+										/>
 
-									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
-								</>
-							)}
+										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
+									</>
+								)}
 
-							{/* Line Style based on */}
+								{/* Line Style based on */}
 
-							{layer?.layerIdentifier === 'Wells' && (
-								<>
-									<LegendCollapse
-										layer={layer}
-										basedOnKey={{ label: 'Well Type/Status' }}
-										basedOnDict={wellsBasedOnDict}
-										typography={'Color Based On'}
-										index={index}
-										isColor={true}
-										isAggLayer={aggregationLayers.includes(layer.layerType)}
-									/>
+								{layer?.layerIdentifier === 'Wells' && (
+									<>
+										<LegendCollapse
+											layer={layer}
+											basedOnKey={{ label: 'Well Type/Status' }}
+											basedOnDict={wellsBasedOnDict}
+											typography={'Color Based On'}
+											index={index}
+											isColor={true}
+											isAggLayer={aggregationLayers.includes(layer.layerType)}
+										/>
 
-									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
-								</>
-							)}
-						</>
-					))}
+										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
+									</>
+								)}
+							</>
+						))
+					)}
 				</List>
 			</Paper>
 		</ThemeProvider>
