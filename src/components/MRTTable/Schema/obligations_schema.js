@@ -5,7 +5,6 @@ import CheckIcon from '@material-ui/icons/Check';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
 
-import { slidoutState } from 'stateManagement/initialStates';
 import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import { getTruncateText } from '../utils/helper';

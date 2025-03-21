@@ -17,10 +17,9 @@ import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } fr
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { globalStateController } from 'stateManagement/globalStateController';
-import { tableESState } from 'stateManagement/initialStates';
 import { layerFiltersController } from 'stateManagement/layerFiltersController';
 import { layerController } from 'stateManagement/layerStateController';
-import { tableController } from 'stateManagement/tableController';
+import { tableController, tableESState } from 'stateManagement/tableController';
 
 import { customLayersFieldAccessors } from './consts';
 import RenderCustomFields from './RenderCustomFields';

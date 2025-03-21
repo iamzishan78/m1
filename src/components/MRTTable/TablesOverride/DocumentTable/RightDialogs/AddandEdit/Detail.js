@@ -28,6 +28,7 @@ import { UPDATE_DOCUMENT, UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocu
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
+import { createViewStateController, viewFormInitialState } from 'stateManagement/addAndEditController';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
@@ -37,7 +38,6 @@ import { convertFile } from 'utils/tesseractHelper';
 import { showErrorMessage } from 'actions';
 
 import UploadZone from './UploadZone';
-import { createViewStateController, initialState } from '../../../../../../stateManagement/addAndEditController';
 
 const filter = createFilterOptions();
 
@@ -357,7 +357,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	useEffect(() => {
 		let fieldsValue = {};
 		if (selectedDocument) {
-			fieldsValue = _.pick(selectedDocument, Object.keys(initialState));
+			fieldsValue = _.pick(selectedDocument, Object.keys(viewFormInitialState));
 		}
 		formController?.initialize(tableKey, fieldsValue);
 

@@ -1,7 +1,8 @@
 import { NotificationManager } from 'react-notifications';
 
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
-import { debounce } from 'lodash';
+import update from 'immutability-helper';
+import { debounce, sortBy, set } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import getBoundsQuery from 'api/getBoundsQuery';
@@ -9,6 +10,7 @@ import getBoundsQuery from 'api/getBoundsQuery';
 import { generateFileFilters, makeGeoJSON, getGeoJsonLayerProps } from 'components/Map/DeckGL/helpers/common';
 import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { copy } from 'components/Shared/functions';
 import {
 	deckGlLayerIdentifiers,
@@ -22,89 +24,41 @@ import {
 } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
-import { getLayerKey } from 'stateManagement/helpers';
-import { hookStateController } from 'stateManagement/hookStateController';
+import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
+import { GET_PROJECTED_LAYERS, LAYERS_BY_ID } from 'graphQL/useQueryAllLayerSettingsByUser';
+
+import { generateDataFunc, getLayerKey, getWellColor } from 'stateManagement/helpers';
+
+import { baseMapLayers, heatLayers } from 'LayerConfig';
 
 import { drawController } from './drawStateController';
 import { globalStateController } from './globalStateController';
-import { layerFilters, layerState, layerStateInitialState } from './initialStates';
 import { layerFiltersController } from './layerFiltersController';
 import { mapControlsController } from './mapControlsController';
 import { navController } from './navStateController';
 import { popupController } from './popupStateController';
+import { StateController } from './stateController';
 
-const getWellColor = w => {
-	// Check if the well status is of Permit type
-	const isWellPermitStatus = ['PERMIT', 'PERMIT - NEW DRILL', 'PERMIT - EXISTING WELL'].includes(
-		w?.properties?.wellStatus
-	);
+const layerStateInitialState = {
+	layers: [],
+	datasets: null,
+	deckLayer: null,
+	layerSettingsLoading: false,
+	projectedLayers: [],
+	client: null,
+	history: null,
+	boundingStates: null,
+	bbox: null,
+	zoom: 0,
+	recalculate: false,
 
-	// Switch on whether wellStatus or wellType
-	const switchType = isWellPermitStatus ? w.properties.wellStatus : w.properties.wellType;
-	switch (switchType) {
-		// rgb(2, 207, 53)
-		case 'OIL':
-		case 'OIL AND GAS':
-			return [2, 207, 53]; // green
+	wellListFromSearch: [], // Not Moved
 
-		// rgb(230, 15, 15)
-		case 'GAS':
-			return [230, 15, 15]; // red
-
-		// rgb(74, 211, 242)
-		case 'WATER':
-			return [74, 211, 242]; // blue
-
-		// rgb(251, 152, 40)
-		case 'PERMIT':
-		case 'PERMIT - NEW DRILL':
-		case 'PERMIT - EXISTING WELL':
-			return [251, 152, 40]; // orange
-
-		// rgba(30, 26, 26, 0.55)
-		case 'PERMITTED':
-			return [251, 152, 40]; // orange
-
-		// rgb(192, 0, 0)
-		default:
-			return [58, 58, 58]; // default dark for permitted
-	}
-};
-
-const generateDataFunc = () => {
-	async function* getData(initalData) {
-		let data = initalData;
-		let pausePromise;
-		// Expose a function to externally pause the generator
-
-		while (true) {
-			if (pausePromise) {
-				// Pause until the external promise is resolved
-				// eslint-disable-next-line no-await-in-loop
-				await pausePromise;
-			}
-			if (data) {
-				let dataToReturn = data;
-				data = null;
-				yield dataToReturn;
-			} else {
-				// No new data, pause until the external promise is resolved
-
-				pausePromise = new Promise(resolve => {
-					// Expose a function to externally pause the generator
-					getData.feedData = d => {
-						data = d;
-						pausePromise = null; // Reset the promise after resolving
-						resolve();
-					};
-				});
-				// eslint-disable-next-line no-await-in-loop
-				await pausePromise;
-			}
-		}
-	}
-
-	return getData;
+	baseMapLayers: baseMapLayers,
+	checkedBaseLayers: [0, 1, 2, 3, 4],
+	heatLayers: heatLayers,
+	checkedHeats: [],
 };
 
 const deckLayers = {};
@@ -123,6 +77,7 @@ const LayerMeta = {
 					data: deckLayers[layerId].getData([]),
 					getFillColor: getWellColor,
 					getLineColor: getWellColor,
+					fillPatternEnabled: false,
 					pointRadiusMinPixels: 2.5,
 					lineWidthMinPixels: 1.5,
 					pointRadiusMaxPixels: 10,
@@ -158,6 +113,49 @@ const LayerMeta = {
 			},
 		},
 	},
+	'dynamic data layer': {
+		defaultZoom: 1,
+		geoField: 'assetShape.shapeJson.geometry',
+		hasText: true,
+		isFilterable: true,
+		propsFunc: getGeoJsonLayerProps,
+		props: {},
+		layer: {
+			id: 'geojson',
+			type: 'GeoJsonLayer',
+			getProps: layerId => {
+				return {
+					data: deckLayers[layerId].getData([]),
+					pointRadiusMinPixels: 5,
+					pointRadiusMaxPixels: 15,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
+				};
+			},
+		},
+	},
+	'Recent Submitted Permits': {
+		defaultZoom: 0,
+		propsFunc: getGeoJsonLayerProps,
+		props: {},
+		layer: {
+			id: 'geojson',
+			type: 'GeoJsonLayer',
+			getProps: layerId => {
+				return {
+					data: deckLayers[layerId].getData([]),
+					pointRadiusMinPixels: 5,
+					lineWidthMinPixels: 2,
+					pointRadiusMaxPixels: 15,
+					lineWidthMaxPixels: 10,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
+				};
+			},
+		},
+	},
 	Basins: {
 		id: 'basinLayer',
 	},
@@ -173,7 +171,7 @@ const LayerMeta = {
 			filterFeatures: (features, dbLayer) =>
 				features.filter(
 					feature =>
-						feature?.properties?.layerShapeName === dbLayer.layerShapeName &&
+						feature?.properties?.layerShapeName === dbLayer.layerIdentifier &&
 						feature?.properties?.layerGeometry === dbLayer.layerGeometry
 				),
 			getProps: layerId => {
@@ -200,6 +198,7 @@ const LayerMeta = {
 				return {
 					data: deckLayers[layerId].getData([]),
 					getFillColor: [0, 0, 0, 0],
+					fillPatternEnabled: false,
 					getLineColor: [0, 0, 0, 0],
 					lineWidthMinPixels: 1.5,
 					lineWidthMaxPixels: 8,
@@ -222,6 +221,7 @@ const LayerMeta = {
 				return {
 					data: deckLayers[layerId].getData([]),
 					getFillColor: [0, 0, 0, 0],
+					fillPatternEnabled: false,
 					getLineColor: [0, 0, 0, 0],
 					lineWidthMinPixels: 1.5,
 					lineWidthMaxPixels: 8,
@@ -236,14 +236,67 @@ const LayerMeta = {
 	},
 };
 
-const layerStateControllerHandler = state => {
-	const showError = debounce(error => {
+class LayerStateControllerHandler extends StateController {
+	constructor(initialState) {
+		super(initialState, LayerStateControllerHandler.name);
+		this.autoBind(this);
+	}
+
+	showError(error) {
 		NotificationManager.error(error, 'Error', 6000);
-	}, 1000);
-	const handleBounds = (layerId, defaultZoom, visible, layerBBox, polygonFilter) => {
-		const { boundingStates, bbox, zoom } = state.get({
-			noproxy: true,
+	}
+
+	getShowableLayers() {
+		let layers = this.getValue('layers');
+		if (layers?.length === 0) {
+			const deckLayer = this.getValue('deckLayer');
+			if (deckLayer) {
+				layers = [deckLayer];
+			}
+		}
+		const landGridLayer = layers.find(layer => layer.identifier === 'Land Grid');
+		const abstractLayerObject = { ...landGridLayer, identifier: 'AbstractGeo' };
+		const plsLayerObject = { ...landGridLayer, identifier: 'Pls' };
+		const formattedDbLayers = [
+			...layers.filter(layer => layer.identifier !== 'Land Grid'),
+			abstractLayerObject,
+			plsLayerObject,
+		];
+
+		return formattedDbLayers.filter(dbLayer => {
+			const meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
+
+			if (!meta?.layer && !ifStaticMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
+				return false;
+			}
+
+			const visible = dbLayer.layerSettings?.showable && dbLayer.layerSettings?.visiable !== false;
+
+			if (!visible) {
+				return false;
+			}
+
+			const isFileLayer = dbLayer?.layerType === 'file layer';
+			const isDynamicLayer = dbLayer?.layerType === 'dynamic data layer';
+
+			if (
+				!isFileLayer &&
+				!isDynamicLayer &&
+				!deckGlLayerIdentifiers.includes(dbLayer?.identifier) &&
+				!isCustomLayerCopy(dbLayer?.identifier) &&
+				!deckGlLandGridIdentifiers.includes(dbLayer?.identifier) &&
+				!mapBoxLayerIdentifiers.includes(dbLayer?.identifier) &&
+				!staticMapBoxLayerIdentifiers.includes(dbLayer?.identifier)
+			) {
+				return false;
+			}
+
+			return true;
 		});
+	}
+
+	handleBounds(layerId, defaultZoom, visible, layerBBox, polygonFilter) {
+		const { boundingStates, bbox, zoom } = this.getValues(['boundingStates', 'bbox', 'zoom']);
 
 		const boundingStateVal = boundingStates?.[layerId] || {};
 		let { previousBounds, ...rest } = boundingStateVal;
@@ -261,8 +314,11 @@ const layerStateControllerHandler = state => {
 				show: { current: visible, previous: !!boundingStates?.[layerId]?.show?.current },
 			};
 
-			state.boundingStates.merge({
-				[layerId]: boundingState,
+			this.updateState({
+				boundingStates: {
+					...boundingStates,
+					[layerId]: boundingState,
+				},
 			});
 
 			return boundingState;
@@ -310,22 +366,25 @@ const layerStateControllerHandler = state => {
 				show: { current: show, previous: !!boundingStates?.[layerId]?.show?.current },
 			};
 
-			state.boundingStates.merge({
-				[layerId]: boundingState,
+			this.updateState({
+				boundingStates: {
+					...boundingStates,
+					[layerId]: boundingState,
+				},
 			});
 
 			return boundingState;
 		} catch (err) {
 			if (polygonFilter) {
-				showError('Invalid Shape');
+				debounce(() => this.showError('Invalid Shape'), 1000)(); // Debounce at call site
 			}
-			console.log('🚀 ~ file: layerStateController.js:285 ~ handleBounds ~ err:', err.message);
+			console.log(`🚀 ~ file: layerStateController.js:285 ~ handleBounds ~ err:${layerId}`, err.message);
 			return boundingStateVal;
 		}
-	};
+	}
 
-	const updateLayers = (layerId, updatedState, type) => {
-		window.mapRef?.__deck?.layerManager?.layers?.forEach?.(layer => {
+	updateLayers(layerId, updatedState, type) {
+		window?.deckOverlay?._deck?.layerManager?.layers?.forEach?.(layer => {
 			if (!layer.id.includes(layerId)) {
 				return;
 			}
@@ -334,130 +393,90 @@ const layerStateControllerHandler = state => {
 				return;
 			}
 
-			DeckGlLayer.updateLayer(updatedState, window.mapRef?.getLayer(layer.id)?.implementation);
+			DeckGlLayer.updateLayer(updatedState, layer.id);
 		});
-	};
+	}
 
-	const updateLayer = (layer, updatedState) => {
-		const layerId = `${layer?.identifier}_${layer._id}`;
-		DeckGlLayer.updateLayer(updatedState, window.mapRef?.getLayer(layerId)?.implementation);
-	};
+	updateLayer(layer, updatedState) {
+		const layerId = `${layer?.identifier}_${layer.layerId}`;
+		DeckGlLayer.updateLayer(updatedState, layerId);
+	}
 
-	const removeLayer = (layer, recalculate = false) => {
+	removeLayer(layer, recalculate = false) {
 		if (!layer) {
 			return;
 		}
 
-		const layerId = `${layer?.identifier}_${layer._id}`;
+		const layerId = `${layer?.identifier}_${layer.layerId}`;
 		DeckGlLayer.removeLayer(layerId);
 		delete deckLayers[layerId];
 
-		const { boundingStates } = state.get({ noproxy: true });
-		state.boundingStates.merge({
-			[layerId]: {
-				...boundingStates?.[layerId],
-				previousBounds: undefined,
-				callApi: false,
+		// Retrieve current boundingStates
+		const boundingStates = this.getValue('boundingStates');
+
+		// Update state properly
+		this.updateState({
+			boundingStates: {
+				...boundingStates,
+				[layerId]: {
+					...boundingStates?.[layerId],
+					previousBounds: undefined,
+					callApi: false,
+				},
 			},
 		});
 
 		setTimeout(() => {
 			if (recalculate) {
-				layerController.recalculate();
+				// baseLayerController.recalculate();
 			}
 		}, 10);
-	};
+	}
 
-	const removeLayers = (timeout = true) => {
-		const showableLayers = getShowableLayers();
+	removeLayers(timeout = true) {
+		const showableLayers = this.getShowableLayers();
 		showableLayers.forEach(layer => {
 			if (timeout) {
 				setTimeout(() => {
-					removeLayer(layer);
+					this.removeLayer(layer);
 				}, 50);
 			} else {
-				removeLayer(layer);
+				this.removeLayer(layer);
 			}
 		});
-	};
+	}
 
-	const recalculate = () => {
-		state.recalculate.set(!state.recalculate.get({ noproxy: true }));
-	};
+	recalculate() {
+		const currentValue = this.getValue('recalculate');
+		this.updateState({ recalculate: !currentValue });
+	}
 
-	const getLayerFromMongoId = layerId => {
-		const layers = getShowableLayers();
+	getLayerFromMongoId(layerId) {
+		const layers = this.getShowableLayers();
 
 		const layer = layers.find(layer => layer.layerId === layerId);
 
 		return layer;
-	};
+	}
 
-	const getShowableLayers = () => {
-		let layers = globalStateController.getValue('layers');
-		if (layers?.length === 0) {
-			const deckLayer = globalStateController.getValue('deckLayer');
-			if (deckLayer) {
-				layers = [deckLayer];
-			}
-		}
-		const landGridLayer = layers.find(layer => layer.identifier === 'Land Grid');
-		const abstractLayerObject = { ...landGridLayer, identifier: 'AbstractGeo' };
-		const plsLayerObject = { ...landGridLayer, identifier: 'Pls' };
-		const formattedDbLayers = [
-			...layers.filter(layer => layer.identifier !== 'Land Grid'),
-			abstractLayerObject,
-			plsLayerObject,
-		];
-
-		return formattedDbLayers.filter(dbLayer => {
-			const meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
-
-			if (!meta?.layer && !ifStaticMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
-				return false;
-			}
-
-			const visible = dbLayer.layerSettings?.showable && dbLayer.layerSettings?.visiable !== false;
-
-			if (!visible) {
-				return false;
-			}
-
-			const isFileLayer = dbLayer?.layerType === 'file layer';
-
-			if (
-				!isFileLayer &&
-				!deckGlLayerIdentifiers.includes(dbLayer?.identifier) &&
-				!isCustomLayerCopy(dbLayer?.identifier) &&
-				!deckGlLandGridIdentifiers.includes(dbLayer?.identifier) &&
-				!mapBoxLayerIdentifiers.includes(dbLayer?.identifier) &&
-				!staticMapBoxLayerIdentifiers.includes(dbLayer?.identifier)
-			) {
-				return false;
-			}
-
-			return true;
-		});
-	};
-
-	const getBeforeLayerId = identifier => {
-		const showableLayers = getShowableLayers();
+	getBeforeLayerId(identifier) {
+		const showableLayers = this.getShowableLayers();
 		const layerIndex = showableLayers.findIndex(dbLayer => {
 			return identifier === dbLayer?.identifier;
 		});
 		return layerIndex > 0
-			? `${showableLayers[layerIndex - 1]?.identifier}_${showableLayers[layerIndex - 1]._id}`
-			: 'first_deck_layer';
-	};
+			? `${showableLayers[layerIndex - 1]?.identifier}_${showableLayers[layerIndex - 1].layerId}`
+			: null;
+	}
 
-	const handleMapBoxLayer = dbLayer => {
+	handleMapBoxLayer(dbLayer) {
 		const map = window.mapRef;
 		const layerId = dbLayer.layerId;
 
 		// Layer data and converting it to geojson
 		let layerData = null;
 		if (dbLayer.identifier === 'Search') {
-			layerData = layerController.getValue('wellListFromSearch');
+			layerData = this.getValue('wellListFromSearch');
 		}
 
 		// Return if we not get any data
@@ -556,32 +575,25 @@ const layerStateControllerHandler = state => {
 				selectedWellId: features[0].properties.id,
 			});
 		});
-	};
+	}
 
-	const handleStaticMapBoxLayer = dbLayer => {
+	handleStaticMapBoxLayer(dbLayer) {
 		const map = window.mapRef;
 		const meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
 		const visible = dbLayer?.layerSettings?.visiable;
 		if (map.getLayer(meta?.id)) {
 			map.setLayoutProperty(meta?.id, 'visibility', visible ? 'visible' : 'none');
 		}
-	};
+	}
 
-	const toggleLayersActivity = (identifier, value) => {
-		let layers = globalStateController.getValue('layers');
-		const layer = layers.find(layer => layer.identifier.startsWith(identifier));
-		layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } });
-	};
-
-	const reinitializeLayer = ({ meta, layerId, beforeLayerId, labelProps, pickable, visible }) => {
+	reinitializeLayer({ meta, layerId, beforeLayerId, labelProps, pickable, visible, position }) {
 		if (!deckLayers[layerId]) {
 			deckLayers[layerId] = {
 				getData: generateDataFunc(),
 				beforeLayerId,
 			};
 			const metaLayer = meta.layer;
-			// eslint-disable-next-line no-new
-			new DeckGlLayer({
+			const deckLayer = DeckGlLayer.addLayer({
 				layerId: layerId,
 				type: metaLayer.type,
 				beforeLayer: beforeLayerId,
@@ -591,37 +603,42 @@ const layerStateControllerHandler = state => {
 					...(labelProps && { getText: d => d.properties?.label }),
 					pickable,
 					visible,
+					position,
 				},
 			});
-		}
-		DeckGlLayer.moveLayer(layerId, beforeLayerId);
-		deckLayers[layerId].beforeLayerId = beforeLayerId;
-	};
 
-	const handleDeckLayer = (dbLayer, isUpdateTrigger) => {
-		const client = layerController.getValue('client');
+			deckLayers[layerId].deckLayer = deckLayer;
+			deckLayers[layerId].beforeLayerId = beforeLayerId;
+		}
+	}
+
+	handleDeckLayer(dbLayer, isUpdateTrigger) {
+		const client = this.getValue('client');
 		if (!client) {
-			return;
+			return null;
 		}
 
 		if (ifMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
-			return handleMapBoxLayer(dbLayer);
+			this.handleMapBoxLayer(dbLayer);
+			return null;
 		}
 
 		if (ifStaticMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
-			return handleStaticMapBoxLayer(dbLayer);
+			this.handleStaticMapBoxLayer(dbLayer);
+			return null;
 		}
 
 		const meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
 
 		if (!meta?.layer) {
-			return;
+			return null;
 		}
 
-		const layerId = `${dbLayer.identifier}_${dbLayer._id}`;
-		const beforeLayerId = getBeforeLayerId(dbLayer.identifier);
+		const layerId = `${dbLayer.identifier}_${dbLayer.layerId}`;
+		const beforeLayerId = this.getBeforeLayerId(dbLayer.identifier);
 
 		const isFileLayer = dbLayer.layerType === 'file layer';
+		const isDynamicLayer = dbLayer?.layerType === 'dynamic data layer';
 
 		const isAgreementLayer = agreementLayerIdentifiers.some(layer =>
 			dbLayer?.identifier?.toLowerCase().includes(layer.toLowerCase())
@@ -629,12 +646,14 @@ const layerStateControllerHandler = state => {
 		const filterIdentifier = isAgreementLayer
 			? 'Agreements'
 			: isFileLayer
-				? dbLayer.layerShapeName
+				? dbLayer.layerIdentifier
 				: dbLayer.identifier;
 
 		const filterKey = isFileLayer
 			? `${dbLayer.file}_${dbLayer.layerShapeName}`
-			: getLayerKey(filterIdentifier, layerFilters);
+			: isDynamicLayer
+				? 'DynamicAsset'
+				: getLayerKey(filterIdentifier, layerFiltersController.getAllValues());
 
 		let {
 			[filterKey]: filters,
@@ -642,7 +661,7 @@ const layerStateControllerHandler = state => {
 			polygonsFilter,
 		} = layerFiltersController.getValues([filterKey, 'polygonFilter', 'polygonsFilter']);
 
-		const boundingState = handleBounds(
+		const boundingState = this.handleBounds(
 			layerId,
 			meta.defaultZoom,
 			dbLayer.layerSettings?.showable && dbLayer.layerSettings?.visiable,
@@ -656,11 +675,13 @@ const layerStateControllerHandler = state => {
 		}
 
 		const visible = dbLayer.layerSettings.showable && dbLayer.layerSettings.visiable !== false;
+		const { isDrawing, editDraw } = drawController.getValues(['isDrawing', 'editDraw']);
 
 		let updatedProps = {
 			pickable,
 			visible,
 			showable: dbLayer.layerSettings.showable,
+			opacity: isDrawing || editDraw ? 0.1 : 1,
 		};
 
 		const labelProps =
@@ -674,7 +695,7 @@ const layerStateControllerHandler = state => {
 			};
 		}
 
-		reinitializeLayer({ meta, layerId, beforeLayerId, labelProps, pickable, visible });
+		this.reinitializeLayer({ meta, layerId, beforeLayerId, labelProps, pickable, visible, position: dbLayer.position });
 
 		if (isUpdateTrigger) {
 			const newId = uuid();
@@ -684,25 +705,44 @@ const layerStateControllerHandler = state => {
 				getLineWidth: newId,
 				defaultColor: newId,
 				getPointRadius: newId,
+				fillPatternEnabled: newId,
+				getDashArray: newId,
+				getFillPattern: newId,
+				opacity: newId,
 			};
 		}
 		if (!boundingState.show?.current) {
-			return updateLayer(dbLayer, {
+			this.updateLayer(dbLayer, {
 				pickable,
 				...updatedProps,
 				visible: boundingState.show?.current,
 			});
+			return null;
 		}
 
 		if (!boundingState.callApi) {
-			return updateLayer(dbLayer, {
+			this.updateLayer(dbLayer, {
 				pickable,
 				...updatedProps,
 				visible: boundingState.show?.current,
 			});
+			return null;
 		}
 
-		updateLayer(dbLayer, updatedProps);
+		this.updateLayer(dbLayer, updatedProps);
+
+		const getFilters = () => {
+			if (isFileLayer) {
+				return generateFileFilters({ fileLayer: dbLayer, extendFilters: filters });
+			}
+
+			if (isDynamicLayer) {
+				filters.variables.index = dbLayer.layerPaintProps[0].id;
+				return filters;
+			}
+
+			return filters;
+		};
 
 		getBoundsQuery({
 			multiQuery: meta.multiQuery,
@@ -712,12 +752,13 @@ const layerStateControllerHandler = state => {
 			boundingState,
 			geoField: meta.geoField,
 			isFileLayer,
+			isDynamicLayer,
 			polygonFilter,
 			polygonsFilter,
-			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
+			filters: getFilters(),
 			onData: data => {
 				if (!Array.isArray(data)) {
-					return;
+					return null;
 				}
 				let geoJson = { features: [] };
 				if (data?.length > 0) {
@@ -726,144 +767,310 @@ const layerStateControllerHandler = state => {
 					}
 					const layerData = data;
 					if (!Array.isArray(layerData)) {
-						return;
+						return null;
 					}
 					geoJson = makeGeoJSON(layerData, labelProps);
 				}
 				if (deckLayers[layerId]?.getData?.feedData) {
 					deckLayers[layerId].getData.feedData(geoJson.features);
 				}
+				return null;
 			},
 		});
-	};
+		return null;
+	}
 
-	return {
-		init: (client, history) => {
-			layerController.updateState({ client, history });
-		},
-		resetBounds: identifier => {
-			if (typeof identifier !== 'string') {
-				return;
-			}
-			if (identifier === 'Agreements') {
-				['Deeds', 'Leases', 'Contracts', 'Surfaces'].forEach(type => {
-					layerController.resetBounds(type);
-				});
-				return;
-			}
-			const { boundingStates } = state.get({
-				noproxy: true,
+	toggleLayersActivity(identifier, value) {
+		let layers = this.getValue('layers');
+		const layer = layers.find(layer => layer.identifier.startsWith(identifier));
+
+		this.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } });
+	}
+
+	resetBounds(identifier, updateTriggers = false) {
+		if (typeof identifier !== 'string') {
+			return;
+		}
+		if (identifier === 'Agreements') {
+			['Deeds', 'Leases', 'Contracts', 'Surfaces'].forEach(type => {
+				this.resetBounds(type);
 			});
+			return;
+		}
+		const boundingStates = this.getValue('boundingStates');
 
-			let layerId = Object.keys(boundingStates || {}).find(
-				key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
+		let layerId = Object.keys(boundingStates || {}).find(
+			key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
+		);
+
+		// If layerId is not found, then find layerId by layerIdentifier
+		if (!layerId && identifier != 'all') {
+			// Find layer by layerIdentifier
+			const requiredLayers = this.getValue('layers').filter(
+				layer => `${layer.file}_${layer.layerIdentifier}` === identifier
 			);
 
-			// If layerId is not found, then find layerId by layerShapeName
-			if (!layerId) {
-				// Find layer by layerShapeName
-				const requiredLayers = globalStateController
-					.getValue('layers')
-					.filter(layer => `${layer.file}_${layer.layerShapeName}` === identifier);
+			requiredLayers.forEach(requiredLayer => {
+				// If layer is not found, then return
+				if (requiredLayer?.layerType === 'file layer') {
+					// Updating identifier with requiredLayer identifier
+					identifier = requiredLayer.identifier;
+					layerId = Object.keys(boundingStates || {}).find(
+						key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
+					);
+					if (layerId) {
+						const showableLayers = this.getShowableLayers();
+						showableLayers.forEach(dbLayer => {
+							if (dbLayer.identifier.toLowerCase().startsWith(identifier.toLowerCase())) {
+								this.removeLayer(dbLayer, true);
+							}
+						});
+					}
+				}
+			});
+			return;
+		}
 
-				requiredLayers.forEach(requiredLayer => {
-					// If layer is not found, then return
-					if (requiredLayer?.layerType === 'file layer') {
-						// Updating identifier with requiredLayer identifier
-						identifier = requiredLayer.identifier;
-						layerId = Object.keys(boundingStates || {}).find(
-							key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
-						);
-						if (layerId) {
-							const showableLayers = getShowableLayers();
-							showableLayers.forEach(dbLayer => {
-								if (dbLayer.identifier.toLowerCase().startsWith(identifier.toLowerCase())) {
-									removeLayer(dbLayer, true);
-								}
-							});
+		const showableLayers = this.getShowableLayers();
+		showableLayers.forEach(dbLayer => {
+			if (dbLayer.identifier.toLowerCase().startsWith(identifier.toLowerCase()) || identifier === 'all') {
+				this.removeLayer(dbLayer, true);
+			}
+		});
+
+		// Refresh all layers when the map is synchronized
+		if (identifier === 'all') {
+			// Retrieve all layers from the global state
+			this.getValue('layers').forEach(layer => {
+				// Handle each layer using the layer controller
+				this.handleDeckLayer(layer);
+			});
+		}
+
+		const layer = this.getValue('layers').find(l => l.identifier === identifier);
+		if (updateTriggers) {
+			this.handleDeckLayer(layer, true);
+		}
+	}
+
+	resetMapStates(mapReady = false) {
+		const client = this.getValue('client');
+		this.removeLayers(false);
+		popupController.reset();
+		drawController.reset();
+		layerFiltersController.reset();
+		const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
+		mapViewFilters.forEach(filter => {
+			const dataSource = filter?.dataSourceName;
+
+			const initialFilters = layerFiltersController.getValue([dataSource])?.variables?.filters || [];
+
+			layerFiltersController.setVariables(dataSource, {
+				filters: [
+					getFormattedFilterBasedOnType(filter.filterType, filter.fieldName, filter.filterValues),
+					...initialFilters,
+				],
+			});
+		});
+
+		this.setState({
+			...this.getValues([
+				'layers',
+				'datasets',
+				'projectedLayers',
+				'baseMapLayers',
+				'checkedBaseLayers',
+				'heatLayers',
+				'checkedHeats',
+			]),
+
+			client,
+		});
+		navController.reset();
+		mapControlsController.setState({
+			selectedControl: mapControlsController.getValue('selectedControl'),
+		});
+		globalStateController.updateState({ mapReady });
+	}
+
+	resetMap() {
+		this.resetMapStates();
+		window.mapRef?.remove();
+		window.mapRef = null;
+		window.drawRef = null;
+	}
+
+	init(client, history) {
+		this.updateState({ client, history });
+	}
+
+	handleChange() {
+		const showableLayers = this.getShowableLayers();
+
+		showableLayers.reverse().forEach(dbLayer => {
+			this.handleDeckLayer(dbLayer);
+		});
+	}
+
+	changeLayerPosition(currentLayer, beforeLayer) {
+		if (!currentLayer) {
+			return null;
+		}
+
+		if (currentLayer && !beforeLayer) {
+			DeckGlLayer.moveLayer(`${currentLayer?.identifier}_${currentLayer.layerId}`);
+		} else {
+			DeckGlLayer.moveLayer(
+				`${currentLayer?.identifier}_${currentLayer.layerId}`,
+				`${beforeLayer?.identifier}_${beforeLayer.layerId}`
+			);
+		}
+		return null;
+	}
+
+	generateUpdateFn(layers, value, currentLayers, field) {
+		const updatefn = {};
+		layers.forEach(layer => {
+			if (layer.type === 'group') {
+				layer.layers.forEach(l => {
+					const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
+					if (layerIndex !== -1) {
+						if (field === 'showable') {
+							updatefn[layerIndex] = {
+								layerSettings: { [field]: { $set: value === 'clear' ? false : !l?.layerSettings?.showable } },
+							};
+						} else {
+							updatefn[layerIndex] = { [field]: { $set: value === 'clear' ? false : value } };
 						}
 					}
 				});
-				return;
-			}
-
-			const showableLayers = getShowableLayers();
-			showableLayers.forEach(dbLayer => {
-				if (dbLayer.identifier.toLowerCase().startsWith(identifier.toLowerCase())) {
-					removeLayer(dbLayer, true);
-				}
-			});
-		},
-		updateLayers,
-		updateLayer,
-		recalculate,
-		handleDeckLayer,
-		handleMapBoxLayer,
-		getLayerFromMongoId,
-		removeLayer,
-		removeLayers,
-		toggleLayersActivity,
-		handleChange: () => {
-			const showableLayers = getShowableLayers();
-
-			showableLayers.forEach(dbLayer => {
-				handleDeckLayer(dbLayer);
-			});
-			if (window.mapRef.getLayer('boundary-layer')) {
-				window.mapRef.moveLayer('boundary-layer');
-			}
-		},
-		changeLayerPosition: (currentLayer, beforeLayer) => {
-			if (!currentLayer) {
-				return;
-			}
-
-			if (currentLayer && !beforeLayer) {
-				DeckGlLayer.moveLayer(`${currentLayer?.identifier}_${currentLayer._id}`);
 			} else {
-				DeckGlLayer.moveLayer(
-					`${currentLayer?.identifier}_${currentLayer._id}`,
-					`${beforeLayer?.identifier}_${beforeLayer._id}`
-				);
+				const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === layer.identifier);
+				if (layerIndex !== -1) {
+					if (field === 'showable') {
+						updatefn[layerIndex] = { layerSettings: { [field]: { $set: value === 'clear' ? false : value } } };
+					} else {
+						updatefn[layerIndex] = { [field]: { $set: value === 'clear' ? false : value } };
+					}
+				}
 			}
-		},
-		resetMapStates: (mapReady = false) => {
-			const client = layerController.getValue('client');
-			removeLayers(false);
-			popupController.reset();
-			drawController.reset();
-			layerFiltersController.reset();
-			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
-			mapViewFilters.forEach(filter => {
-				const dataSource = filter?.dataSourceName;
+		});
+		return updatefn;
+	}
 
-				const initialFilters = layerFiltersController.getValue([dataSource])?.variables?.filters || [];
+	async getProjectedLayers() {
+		const client = this.getValue('client');
+		const user = globalStateController.getValue('user');
+		const resp = await client.query({
+			query: GET_PROJECTED_LAYERS,
+			variables: {
+				userId: user._id,
+				project: {
+					dataset: 1,
+					file: 1,
+					layerId: 1,
+					layerType: 1,
+					layerName: 1,
+					groupName: 1,
+					groupId: 1,
+					position: 1,
+					layerSettings: 1,
+					identifier: 1,
+					layerCategory: 1,
+				},
+			},
+		});
+		this.updateState({ projectedLayers: copy(resp.data.allLayerSettingsByUser) });
+	}
 
-				layerFiltersController.setVariables(dataSource, {
-					filters: [
-						getFormattedFilterBasedOnType(filter.filterType, filter.fieldName, filter.filterValues),
-						...initialFilters,
-					],
+	updateProjectedLayers({ layer, value, field }) {
+		const projectedLayers = this.getValue('projectedLayers');
+		const updatefn = this.generateUpdateFn(layer, value, projectedLayers, field);
+		this.updateState({ projectedLayers: update(projectedLayers, updatefn) });
+	}
+
+	async handleLayerChange(layer, field, value) {
+		const client = this.getValue('client');
+
+		const layersToChange = Array.isArray(layer.layers) ? layer.layers : [layer];
+		const fetchUserLayers = [];
+		const layersSettingsToUpdate = [];
+		const layersToUpdate = [];
+		const user = globalStateController.getValue('user');
+		const { layers, projectedLayers } = this.getValues(['layers', 'projectedLayers']);
+
+		projectedLayers.forEach(layer => {
+			const layerToUpdate = layersToChange.find(l => l._id === layer._id);
+			if (layerToUpdate) {
+				set(layer, field, value);
+				if (field !== 'layerSettings.showable') {
+					layersToUpdate.push({
+						_id: layer.layerId,
+						[field]: value,
+						oldGroupName: field === 'groupName' ? layer.groupName : null,
+					});
+				}
+
+				const layerFound = layers.find(l => l._id === layer._id);
+				if (layerFound) {
+					set(layerFound, field, value);
+					if (field == 'layerSettings.showable') {
+						this.handleDeckLayer({ ...layerFound });
+						layersSettingsToUpdate.push({
+							_id: layerFound._id,
+							layerSettings: layerFound.layerSettings,
+						});
+					}
+				} else {
+					if (field === 'layerSettings.showable') {
+						fetchUserLayers.push(layerToUpdate.layerId);
+					}
+				}
+			}
+		});
+		this.updateState({ projectedLayers: [...projectedLayers] });
+
+		if (fetchUserLayers.length > 0) {
+			const userLayers = await client.query({
+				query: LAYERS_BY_ID,
+				variables: {
+					layerIds: fetchUserLayers,
+					userId: user._id,
+				},
+			});
+			const layersToAdd = copy(userLayers.data.layersById);
+			layersToAdd.forEach(layer => {
+				set(layer, field, value);
+
+				layersSettingsToUpdate.push({
+					_id: layer._id,
+					layerSettings: layer.layerSettings,
 				});
 			});
 
-			layerController.setState({ client });
-			navController.reset();
-			mapControlsController.setState({
-				selectedControl: mapControlsController.getValue('selectedControl'),
-			});
-			globalStateController.updateState({ mapReady });
-		},
-		resetMap: () => {
-			layerController.resetMapStates();
-			window.mapRef?.remove();
-			window.mapRef = null;
-			window.drawRef = null;
-		},
-	};
-};
+			this.updateState({ layers: sortBy([...layers, ...layersToAdd], 'position') });
+		} else {
+			this.updateState({ layers: [...layers] });
+		}
 
-export const layerController = {
-	...layerStateControllerHandler(layerState),
-	...hookStateController(layerState, copy(layerStateInitialState)),
-};
+		if (layersSettingsToUpdate.length > 0) {
+			await client.mutate({
+				mutation: UPDATEMANYLAYERSETTINGS,
+				variables: {
+					manySettings: layersSettingsToUpdate,
+				},
+			});
+		}
+
+		if (layersToUpdate.length > 0) {
+			await client.mutate({
+				mutation: UPDATE_MANY_LAYER,
+				variables: {
+					layers: layersToUpdate,
+				},
+			});
+		}
+	}
+}
+
+export const layerController = new LayerStateControllerHandler(layerStateInitialState);

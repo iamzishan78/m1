@@ -2,7 +2,6 @@ import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import { slidoutState } from 'stateManagement/initialStates';
 import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import DialogContent from './DialogContent';

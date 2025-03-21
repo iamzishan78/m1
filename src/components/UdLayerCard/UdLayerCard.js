@@ -32,7 +32,6 @@ import { mapControlsController } from 'stateManagement/mapControlsController';
 import { mapStateController } from 'stateManagement/mapStateController';
 import { popupController } from 'stateManagement/popupStateController';
 
-import { layerRefs } from 'stateManagement';
 import { history } from 'store';
 
 import { AppContext } from '../../AppContext';

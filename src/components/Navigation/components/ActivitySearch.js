@@ -16,7 +16,6 @@ import debounce from 'lodash/debounce';
 
 import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
 
-import { slidoutState } from 'stateManagement/initialStates';
 import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import { AppContext } from 'AppContext';

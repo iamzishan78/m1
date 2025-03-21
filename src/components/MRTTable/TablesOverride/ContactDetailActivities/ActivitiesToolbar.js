@@ -6,7 +6,6 @@ import ActivitiesSlideout from 'components/Activities/components/ActivitiesSlide
 
 import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 
-import { slidoutState } from 'stateManagement/initialStates';
 import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import { AppContext } from 'AppContext';

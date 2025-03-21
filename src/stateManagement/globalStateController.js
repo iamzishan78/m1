@@ -1,31 +1,72 @@
-import { hookStateController } from 'stateManagement/hookStateController';
-
 import { bypassTenants, simpleAuthBypass } from 'utils/data';
 
-import { globalInitialState, globalState } from './initialStates';
+import { StateController } from './stateController'; // Import your StateController class
 
-const globalStateControllerHandler = state => ({
-	setLayerLoading: (type, value) => {
-		if (value !== globalState.layerLoading.get()[type]) {
-			globalState.layerLoading.set({
-				...globalState.layerLoading.get(),
-				[type]: value,
+export const globalInitialState = {
+	panelItems: [],
+	emptyGroups: [],
+	globalSearch: '',
+	universalLoader: false,
+	layerLoading: {},
+	user: null,
+	reFetchedLayer: null /* ? */,
+	mapReady: false,
+	showFieldModal: false,
+	apolloClientEndpoint: null,
+	x_zumo_auth: null,
+	cypress: null,
+	testCase: null,
+	bypassLogin: simpleAuthBypass || false,
+	bypassType: '',
+	tenant: null,
+	selectedIconTpe: 'Chip',
+	onMapLoad: null,
+	editIconState: {},
+	activeStatement: {},
+};
+
+class GlobalStateController extends StateController {
+	constructor(initialState) {
+		super(initialState, GlobalStateController.name);
+		this.autoBind(this);
+	}
+
+	setLayerLoading(type, value) {
+		const currentLayerLoading = this.getValue('layerLoading');
+		if (value !== currentLayerLoading[type]) {
+			this.updateState({
+				layerLoading: {
+					...currentLayerLoading,
+					[type]: value,
+				},
 			});
 		}
-	},
-	setBypassLogin: tenant => {
+	}
+
+	setBypassLogin(tenant) {
 		const bypass = simpleAuthBypass
 			? { bypassLogin: true, bypassType: 'SimpleBypass' }
-			: { bypassLogin: bypassTenants.includes(tenant.name), bypassType: 'Auth0Bypass' };
+			: {
+					bypassLogin: bypassTenants.includes(tenant.name),
+					bypassType: 'Auth0Bypass',
+				};
+
 		if (bypass.bypassLogin) {
-			globalStateController.updateState({ ...bypass, tenant });
+			this.updateState({ ...bypass, tenant });
 		}
-	},
-	isAuth0Bypass: () => state.bypassType.get({ noproxy: true }) === 'Auth0Bypass',
-	isBypassTenant: tenant => bypassTenants.map(t => t.toLowerCase()).includes(tenant.toLowerCase()),
-	handleMyWellTestCase: (globalWellId, mongoWellId) => {
-		if (globalStateController.getValue('cypress')) {
-			globalStateController.updateState({
+	}
+
+	isAuth0Bypass() {
+		return this.getValue('bypassType') === 'Auth0Bypass';
+	}
+
+	isBypassTenant(tenant) {
+		return bypassTenants.map(t => t.toLowerCase()).includes(tenant.toLowerCase());
+	}
+
+	handleMyWellTestCase(globalWellId, mongoWellId) {
+		if (this.getValue('cypress')) {
+			this.updateState({
 				testCase: {
 					name: 'MyWellsNameUpdate',
 					globalWellId,
@@ -33,10 +74,7 @@ const globalStateControllerHandler = state => ({
 				},
 			});
 		}
-	},
-});
+	}
+}
 
-export const globalStateController = {
-	...globalStateControllerHandler(globalState),
-	...hookStateController(globalState, globalInitialState),
-};
+export const globalStateController = new GlobalStateController(globalInitialState);

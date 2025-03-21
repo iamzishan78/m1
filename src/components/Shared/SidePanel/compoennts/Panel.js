@@ -32,7 +32,6 @@ import MapPositions from 'components/Shared/SidePanel/compoennts/MapPositions';
 import FilterAltIcon from 'components/Shared/svgIcons/FilterAltIcon';
 
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
-import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 import { layerController } from 'stateManagement/layerStateController';

@@ -12,7 +12,6 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { slidoutState } from 'stateManagement/initialStates';
 import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 const getDealNameFieldHeight = title => {

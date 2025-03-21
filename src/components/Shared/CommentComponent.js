@@ -33,7 +33,6 @@ import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
 
 import { globalStateController } from 'stateManagement/globalStateController';
-import { slidoutState } from 'stateManagement/initialStates';
 import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import { updatePinComments } from 'store/actions/commonActions';

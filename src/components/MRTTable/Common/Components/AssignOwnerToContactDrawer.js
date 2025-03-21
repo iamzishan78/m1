@@ -44,8 +44,6 @@ import { tableGlobalController } from 'stateManagement/tableController';
 
 import { Modals } from 'styles/Modal';
 
-import { resetESTableToggle } from 'stateManagement';
-
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
 	loading: {
@@ -577,7 +575,6 @@ export default function AssignOwnerToContactDrawer({
 				awaitRefetchQueries: true,
 			}).then(
 				res => {
-					resetESTableToggle.set(!resetESTableToggle.get());
 					if (res.data && res.data.bulkAddActivities) {
 						const { success } = res.data.bulkAddActivities;
 						if (success) {

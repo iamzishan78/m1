@@ -1,40 +1,50 @@
-import { hookStateController } from 'stateManagement/hookStateController';
+import { StateController } from './stateController';
 
-import { detailCardInitialState, detailCardState } from './initialStates';
+export const detailCardInitialState = {
+	shrinkRightColumn: false,
+	baseTabKey: 0,
+	bottomTabKey: 0,
+	props: null,
+};
 
-const detailCardControllerHandler = state => ({
-	initialize: (stateToUpdate = {}) => {
-		state.set({
+class DetailCardController extends StateController {
+	constructor(initialState) {
+		super(initialState, DetailCardController.name);
+		this.autoBind(this);
+	}
+
+	initialize(stateToUpdate = {}) {
+		this.updateState({
 			...detailCardInitialState,
 			...stateToUpdate,
 		});
-	},
-	updateProps: props => {
-		detailCardController.updateState({
+	}
+
+	updateProps(props) {
+		this.updateState({
 			props: {
-				...(detailCardController.getValue('props') || {}),
+				...(this.getValue('props') || {}),
 				...props,
 			},
 		});
-	},
+	}
 
-	togglePullout: () => {
-		state.shrinkRightColumn.set(!detailCardState.shrinkRightColumn.get({ noproxy: true }));
-	},
+	togglePullout() {
+		const shrinkRightColumn = !this.getValue('shrinkRightColumn');
+		this.updateState({ shrinkRightColumn });
+	}
 
-	setBaseSelectedTab: tab => {
-		if (tab !== state.baseTabKey.get()) {
-			state.baseTabKey.set(tab);
+	setBaseSelectedTab(tab) {
+		if (tab !== this.getValue('baseTabKey')) {
+			this.updateState({ baseTabKey: tab });
 		}
-	},
-	setBottomSelectedTab: tab => {
-		if (tab !== state.bottomTabKey.get()) {
-			state.bottomTabKey.set(tab);
-		}
-	},
-});
+	}
 
-export const detailCardController = {
-	...detailCardControllerHandler(detailCardState),
-	...hookStateController(detailCardState, detailCardInitialState),
-};
+	setBottomSelectedTab(tab) {
+		if (tab !== this.getValue('bottomTabKey')) {
+			this.updateState({ bottomTabKey: tab });
+		}
+	}
+}
+
+export const detailCardController = new DetailCardController(detailCardInitialState);

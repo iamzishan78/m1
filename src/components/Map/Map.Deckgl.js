@@ -41,8 +41,6 @@ import { popupController } from 'stateManagement/popupStateController';
 import { baseTenantsMaps } from 'utils/data';
 import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
 
-import { layerRefs } from 'stateManagement';
-
 import HugeRequest from './components/HugeRequest';
 import DeckGL from './DeckGL';
 import DefaultFiltersTest from './filtersDefaultTest';

@@ -1,41 +1,66 @@
-import { useHookstate } from '@hookstate/core';
+import { StateController } from './stateController';
 
-import { hookStateController } from 'stateManagement/hookStateController';
-
-import { slidoutInitialState, slidoutState } from './initialStates';
-
-export const useSlideoutState = () => useHookstate(slidoutState);
-const slidoutStateControllerHandler = state => ({
-	updateProps: newProps => {
-		state.props.set(prevProps => ({ ...prevProps, ...newProps }));
-	},
-	updateActiveTabs: tab => {
-		state.activeTabs[tab].set(value => !value);
-	},
-	updateTitle: newTitle => {
-		state.title.set(newTitle);
-	},
-	showSlideout: () => {
-		state.show.set(true);
-	},
-	hideSlideout: () => {
-		state.show.set(false);
-	},
-	changeView: view => {
-		state.view.set(view);
-	},
-	updateParent: newParent => {
-		state.parentType.set(newParent);
-	},
-	updateNewEntity: newEntity => {
-		state.newEntity.set(newEntity);
-	},
-	updateEntityLoading: isLoading => {
-		state.isLoading.set(isLoading);
-	},
-});
-
-export const slidoutStateController = {
-	...slidoutStateControllerHandler(slidoutState),
-	...hookStateController(slidoutState, slidoutInitialState),
+export const slidoutInitialState = {
+	show: false,
+	views: [],
+	parentId: '',
+	view: null,
+	props: {},
+	activeTabs: { Grid: false, Map: false },
+	title: '',
+	formMode: '',
+	newEntity: false,
+	selectedActivity: null,
+	selectedActivityId: '',
+	newComments: [],
+	loader: false,
+	isChanged: false,
+	lines: [],
 };
+
+class SlidoutStateController extends StateController {
+	constructor(initialState) {
+		super(initialState, SlidoutStateController.name);
+		this.autoBind(this);
+	}
+
+	updateProps(newProps) {
+		this.updateState({ props: { ...this.getValue('props'), ...newProps } });
+	}
+
+	updateActiveTabs(tab) {
+		const activeTabs = this.getValue('activeTabs');
+		activeTabs[tab] = !activeTabs[tab];
+		this.updateState({ activeTabs });
+	}
+
+	updateTitle(newTitle) {
+		this.updateState({ title: newTitle });
+	}
+
+	showSlideout() {
+		this.updateState({ show: true });
+	}
+
+	hideSlideout() {
+		this.updateState({ show: false });
+	}
+
+	changeView(view) {
+		this.updateState({ view });
+	}
+
+	updateParent(newParent) {
+		this.updateState({ parentType: newParent });
+	}
+
+	updateNewEntity(newEntity) {
+		this.updateState({ newEntity });
+	}
+
+	updateEntityLoading(isLoading) {
+		this.updateState({ isLoading });
+	}
+}
+
+export const slidoutStateController = new SlidoutStateController(slidoutInitialState);
