@@ -23,6 +23,7 @@ function CustomDatePicker({
 		variant = 'outlined',
 		hasTime = false,
 		iconOnly = false,
+		overrideEndAdornment = false,
 	} = {},
 	fieldAttributes: {
 		name = '',
@@ -97,18 +98,30 @@ function CustomDatePicker({
 				}}
 				disabled={disabled}
 				slotProps={{
-					textField: {
-						variant,
-						size,
-						fullWidth,
-						margin,
-						autoFocus,
-						placeholder,
-						inputRef: inputRef || field?.ref || null,
-						InputProps,
-						InputLabelProps,
-						error: required && !watchDateValue && error,
-						helperText: error?.message ?? helperText,
+					textField: params => {
+						const defaultInputProps = params?.InputProps || {};
+
+						return {
+							...params,
+							variant,
+							size,
+							fullWidth,
+							margin,
+							autoFocus,
+							placeholder,
+							inputRef: inputRef || field?.ref || null,
+							InputLabelProps,
+							error: required && !watchDateValue && error,
+							helperText: error?.message ?? helperText,
+							InputProps: overrideEndAdornment
+								? {
+										...defaultInputProps,
+										startAdornment: defaultInputProps.endAdornment,
+										endAdornment: null,
+										...InputProps,
+									}
+								: InputProps,
+						};
 					},
 				}}
 				{...propsRest}

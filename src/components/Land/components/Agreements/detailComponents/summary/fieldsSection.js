@@ -276,6 +276,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 											id={`field-${field.key}`}
 											fieldConfig={{
 												margin: 'dense',
+												overrideEndAdornment: true,
 											}}
 											fieldAttributes={{
 												name: field.key,

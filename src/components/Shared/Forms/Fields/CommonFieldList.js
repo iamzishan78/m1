@@ -131,6 +131,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 								}}
 								fieldConfig={{
 									size: 'small',
+									overrideEndAdornment: true,
 								}}
 								fieldEvents={{
 									onChange: newValue => {
@@ -138,7 +139,6 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 									},
 								}}
 								InputProps={{
-									...field.InputProps,
 									endAdornment,
 								}}
 							/>
