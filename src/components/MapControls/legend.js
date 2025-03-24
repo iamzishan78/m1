@@ -6,7 +6,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { aggregationLayers } from 'components/Shared/functions/shapeLayer';
 
-import { layerController } from 'controllers/layerStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 import LegendCollapse from './legendCollapse';
 

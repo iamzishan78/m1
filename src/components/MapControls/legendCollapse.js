@@ -6,8 +6,8 @@ import { Box, Typography, ListItem, ListItemText, Collapse } from '@material-ui/
 import { ChevronRight } from '@mui/icons-material';
 import { ListItemButton } from '@mui/material';
 
-import { layerStylingController } from 'controllers/layersStylingController';
-import { layerController } from 'controllers/layerStateController';
+import { layerStylingController } from 'stateManagement/layersStylingController';
+import { layerController } from 'stateManagement/layerStateController';
 
 import { styleImageMap } from './components/Layer/Common';
 
