@@ -36,8 +36,6 @@ import { tableController, tableGlobalController } from 'stateManagement/tableCon
 
 import { colorPallete } from 'utils/consts';
 
-import { AppContext } from 'AppContext';
-
 import { getMetaCss } from './getMetaCss';
 
 const useStyles = makeStyles(() => ({
@@ -511,7 +509,6 @@ const MetaField = ({
 														placeholder="e.g. Priority, Stage, Status"
 														fullWidth
 														defaultValue=""
-														disabled={globalState.selectedMeta}
 														onBlur={e => {
 															const name = e.target.value?.replace(/ /g, '_').toLowerCase();
 															checkMetaKeyExists({ variables: { name, category } });
