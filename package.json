@@ -85,6 +85,7 @@
 		"react-avatar": "^3.10.0",
 		"react-beautiful-dnd": "^13.0.0",
 		"react-big-calendar": "^0.33.2",
+		"react-color": "^2.19.3",
 		"react-csv-downloader": "^2.7.1",
 		"react-data-grid-m1n-version": "^1.0.1",
 		"react-datepicker": "^4.8.0",

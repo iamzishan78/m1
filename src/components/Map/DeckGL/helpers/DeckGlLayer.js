@@ -1,5 +1,6 @@
 import { ScatterplotLayer, LineLayer, PolygonLayer, TextLayer, GeoJsonLayer } from '@deck.gl/layers';
 import { MapboxOverlay } from '@deck.gl/mapbox';
+import { GridLayer, HeatmapLayer, HexagonLayer } from 'deck.gl';
 import { isEqual } from 'lodash';
 
 import { drawBoundary, drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
@@ -61,6 +62,22 @@ const Layers = {
 		component: GeoJsonLayer,
 		defaultProps: {
 			parameters: { depthTest: false },
+		},
+	},
+	HexagonLayer: {
+		component: HexagonLayer,
+		defaultProps: {
+			pickable: true,
+		},
+	},
+	HeatmapLayer: {
+		component: HeatmapLayer,
+		defaultProps: {},
+	},
+	GridLayer: {
+		component: GridLayer,
+		defaultProps: {
+			pickable: true,
 		},
 	},
 };

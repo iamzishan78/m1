@@ -18,6 +18,7 @@ import {
 	drawBoundary,
 	getDrawAdustedShape,
 } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { removeSpaces } from 'components/MRTTable/utils/helper';
 import { DRAWING_MODES } from 'components/Navigation/NavigationContext';
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { calculateLandArea, shapeTypeLayers } from 'components/Shared/functions/shapeLayer';
@@ -465,7 +466,7 @@ class DrawStateControllerHandler extends StateController {
 
 		if (!shapeEdit && currentFeature?.geometry?.type !== 'Point') {
 			window.drawRef?.changeMode('direct_select', {
-				featureId: selectedFeature.id,
+				featureId: selectedFeature?.id,
 			});
 		} else if (currentFeature?.geometry?.type === 'Point') {
 			// Set point mode for point shape
@@ -476,7 +477,7 @@ class DrawStateControllerHandler extends StateController {
 
 		navController.updateState({ drawingMode: DRAWING_MODES.DRAW_CIRCLE });
 
-		setFeatureProperty(window.drawRef, selectedFeature.id, 'shapeEdit', !shapeEdit);
+		setFeatureProperty(window.drawRef, selectedFeature?.id, 'shapeEdit', !shapeEdit);
 		drawShapeLayerToggle(!shapeEdit ? 'visible' : 'none');
 
 		this.updateState({

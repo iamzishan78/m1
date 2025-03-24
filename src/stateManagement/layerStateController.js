@@ -2,12 +2,20 @@ import { NotificationManager } from 'react-notifications';
 
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
 import update from 'immutability-helper';
-import { debounce, sortBy, set } from 'lodash';
+import _, { debounce, sortBy, set } from 'lodash';
+import mapboxgl from 'mapbox-gl';
 import { v4 as uuid } from 'uuid';
 
 import getBoundsQuery from 'api/getBoundsQuery';
 
-import { generateFileFilters, makeGeoJSON, getGeoJsonLayerProps } from 'components/Map/DeckGL/helpers/common';
+import {
+	generateFileFilters,
+	makeGeoJSON,
+	getGeoJsonLayerProps,
+	getGridLayerProps,
+	getHeatMapLayerProps,
+	getHexLayerProps,
+} from 'components/Map/DeckGL/helpers/common';
 import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
@@ -42,6 +50,7 @@ import { StateController } from './stateController';
 
 const layerStateInitialState = {
 	layers: [],
+	bins: [],
 	datasets: null,
 	deckLayer: null,
 	layerSettingsLoading: false,
@@ -163,6 +172,7 @@ const LayerMeta = {
 		defaultZoom: 10,
 		geoField: 'geometry',
 		isFilterable: true,
+		isFileDataSource: true,
 		propsFunc: getGeoJsonLayerProps,
 		props: {},
 		layer: {
@@ -183,6 +193,99 @@ const LayerMeta = {
 					lineWidthMaxPixels: 10,
 					parameters: {
 						depthTest: false, // Disable depth testing to draw points on top
+					},
+				};
+			},
+		},
+	},
+	'hexagon layer': {
+		defaultZoom: 10,
+		geoField: 'geometry',
+		isFilterable: true,
+		isFileDataSource: true,
+		propsFunc: getHexLayerProps,
+		props: {},
+		layer: {
+			id: 'HexagonLayer',
+			type: 'HexagonLayer',
+			getProps: layerId => {
+				return {
+					data: deckLayers[layerId].getData([]),
+					onHover: info => {
+						const selectedHex = popupController.getValue('selectedHex');
+
+						if (_.isEqual(info.object?.position, selectedHex?.position)) {
+							return;
+						}
+
+						const popUps = document.getElementsByClassName('mapboxgl-popup');
+						if (popUps[0]) {
+							popUps[0].remove();
+						}
+
+						// Create new popup if not exists
+						new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+							.setLngLat(info?.coordinate)
+							.setMaxWidth('none')
+							.setHTML('<div id="popupContainer"></div>')
+							.addTo(window.mapRef);
+
+						popupController.setState({ selectedHex: info.object, popupOpen: true });
+					},
+				};
+			},
+		},
+	},
+	'heatmap layer': {
+		defaultZoom: 10,
+		geoField: 'geometry',
+		isFilterable: true,
+		isFileDataSource: true,
+		propsFunc: getHeatMapLayerProps,
+		props: {},
+		layer: {
+			id: 'HeatmapLayer',
+			type: 'HeatmapLayer',
+			getProps: layerId => {
+				return {
+					data: deckLayers[layerId].getData([]),
+				};
+			},
+		},
+	},
+	'grid layer': {
+		defaultZoom: 10,
+		geoField: 'geometry',
+		isFilterable: true,
+		isFileDataSource: true,
+		props: {},
+		propsFunc: getGridLayerProps,
+		layer: {
+			id: 'GridLayer',
+			type: 'GridLayer',
+			getProps: layerId => {
+				return {
+					data: deckLayers[layerId].getData([]),
+					onHover: info => {
+						const selectedHex = popupController.getValue('selectedHex');
+
+						if (_.isEqual(info.object?.position, selectedHex?.position)) {
+							return;
+						}
+
+						const popUps = document.getElementsByClassName('mapboxgl-popup');
+						if (popUps[0]) {
+							popUps[0].remove();
+						}
+
+						// Create new popup if not exists
+						new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+							.setLngLat(info?.coordinate)
+							.setMaxWidth('none')
+							.setHTML('<div id="popupContainer"></div>')
+							.addTo(window.mapRef);
+
+						popupController.setState({ selectedHex: info.object, popupOpen: true });
 					},
 				};
 			},
@@ -246,6 +349,29 @@ class LayerStateControllerHandler extends StateController {
 		NotificationManager.error(error, 'Error', 6000);
 	}
 
+	getLayerMeta(dbLayer) {
+		let meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
+		if (dbLayer?.identifier.startsWith('PlatformWells - Point') && dbLayer?.layerType !== 'point') {
+			meta = LayerMeta['Wells'];
+			meta.layer = LayerMeta[dbLayer?.layerType]?.layer;
+			meta.layer.getProps = layerId => {
+				return {
+					data: deckLayers[layerId].getData([]),
+					getPosition: d => d.geometry.geometries[0].coordinates,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
+				};
+			};
+			meta.propsFunc = LayerMeta[dbLayer?.layerType]?.propsFunc;
+			meta.props = {};
+			return meta;
+		} else if (dbLayer?.identifier.startsWith('PlatformWells - Point')) {
+			return LayerMeta['Wells'];
+		}
+		return meta;
+	}
+
 	getShowableLayers() {
 		let layers = this.getValue('layers');
 		if (layers?.length === 0) {
@@ -276,11 +402,11 @@ class LayerStateControllerHandler extends StateController {
 				return false;
 			}
 
-			const isFileLayer = dbLayer?.layerType === 'file layer';
+			const { isFileDataSource } = meta;
 			const isDynamicLayer = dbLayer?.layerType === 'dynamic data layer';
 
 			if (
-				!isFileLayer &&
+				!isFileDataSource &&
 				!isDynamicLayer &&
 				!deckGlLayerIdentifiers.includes(dbLayer?.identifier) &&
 				!isCustomLayerCopy(dbLayer?.identifier) &&
@@ -628,8 +754,7 @@ class LayerStateControllerHandler extends StateController {
 			return null;
 		}
 
-		const meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
-
+		const meta = this.getLayerMeta(dbLayer);
 		if (!meta?.layer) {
 			return null;
 		}
@@ -637,7 +762,7 @@ class LayerStateControllerHandler extends StateController {
 		const layerId = `${dbLayer.identifier}_${dbLayer.layerId}`;
 		const beforeLayerId = this.getBeforeLayerId(dbLayer.identifier);
 
-		const isFileLayer = dbLayer.layerType === 'file layer';
+		const { isFileDataSource } = meta;
 		const isDynamicLayer = dbLayer?.layerType === 'dynamic data layer';
 
 		const isAgreementLayer = agreementLayerIdentifiers.some(layer =>
@@ -645,11 +770,11 @@ class LayerStateControllerHandler extends StateController {
 		);
 		const filterIdentifier = isAgreementLayer
 			? 'Agreements'
-			: isFileLayer
+			: isFileDataSource
 				? dbLayer.layerIdentifier
 				: dbLayer.identifier;
 
-		const filterKey = isFileLayer
+		const filterKey = isFileDataSource
 			? `${dbLayer.file}_${dbLayer.layerShapeName}`
 			: isDynamicLayer
 				? 'DynamicAsset'
@@ -709,6 +834,7 @@ class LayerStateControllerHandler extends StateController {
 				getDashArray: newId,
 				getFillPattern: newId,
 				opacity: newId,
+				extruded: newId,
 			};
 		}
 		if (!boundingState.show?.current) {
@@ -732,7 +858,7 @@ class LayerStateControllerHandler extends StateController {
 		this.updateLayer(dbLayer, updatedProps);
 
 		const getFilters = () => {
-			if (isFileLayer) {
+			if (isFileDataSource) {
 				return generateFileFilters({ fileLayer: dbLayer, extendFilters: filters });
 			}
 
@@ -751,8 +877,7 @@ class LayerStateControllerHandler extends StateController {
 			layerSettings: dbLayer.layerSettings,
 			boundingState,
 			geoField: meta.geoField,
-			isFileLayer,
-			isDynamicLayer,
+			isFileLayer: isFileDataSource,
 			polygonFilter,
 			polygonsFilter,
 			filters: getFilters(),

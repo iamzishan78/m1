@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import { ALPHA_INDEX, ifRgbaConvt, TWO } from 'components/MapControls/components/Layer/Common';
+import { colorPalettes } from 'components/MapControls/components/Layer/LayerAttributes/ColorPaletteGrid';
 import { copy } from 'components/Shared/functions';
 
 import { StateController } from './stateController';
@@ -16,6 +17,11 @@ class LayerStylingStateController extends StateController {
 		const stateValues = this.getAllValues();
 		const {
 			width,
+			aggregation,
+			selectedPalette,
+			colorSteps,
+			isCustomPalette,
+			colorScaleType,
 			fillColor,
 			fillStyle,
 			lineStyle,
@@ -32,9 +38,12 @@ class LayerStylingStateController extends StateController {
 			attributeBasedStyles,
 			attributeBasedLineStyles,
 			layerLabelVisibility,
+			isExtruded,
 			layerClickability,
 			strokeColor,
 			strokeWidth,
+			binsWidth,
+			elevationScale,
 			layerName,
 		} = stateValues;
 
@@ -45,6 +54,7 @@ class LayerStylingStateController extends StateController {
 			width ||
 			layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
 			parseInt(layer.layerPaintProps[0]?.paintProps?.strokeWidth) !== parseInt(strokeWidth) ||
+			parseInt(layer.layerSettings?.strokeWidth) !== parseInt(strokeWidth) ||
 			layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
 			layer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
 			layer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
@@ -59,7 +69,13 @@ class LayerStylingStateController extends StateController {
 			layer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label ||
 			layer.layerSettings?.selectedLineStyle?.label !== selectedLineStyle?.label ||
 			layer.layerSettings?.fillStyle !== fillStyle ||
-			layer.layerSettings?.lineStyle !== lineStyle
+			layer.layerSettings?.lineStyle !== lineStyle ||
+			layer.layerSettings?.aggregation !== aggregation ||
+			layer.layerSettings?.isExtruded !== isExtruded ||
+			!_.isEqual(layer.layerSettings?.selectedPalette, selectedPalette) ||
+			!_.isEqual(layer.layerSettings?.isCustomPalette, isCustomPalette) ||
+			!_.isEqual(layer.layerSettings?.colorSteps, colorSteps) ||
+			layer.layerSettings?.colorScaleType !== colorScaleType
 		) {
 			let currentLayer = { ...layer };
 			let fColor;
@@ -121,6 +137,16 @@ class LayerStylingStateController extends StateController {
 			layerSettings.selectedLineStyle = selectedLineStyle;
 
 			layerSettings.lineStyle = lineStyle;
+
+			layerSettings.aggregation = aggregation || 'SUM';
+			layerSettings.binsWidth = binsWidth || 20;
+			layerSettings.elevationScale = elevationScale || 4;
+
+			layerSettings.colorScaleType = colorScaleType;
+			layerSettings.selectedPalette = selectedPalette;
+			layerSettings.colorSteps = colorSteps;
+			layerSettings.isCustomPalette = isCustomPalette;
+			layerSettings.isExtruded = isExtruded;
 
 			if (
 				currentLayer &&
@@ -405,6 +431,14 @@ class LayerStylingStateController extends StateController {
 		const initialLayerLineStyle = layer.layerSettings?.selectedLineStyle || null;
 		const DEFAULT_STROKE_WIDTH = 20;
 		const initialStrokeWidth = layer.layerPaintProps[0]?.paintProps?.strokeWidth || DEFAULT_STROKE_WIDTH;
+		const initialBinsWidth = layer.layerSettings?.binsWidth || 20;
+		const initialElevationScale = layer.layerSettings?.elevationScale || 4;
+
+		const initialAggregation = layer.layerSettings?.aggregation || 'SUM';
+		const initialSelectedPalette = layer.layerSettings?.selectedPalette || colorPalettes[0];
+		const intialColorSteps = layer.layerSettings?.colorSteps || 5;
+		const initialIsCustomPalette = layer.layerSettings?.isCustomPalette || false;
+		const initialColorScaleType = layer.layerSettings?.colorScaleType || 'quantize';
 
 		const initialFillColor =
 			layerType === 'fill'
@@ -435,6 +469,12 @@ class LayerStylingStateController extends StateController {
 			width: initialWidth,
 			layerName: null,
 			fillColor: initialFillColor,
+			aggregation: initialAggregation,
+			selectedPalette: initialSelectedPalette,
+			colorSteps: intialColorSteps,
+			isCustomPalette: initialIsCustomPalette,
+			colorScaleType: initialColorScaleType,
+
 			fillStyle: layer.layerSettings?.fillStyle || null,
 			lineStyle: layer.layerSettings?.lineStyle || null,
 
@@ -456,6 +496,9 @@ class LayerStylingStateController extends StateController {
 			layerClickability: initialLayerClickable,
 			strokeColor: initialStrokeColor,
 			strokeWidth: initialWidth || initialStrokeWidth,
+			binsWidth: initialBinsWidth,
+			isExtruded: layer.layerSettings?.isExtruded || true,
+			elevationScale: initialElevationScale,
 			layerInitialized: true,
 		});
 	}
@@ -468,12 +511,31 @@ class LayerStylingStateController extends StateController {
 		this.updateState({ layerName: newLayerName });
 	}
 
-	setFillColor(newFillColor) {
-		this.updateState({ fillColor: newFillColor });
+	setAggregation(newAggregation) {
+		this.updateState({ aggregation: newAggregation });
+	}
+
+	setColorScaleType(newColorScaleType) {
+		this.updateState({ colorScaleType: newColorScaleType });
+	}
+
+	setSelectedPalette(newSelectedPalette) {
+		this.updateState({ selectedPalette: newSelectedPalette });
+	}
+
+	setIsCustomPalette(isCustomPalette) {
+		this.updateState({ isCustomPalette: isCustomPalette });
+	}
+
+	setColorSteps(newColorSteps) {
+		this.updateState({ colorSteps: newColorSteps });
 	}
 
 	setFillStyle(newFillStyle) {
 		this.updateState({ fillStyle: newFillStyle });
+	}
+	setFillColor(newFillColor) {
+		this.updateState({ fillColor: newFillColor });
 	}
 
 	setLineStyle(newLineStyle) {
@@ -532,16 +594,25 @@ class LayerStylingStateController extends StateController {
 		this.updateState({ layerLabelVisibility: newVisibility });
 	}
 
+	setLayerExtrusion(newExtrusion) {
+		this.updateState({ isExtruded: newExtrusion });
+	}
+
+	setStrokeWidth(newStrokeWidth) {
+		this.updateState({ strokeWidth: newStrokeWidth });
+	}
+	setBinsWidth(newBinsWidth) {
+		this.updateState({ binsWidth: newBinsWidth });
+	}
+	setElevationScale(newElevationScale) {
+		this.updateState({ elevationScale: newElevationScale });
+	}
 	setLayerClickability(newClickability) {
 		this.updateState({ layerClickability: newClickability });
 	}
 
 	setStrokeColor(newStrokeColor) {
 		this.updateState({ strokeColor: newStrokeColor });
-	}
-
-	setStrokeWidth(newStrokeWidth) {
-		this.updateState({ strokeWidth: newStrokeWidth });
 	}
 }
 

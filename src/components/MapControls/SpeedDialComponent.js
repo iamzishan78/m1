@@ -11,6 +11,7 @@ import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 
 import SyncSharpIcon from '@mui/icons-material/SyncSharp';
+import ViewListOutlinedIcon from '@mui/icons-material/ViewListOutlined';
 
 import { drawController } from 'stateManagement/drawStateController';
 import { globalStateController } from 'stateManagement/globalStateController';
@@ -244,6 +245,10 @@ export function SpeedDialComponent(props) {
 			mapStateController.updateState({ isMapRefreshing: true });
 		}
 
+		if (action === 'showLegend') {
+			mapStateController.updateState({ showLegend: !mapStateController.getValue('showLegend') });
+		}
+
 		if (window.drawRef && window.drawRef.getMode() !== 'simple_select') {
 			drawController.updateState({
 				editDraw: false,
@@ -284,6 +289,11 @@ export function SpeedDialComponent(props) {
 			icon: <SyncSharpIcon />,
 			name: 'Sync Map',
 			action: 'syncMap',
+		},
+		{
+			icon: <ViewListOutlinedIcon />,
+			name: 'Show legend',
+			action: 'showLegend',
 		},
 	];
 

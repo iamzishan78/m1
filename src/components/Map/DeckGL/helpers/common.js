@@ -210,7 +210,8 @@ export const filterUniqueFeatures = features => {
 					feature?.object?._id ||
 					feature?.object?.id ||
 					feature?.object?.properties?.id ||
-					feature?.object?.properties?.Id,
+					feature?.object?.properties?.Id ||
+					feature?.layer?.id,
 			},
 		}))
 		.filter(f => f?.object?.id);
@@ -679,6 +680,114 @@ export const getLayerDashStyle = dbLayer => {
 	};
 };
 
+export function getHexLayerProps(dbLayer) {
+	const basedOnField = dbLayer.layerSettings?.selectedAttribute?.value;
+	const aggregation = dbLayer.layerSettings?.aggregation;
+	const props = {};
+
+	if (basedOnField) {
+		props.getColorWeight = d => _.get(d, basedOnField);
+		props.colorAggregation = aggregation;
+	} else {
+		props.getColorValue = points => points.length;
+	}
+	props.getPosition = d => {
+		if (d?.properties?.WellName) {
+			return d.geometry.geometries[0].coordinates;
+		} else {
+			return d.geometry.coordinates;
+		}
+	};
+	props.getElevationValue = points => points.length;
+	props.radius = dbLayer.layerSettings?.binsWidth * 10 || 200;
+	props.elevationScale = dbLayer.layerSettings?.elevationScale || 4;
+	props.colorScaleType = dbLayer.layerSettings?.colorScaleType || 'quantize';
+	props.extruded = dbLayer.layerSettings?.isExtruded;
+
+	props.colorRange = dbLayer.layerSettings?.selectedPalette;
+	props.onSetColorDomain = domain => {
+		const [min, max] = domain;
+		if (min === Infinity || max === Infinity) {
+			return;
+		}
+
+		// Check if min and max are valid numbers
+		if (typeof min !== 'number' || typeof max !== 'number' || isNaN(min) || isNaN(max)) {
+			return;
+		}
+
+		const numColors = dbLayer.layerSettings?.selectedPalette?.length;
+		const binSize = (max - min) / numColors; // Auto bin size
+		const autoBins = Array.from({ length: numColors + 1 }, (_, i) => min + i * binSize);
+		const binLabels = autoBins.slice(0, -1).map((start, i) => `${start} - ${autoBins[i + 1]}`);
+		layerController.updateState({
+			bins: binLabels,
+		});
+	};
+
+	return props;
+}
+export function getHeatMapLayerProps(dbLayer) {
+	const aggregation = dbLayer.layerSettings?.aggregation;
+
+	const props = {};
+	props.aggregation = aggregation;
+	props.getPosition = d => {
+		if (d?.properties?.WellName) {
+			return d.geometry.geometries[0].coordinates;
+		} else {
+			return d.geometry.coordinates;
+		}
+	};
+	props.radiusPixels = dbLayer.layerSettings?.binsWidth * 10 || 50;
+	props.colorRange = dbLayer.layerSettings?.selectedPalette;
+	return props;
+}
+export function getGridLayerProps(dbLayer) {
+	const basedOnField = dbLayer.layerSettings?.selectedAttribute?.value;
+	const aggregation = dbLayer.layerSettings?.aggregation;
+
+	const props = {};
+
+	if (basedOnField) {
+		props.getColorWeight = d => _.get(d, basedOnField);
+		props.colorAggregation = aggregation;
+	} else {
+		props.getColorValue = points => points.length;
+	}
+
+	props.getPosition = d => {
+		if (d?.properties?.WellName) {
+			return d.geometry.geometries[0].coordinates;
+		} else {
+			return d.geometry.coordinates;
+		}
+	};
+	props.getElevationValue = points => points.length;
+	props.cellSize = dbLayer.layerSettings?.binsWidth * 10 || 200;
+	props.elevationScale = dbLayer.layerSettings?.elevationScale || 4;
+	props.colorScaleType = dbLayer.layerSettings?.colorScaleType || 'quantize';
+	props.extruded = dbLayer.layerSettings?.isExtruded;
+
+	props.colorRange = dbLayer.layerSettings?.selectedPalette;
+	props.onSetColorDomain = domain => {
+		const [min, max] = domain;
+		// Check if min and max are valid numbers
+		if (typeof min !== 'number' || typeof max !== 'number' || isNaN(min) || isNaN(max)) {
+			return;
+		}
+
+		const numColors = dbLayer.layerSettings?.selectedPalette?.length;
+		const binSize = (max - min) / numColors; // Auto bin size
+		const autoBins = Array.from({ length: numColors + 1 }, (_, i) => min + i * binSize);
+		const binLabels = autoBins.slice(0, -1).map((start, i) => `${start} - ${autoBins[i + 1]}`);
+		layerController.updateState({
+			bins: binLabels,
+		});
+	};
+
+	return props;
+}
 export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	const props = {};
 	// Getting layer interation settings

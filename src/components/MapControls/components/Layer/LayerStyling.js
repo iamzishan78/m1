@@ -4,13 +4,14 @@ import { Grid, IconButton, Divider, FormControlLabel, Switch, Tooltip, ClickAway
 import { Close as CloseIcon } from '@material-ui/icons';
 import GridOnIcon from '@material-ui/icons/GridOn';
 
-import { Typography, Slider, TextField, Box } from '@mui/material';
+import { Typography, Slider, TextField, Box, Tabs, Tab } from '@mui/material';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import _ from 'lodash';
 
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
+import { aggregationLayers } from 'components/Shared/functions/shapeLayer';
 import { getLayerColor } from 'components/Shared/SidePanel/compoennts/common';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
@@ -26,10 +27,13 @@ import { mapControlsController } from 'stateManagement/mapControlsController';
 import { AppContext } from 'AppContext';
 
 import { ifRgbaConvt, useStyles, WidthPicker } from './Common';
+import AggAutocomplete from './LayerAttributes/AggAutocomplete';
 import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
 import AttrsFillStyleDropdown from './LayerAttributes/AttrsFillStyleDropdown';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
 import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
+import ColorPaletteGrid, { colorPalettes } from './LayerAttributes/ColorPaletteGrid';
+import CustomColorPalette from './LayerAttributes/CustomColorPalette';
 import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
 
 function LayerStyling() {
@@ -40,6 +44,11 @@ function LayerStyling() {
 	const {
 		width,
 		fillColor,
+		aggregation,
+		selectedPalette,
+		isCustomPalette,
+		colorSteps,
+		colorScaleType,
 		fillStyle,
 		lineStyle,
 		enablefillColor,
@@ -55,12 +64,18 @@ function LayerStyling() {
 		attributeBasedStyles,
 		attributeBasedLineStyles,
 		layerLabelVisibility,
+		isExtruded,
 		layerClickability,
 		strokeColor,
 		layerInitialized,
 		strokeWidth,
+		binsWidth,
+		elevationScale,
 	} = layerStylingController.useCompleteState();
+	console.log(colorSteps);
 
+	const isAggLayer = aggregationLayers.includes(selectedLayer?.layerType);
+	const isHeatMap = selectedLayer?.layerType === 'heatmap layer';
 	const layerType = selectedLayer.layerPaintProps?.[0]?.paintType;
 
 	const initialFillColor =
@@ -75,6 +90,11 @@ function LayerStyling() {
 			: layerType === 'line'
 				? undefined
 				: ifRgbaConvt(selectedLayer.layerPaintProps?.[0]?.paintProps['circle-stroke-color']);
+	const initialAggregation = selectedLayer.layerSettings?.aggregation || 'SUM';
+	const initialColorScaleType = selectedLayer.layerSettings?.colorScaleType || 'quantize';
+	const initialSelectedPalette = selectedLayer.layerSettings?.selectedPalette || colorPalettes[0];
+	const initialIsCustom = selectedLayer.layerSettings?.isCustomPalette || false;
+	const initialColorSteps = selectedLayer.layerSettings?.colorSteps || 5;
 
 	let initialWidth;
 	if (layerType === 'circle') {
@@ -136,6 +156,8 @@ function LayerStyling() {
 			width ||
 			selectedLayer.layerPaintProps?.[0]?.labelProps?.visibility !== layerLabelVisibility ||
 			parseInt(selectedLayer.layerPaintProps?.[0]?.paintProps?.strokeWidth) !== parseInt(strokeWidth) ||
+			parseInt(selectedLayer.layerSettings?.binsWidth) !== parseInt(binsWidth) ||
+			parseInt(selectedLayer.layerSettings?.elevationScale) !== parseInt(elevationScale) ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
@@ -150,7 +172,12 @@ function LayerStyling() {
 			selectedLayer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label ||
 			selectedLayer.layerSettings?.selectedLineStyle?.label !== selectedLineStyle?.label ||
 			selectedLayer.layerSettings?.fillStyle !== fillStyle ||
-			selectedLayer.layerSettings?.lineStyle !== lineStyle
+			selectedLayer.layerSettings?.lineStyle !== lineStyle ||
+			selectedLayer.layerSettings?.aggregation !== aggregation ||
+			selectedLayer.layerSettings?.colorScaleType !== colorScaleType ||
+			selectedLayer.layerSettings?.isExtruded !== isExtruded ||
+			!_.isEqual(selectedLayer.layerSettings?.selectedPalette, selectedPalette) ||
+			!_.isEqual(selectedLayer.layerSettings?.isCustomPalette, isCustomPalette)
 		) {
 			let { currentLayer } = layerStylingController.handleLayerChange(selectedLayer);
 			const currentLayers = [...hookStateAppLayers];
@@ -191,6 +218,7 @@ function LayerStyling() {
 	}, [
 		layerClickability,
 		layerLabelVisibility,
+		isExtruded,
 		enablefillColor,
 		enableStrokeColor,
 		enableStrokeStyle,
@@ -204,7 +232,13 @@ function LayerStyling() {
 		selectedFillStyle,
 		selectedLineStyle,
 		strokeWidth,
+		binsWidth,
+		elevationScale,
 		fillColor,
+		aggregation,
+		selectedPalette,
+		isCustomPalette,
+		colorScaleType,
 		fillStyle,
 		lineStyle,
 		strokeColor,
@@ -221,6 +255,11 @@ function LayerStyling() {
 
 	useEffect(() => {
 		layerStylingController.setFillColor(initialFillColor);
+		layerStylingController.setAggregation(initialAggregation);
+		layerStylingController.setColorScaleType(initialColorScaleType);
+		layerStylingController.setSelectedPalette(initialSelectedPalette);
+		layerStylingController.setColorSteps(initialColorSteps);
+		layerStylingController.setIsCustomPalette(initialIsCustom);
 		layerStylingController.setStrokeColor(initialStrokeColor);
 		layerStylingController.setFillStyle(selectedLayer.layerSettings?.fillStyle);
 		layerStylingController.setLineStyle(selectedLayer.layerSettings?.lineStyle);
@@ -229,6 +268,11 @@ function LayerStyling() {
 	useEffect(() => {
 		layerStylingController.setWidth(initialWidth);
 		layerStylingController.setFillColor(initialFillColor);
+		layerStylingController.setAggregation(initialAggregation);
+		layerStylingController.setColorScaleType(initialColorScaleType);
+		layerStylingController.setSelectedPalette(initialSelectedPalette);
+		layerStylingController.setColorSteps(initialColorSteps);
+		layerStylingController.setIsCustomPalette(initialIsCustom);
 		layerStylingController.setStrokeColor(initialStrokeColor);
 		layerStylingController.setFillStyle(selectedLayer.layerSettings?.fillStyle);
 		layerStylingController.setLineStyle(selectedLayer.layerSettings?.lineStyle);
@@ -344,10 +388,31 @@ function LayerStyling() {
 								<FormControlLabel
 									control={
 										<Switch
+											key={layerClickability}
 											checked={layerClickability}
 											onChange={() => layerStylingController.setLayerClickability(!layerClickability)}
 											size="small"
 											data-testid="layer-pickability-toggle"
+										/>
+									}
+								/>
+							</div>
+							<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
+						</Grid>
+					)}
+
+					{isAggLayer && !isHeatMap && (
+						<Grid item xs={12}>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}>
+								<Typography variant="h6">Layer 3D(extruded)</Typography>
+								<FormControlLabel
+									control={
+										<Switch
+											key={isExtruded}
+											checked={isExtruded}
+											onChange={() => layerStylingController.setLayerExtrusion(!isExtruded)}
+											size="small"
+											data-testid="layer-label-visibility-toggle"
 										/>
 									}
 								/>
@@ -369,6 +434,7 @@ function LayerStyling() {
 									<FormControlLabel
 										control={
 											<Switch
+												key={enablefillColor}
 												checked={enablefillColor}
 												onChange={() => layerStylingController.setEnableFillColor(!enablefillColor)}
 												size="small"
@@ -380,7 +446,7 @@ function LayerStyling() {
 										<WidthPicker width={width} setWidth={layerStylingController.setWidth} layerType={layerType} />
 									)}
 								</div>
-								{enablefillColor && (
+								{enablefillColor && !isHeatMap && (
 									<>
 										<AttrsAutocomplete
 											options={options}
@@ -398,53 +464,199 @@ function LayerStyling() {
 										/>
 									</>
 								)}
-								<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
+
+								{enablefillColor && !isHeatMap && isAggLayer && (
+									<>
+										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
+										<Typography variant="h6" style={{ marginBottom: '10px' }}>
+											Color Scale Type
+										</Typography>
+										<AggAutocomplete
+											defaultValue={'quantize'}
+											aggregation={colorScaleType}
+											options={['linear', 'quantize', 'quantile', 'ordinal']}
+											setAggregation={layerStylingController.setColorScaleType}
+										/>
+										{/* <ColorScaleDropdown /> */}
+										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
+
+										<>
+											<Typography variant="h6" style={{ marginBottom: '10px' }}>
+												Color Palette
+											</Typography>
+											<Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+												<Tabs
+													value={isCustomPalette ? 1 : 0}
+													onChange={(_, newValue) => layerStylingController.setIsCustomPalette(Boolean(newValue))}
+													variant="fullWidth"
+													sx={{
+														minHeight: 40,
+														'& .MuiTab-root': {
+															minHeight: 40,
+															textTransform: 'none',
+															fontSize: '0.875rem',
+														},
+													}}
+												>
+													<Tab label="Predefined" />
+													<Tab label="Custom" />
+												</Tabs>
+											</Box>
+
+											{!isCustomPalette ? (
+												<ColorPaletteGrid
+													selectedPalette={selectedPalette || colorPalettes[0]}
+													setSelectedPalette={layerStylingController.setSelectedPalette}
+												/>
+											) : (
+												<CustomColorPalette
+													selectedPalette={selectedPalette}
+													setSelectedPalette={layerStylingController.setSelectedPalette}
+													steps={colorSteps}
+													setSteps={layerStylingController.setColorSteps}
+												/>
+											)}
+										</>
+									</>
+								)}
 							</Grid>
 
 							{/* dropdown for fill style selection */}
+							{isAggLayer && (
+								<>
+									<Grid item xs={12}>
+										<Typography variant="h6" style={{ marginBottom: '10px' }}>
+											Layer Aggregation
+										</Typography>
+										<AggAutocomplete
+											defaultValue={'SUM'}
+											aggregation={aggregation}
+											options={['SUM', 'MEAN', 'MIN', 'MAX', 'COUNT']}
+											setAggregation={layerStylingController.setAggregation}
+										/>
+										<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
+									</Grid>
 
-							<Grid item xs={12}>
-								<div
-									style={{
-										display: 'flex',
-										justifyContent: 'space-between',
-									}}
-								>
-									<Typography variant="h6">Fill Style</Typography>
-									<FormControlLabel
-										control={
-											<Switch
-												checked={!!enableColorStyle}
-												onChange={() => layerStylingController.setEnableColorStyle(!enableColorStyle)}
-												size="small"
-												data-testid="layer-stroke-toggle"
+									<Grid item xs={12}>
+										<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
+											Bins Width
+										</Typography>
+										<Box display="flex" alignItems="center" justifyContent="space-between">
+											<Slider
+												value={binsWidth}
+												onChange={(e, val) => layerStylingController.setBinsWidth(val)}
+												aria-labelledby="continuous-slider"
+												className={classes.slider}
+												valueLabelDisplay="auto" // Shows the value above the thumb
 											/>
-										}
-									/>
-								</div>
-								{enablefillColor && enableColorStyle && (
-									<>
-										<AttrsAutocomplete
-											options={options}
-											selectedValue={selectedFillStyle}
-											setSelectedValue={value => layerStylingController.setSelectedFillStyle(value)}
-											typography={'Style based on'}
-										/>
-										<AttrsFillStyleDropdown
-											dropDownOptions={['dots', 'hatch-1x', 'hatch-2x', 'hatch-cross']}
-											selectedValue={selectedFillStyle}
-											selectedLayer={selectedLayer}
-											fillStyle={fillStyle}
-											setFillStyle={value => layerStylingController.setFillStyle(value)}
-											attributeBasedStyles={attributeBasedStyles}
-											setAttributeBasedStyles={value => layerStylingController.setAttributeBasedStyles(value)}
-										/>
-									</>
-								)}
-								<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
-							</Grid>
+											<TextField
+												value={binsWidth !== '' ? Number(binsWidth).toString() : ''}
+												variant="outlined"
+												type="number"
+												onChange={e => {
+													let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
+													if (width > 100) {
+														width = 100;
+													}
+													if (width < 0) {
+														width = 0;
+													}
+													layerStylingController.setBinsWidth(width);
+												}}
+												size="small"
+												className={classes.valueBox}
+												inputProps={{
+													inputMode: 'numeric',
+													pattern: '[0-9]*',
+												}}
+											/>
+										</Box>
+									</Grid>
 
-							{strokeColor && (
+									{!isHeatMap && (
+										<Grid item xs={12}>
+											<Typography variant="h6" style={{ margin: '14px 0px 10px 0px' }}>
+												Elevation Scale
+											</Typography>
+											<Box display="flex" alignItems="center" justifyContent="space-between">
+												<Slider
+													value={elevationScale}
+													onChange={(e, val) => layerStylingController.setElevationScale(val)}
+													aria-labelledby="continuous-slider"
+													className={classes.slider}
+													valueLabelDisplay="auto" // Shows the value above the thumb
+												/>
+												<TextField
+													value={elevationScale !== '' ? Number(elevationScale).toString() : ''}
+													variant="outlined"
+													type="number"
+													onChange={e => {
+														let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
+														if (width > 100) {
+															width = 100;
+														}
+														if (width < 0) {
+															width = 0;
+														}
+														layerStylingController.setElevationScale(width);
+													}}
+													size="small"
+													className={classes.valueBox}
+													inputProps={{
+														inputMode: 'numeric',
+														pattern: '[0-9]*',
+													}}
+												/>
+											</Box>
+										</Grid>
+									)}
+								</>
+							)}
+
+							{!isAggLayer && (
+								<Grid item xs={12}>
+									<div
+										style={{
+											display: 'flex',
+											justifyContent: 'space-between',
+										}}
+									>
+										<Typography variant="h6">Fill Style</Typography>
+										<FormControlLabel
+											control={
+												<Switch
+													checked={!!enableColorStyle}
+													onChange={() => layerStylingController.setEnableColorStyle(!enableColorStyle)}
+													size="small"
+													data-testid="layer-stroke-toggle"
+												/>
+											}
+										/>
+									</div>
+									{enablefillColor && enableColorStyle && (
+										<>
+											<AttrsAutocomplete
+												options={options}
+												selectedValue={selectedFillStyle}
+												setSelectedValue={layerStylingController.setSelectedFillStyle}
+												typography={'Style based on'}
+											/>
+											<AttrsFillStyleDropdown
+												dropDownOptions={['dots', 'hatch-1x', 'hatch-2x', 'hatch-cross']}
+												selectedValue={selectedFillStyle}
+												selectedLayer={selectedLayer}
+												fillStyle={fillStyle}
+												setFillStyle={layerStylingController.setFillStyle}
+												attributeBasedStyles={attributeBasedStyles}
+												setAttributeBasedStyles={layerStylingController.setAttributeBasedStyles}
+											/>
+										</>
+									)}
+									<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '25px' }} />
+								</Grid>
+							)}
+
+							{strokeColor && !isAggLayer && (
 								<Grid item xs={12}>
 									<div
 										style={{
