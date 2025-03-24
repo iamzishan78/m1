@@ -64,6 +64,15 @@ export default function Legend() {
 		},
 	};
 
+	const hasLegendItems = visibleLayers.some(
+		layer =>
+			layer?.layerSettings?.selectedAttribute ||
+			layer?.layerSettings?.selectedStrokeAttribute ||
+			layer?.layerSettings?.selectedFillStyle ||
+			layer?.layerSettings?.selectedLineStyle ||
+			layer?.layerIdentifier === 'Wells'
+	);
+
 	return (
 		<ThemeProvider theme={darkTheme}>
 			<Paper
@@ -109,7 +118,7 @@ export default function Legend() {
 				</Box>
 
 				<List style={{ backgroundColor: 'white' }} disablePadding>
-					{visibleLayers.length === 0 ? (
+					{!hasLegendItems ? (
 						<Box sx={{ p: 2, textAlign: 'center', color: '#666' }}>
 							<Typography variant="body2">No attributes of any layer selected</Typography>
 						</Box>
