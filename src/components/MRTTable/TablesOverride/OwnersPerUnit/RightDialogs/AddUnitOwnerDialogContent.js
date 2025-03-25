@@ -195,8 +195,6 @@ export default function AddUnitOwnerDialogContent({
 	};
 
 	const handleUpdateContact = ownerToAdd => {
-		console.log(selectedRow);
-		console.log(ownerToAdd);
 		if (
 			((ownerToAdd.contactStatus || selectedRow?.contactStatus) &&
 				selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
@@ -266,7 +264,6 @@ export default function AddUnitOwnerDialogContent({
 				awaitRefetchQueries: true,
 			});
 		} else {
-			console.log(props);
 			// Update shape owner object for autocompletes
 			const shapeOwner = extractValueRecursively({
 				...formStateValues,
