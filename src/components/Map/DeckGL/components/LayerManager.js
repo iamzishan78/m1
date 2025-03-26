@@ -54,11 +54,11 @@ function LayerManager() {
 		}
 		move(moveRef);
 		window.mapRef?.on?.('move', () => move(moveRef));
-		 
+
 		return () => {
 			window.mapRef?.off('move', () => move(moveRef));
 		};
-	}, []);
+	}, [window.mapRef]);
 
 	useEffect(() => {
 		layerController.init(client, history);
