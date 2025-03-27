@@ -897,7 +897,10 @@ class LayerStateControllerHandler extends StateController {
 					geoJson = makeGeoJSON(layerData, labelProps);
 				}
 				if (deckLayers[layerId]?.getData?.feedData) {
-					deckLayers[layerId].getData.feedData(geoJson.features);
+					const timeout = Math.floor(Math.random() * (100 - 500 + 1)) + 500;
+					setTimeout(() => {
+						deckLayers[layerId].getData.feedData(geoJson.features);
+					}, timeout);
 				}
 				return null;
 			},
