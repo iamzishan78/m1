@@ -59,7 +59,7 @@ const TaxRollInterestsMeta = {
 		},
 		{
 			...CommonSchema.NUMBER_COLUMN,
-			header: 'Lease Acers',
+			header: 'Lease Acres',
 			id: 'leaseAcres',
 			name: 'leaseAcres',
 		},
@@ -82,7 +82,7 @@ const TaxRollInterestsMeta = {
 			name: 'type',
 		},
 		{
-			...CommonSchema.NUMBER_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			header: 'Amount',
 			id: 'amount',
 			name: 'amount',
