@@ -12,14 +12,14 @@ import { get } from 'lodash';
 import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
 
 import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
-import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
+import { GET_DB_FILTERS, GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
 
 import { showInfoMessage } from 'actions';
 
@@ -116,8 +116,6 @@ function HeaderFunction(props) {
 				}
 			}
 		};
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -139,7 +137,6 @@ function HeaderFunction(props) {
 			setCheck(check);
 			setSearchOperator(check?.payor?.name || '');
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.check]);
 
 	const handleUpdateCheck = debounce(checkKey => {
@@ -292,7 +289,7 @@ function HeaderFunction(props) {
 										InputProps={{
 											endAdornment: (
 												<IconButton
-													onClick={event =>
+													onClick={() =>
 														handleUpdateCheck({
 															checkDate: null,
 														})
@@ -354,7 +351,7 @@ function HeaderFunction(props) {
 								control={control}
 								name="payee"
 								defaultValue={check?.payee || {}}
-								render={({ onChange, value, ref }) => (
+								render={({ onChange, value }) => (
 									<AutocompEntityNamesList
 										variant="outlined"
 										margin=""
@@ -399,13 +396,13 @@ function HeaderFunction(props) {
 										variant="outlined"
 										margin="normal"
 										fullWidth
-										value={moment(props?.value || '').format('yyyy-MM-DD')}
+										value={moment.utc(props?.value).format('YYYY-MM-DD')}
 										onChange={e => {
 											props.onChange(e.target.value);
 										}}
 										onBlur={e => {
 											handleUpdateCheck({
-												depositDate: moment(e.target.value).toISOString(),
+												depositDate: moment.utc(e.target.value).toISOString(),
 											});
 										}}
 										InputLabelProps={{
@@ -418,7 +415,7 @@ function HeaderFunction(props) {
 										InputProps={{
 											endAdornment: (
 												<IconButton
-													onClick={event =>
+													onClick={() =>
 														handleUpdateCheck({
 															depositDate: null,
 														})
@@ -468,7 +465,7 @@ function HeaderFunction(props) {
 											) : null,
 										}}
 										value={parseFloat(params.value).toFixed(2) || ''}
-										onBlur={e => handleUpdateCheck({ checkAmount: Number(params.value) })}
+										onBlur={() => handleUpdateCheck({ checkAmount: Number(params.value) })}
 									/>
 								)}
 							/>
@@ -537,4 +534,27 @@ function HeaderFunction(props) {
 	);
 }
 
+// Add missing prop types
+HeaderFunction.propTypes = {
+	check: PropTypes.shape({
+		payor: PropTypes.shape({
+			name: PropTypes.string,
+			_id: PropTypes.string,
+		}),
+		payee: PropTypes.shape({
+			name: PropTypes.string,
+			_id: PropTypes.string,
+			number: PropTypes.string,
+		}),
+		checkNumber: PropTypes.string,
+		checkDate: PropTypes.string,
+		checkAmount: PropTypes.number,
+		source: PropTypes.string,
+		sourceId: PropTypes.string,
+		depositDate: PropTypes.string,
+	}),
+	setCheck: PropTypes.func.isRequired,
+	value: PropTypes.any, // Add missing prop validation
+	onChange: PropTypes.func, // Add missing prop validation
+};
 export default memo(HeaderFunction);
