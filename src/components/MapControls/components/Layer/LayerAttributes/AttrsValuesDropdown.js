@@ -94,7 +94,7 @@ const AttrsValuesDropdown = ({
 	setAttributeBasedColors,
 }) => {
 	const classes = useStyles();
-	const [displayDropdown, setDisplayDropdown] = useState(false);
+	const [displayDropdown, setDisplayDropdown] = useState(true);
 	const [displayColorPicker, setDisplayColorPicker] = useState(false);
 
 	// State for managing the clicked value and its color

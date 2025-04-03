@@ -89,7 +89,7 @@ const AttrsFillStyleDropdown = ({
 	setAttributeBasedStyles,
 }) => {
 	const classes = useStyles();
-	const [displayDropdown, setDisplayDropdown] = useState(false);
+	const [displayDropdown, setDisplayDropdown] = useState(true);
 	const [selectedOption, setSelectedOption] = useState(null);
 	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
@@ -205,7 +205,7 @@ const AttrsFillStyleDropdown = ({
 				</div>
 			) : null}
 
-			{!selectedValue || displayDropdown ? (
+			{!selectedValue || fillStyle ? (
 				<Autocomplete
 					options={dropDownOptions}
 					value={fillStyle || ''}
