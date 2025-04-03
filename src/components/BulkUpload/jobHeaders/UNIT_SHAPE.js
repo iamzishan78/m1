@@ -119,5 +119,35 @@ const Unit = [
     required: true,
     actual_key: "custom_data.attempted_to_reach_out",
   },
+	{
+		label: 'State',
+		actual_key: 'originalProperties.State',
+		mapped_key: '',
+	},
+	{
+		label: 'County',
+		actual_key: 'originalProperties.County',
+		mapped_key: '',
+	},
+	{
+		label: 'Survey',
+		actual_key: 'originalProperties.Survey',
+		mapped_key: '',
+	},
+	{
+		label: 'Block',
+		actual_key: 'originalProperties.Block',
+		mapped_key: '',
+	},
+	{
+		label: 'Section',
+		actual_key: 'originalProperties.Section',
+		mapped_key: '',
+	},
+	{
+		label: 'Abstract',
+		actual_key: 'originalProperties.AbstractName',
+		mapped_key: '',
+	},
 ];
 export default Unit;
