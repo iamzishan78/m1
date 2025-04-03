@@ -45,7 +45,7 @@ const filter = createFilterOptions();
 export default function FieldContent({
 	children,
 	id,
-	isPurchased,
+	isPurchased = false,
 	entity,
 	melissaRecordId = null,
 	melissaAddressRecordId = null,
@@ -279,7 +279,7 @@ export default function FieldContent({
 							purchaseData: trimmedEditContent,
 							isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 						},
-						refetchQueries: ['getContactPurchaseData'],
+						refetchQueries: ['getContactPurchaseData', 'getDailpadContact'],
 						awaitRefetchQueries: false,
 					}).then(({ data }) => {
 						if (data?.updateContactPurchaseData && !data.updateContactPurchaseData?.success) {
@@ -293,7 +293,7 @@ export default function FieldContent({
 							ignoreResponse: true,
 							isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 						},
-						refetchQueries: ['getPaginatedContacts', 'getContact', 'getparcelOwners'],
+						refetchQueries: ['getPaginatedContacts', 'getContact', 'getparcelOwners', 'getDailpadContact'],
 						awaitRefetchQueries: false,
 					}).then(({ data }) => {
 						let entries = Object.entries(editContent);
@@ -614,6 +614,7 @@ export default function FieldContent({
 					editContent={content}
 					row={row}
 					handleQuickActionActivity={handleQuickActionActivity}
+					isPurchased={isPurchased}
 				/>
 			)}
 			{fieldType === FieldTypes.Contact && isMerged && (

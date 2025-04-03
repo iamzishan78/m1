@@ -25,6 +25,7 @@ import { CONTACT } from '../../graphQL/useQueryContact';
 import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
 import { TRANSACTIONDATA } from 'graphQL/useQueryTransactionData';
 import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
+import { GET_DIALPAD_CONTACT } from 'graphQL/useQueryDailpad';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import ConfirmationDialog from './components/ConfirmationDialog';
 import BuyContactsInfoDialogContent from '../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
@@ -427,6 +428,7 @@ function ContactDetailCard(props) {
 	const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
 
 	const [getContact, { data }] = useLazyQuery(CONTACT);
+	const [getDailpadContact, { data: dailpadContactRes }] = useLazyQuery(GET_DIALPAD_CONTACT);
 	const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
 
 	const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(TRANSACTIONDATA);
@@ -494,6 +496,11 @@ function ContactDetailCard(props) {
 					contactId: stateApp.selectedContact,
 				},
 			});
+			getDailpadContact({
+				variables: {
+					contactId: stateApp.selectedContact,
+				},
+			});
 		} else if (contactId) {
 			setStateApp(stateApp => ({
 				...stateApp,
@@ -534,6 +541,14 @@ function ContactDetailCard(props) {
 			});
 		}
 	}, [stateApp.user]);
+
+	useEffect(() => {
+		if (dailpadContactRes?.getDailpadContact?.dialpadContact) {
+			globalStateController.updateState({ dialpadContact: dailpadContactRes?.getDailpadContact?.dialpadContact });
+		} else {
+			globalStateController.updateState({ dialpadContact: {} });
+		}
+	}, [dailpadContactRes]);
 
 	const StyleBadge = withStyles({
 		badge: {
