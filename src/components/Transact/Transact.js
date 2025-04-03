@@ -171,12 +171,12 @@ const useStyles = makeStyles(theme => ({
 		backgroundColor: '#4880F6',
 		padding: '0.5em',
 	},
-	content: ({ transactBarShowGrid }) => ({
+	content: () => ({
 		flexGrow: 1,
 		top: '64px',
-		left: transactBarShowGrid ? '' : '425px!important',
+		left: '425px!important',
 		position: 'absolute',
-		width: transactBarShowGrid ? '100%' : 'calc(100% - 425px)',
+		width: 'calc(100% - 425px)',
 	}),
 }));
 
@@ -203,7 +203,7 @@ const Transact = () => {
 	});
 
 	const [dealFilter, setDealFilter] = useState('all');
-	const classes = useStyles({ dealDialog: stateApp.dealDialog, transactBarShowGrid: stateApp.transactBarShowGrid });
+	const classes = useStyles({ dealDialog: stateApp.dealDialog });
 	const cardColors = useRef({});
 
 	// const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
@@ -762,7 +762,7 @@ const Transact = () => {
 			{/**
 			 * Here goes the Side Panel for Flowlines
 			 */}
-			{!stateApp.transactBarShowGrid && <SidePanel />}
+			<SidePanel />
 
 			<main className={classes.content}>
 				<TransactAppBar

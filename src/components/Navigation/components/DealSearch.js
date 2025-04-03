@@ -14,12 +14,12 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { AppContext } from '../../../AppContext';
 
 const useStyles = makeStyles(theme => ({
-	search: ({ transactBarShowGrid }) => ({
+	search: () => ({
 		position: 'relative',
 		borderRadius: theme.shape.borderRadius,
 		backgroundColor: fade(theme.palette.common.white, 0.15),
 		marginRight: theme.spacing(2),
-		marginLeft: transactBarShowGrid ? '' : '425px !important',
+		marginLeft: '425px !important',
 		width: '34%',
 		transition: 'width 0.5s',
 		[theme.breakpoints.up('sm')]: {
@@ -68,7 +68,7 @@ const useStyles = makeStyles(theme => ({
 
 const DealSearch = () => {
 	const [stateApp, setStateApp] = useContext(AppContext);
-	const classes = useStyles({ transactBarShowGrid: stateApp.transactBarShowGrid });
+	const classes = useStyles();
 	const [allDeals, setAllDeals] = useState([]);
 	const [searchInputValue, setSearchInputValue] = useState('');
 	const { pipeToShowTab } = useSelector(({ Flow }) => Flow);
