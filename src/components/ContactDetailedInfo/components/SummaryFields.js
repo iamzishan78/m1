@@ -24,6 +24,7 @@ import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
+import { phonenumber } from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -270,8 +271,8 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 
 														if (currValue != prevValue) updateFieldData(field.key, currValue);
 													}}
-													onChange={({ target }) => {
-														params.onChange(target.value);
+													onChange={({ target: { value } }) => {
+														params.onChange(field.isPhoneNumber && !phonenumber(value) ? '' : value);
 													}}
 													onKeyUp={e => {
 														if (e.key === 'Enter') e.target.blur();
