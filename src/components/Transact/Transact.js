@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useContext, useState, useEffect, useRef, useMemo } from 'react';
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { useHistory } from 'react-router-dom';
 import { get } from 'lodash';
@@ -393,6 +393,35 @@ const Transact = () => {
 
 	const handleDataChange = newData => {};
 
+	const summaryData = useMemo(() => {
+		if (!filteredBoardTransactData || pipeToShow?.flowLineType !== 'deal') return null;
+
+		let totalDealCount = 0;
+		let totalPriceSum = 0;
+		let totalForecast = 0;
+
+		filteredBoardTransactData?.lanes?.forEach(lane => {
+			totalDealCount += lane?.cards?.length || 0;
+
+			let laneForecast = 0;
+			lane?.cards?.forEach(card => {
+				const offerPrice = card?.metadata?.offerPrice || 0;
+				laneForecast += offerPrice;
+			});
+			totalPriceSum += laneForecast;
+
+			if (lane?.metadata?.dealProbability > 0 && laneForecast > 0) {
+				totalForecast += laneForecast * (lane.metadata.dealProbability / 100);
+			}
+		});
+
+		return {
+			totalDealCount,
+			totalPriceSum: vf_currency(totalPriceSum),
+			totalForecast: vf_currency(totalForecast),
+		};
+	}, [filteredBoardTransactData, pipeToShow?.flowLineType]);
+
 	const handleCardClick = (cardId, metadata, laneId) => {
 		history.push(`/flow/${selectedPipe._id}/lane/${laneId}/card/${cardId}`);
 		setStateApp(stateApp => ({
@@ -688,7 +717,12 @@ const Transact = () => {
 			<SidePanel />
 
 			<main className={classes.content}>
-				<TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} setStateApp={setStateApp} />
+				<TransactAppBar
+					dealFilter={dealFilter}
+					setDealFilter={setDealFilter}
+					setStateApp={setStateApp}
+					summaryData={summaryData}
+				/>
 				{pipeToShow ? (
 					<div className={classes.boardAndTable}>
 						{isPipeLoading === true && (

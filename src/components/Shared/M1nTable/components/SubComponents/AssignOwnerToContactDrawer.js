@@ -34,6 +34,10 @@ import RelatedContact from 'components/MRTTable/Common/Dialog/BulkUpdate/Related
 import { ADD_RELATED_CONTACTS } from 'graphQL/useMutationRelatedContact';
 import BulkAddActivityForm from 'components/MRTTable/Common/Dialog/BulkUpdate/BulkAddActivityForm';
 import { BULK_ADD_ACTIVITIES } from 'graphQL/useMutationBulkAddActivities';
+import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
+import { copy } from 'components/Shared/functions';
+import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
+import { set } from 'lodash';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
@@ -193,7 +197,25 @@ function SelectedField({
 				/>
 			);
 		// Additional cases can be added as needed for different field types
-
+		case 'Max Pricing (Per NRA)':
+		case 'Target Pricing (Per NRA)':
+			// Add text field for Max Pricing and Target Pricing bulk update
+			return (
+				<TextField
+					key={field} // Use key to force re-render and re-apply focus
+					placeholder={field}
+					value={fieldKey}
+					onChange={({ target }) => {
+						setFieldKey(target.value);
+					}}
+					autoFocus={true} // This will automatically focus the field when rendered
+					className={classes.fullWidth}
+					InputProps={{
+						startAdornment: <InputAdornment position="start">$</InputAdornment>,
+						inputComponent: CurrencyFormatCustomWithoutPrefix,
+					}}
+				/>
+			);
 		case 'Entity Type':
 			filterKey = 'ownerType.keyword'; // Sets filterKey to 'ownerType.keyword' for filtering by entity type
 			return (
@@ -270,6 +292,10 @@ export default function AssignOwnerToContactDrawer({
 		...options,
 		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
 	});
+	const [updateShapes] = useMutation(UPDATE_SHAPES, {
+		...options,
+		refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
+	});
 	const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT, options);
 	const [updateBulkContact] = useMutation(UPDATEBULKCONTACT, options);
 	const [updateBulkTags] = useMutation(BULKUPSERTTAG, options);
@@ -289,8 +315,8 @@ export default function AssignOwnerToContactDrawer({
 
 	const unitTableFields = [
 		{ title: 'Campaign Name', value: 'campaignName' },
-		{ title: 'Max Pricing', value: 'timeZone' },
-		{ title: 'Target Pricing', value: 'timeZone' },
+		{ title: 'Max Pricing (Per NRA)', value: 'uMaxUnitPricing' },
+		{ title: 'Target Pricing (Per NRA)', value: 'uUnitPricing' },
 		{ title: 'Tags', value: 'contactStatus' },
 	];
 
@@ -347,6 +373,75 @@ export default function AssignOwnerToContactDrawer({
 		} else {
 			setFieldKey('');
 		}
+	};
+
+	const updateCampaign = (shape, field, value) => {
+		/* -------------------------------- Data Fix -------------------------------- */
+		if (field.includes('originalProperties.')) {
+			delete shape.properties[field];
+		}
+		if (field.includes('originalProperties.State')) {
+			set(shape.properties, 'originalProperties.StateAbbreviation', value);
+		}
+		if (field.includes('originalProperties.Section')) {
+			set(shape.properties, 'originalProperties.ShortName', value);
+		}
+		if (field.includes('originalProperties.Meridian')) {
+			set(shape.properties, 'originalProperties.PrincipalMeridian', value);
+		}
+		/* -------------------------------- Data Fix -------------------------------- */
+
+		set(shape.properties, field, value); // Set field and its value in shapeJson
+
+		const customLayer = {};
+
+		if (field.includes('originalProperties')) {
+			set(shape.properties, field.replace('originalProperties.', '').toLowerCase(), value);
+		}
+		customLayer.shape = JSON.stringify(shape); // Assign updated shape
+		customLayer.shapeJson = shape; // Assign updated shapeJson
+
+		return customLayer;
+	};
+
+	const bulkShapeUpdate = (shapesToUpdate, errorMsg) => {
+		// Update the shapes with the new data
+		updateShapes({
+			variables: {
+				shapes: shapesToUpdate,
+			},
+			refetchQueries: ['getESFilterList', 'getCustomLayer'], // Refetch these queries after the update
+			awaitRefetchQueries: true,
+		}).then(
+			res => {
+				// Toggle the reset state for the table to refresh its data
+
+				// Check if the response data is present and updateShapes was successful
+				if (res.data && res.data.updateShapes) {
+					const success = res.data.updateShapes.success;
+					if (success) {
+						// Show a success toast and message if the update was successful
+						Loader.successToast('contact-creation', 'Updated');
+						showSuccessMessage(`${field} Bulk Updated Successfully`);
+
+						// Call the onBulkUpdateComplete callback if it exists
+						if (rest.onBulkUpdateComplete) {
+							rest.onBulkUpdateComplete();
+						}
+					} else {
+						// Show an error toast if the update was not successful
+						Loader.errorToast('contact-creation', 'Updated');
+					}
+				} else {
+					// Show an error toast if the response data is not as expected
+					Loader.errorToast('contact-creation', 'Failed');
+				}
+			},
+			err => {
+				console.log(err);
+				Loader.errorToast('contact-creation', errorMsg);
+			}
+		);
 	};
 
 	const onAssign = () => {
@@ -447,6 +542,25 @@ export default function AssignOwnerToContactDrawer({
 					Loader.errorToast('contact-creation', errorMsg);
 				}
 			);
+		} else if (field === 'Max Pricing (Per NRA)' || field === 'Target Pricing (Per NRA)') {
+			// Map through each row to create an array of shapes to update
+			const shapesToUpdate = rows.map(row => {
+				// Update the campaign with the new value and fieldKey, creating a custom layer for each row
+				const customlayer = updateCampaign(
+					copy(row.shapeJson),
+					fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value,
+					fieldKey
+				);
+
+				// Return an object with the updated custom layer information
+				return {
+					customLayer: customlayer,
+					customLayerId: row._id,
+					userId: getUser?._id,
+				};
+			});
+
+			bulkShapeUpdate(shapesToUpdate, errorMsg);
 		} else if (field === 'Add New Activity') {
 			const isOwnerTable = ['TractPerUnitTable', 'OwnersPerUnitTable'].includes(rest.header);
 

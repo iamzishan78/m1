@@ -469,6 +469,7 @@ function AddDealDialog(props) {
 	const [bidDate, setBidDate] = useState('');
 	const [dueDate, setDueDate] = useState('');
 	const [closeDate, setCloseDate] = useState('');
+	const [internalId, setInternalId] = useState('');
 
 	const [nameAutValue, setNameAutValue] = useState({ name: '', id: 0, _id: 0 });
 	const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -728,6 +729,7 @@ function AddDealDialog(props) {
 			}
 			const deal = {
 				name: title ? title.trim() : null,
+				internalId: internalId,
 				offerPrice: label,
 				notes: description ? description.trim() : null,
 				status: dealState ? dealState : 'open',
@@ -1015,6 +1017,7 @@ function AddDealDialog(props) {
 
 		if (cardId && laneId && stateApp.dealDialog) {
 			const card = stateApp.activeDeal;
+			setInternalId(card.internalId ?? '');
 			setTitle(card.name ? card.name : '');
 			setDealState(card.status ? card.status : null);
 			setLabel(card.offerPrice ? card.offerPrice : '');
@@ -1397,6 +1400,7 @@ function AddDealDialog(props) {
 								setTitleFocus={setTitleFocus}
 								isTransactPage={props.isTransactPage}
 								handleClickDialogClose={handleClickDialogClose}
+								addUpdateDeal={addUpdateDeal}
 							/>
 							{addDealLoading ? (
 								<div
@@ -1504,6 +1508,39 @@ function AddDealDialog(props) {
 													</Grid>
 												</FormControl>
 											</div>
+
+											<FormControl variant="outlined" fullWidth size="small">
+												<Grid container className={classes.gridStyle}>
+													<Grid item xs={3}>
+														<div>Internal ID</div>
+													</Grid>
+													<Grid item xs={9}>
+														<TextField
+															margin="dense"
+															type="text"
+															variant="outlined"
+															value={internalId}
+															placeholder=""
+															fullWidth
+															className={classes.inputFieldDate}
+															onChange={e => {
+																setInternalId(e.target.value);
+															}}
+															onBlur={() => addUpdateDeal()}
+															InputLabelProps={{
+																shrink: true,
+															}}
+															InputProps={{
+																classes: {
+																	root: classes.dateRoot,
+																	focused: classes.focused,
+																	notchedOutline: classes.notchedOutline,
+																},
+															}}
+														/>
+													</Grid>
+												</Grid>
+											</FormControl>
 
 											{selectedPipe.flowLineType === 'general' && (
 												<FormControl variant="outlined" fullWidth size="small">
@@ -1876,14 +1913,14 @@ function AddDealDialog(props) {
 							)}
 							{['Deal', 'Map'].includes(stateApp.transactBarView) && (
 								<div style={{ marginTop: 2, height: '40vh', width: '25vw' }}>
-								<CommentComponent
-									setNewCommentId={setNewCommentId}
-									targetLabel="deal"
-									targetSourceId={stateApp.activeDeal?.cardId}
-									activityLog={stateApp?.activeDeal?.activity}
-									showCommentType
-								/>
-							</div>
+									<CommentComponent
+										setNewCommentId={setNewCommentId}
+										targetLabel="deal"
+										targetSourceId={stateApp.activeDeal?.cardId}
+										activityLog={stateApp?.activeDeal?.activity}
+										showCommentType
+									/>
+								</div>
 							)}
 						</>
 					)}

@@ -138,6 +138,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 						nraSum: getCommaValue(_contact.contactInterests.nraSum),
 						offerPriceSum: getCommaValue(_contact.contactInterests.offerPriceSum),
 						maxOfferPriceSum: getCommaValue(_contact.contactInterests.maxOfferPriceSum),
+						currentOfferPriceSum: getCommaValue(_contact.contactInterests.currentOfferPriceSum),
 						closedPriceSum: getCommaValue(_contact.contactInterests.closedPriceSum), // Add thousand comma seprator to closedPriceSum
 					},
 				};
@@ -242,6 +243,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 											field.key.includes('offerPriceSum') ||
 											field.key.includes('nraSum') ||
 											field.key.includes('maxOfferPriceSum') ||
+											field.key.includes('currentOfferPriceSum') ||
 											field.key.includes('closedPriceSum')
 										) {
 											// allow user to override closedPrimeSum
@@ -255,6 +257,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 										} else {
 											initialized.current = true;
 										}
+										// eslint-disable-next-line react-hooks/exhaustive-deps
 									}, [field.value, params.value]);
 
 									return (
@@ -281,13 +284,14 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 															field.key.includes('offerPriceSum') ||
 															field.key.includes('nraSum') ||
 															field.key.includes('maxOfferPriceSum') ||
+															field.key.includes('currentOfferPriceSum') ||
 															field.key.includes('closedPriceSum')
 														)
 															currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''));
 
 														const prevValue = get(contactData, field.key) || '';
 
-														if (currValue != prevValue) updateFieldData(field.key, currValue);
+														if (currValue !== prevValue) updateFieldData(field.key, currValue);
 													}}
 													onChange={({ target: { value } }) => {
 														params.onChange(field.isPhoneNumber && !phonenumber(value) ? '' : value);
@@ -304,7 +308,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 													// else show nothing
 													InputProps={{
 														inputComponent:
-															field.type === 'currency'
+															field.type === 'currency' || field.type === 'currencySimple'
 																? CurrencyFormatCustom
 																: field.key.includes('nraSum')
 																	? NumberFormatComma
@@ -406,7 +410,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 																<CircularProgress className={classes.loader} size={22} color="secondary" />
 															) : (
 																<>
-																	{isValueOveridden && (
+																	{isValueOveridden && field.type !== 'currencySimple' && (
 																		<AutorenewIcon
 																			htmlColor="#757575"
 																			onClick={() => {
@@ -417,6 +421,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 																					field.key.includes('offerPriceSum') ||
 																					field.key.includes('nraSum') ||
 																					field.key.includes('maxOfferPriceSum') ||
+																					field.key.includes('currentOfferPriceSum') ||
 																					field.key.includes('closedPriceSum')
 																				) {
 																					value = parseFloat(value).toFixed(2);
