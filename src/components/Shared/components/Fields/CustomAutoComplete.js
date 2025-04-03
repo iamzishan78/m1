@@ -97,10 +97,17 @@ function CustomAutoComplete({
 	}, []);
 
 	const getOptionLabel = option => {
-		if (!option) return '';
-		if (typeof option === 'string') return option;
-		if (getCustomOptionLabel) return getCustomOptionLabel(option);
-		else return option.label || option.value || option.name || '';
+		if (!option) {
+			return '';
+		}
+		if (typeof option === 'string') {
+			return option;
+		}
+		if (getCustomOptionLabel) {
+			return getCustomOptionLabel(option);
+		} else {
+			return option.label || option.value || option.name || '';
+		}
 	};
 
 	const getOptionSelected = (option, value) => {
@@ -128,14 +135,14 @@ function CustomAutoComplete({
 			return typeof fieldValue === 'string' ? [fieldValue] : fieldValue || [];
 		}
 
-		return (fieldValue && options.find(opt => opt.value === fieldValue || opt === fieldValue)) || value || null;
+		return (fieldValue && options?.find(opt => opt.value === fieldValue || opt === fieldValue)) || value || null;
 	};
 
 	const getOptionsArray = value => {
 		if (!multiple) {
 			return options;
 		}
-		const optArray = options.filter(opt => !value?.some(selected => getOptionLabel(selected) === getOptionLabel(opt)));
+		const optArray = options?.filter(opt => !value?.some(selected => getOptionLabel(selected) === getOptionLabel(opt)));
 		return optArray;
 	};
 
@@ -164,12 +171,13 @@ function CustomAutoComplete({
 			);
 		}
 
-		if (renderOptionComp)
+		if (renderOptionComp) {
 			return (
 				<Grid container spacing={0} {...props}>
 					{renderOptionComp({ props, option })}
 				</Grid>
 			);
+		}
 
 		return (
 			<Grid container spacing={0} {...props}>
