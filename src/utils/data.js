@@ -667,7 +667,6 @@ export const AdminManagementRoutes = {
 
 export const bypassTenants = [
 	'localhost',
-	// "m1Preview",
 	'm1dev',
 	'm1cypress',
 	'm1Staging',
@@ -675,11 +674,7 @@ export const bypassTenants = [
 	'covenant',
 	'sansaba',
 	'farmers',
-	// "m1Production",
-	// "m1Development",
-	// "GHR",
-	// "Quality",
-	// "Foss",
+	"Quality",
 	// "SantaFe",
 	// "Republic",
 	'Frontier',
