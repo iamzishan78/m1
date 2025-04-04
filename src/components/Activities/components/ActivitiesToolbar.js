@@ -154,14 +154,29 @@ const ActivitiesToolbar = ({
 		if (activities) {
 			const uniqueOwners = new Map();
 			activities.forEach(activity => {
-				if (activity.ownerId && activity.ownerName && !uniqueOwners.has(activity.ownerId)) {
-					uniqueOwners.set(activity.ownerId, activity.ownerName);
-					ownerOptions.push({ value: activity.ownerId, label: activity.ownerName });
+				const activityDate = moment(parseInt(activity.dateTime));
+				const selectedMonth = moment(selectedDate);
+				const weekStart = moment(selectedDate).startOf('week');
+				const weekEnd = moment(selectedDate).endOf('week');
+				if (
+					activity.ownerId &&
+					activity.ownerName &&
+					!uniqueOwners.has(activity.ownerId) &&
+					(activityFilterByType === 'all' || activity.type === activityFilterByType)
+				) {
+					if (
+						(activityDate.isSame(selectedMonth, 'month') && view === Views.MONTH) ||
+						(activityDate.isBetween(weekStart, weekEnd, undefined, '[]') && view === Views.WEEK) || // '[]' includes start and end dates
+						stateApp.activityDisplayType !== 'calendar'
+					) {
+						uniqueOwners.set(activity.ownerId, activity.ownerName);
+						ownerOptions.push({ value: activity.ownerId, label: activity.ownerName });
+					}
 				}
 			});
 		}
 		return ownerOptions;
-	}, [activities]);
+	}, [activities, activityFilterByType, selectedDate, view, stateApp.activityDisplayType]);
 
 	const responsiblePartyOptions = React.useMemo(() => {
 		let ownerOptions = [{ label: 'All', value: 'all' }];
@@ -169,11 +184,15 @@ const ActivitiesToolbar = ({
 			const uniqueOwners = new Map();
 
 			activities.forEach(activity => {
-				const activityDate = moment(activity.dateTime);
+				const activityDate = moment(parseInt(activity.dateTime));
 				const selectedMonth = moment(selectedDate);
 				const weekStart = moment(selectedDate).startOf('week');
 				const weekEnd = moment(selectedDate).endOf('week');
-				if (activity.responsibleParty && !uniqueOwners.has(activity.responsibleParty)) {
+				if (
+					activity.responsibleParty &&
+					!uniqueOwners.has(activity.responsibleParty) &&
+					(activityFilterByType === 'all' || activity.type === activityFilterByType)
+				) {
 					if (
 						(activityDate.isSame(selectedMonth, 'month') && view === Views.MONTH) ||
 						(activityDate.isBetween(weekStart, weekEnd, undefined, '[]') && view === Views.WEEK) || // '[]' includes start and end dates
@@ -186,7 +205,7 @@ const ActivitiesToolbar = ({
 			});
 		}
 		return ownerOptions;
-	}, [activities]);
+	}, [activities, activityFilterByType, selectedDate, view, stateApp.activityDisplayType]);
 
 	return (
 		<div className={classes.root}>
