@@ -688,7 +688,7 @@ export const bypassTenants = [
 	// "Vector",
 	// "TableRock",
 	// "Providence",
-	// "Pheasant"
+	"Pheasant"
 ];
 
 export const simpleAuthBypass = false;
