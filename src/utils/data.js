@@ -680,7 +680,7 @@ export const bypassTenants = [
 	'Frontier',
 	'm1demo',
 	"Vector",
-	// "TableRock",
+	"TableRock",
 	"Providence",
 	"Pheasant"
 ];
