@@ -677,6 +677,7 @@ export const bypassTenants = [
 	"Quality",
 	"SantaFe",
   "SITL",
+  'Jetstream',
 	'Frontier',
 	'm1demo',
 	"Vector",
