@@ -104,7 +104,7 @@ const LastCheckDateFilter = ({
 					lte: toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
 				},
 				type: 'range',
-				filterType: 'date',
+				columnType: 'date',
 			});
 
 		const _propertyFilter = copy(propertyFilter);
