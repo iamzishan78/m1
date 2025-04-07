@@ -135,7 +135,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 								}}
 								fieldEvents={{
 									onChange: newValue => {
-										offClickHandler?.(fieldKey, newValue.toDate());
+										offClickHandler?.(fieldKey, newValue?.toDate());
 									},
 								}}
 								InputProps={{
