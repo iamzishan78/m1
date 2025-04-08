@@ -287,7 +287,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 											}}
 											fieldEvents={{
 												onChange: newValue => {
-													offClickHandler?.(field.key, newValue.toDate());
+													offClickHandler?.(field.key, newValue?.toDate());
 												},
 											}}
 											InputProps={{
