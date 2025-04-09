@@ -59,7 +59,7 @@ const ShapesFilesGenericMeta = {
 								popupController.updateState({ selectedShapeFile: row.original });
 							};
 
-							if (history && !history.location.pathname.includes('map')) {
+							if (history && history.location.pathname !== '/') {
 								history.push('/');
 
 								globalStateController.updateState({

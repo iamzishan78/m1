@@ -41,7 +41,7 @@ const MRTFilterComponent = ({ tableKey, filterColumn }) => {
 			textFieldProps={{
 				size: 'small',
 				variant: 'outlined',
-				label: columnSchema.header,
+				label: filterColumn.label ?? columnSchema.header,
 			}}
 		/>
 	);

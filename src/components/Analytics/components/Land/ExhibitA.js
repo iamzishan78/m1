@@ -78,7 +78,7 @@ const ExhibitA = () => {
 				</Grid>
 			</div>
 			<div>
-				<MRTTable name={TableKey} />;
+				<MRTTable name={TableKey} />
 			</div>
 		</>
 	);

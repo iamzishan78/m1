@@ -166,7 +166,16 @@ function ESAutoCompleteFilter({
 
 			return { label, value };
 		});
-		newOptions = _.uniqWith(newOptions, (a, b) => a.label === b.label).filter(op => op.value || op.value === 0);
+		newOptions = _.uniqWith(newOptions, (a, b) => a.label === b.label)
+			.filter(op => op.value || op.value === 0)
+			.map(op => ({
+				...op,
+				label:
+					typeof op.label === 'string' && /^[a-zA-Z]/.test(op.label)
+						? op.label.charAt(0).toUpperCase() + op.label.slice(1)
+						: op.label,
+			}))
+			.sort((a, b) => a.label.localeCompare(b.label));
 
 		if (appendOptions.current) {
 			appendOptions.current = false;

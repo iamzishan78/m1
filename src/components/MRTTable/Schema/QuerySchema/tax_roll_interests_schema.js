@@ -28,13 +28,13 @@ const TaxRollInterestsMeta = {
 	isInFiniteScroll: true,
 	TableSchema: [
 		{
-			...CommonSchema.SELECT_STRING_COLUMN,
+			...CommonSchema.INITAIL_PINNED,
 			header: 'Api Number',
 			id: 'api',
 			name: 'api',
 		},
 		{
-			...CommonSchema.SELECT_STRING_COLUMN,
+			...CommonSchema.INITAIL_PINNED,
 			header: 'Well Name',
 			id: 'wellName',
 			name: 'wellName',
