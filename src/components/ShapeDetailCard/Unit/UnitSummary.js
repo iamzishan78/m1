@@ -78,7 +78,10 @@ export default function UnitSummary(props) {
 
 	const filteredUnitDefaultData = React.useMemo(() => {
 		// Check if the state in properties or originalProperties is "TX"
-		const isTexasState = props.properties?.state === 'TX' || props.properties?.originalProperties?.State === 'TX';
+		const isTexasState =
+			props.properties?.state === 'TX' ||
+			props.properties?.originalProperties?.State === 'TX' ||
+			props.properties?.['originalProperties.State'] === 'TX';
 
 		// Use useMemo to memoize the result based on the state value
 		return isTexasState
