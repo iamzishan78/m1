@@ -204,12 +204,6 @@ export default function M1neralHeaders() {
 					}
 				});
 			}
-			if (['CHECKDETAILS'].includes(jobStateValues.jobType)) {
-				if (!return_obj['lineNumber'] || !return_obj['date']) {
-					filtered_data_to_send.push(null);
-					continue;
-				}
-			}
 			if (['PARCELINTERESTS'].includes(jobStateValues.jobType)) {
 				if (!return_obj['parcel._id'] || !return_obj['parcel.name']) {
 					filtered_data_to_send.push(null);

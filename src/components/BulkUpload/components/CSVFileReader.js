@@ -87,13 +87,87 @@ const mainContent = {
 	padding: '14px 0px 0px  0px',
 };
 
+function transformData(dataArray) {
+	const taxFieldPrefixes = ['Tax Type', 'Gross Tax', 'Net Tax'];
+	const deductFieldPrefixes = ['Deduct Type', 'Gross Deduct', 'Net Deduct'];
+	const maxCount = 10;
+
+	const transformed = [];
+
+	dataArray.forEach(entry => {
+		const item = entry.data;
+		const meta = entry.meta || null;
+		const error = entry.error || null;
+
+		// Other fields (excluding tax & deduct)
+		const otherData = {};
+		Object.keys(item).forEach(key => {
+			const isTax = taxFieldPrefixes.some(prefix => key.startsWith(prefix));
+			const isDeduct = deductFieldPrefixes.some(prefix => key.startsWith(prefix));
+			if (!isTax && !isDeduct) {
+				otherData[key] = item[key];
+			}
+		});
+
+		// Tax rows
+		for (let i = 1; i <= maxCount; i++) {
+			const taxType = item[`Tax Type ${i}`];
+			const grossTax = item[`Gross Tax ${i}`];
+			const netTax = item[`Net Tax ${i}`];
+
+			if (taxType || grossTax || netTax) {
+				transformed.push({
+					data: {
+						...otherData,
+						'Tax Type': taxType,
+						'Gross Tax': grossTax,
+						'Net Tax': netTax,
+						'Deduct Type': null,
+						'Gross Deduct': null,
+						'Net Deduct': null,
+					},
+					meta,
+					error,
+				});
+			}
+		}
+
+		// Deduct rows
+		for (let i = 1; i <= maxCount; i++) {
+			const deductType = item[`Deduct Type ${i}`];
+			const grossDeduct = item[`Gross Deduct ${i}`];
+			const netDeduct = item[`Net Deduct ${i}`];
+
+			if (deductType || grossDeduct || netDeduct) {
+				console.log('pushing deduct rows');
+
+				transformed.push({
+					data: {
+						...otherData,
+						'Deduct Type': deductType,
+						'Gross Deduct': grossDeduct,
+						'Net Deduct': netDeduct,
+						'Tax Type': null,
+						'Gross Tax': null,
+						'Net Tax': null,
+					},
+					meta,
+					error,
+				});
+			}
+		}
+	});
+
+	return transformed;
+}
+
 export default function CSVFileReader(props) {
 	const dispatch = useDispatch();
 	const [stateNav] = useContext(NavigationContext);
 	const classes = useStyles({ disabled: props.disabled });
 	let unmounted = useRef(false);
 
-	const { jobStateValues } = jobController.useState(['m1neralHeaders', 'jobType'], 'jobStateValues');
+	const { jobStateValues } = jobController.useState(['m1neralHeaders', 'jobType', 'jobSubType'], 'jobStateValues');
 
 	const csvColumns = [Object.fromEntries(jobStateValues.m1neralHeaders.map(col => [col.label, '']))];
 
@@ -158,6 +232,11 @@ export default function CSVFileReader(props) {
 					});
 				}
 
+				if (jobStateValues.jobType === 'CHECKDETAILS' && jobStateValues.jobSubType === 'EnergyLink Import') {
+					data = transformData(data);
+					console.log(data);
+				}
+
 				mapped_headers_from_CSV(data);
 				jobController.updateState({
 					csvDataList: data,
@@ -173,19 +252,18 @@ export default function CSVFileReader(props) {
 		}
 	};
 
-	const normalizeFieldName = (fieldName) => {
-		return fieldName
-			.replace(/_/g, ' ')
-			.toLowerCase()
-			.trim();
+	const normalizeFieldName = fieldName => {
+		return fieldName.replace(/_/g, ' ').toLowerCase().trim();
 	};
 
 	const mapped_headers_from_CSV = data => {
 		if (data.length > 0) {
-			const  uniqueKeys = Object.keys(data[0].data);
+			const uniqueKeys = Object.keys(data[0].data);
 			const matchedKeys = [...jobStateValues.m1neralHeaders];
 			for (let index in uniqueKeys) {
-				const matchedKey = matchedKeys.find(el => normalizeFieldName(el?.label) === normalizeFieldName(uniqueKeys[index]));
+				const matchedKey = matchedKeys.find(
+					el => normalizeFieldName(el?.label) === normalizeFieldName(uniqueKeys[index])
+				);
 
 				uniqueKeys[index] = {
 					mapped_key: uniqueKeys[index],
