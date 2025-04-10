@@ -52,9 +52,9 @@ const CHECKDETAILSENERGY = [
 	},
 	{
 		label: 'Operator CC',
-		mapped_key: '',
+		mapped_key: 'Payor Prop #',
 		required: false,
-		actual_key: 'property.number',
+		actual_key: 'property.purchaserNumber',
 	},
 	{
 		// unmapped
@@ -106,10 +106,9 @@ const CHECKDETAILSENERGY = [
 	},
 	{
 		label: 'Prod Date',
-		mapped_key: '',
+		mapped_key: 'Sales Date',
 		required: false,
-		actual_key: 'prodDate',
-		showAsSample: false,
+		actual_key: 'date',
 	},
 	{
 		label: 'BTU Factor',
