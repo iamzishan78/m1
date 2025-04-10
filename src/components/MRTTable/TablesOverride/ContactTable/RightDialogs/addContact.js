@@ -80,9 +80,11 @@ export default function AddContactDialogContent(props) {
 	}, [formState?.rerenderJson]);
 
 	const [addContact, { loading }] = useMutation(ADDCONTACT, {
-		onError: error => {
-			debugger;
-			dispatch(showErrorMessage(error?.message));
+		onCompleted: data => {
+			if (!data.addContact.success) {
+				dispatch(showErrorMessage(data.addContact.message));
+			}
+			tableGlobalController.refetch();
 		},
 	});
 
