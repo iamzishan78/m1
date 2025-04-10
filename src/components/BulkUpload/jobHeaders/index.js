@@ -4,6 +4,7 @@ const CONTACTS = require('./CONTACTS').default;
 const SHAPEOWNER = require('./SHAPEOWNER').default;
 const PROPERTIES = require('./PROPERTIES').default;
 const CHECKDETAILS = require('./CHECKDETAILS').default;
+const { CHECKDETAILSENERGY } = require('./CHECKDETAILS');
 const PARCELINTERESTS = require('./PARCELINTERESTS').default;
 const AGREEMENT_SHAPE = require('./AGREEMENT_SHAPE').default;
 const UNIT_SHAPE = require('./UNIT_SHAPE').default;
@@ -23,6 +24,7 @@ const eportData = {
 	PARCELINTERESTS,
 	SHAPEOWNER,
 	CHECKDETAILS,
+	CHECKDETAILSENERGY,
 	PROPERTIES,
 	CONTACTS_WELL_INTEREST,
 	AGREEMENT_SHAPE,

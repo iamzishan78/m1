@@ -88,6 +88,10 @@ const mainContent = {
 };
 
 function transformData(dataArray) {
+	const data = dataArray?.[0]?.data || {};
+	if (dataArray.length === 1 && Object.values(data).every(value => value === undefined)) {
+		return dataArray;
+	}
 	const taxFieldPrefixes = ['Tax Type', 'Gross Tax', 'Net Tax'];
 	const deductFieldPrefixes = ['Deduct Type', 'Gross Deduct', 'Net Deduct'];
 	const maxCount = 10;
@@ -232,9 +236,8 @@ export default function CSVFileReader(props) {
 					});
 				}
 
-				if (jobStateValues.jobType === 'CHECKDETAILS' && jobStateValues.jobSubType === 'EnergyLink Import') {
+				if (jobStateValues.jobType === 'CHECKDETAILS' && jobStateValues.jobSubType === 'CHECKDETAILSENERGY') {
 					data = transformData(data);
-					console.log(data);
 				}
 
 				mapped_headers_from_CSV(data);

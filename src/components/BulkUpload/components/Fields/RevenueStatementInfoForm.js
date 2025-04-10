@@ -290,7 +290,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 									render={params => (
 										<Select {...params} fullWidth margin="dense" variant="outlined">
 											<MenuItem value="Standard M1 Import">Standard M1 Import</MenuItem>
-											<MenuItem value="EnergyLink Import">EnergyLink Import</MenuItem>
+											<MenuItem value="CHECKDETAILSENERGY">EnergyLink Import</MenuItem>
 										</Select>
 									)}
 								/>
