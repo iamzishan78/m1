@@ -636,10 +636,6 @@ function ContactDetailCard(props) {
 	};
 
 	const handleContactSync = async () => {
-		if (!contactData?.entityDetail?.firstName || !contactData?.entityDetail?.lastName) {
-			dispatch(showErrorMessage('First Name and Last Name are required to sync contact to Dialpad'));
-			return;
-		}
 		dispatch(showInfoMessage('Syncing contact to Dialpad...'));
 		syncContactToDialpad({
 			variables: { contactId: contactData?._id },
