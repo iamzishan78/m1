@@ -5,35 +5,6 @@ import { drawController } from 'stateManagement/drawStateController';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { popupController } from 'stateManagement/popupStateController';
 
-export const clearMapAndCloseShapeActionsPopup = () => {
-	const currentFeature = drawController.getValue('currentFeature');
-	drawShapeLayerToggle('visible');
-
-	if (currentFeature?.id) {
-		setFeatureProperty(window.drawRef, currentFeature.id, 'shapeEdit', true);
-		window.drawRef?.delete(currentFeature?.id);
-	}
-	window.drawRef?.deleteAll();
-
-	window.drawRef?.changeMode('simple_select');
-
-	popupController.reset();
-	drawController.reset();
-
-	const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
-
-	if (!sourceId) {
-		return;
-	}
-
-	// unselecting the grids
-	const featuresList = window.mapRef?.getSource(sourceId)._data.features;
-	for (let i = 0; i < featuresList.length; i++) {
-		const id = featuresList[i].properties.Id;
-		window.mapRef?.setFeatureState({ source: sourceId, id: id }, { click: false });
-	}
-};
-
 export const setFeatureProperty = (draw, drawFeatureID, field, value) => {
 	if (drawFeatureID !== '' && typeof draw === 'object' && draw?.setFeatureProperty) {
 		var feat = draw.get(drawFeatureID);
@@ -83,6 +54,35 @@ export const drawShapeLayerToggle = value => {
 	window.mapRef?.setLayoutProperty('gl-draw-polygon-and-line-vertex-stroke-inactive.hot', 'visibility', value);
 };
 
+export const clearMapAndCloseShapeActionsPopup = () => {
+	const currentFeature = drawController.getValue('currentFeature');
+	drawShapeLayerToggle('visible');
+
+	if (currentFeature?.id) {
+		setFeatureProperty(window.drawRef, currentFeature.id, 'shapeEdit', true);
+		window.drawRef?.delete(currentFeature?.id);
+	}
+	window.drawRef?.deleteAll();
+
+	window.drawRef?.changeMode('simple_select');
+
+	popupController.reset();
+	drawController.reset();
+
+	const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
+
+	if (!sourceId) {
+		return;
+	}
+
+	// unselecting the grids
+	const featuresList = window.mapRef?.getSource(sourceId)._data.features;
+	for (let i = 0; i < featuresList.length; i++) {
+		const id = featuresList[i].properties.Id;
+		window.mapRef?.setFeatureState({ source: sourceId, id: id }, { click: false });
+	}
+};
+
 export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
 	let bound = null;
 	if (shapes && shapes.length > 0) {
@@ -123,10 +123,10 @@ export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
 								left: 1200,
 								right: 0,
 							},
-					maxZoom: 14, // Max zoom value
+					maxZoom: 18, // Max zoom value
 				}
 			);
-		} catch (err) {
+		} catch {
 			// Removing padding for smaller screens
 			try {
 				if (bound.minLong && bound.minLat && bound.maxLong && bound.maxLat) {
