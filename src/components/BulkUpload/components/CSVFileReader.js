@@ -92,9 +92,21 @@ function transformData(dataArray) {
 	if (dataArray.length === 1 && Object.values(data).every(value => value === undefined)) {
 		return dataArray;
 	}
+
 	const taxFieldPrefixes = ['Tax Type', 'Gross Tax', 'Net Tax'];
 	const deductFieldPrefixes = ['Deduct Type', 'Gross Deduct', 'Net Deduct'];
 	const maxCount = 10;
+
+	// Define non-repeating keys
+	const nonRepeatingKeys = [
+		'Gross Volume',
+		'Gross Value',
+		'Price',
+		'Gross Deducts',
+		'Net Value',
+		'Owner Value',
+		'Owner Net Value ',
+	];
 
 	const transformed = [];
 
@@ -103,57 +115,46 @@ function transformData(dataArray) {
 		const meta = entry.meta || null;
 		const error = entry.error || null;
 
-		// Other fields (excluding tax & deduct)
+		// Separate non-repeating values
+		const nonRepeatingValues = {};
+		nonRepeatingKeys.forEach(key => {
+			nonRepeatingValues[key] = item[key];
+		});
+
+		// Other fields (excluding tax & deduct & non-repeating)
 		const otherData = {};
 		Object.keys(item).forEach(key => {
 			const isTax = taxFieldPrefixes.some(prefix => key.startsWith(prefix));
 			const isDeduct = deductFieldPrefixes.some(prefix => key.startsWith(prefix));
-			if (!isTax && !isDeduct) {
+			const isNonRepeating = nonRepeatingKeys.includes(key);
+			if (!isTax && !isDeduct && !isNonRepeating) {
 				otherData[key] = item[key];
 			}
 		});
 
-		// Tax rows
+		// rows
 		for (let i = 1; i <= maxCount; i++) {
 			const taxType = item[`Tax Type ${i}`];
 			const grossTax = item[`Gross Tax ${i}`];
 			const netTax = item[`Net Tax ${i}`];
-
-			if (taxType || grossTax || netTax) {
-				transformed.push({
-					data: {
-						...otherData,
-						'Tax Type': taxType,
-						'Gross Tax': grossTax,
-						'Net Tax': netTax,
-						'Deduct Type': null,
-						'Gross Deduct': null,
-						'Net Deduct': null,
-					},
-					meta,
-					error,
-				});
-			}
-		}
-
-		// Deduct rows
-		for (let i = 1; i <= maxCount; i++) {
 			const deductType = item[`Deduct Type ${i}`];
 			const grossDeduct = item[`Gross Deduct ${i}`];
 			const netDeduct = item[`Net Deduct ${i}`];
 
-			if (deductType || grossDeduct || netDeduct) {
-				console.log('pushing deduct rows');
-
+			const isFirstRow = i === 1;
+			if (taxType || grossTax || netTax || deductType || grossDeduct || netDeduct) {
 				transformed.push({
 					data: {
 						...otherData,
+						...Object.fromEntries(
+							Object.entries(nonRepeatingValues).map(([key, val]) => [key, isFirstRow ? val : null])
+						),
+						'Tax Type': taxType,
+						'Gross Tax': grossTax,
+						'Net Tax': netTax,
 						'Deduct Type': deductType,
 						'Gross Deduct': grossDeduct,
 						'Net Deduct': netDeduct,
-						'Tax Type': null,
-						'Gross Tax': null,
-						'Net Tax': null,
 					},
 					meta,
 					error,
@@ -265,7 +266,9 @@ export default function CSVFileReader(props) {
 			const matchedKeys = [...jobStateValues.m1neralHeaders];
 			for (let index in uniqueKeys) {
 				const matchedKey = matchedKeys.find(
-					el => normalizeFieldName(el?.label) === normalizeFieldName(uniqueKeys[index])
+					el =>
+						normalizeFieldName(el?.label) === normalizeFieldName(uniqueKeys[index]) ||
+						normalizeFieldName(el?.mapped_key) === normalizeFieldName(uniqueKeys[index])
 				);
 
 				uniqueKeys[index] = {

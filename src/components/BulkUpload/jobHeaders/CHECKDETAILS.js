@@ -1,6 +1,5 @@
 const CHECKDETAILSENERGY = [
 	{
-		// unmapped
 		label: 'UID',
 		mapped_key: 'Line Number',
 		required: true,
@@ -8,7 +7,6 @@ const CHECKDETAILSENERGY = [
 		showAsSample: false,
 	},
 	{
-		// unmapped
 		label: 'Payor',
 		mapped_key: '',
 		required: false,
@@ -37,34 +35,24 @@ const CHECKDETAILSENERGY = [
 		showAsSample: false,
 	},
 	{
-		// unmapped
 		label: 'M1 Property ID',
 		mapped_key: '',
 		required: false,
 		actual_key: 'property._id',
 	},
 	{
-		// unmapped
 		label: 'Payor Prop #',
-		mapped_key: '',
-		required: false,
+		mapped_key: 'Operator CC',
+		required: true,
 		actual_key: 'property.purchaserNumber',
 	},
 	{
-		label: 'Operator CC',
-		mapped_key: 'Payor Prop #',
-		required: false,
-		actual_key: 'property.purchaserNumber',
-	},
-	{
-		// unmapped
 		label: 'Accounting Ref ID',
 		mapped_key: '',
 		required: false,
 		actual_key: 'property.internalID',
 	},
 	{
-		// unmapped
 		label: 'Property Name',
 		mapped_key: '',
 		required: false,
@@ -91,56 +79,22 @@ const CHECKDETAILSENERGY = [
 		showAsSample: false,
 	},
 	{
-		label: 'Owner Percent',
-		mapped_key: '',
+		label: 'Decimal Interest',
+		mapped_key: 'Distribution Percent',
 		required: false,
-		actual_key: 'check.payee.percent',
-		showAsSample: false,
+		actual_key: 'disbursement',
 	},
 	{
-		label: 'Distribution Percent',
-		mapped_key: '',
-		required: false,
-		actual_key: 'check.payee.distributionPercent',
-		showAsSample: false,
-	},
-	{
-		label: 'Prod Date',
-		mapped_key: 'Sales Date',
-		required: false,
-		actual_key: 'date',
-	},
-	{
-		label: 'BTU Factor',
-		mapped_key: '',
-		required: false,
-		actual_key: 'BTU',
-	},
-	{
-		// Prod Date
 		label: 'Sales Date',
-		mapped_key: '',
+		mapped_key: 'Prod Date',
 		required: true,
 		actual_key: 'date',
 	},
 	{
-		label: 'Product Code Description',
-		mapped_key: '',
+		label: 'Product Code',
+		mapped_key: 'Product Code Description',
 		required: false,
 		actual_key: 'product',
-	},
-	{
-		label: 'Property Description',
-		mapped_key: '',
-		required: false,
-		actual_key: 'property.description',
-	},
-	{
-		// unmapped
-		label: 'Decimal Interest',
-		mapped_key: '',
-		required: false,
-		actual_key: 'disbursement',
 	},
 	{
 		label: 'Interest Type',
@@ -149,40 +103,28 @@ const CHECKDETAILSENERGY = [
 		actual_key: 'interestType',
 	},
 	{
-		label: 'Price',
-		mapped_key: '',
+		label: 'Avg Price',
+		mapped_key: 'Price',
 		required: false,
 		actual_key: 'price',
 	},
 	{
-		label: 'Gross Volume',
-		mapped_key: '',
+		label: 'Property Gross Volume',
+		mapped_key: 'Gross Volume',
 		required: false,
 		actual_key: 'grossPropertyVolume',
 	},
 	{
-		label: 'Gross Value',
-		mapped_key: '',
+		label: 'Property Gross Revenue',
+		mapped_key: 'Gross Value',
 		required: false,
 		actual_key: 'grossPropertyValue',
 	},
 	{
-		label: 'Gross Taxes',
-		mapped_key: '',
+		label: 'GrsDeduct',
+		mapped_key: 'Gross Deducts',
 		required: false,
-		actual_key: 'grossPropertyTaxes',
-	},
-	{
-		label: 'Gross Deducts',
-		mapped_key: '',
-		required: false,
-		actual_key: 'grossPropertyDeducts',
-	},
-	{
-		label: 'Owner Volume',
-		mapped_key: '',
-		required: false,
-		actual_key: 'grossOwnerVolume',
+		actual_key: 'propertyDeducts',
 	},
 	{
 		label: 'Owner Value',
@@ -190,19 +132,6 @@ const CHECKDETAILSENERGY = [
 		required: false,
 		actual_key: 'grossOwnerValue',
 	},
-	{
-		label: 'Owner Taxes',
-		mapped_key: '',
-		required: false,
-		actual_key: 'ownerTax',
-	},
-	{
-		label: 'Owner Deducts',
-		mapped_key: '',
-		required: false,
-		actual_key: 'ownerDeducts',
-	},
-
 	// Tax keys
 	{
 		label: 'Tax Type',
@@ -211,22 +140,21 @@ const CHECKDETAILSENERGY = [
 		actual_key: 'taxType',
 	},
 	{
-		label: 'Gross Tax',
-		mapped_key: '',
+		label: 'GrsSevTax',
+		mapped_key: 'Gross Tax',
 		required: false,
-		actual_key: 'grossTax',
+		actual_key: 'propertyTax',
 	},
 	{
-		label: 'Net Tax',
-		mapped_key: '',
+		label: 'Owner Tax Amount',
+		mapped_key: 'Net Tax',
 		required: false,
-		actual_key: 'netTax',
+		actual_key: 'ownerTax',
 	},
-
 	// Deduct keys
 	{
-		label: 'Deduct Type',
-		mapped_key: '',
+		label: 'Deduct Code',
+		mapped_key: 'Deduct Type',
 		required: false,
 		actual_key: 'deductType',
 	},
@@ -237,326 +165,31 @@ const CHECKDETAILSENERGY = [
 		actual_key: 'grossDeduct',
 	},
 	{
-		label: 'Net Deduct',
-		mapped_key: '',
+		label: 'Owner Deduct Amount',
+		mapped_key: 'Net Deduct',
 		required: false,
-		actual_key: 'netDeduct',
+		actual_key: 'ownerDeducts',
 	},
-
 	{
-		label: 'Owner Net Value',
-		mapped_key: '',
+		label: 'Owner Net Revenue',
+		mapped_key: 'Owner Net Value',
 		required: false,
 		actual_key: 'netOwnerValue',
 	},
 	{
-		label: 'Net Value',
-		mapped_key: '',
+		label: 'NetVal',
+		mapped_key: 'Net Value',
 		required: false,
-		actual_key: 'netValue',
+		actual_key: 'netPropertyValue',
 	},
-
 	{
-		// unmapped
 		label: 'Line Number',
 		mapped_key: '',
 		required: true,
 		actual_key: 'lineNumber',
 		showAsSample: false,
 	},
-
-	{
-		label: 'Detail Line Notation',
-		mapped_key: '',
-		required: false,
-		actual_key: 'detailLineNotation',
-	},
 ];
-
-// export default [
-//     {
-//         label: "Sender",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "check.payor.name",
-//     },
-//     {
-//         label: "Check#",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "check.checkNumber",
-//     },
-//     {
-//         label: "Property#",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "property.number",
-//     },
-//     {
-//         label: "CheckDate",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "check.checkDate",
-//     },
-//     {
-//         label: "PropertyName",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "property.name",
-//     },
-//     {
-//         label: "Owner#",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "check.payee.number",
-//     },
-//     {
-//         label: "ToProdDate",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "ToProdDate",
-//     },
-//     {
-//         label: "FromProdDate",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "FromProdDate",
-//     },
-//     {
-//         label: "GrsVol",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "grossPropertyVolume",
-//     },
-//     {
-//         label: "OwnGrsVal",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "grossOwnerValue",
-//     },
-//     {
-//         label: "GrsSevTax",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "propertyTax",
-//     },
-//     {
-//         label: "OwnDec",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "disbursement",
-//     },
-//     {
-//         label: "NetVal",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "netPropertyValue",
-//     },
-//     {
-//         label: "GrsDeduct",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "propertyDeducts",
-//     },
-//     {
-//         label: "OwnDeduct",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "ownerDeducts",
-//     },
-//     {
-//         label: "TranDate",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "date",
-//     },
-//     {
-//         label: "IntType",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "interestTypeCode",
-//     },
-//     {
-//         label: "UnitPrice",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "price",
-//     },
-//     {
-//         label: "ProdCode",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "productCode",
-//     },
-//     {
-//         label: "TotalProd",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "TotalProd",
-//     },
-//     {
-//         label: "GrsNetVal",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "GrsNetVal",
-//     },
-//     {
-//         label: "OwnNetVal",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "netOwnerValue",
-//     },
-//     {
-//         label: "OwnSevTax",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "ownerTax",
-//     },
-//     {
-//         label: "OwnNetVol",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "netOwnerVolume",
-//     },
-//     {
-//         label: "OwnVol",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "grossOwnerVolume",
-//     },
-//     {
-//         label: "GrsVal",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "grossPropertyValue",
-//     },
-//     {
-//         label: "OwnShareLNV",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "OwnShareLNV",
-//     },
-//     {
-//         label: "BTU",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "BTU",
-//     },
-//     {
-//         label: "ProductionUnit",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "ProductionUnit",
-//     },
-//     {
-//         label: "[EMPTY COLUMN]",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "[EMPTY COLUMN]",
-//     },
-//     {
-//         label: "DecFlag",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "DecFlag",
-//     },
-//     {
-//         label: "MappedIntType",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "interestType",
-//     },
-//     {
-//         label: "MappedTranCode2",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "MappedTranCode2",
-//     },
-//     {
-//         label: "TranCode2",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "TranCode2",
-//     },
-//     {
-//         label: "OwnGrsVal2",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "OwnGrsVal2",
-//     },
-//     {
-//         label: "OwnSevTax2",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "OwnSevTax2",
-//     },
-//     {
-//         label: "Line#",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "lineNumber",
-//     },
-//     {
-//         label: "MappedTranCode1",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "MappedTranCode1",
-//     },
-//     {
-//         label: "MappedPropertyName",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "MappedPropertyName",
-//     },
-//     {
-//         label: "TranCode1",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "TranCode1",
-//     },
-//     {
-//         label: "MappedProperty#",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "MappedProperty#",
-//     },
-//     {
-//         label: "MappedProdCode",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "product",
-//     },
-//     {
-//         label: "RoyaltyAgreement",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "RoyaltyAgreement",
-//     },
-//     {
-//         label: "MappedOwnDec",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "MappedOwnDec",
-//     },
-//     {
-//         label: "DivOfInterest",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "divisionOfInterestCode",
-//     },
-//     {
-//         label: "Comment",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "comments",
-//     },
-//     {
-//         label: "Tags",
-//         mapped_key: "",
-//         required: false,
-//         actual_key: "check.tags"
-//     },
-// ];
 
 const checkDetailsKeys = [
 	{
@@ -691,12 +324,6 @@ const checkDetailsKeys = [
 		mapped_key: '',
 		required: false,
 		actual_key: 'grossPropertyValue',
-	},
-	{
-		label: 'Owner Volume',
-		mapped_key: '',
-		required: false,
-		actual_key: 'grossOwnerVolume',
 	},
 	{
 		label: 'Owner Value',

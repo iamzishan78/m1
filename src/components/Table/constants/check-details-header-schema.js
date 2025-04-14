@@ -201,18 +201,6 @@ const RevenueStatementHeadCells = [
 		options: { sort: true, filter: true },
 	},
 	{
-		name: 'grossTax',
-		label: 'Gross Tax',
-		esKey: 'grossTax',
-		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { currency: true }) },
-	},
-	{
-		name: 'netTax',
-		label: 'Net Tax',
-		esKey: 'netTax',
-		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { currency: true }) },
-	},
-	{
 		name: 'ownerDeducts',
 		label: 'Deduct Amt',
 		esKey: 'ownerDeducts',
@@ -228,12 +216,6 @@ const RevenueStatementHeadCells = [
 		name: 'grossDeduct',
 		label: 'Gross Deduct',
 		esKey: 'grossDeduct',
-		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { currency: true }) },
-	},
-	{
-		name: 'netDeduct',
-		label: 'Net Deduct',
-		esKey: 'netDeduct',
 		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { currency: true }) },
 	},
 	{
