@@ -97,6 +97,12 @@ function ExportConfirmationDialog({ table, tableKey, header, onClose, children, 
 
 		const selectedIds = rows && rows.length > 0 ? rows.map(item => item._id) : null;
 
+		const grouping = filteredTableSchema
+			.filter(col => tableStateValues?.grouping.includes(col.esKey))
+			.map(col => ({ esKey: col.esKey, label: col.label }));
+
+		const isSummaryGrid = tableStateValues.isSummaryGrid ?? false;
+
 		dispatch(
 			execCommonAsyncExportJobAction.STARTED({
 				jobType: 'EXPORTCSV',
@@ -119,6 +125,8 @@ function ExportConfirmationDialog({ table, tableKey, header, onClose, children, 
 					counts: {
 						exportGrid: tableStateValues?.data.total,
 					},
+					isSummaryGrid,
+					grouping: grouping.length > 0 ? grouping : null,
 				},
 			})
 		);

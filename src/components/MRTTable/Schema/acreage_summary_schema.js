@@ -40,6 +40,7 @@ const AcreageSummaryMeta = {
 	maxTableHeight: 'calc(100vh - 350px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	isSummaryGrid: true,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
@@ -64,12 +65,14 @@ const AcreageSummaryMeta = {
 			name: 'county.keyword',
 			id: 'county',
 			header: 'County',
+			isGrouped: true,
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.prospectID.keyword',
 			id: 'shape.shapeJson.properties.prospectID',
 			header: 'Prospect',
+			isGrouped: true,
 		},
 		{
 			...CommonSchema.STRING_COLUMN,

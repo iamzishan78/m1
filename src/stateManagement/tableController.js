@@ -355,7 +355,7 @@ const tableESStateControllerHandler = state => ({
 			TableSchema: _TableSchema,
 			tableCss,
 			groupedField,
-			grouping: groupedField ? [groupedField] : [],
+			grouping: groupedField || [],
 			footerProps: [],
 			ExternalFilter,
 			defaultSort,
@@ -363,6 +363,7 @@ const tableESStateControllerHandler = state => ({
 			commentsCounter: [],
 			tagsList: [],
 			isTrackedList: [],
+			isSummaryGrid: rest.isSummaryGrid ?? false,
 		};
 
 		const _defaultFilters = defaultFilters || state?.defaultFilters?.get({ noproxy: true }) || [];
