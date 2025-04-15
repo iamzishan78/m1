@@ -900,6 +900,7 @@ const tableESStateControllerHandler = state => ({
 
 		const {
 			isGeneric,
+			isClientSide,
 			orderKeys,
 			excludedKeys,
 			nestedKey,
@@ -938,6 +939,7 @@ const tableESStateControllerHandler = state => ({
 			search,
 			columnVirtualization,
 			layerIdentifier,
+			isClientSide,
 		});
 
 		genericState.TableSchema = _TableSchema;

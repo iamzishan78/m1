@@ -33,7 +33,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	const client = useApolloClient();
 
 	// Destructure table state values
-	const { isClientSide, modelName } = tableStateValues;
+	const { isClientSide, modelName, isGeneric } = tableStateValues;
 
 	// Function to execute query based on client-side or server-side querying
 	const callQuery = async _pagination => {
@@ -73,6 +73,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				isLoading: false,
 				isFetching: false,
 				isError: false,
+				...(isGeneric && Controller.getGenericState(rows)),
 			});
 
 			return;
