@@ -528,7 +528,7 @@ export default function RevenueAnalytics(props) {
 									lastCheckMinDate={lastCheckMinDate}
 									datesInputWidth={4}
 									setAllDateToNull={false}
-									defaultRange={CUSTOM_DATES.THIS_YEAR_TO_DATE}
+									defaultRange={CUSTOM_DATES.ALL_DATES}
 									setSelectedFilter={setSelectedFilter}
 								/>
 							</Grid>
