@@ -12,7 +12,6 @@ import { apolloClientEndpointDev, isDev } from 'utils/helper';
 import { UserSession } from 'utils/user';
 
 import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConfig';
-import { B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
 
 const AppContext = createContext([{}, () => {}]);
 
@@ -140,20 +139,6 @@ const AppProvider = props => {
 				setStateApp(state => {
 					return { ...state, myMSALObj: false };
 				});
-			}
-
-			let B2CTenantName = UserSession.getStorageItem('B2CTenantName');
-
-			if (B2CTenantName) {
-				let tenant = B2CTenantCredentials(B2CTenantName);
-				if (tenant) {
-					setStateApp(state => {
-						return {
-							...state,
-							apolloClientEndpoint: tenant.apolloClientEndpoint,
-						};
-					});
-				}
 			}
 		}
 		wait();

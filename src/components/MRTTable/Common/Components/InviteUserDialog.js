@@ -8,6 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
@@ -28,6 +29,19 @@ export default function InviteUserDialog(props) {
 	const [emails, setEmailAddress] = useState('');
 	const [role, setUserRole] = useState('USER');
 	const [rolePrivileges, setRolePrivileges] = useState('ADD_OR_EDIT');
+
+	const handleClose = () => {
+		setName('');
+		setEmailAddress('');
+		setUserRole('USER');
+
+		tableGlobalController.updateState({
+			dialog: {},
+		});
+
+		props.onClose();
+	};
+
 	const [addUser] = useMutation(ADD_USER, {
 		onCompleted: () => {
 			handleClose();
@@ -51,10 +65,6 @@ export default function InviteUserDialog(props) {
 	}, [activeUser]);
 
 	const submitAddUser = () => {
-		// const rowData = props.rows;
-		// let temp_last_ts = new Date();
-		// setLastLogin(temp_last_ts.toString());
-		// rowData.push({displayName, emails, userType, role, adminAccess, lastLogin: "Invite sent" });
 		addUser({
 			variables: {
 				user: {
@@ -62,29 +72,12 @@ export default function InviteUserDialog(props) {
 					email: emails,
 					role,
 					rolePrivileges,
-					// identities: [{
-					//     signInType: "emailAddress",
-					//     issuer: "mineralb2c.onmicrosoft.com",
-					//     issuerAssignedId: emails
-					//   },],
-					// passwordProfile : {
-					//   forceChangePasswordNextSignIn: false,
-					//   password: "1"
-					// },
-					// passwordPolicies: "DisablePasswordExpiration,DisableStrongPassword",
-					// extension_ecdc741a6b2c415893d3b5bccc2d7e76_mustResetPassword: true
 				},
 			},
 		});
-
-		// props.setRows(rowData);
 	};
 
 	const submitUpdateUser = () => {
-		// const rowData = props.rows;
-		// let temp_last_ts = new Date();
-		// setLastLogin(temp_last_ts.toString());
-		// rowData.push({displayName, emails, userType, role, adminAccess, lastLogin: "Invite sent" });
 		updateUser({
 			variables: {
 				user: {
@@ -93,34 +86,9 @@ export default function InviteUserDialog(props) {
 					email: emails,
 					role,
 					rolePrivileges,
-					// identities: [{
-					//     signInType: "emailAddress",
-					//     issuer: "mineralb2c.onmicrosoft.com",
-					//     issuerAssignedId: emails
-					//   },],
-					// passwordProfile : {
-					//   forceChangePasswordNextSignIn: false,
-					//   password: "1"
-					// },
-					// passwordPolicies: "DisablePasswordExpiration,DisableStrongPassword",
-					// extension_ecdc741a6b2c415893d3b5bccc2d7e76_mustResetPassword: true
 				},
 			},
 		});
-
-		// props.setRows(rowData);
-	};
-
-	const handleClose = () => {
-		setName('');
-		setEmailAddress('');
-		setUserRole('USER');
-
-		tableGlobalController.updateState({
-			dialog: {},
-		});
-
-		props.onClose();
 	};
 
 	return (
@@ -194,3 +162,7 @@ export default function InviteUserDialog(props) {
 		</React.Fragment>
 	);
 }
+
+InviteUserDialog.propTypes = {
+	onClose: PropTypes.func.isRequired,
+};

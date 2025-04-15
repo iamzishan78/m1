@@ -38,11 +38,6 @@ export const msalConfig = tenant => {
 			clientId: tenant ? tenant.clientId : undefined,
 			authority: tenant ? tenant.authority : undefined,
 			knownAuthorities: [tenant ? new URL(tenant.authority).host : undefined],
-			// authority: 'https://mineralb2c.b2clogin.com/mineralb2c.onmicrosoft.com/b2c_1a_signin',
-			// knownAuthorities: ['mineralb2c.b2clogin.com'],
-			// authority: `https://login.microsoftonline.com/${
-			//   tenantId ? tenantId : "common"
-			// }`,
 			redirectUri: path,
 			postLogoutRedirectUri: path,
 		},
@@ -72,7 +67,5 @@ export const authGraphQLRequest = graphqlScope => {
 	return {
 		scopes: ['openid', graphqlScope],
 		extraScopesToConsent: ['offline_access'],
-		// scopes: ["https://mineralb2c.onmicrosoft.com/api/user_impersonation", "openid", "offline_access"],
-		// scopes: ["https://management.azure.com/user_impersonation", "openid", "offline_access"],
 	};
 };
