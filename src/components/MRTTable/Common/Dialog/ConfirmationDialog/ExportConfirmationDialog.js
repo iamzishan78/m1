@@ -99,7 +99,7 @@ function ExportConfirmationDialog({ table, tableKey, header, onClose, children, 
 
 		const grouping = filteredTableSchema
 			.filter(col => tableStateValues?.grouping.includes(col.esKey))
-			.map(col => ({ esKey: col.esKey, label: col.label }));
+			.map(col => col.label);
 
 		const isSummaryGrid = tableStateValues.isSummaryGrid ?? false;
 
