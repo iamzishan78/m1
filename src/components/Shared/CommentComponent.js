@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/no-array-index-key */
 import React, { useState, useEffect, Fragment, useRef, useCallback } from 'react';
 import Avatar from 'react-avatar';
 import { useDispatch } from 'react-redux';
@@ -21,14 +21,15 @@ import en from 'javascript-time-ago/locale/en';
 import ru from 'javascript-time-ago/locale/ru';
 import { get, uniqBy } from 'lodash';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import CommentField from 'components/Shared/components/Fields/CommentField';
 
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
-import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
-import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
+import { GET_COMMENT_TYPES } from 'graphQL/useQueryCommentType';
+import { GET_PROFILES_IMAGES, GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
 
@@ -38,13 +39,13 @@ import { slidoutState } from 'stateManagement/initialStates';
 import { updatePinComments } from 'store/actions/commonActions';
 
 import { UserSession } from 'utils/user';
-import { GET_COMMENT_TYPES } from 'graphQL/useQueryCommentType';
+
 import CommentsAutoComplete from './CommentsAutoComplete';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	container: ({ isFileDetail }) => ({
 		backgroundColor: '#F6F8F9',
 		'& .MuiFormControl-marginDense': {
@@ -56,7 +57,7 @@ const useStyles = makeStyles(theme => ({
 		flexDirection: 'column',
 		justifyContent: 'flex-end',
 	}),
-	comment: ({ commentsHeight }) => ({
+	comment: () => ({
 		position: 'relative',
 		overflow: 'auto',
 		'& *': {
@@ -197,9 +198,9 @@ export function getLikedPeoplesName(comment, myUserId) {
 	const { likedBy } = comment;
 	const names = (likedBy || []).map(user => {
 		if (user._id === myUserId) {
-			return <li>You</li>;
+			return <li key={user._id}>You</li>;
 		} else {
-			return <li>{user.name || user.displayName}</li>;
+			return <li key={user._id}>{user.name || user.displayName}</li>;
 		}
 	});
 
@@ -301,14 +302,18 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 						);
 					}
 
-					return <p className={classes.commentWords}>{splittedWord}</p>;
+					return (
+						<p className={classes.commentWords} key={index}>
+							{splittedWord}
+						</p>
+					);
 				} else {
 					// Process regular words, ensure spaces are correctly handled
 					const _word = index !== formatComment.length - 1 ? `${word}` : word;
 					const sanitizedData = () => ({
 						__html: DOMPurify.sanitize(urlify(_word)),
 					});
-					return <span className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()}></span>;
+					return <span className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()} key={index}></span>;
 				}
 			})}
 		</div>
@@ -364,6 +369,24 @@ export default function CommentComponent(props) {
 	});
 
 	const { data: commentResponse } = useQuery(GET_COMMENT_TYPES);
+
+	const sortArrayBasedOnTs = array => {
+		const compare = (a, b) => {
+			if (a.ts < b.ts) {
+				return -1;
+			}
+			if (b.ts < a.ts) {
+				return 1;
+			}
+
+			return 0;
+		};
+		if (!props.multipleIds) {
+			array.sort(compare);
+		}
+
+		return array;
+	};
 
 	useEffect(() => {
 		if (commentResponse && Array.isArray(commentResponse.commentsType)) {
@@ -519,23 +542,6 @@ export default function CommentComponent(props) {
 		return pinnedComments;
 	}, [commentsArray]);
 
-	const sortArrayBasedOnTs = array => {
-		const compare = (a, b) => {
-			if (a.ts < b.ts) {
-				return -1;
-			}
-			if (b.ts < a.ts) {
-				return 1;
-			}
-
-			return 0;
-		};
-		if (!props.multipleIds) {
-			array.sort(compare);
-		}
-
-		return array;
-	};
 	const newCommentCleaner = value =>
 		value.trim()[value.trim().length - 1] === '.'
 			? value
@@ -707,7 +713,7 @@ export default function CommentComponent(props) {
 			},
 			refetchQueries: ['getCommentsByObjectId', 'getCommentsCounter', 'getCommentsByObjectsIds', 'getContact'],
 			awaitRefetchQueries: true,
-		}).then(result => {
+		}).then(() => {
 			setScrollIntoView(false);
 		});
 		setShowActions(false);
@@ -1108,16 +1114,16 @@ export const CommentText = ({ eachComment, users }) => {
 										let id = sWord.split('{{')[1];
 										id = id.split('}}')[0];
 										return (
-											<p className={`${classes.commentWords} blue`}>
+											<p className={`${classes.commentWords} blue`} key={index}>
 												{firstPart}@{users?.find(user => user._id === id)?.name}
 												{secondPart}{' '}
 											</p>
 										);
 									} else if (sWord === '') {
-										return <br />;
+										return <br key={index} />;
 									} else {
 										return (
-											<p className={classes.commentWords}>
+											<p className={classes.commentWords} key={index}>
 												{sWord} <br />{' '}
 											</p>
 										);
@@ -1127,9 +1133,17 @@ export const CommentText = ({ eachComment, users }) => {
 						);
 					}
 
-					return <p className={classes.commentWords}>{splittedWord}</p>;
+					return (
+						<p className={classes.commentWords} key={index}>
+							{splittedWord}
+						</p>
+					);
 				} else {
-					return <p className={classes.commentWords}>{word} </p>;
+					return (
+						<p className={classes.commentWords} key={index}>
+							{word}{' '}
+						</p>
+					);
 				}
 			})}
 		</div>
@@ -1182,7 +1196,7 @@ const ActionMenu = ({
 			>
 				<MenuItem
 					id="editComment"
-					onClick={event => {
+					onClick={() => {
 						setEditCommentId(eachComment?._id);
 						setEditComment(eachComment?.comment);
 						setShowActions(true);
@@ -1207,4 +1221,78 @@ const ActionMenu = ({
 			</Menu>
 		</>
 	);
+};
+
+CommentComponent.propTypes = {
+	targetSourceId: PropTypes.string,
+	commentsHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	targetLabel: PropTypes.string,
+	activityLog: PropTypes.arrayOf(
+		PropTypes.shape({
+			type: PropTypes.string,
+			ownerName: PropTypes.string,
+			notes: PropTypes.string,
+			outcome: PropTypes.string,
+			_ts: PropTypes.string,
+			isExternal: PropTypes.bool,
+		})
+	),
+	multipleIds: PropTypes.bool,
+	setNewCommentId: PropTypes.func,
+	cardWidthExpanded: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	cardLeft: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	cardTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	cardWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	title: PropTypes.string,
+	subTitle: PropTypes.string,
+	parent: PropTypes.string,
+	mouseX: PropTypes.number,
+	mouseY: PropTypes.number,
+	position: PropTypes.string,
+	showCommentType: PropTypes.bool,
+};
+
+const commentPropTypes = PropTypes.shape({
+	_id: PropTypes.string.isRequired,
+	comment: PropTypes.string,
+	commentType: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.shape({
+			commentType: PropTypes.string,
+		}),
+	]),
+	pin: PropTypes.bool,
+});
+
+CommonCommentText.propTypes = {
+	eachComment: commentPropTypes,
+	users: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string,
+			name: PropTypes.string,
+		})
+	),
+	isPinned: PropTypes.bool,
+};
+
+ActionMenu.propTypes = {
+	pinToTop: PropTypes.func.isRequired,
+	unpinFromTop: PropTypes.func.isRequired,
+	showActions: PropTypes.bool.isRequired,
+	eachComment: commentPropTypes.isRequired,
+	setEditCommentId: PropTypes.func.isRequired,
+	setEditComment: PropTypes.func.isRequired,
+	deleteComment: PropTypes.func.isRequired,
+	setShowActions: PropTypes.func.isRequired,
+	setIsEdit: PropTypes.func.isRequired,
+};
+
+CommentText.propTypes = {
+	eachComment: commentPropTypes.isRequired,
+	users: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string,
+			name: PropTypes.string,
+		})
+	),
 };
