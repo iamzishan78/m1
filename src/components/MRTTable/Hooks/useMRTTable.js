@@ -149,6 +149,20 @@ const useMRTTable = tableKey => {
 			enableStickyFooter: true,
 			enableSorting: tableStateValues?.grouping.length === 0,
 			enableFullScreenToggle: false,
+			muiExpandAllButtonProps: {
+				onClickCapture: () => {
+					if (tableContainerRef.current) {
+						fetchMoreOnBottomReached?.(tableContainerRef.current);
+					}
+				},
+			},
+			muiExpandButtonProps: {
+				onClickCapture: () => {
+					if (tableContainerRef.current) {
+						fetchMoreOnBottomReached?.(tableContainerRef.current);
+					}
+				},
+			},
 
 			...(tableStateValues.enableEditing && {
 				createDisplayMode: tableStateValues.createDisplayMode,
