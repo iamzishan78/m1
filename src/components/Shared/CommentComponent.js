@@ -45,6 +45,14 @@ import CommentsAutoComplete from './CommentsAutoComplete';
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
+// Hook into DOMPurify to safely allow target="_blank"
+DOMPurify.addHook('afterSanitizeAttributes', node => {
+	if (node.tagName === 'A') {
+		node.setAttribute('target', '_blank');
+		node.setAttribute('rel', 'noopener noreferrer');
+	}
+});
+
 const useStyles = makeStyles(() => ({
 	container: ({ isFileDetail }) => ({
 		backgroundColor: '#F6F8F9',
