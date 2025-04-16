@@ -623,7 +623,7 @@ const drawStateControllerHandler = state => {
 				projectName: '',
 				sdNotes: '',
 				sdGrossAcres: '',
-				shapeArea: calculateLandArea(abstractShape),
+				shapeArea: calculateLandArea(abstractShape, true),
 				shapeCenter: calculateShapeCenter(abstractShape.geometry),
 				shapeLabelLayer: '',
 				id: featureId,
@@ -719,7 +719,7 @@ const drawStateControllerHandler = state => {
 				layerSubType,
 				shapeLabel: shapeName,
 				...properties,
-				shapeArea: calculateLandArea(abstractShape),
+				shapeArea: calculateLandArea(abstractShape, true),
 				shapeCenter: calculateShapeCenter(abstractShape.geometry),
 				id: featureId,
 			},
@@ -761,7 +761,7 @@ const drawStateControllerHandler = state => {
 		layerData.shapeJson.properties = {
 			...layerData.shapeJson.properties,
 			originalProperties: abstractShape?.properties,
-			shapeArea: calculateLandArea(abstractShape),
+			shapeArea: calculateLandArea(abstractShape, true),
 			shapeCenter: calculateShapeCenter(abstractShape?.geometry),
 		};
 		const customLayerData = {
@@ -862,7 +862,7 @@ const drawStateControllerHandler = state => {
 			geometry: currentFeature?.geometry,
 			properties: {
 				...featureToEdit.properties,
-				shapeArea: calculateLandArea(currentFeature),
+				shapeArea: calculateLandArea(currentFeature, true),
 				shapeCenter: calculateShapeCenter(currentFeature?.geometry),
 			},
 		};
