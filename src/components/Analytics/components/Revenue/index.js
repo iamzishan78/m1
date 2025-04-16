@@ -272,8 +272,8 @@ export default function RevenueAnalytics(props) {
 	useEffect(() => {
 		if (tabs[tab] === 'Revenue by Month') {
 			getCheckMinDate();
-			setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
-			setToDate(moment().endOf('month').format('yyyy-MM-DD'));
+			setFromDate(moment().subtract(1, 'year').startOf('year').format('YYYY-MM-DD'));
+			setToDate(moment().format('YYYY-MM-DD'));
 		} else {
 			getDbMinValue({
 				variables: {
@@ -330,8 +330,8 @@ export default function RevenueAnalytics(props) {
 
 	// override meta for Properties Revenue by Month tab
 	const propertiesRevenuOverrideMeta = useMemo(() => {
-		const startDate = moment().startOf('year').format('yyyy-MM-DD');
-		const endDate = moment().endOf('month').format('yyyy-MM-DD');
+		const startDate = moment().subtract(1, 'year').startOf('year').format('YYYY-MM-DD');
+		const endDate = moment().format('YYYY-MM-DD');
 		return {
 			customProps: {
 				filters,
@@ -528,7 +528,7 @@ export default function RevenueAnalytics(props) {
 									lastCheckMinDate={lastCheckMinDate}
 									datesInputWidth={4}
 									setAllDateToNull={false}
-									defaultRange={CUSTOM_DATES.ALL_DATES}
+									defaultRange={CUSTOM_DATES.LAST_YEAR_TO_DATE}
 									setSelectedFilter={setSelectedFilter}
 								/>
 							</Grid>
