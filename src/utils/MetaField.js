@@ -97,7 +97,7 @@ const useStyles = makeStyles(() => ({
 	},
 	library: {
 		marginLeft: 25,
-		marginTop: 20,
+		marginTop: props => (props.isBasicType ? 244 : 55),
 		'& .MuiTypography-body1': {
 			fontSize: 14,
 		},
@@ -112,15 +112,18 @@ const useStyles = makeStyles(() => ({
 		color: 'white',
 		backgroundColor: '#4576CF',
 	},
+	paperScrollPaper: {
+		minHeight: '700px',
+	},
 }));
 
 const options = [
 	{ value: 'dropdown', label: 'Drop-down' },
 	{ value: 'multiselect', label: 'Multi-select' },
 	{ value: 'text', label: 'Text' },
+	{ value: 'link', label: 'Link' },
 	{ value: 'number', label: 'Number' },
 	{ value: 'date', label: 'Date' },
-	{ value: 'link', label: 'Link' },
 ];
 
 const viewOptions = [
@@ -201,7 +204,6 @@ const MetaField = ({
 	customDataPostfix = '',
 	tableKey,
 }) => {
-	const classes = useStyles();
 	const [selectedTab, setSelectedTab] = useState('new');
 	const [metaData, setMetaData] = useState(null);
 	const [filteredMetaData, setFilteredMetaData] = useState(null);
@@ -213,26 +215,29 @@ const MetaField = ({
 	const [selectFilter, setSelectFilter] = useState(categoryOptions[categoryOptions.length - 1].value);
 	const [filter, setFilter] = useState('');
 	const [showAddDescription, setShowAddDescription] = useState(false);
+	const [isBasicType, setIsBasicType] = useState(false);
 	const { control, setValue, getValues, watch } = useForm();
 	const { globalState, selectedMeta } = globalStateController.useState(
 		['selectedIconTpe', 'selectedMeta', 'user'],
 		'globalState'
 	);
+	const [items, setItems] = useState([{ palleteId: colorPallete[0].id }]);
 
 	const type = watch('type', globalState.selectedMeta ? globalState.selectedMeta.type : 'dropdown');
 	const title = watch('title', globalState.selectedMeta ? globalState.selectedMeta.title : '');
+
+	const isDisabled = isBasicType ? !title : !title || items.filter(item => !!item.value).length === 0;
+
+	const classes = useStyles({ isBasicType });
+
+	useEffect(() => {
+		setIsBasicType(['text', 'number', 'date', 'link'].includes(type));
+	}, [type]);
 
 	const isAddedToLibrary = watch(
 		'isAddedToLibrary',
 		globalState.selectedMeta ? globalState.selectedMeta.isAddedToLibrary : false
 	);
-
-	const [items, setItems] = useState([{ palleteId: colorPallete[0].id }]);
-
-	const isBasicType = ['text', 'number', 'date', 'link'].includes(type);
-	const isDisabled = isBasicType ? !title : !title || items.filter(item => !!item.value).length === 0;
-
-	const postFix = type === 'number' ? '' : customDataPostfix;
 
 	useEffect(() => {
 		if (globalState.selectedMeta) {
@@ -411,6 +416,8 @@ const MetaField = ({
 		rippleEffectCall(data);
 	};
 
+	const postFix = type === 'number' ? '' : customDataPostfix;
+
 	return (
 		<>
 			<Dialog
@@ -422,6 +429,9 @@ const MetaField = ({
 						showFieldModal: false,
 						selectedMeta: null,
 					});
+				}}
+				classes={{
+					paperScrollPaper: classes.paperScrollPaper,
 				}}
 			>
 				<div>
@@ -527,16 +537,7 @@ const MetaField = ({
 												render={({ field }) => (
 													<Select
 														styles={{
-															menu: provided => ({
-																...provided,
-																zIndex: 9999,
-																height: '200px',
-																overflowY: 'auto',
-															}),
-															menuPortal: base => ({
-																...base,
-																zIndex: 9999,
-															}),
+															menu: provided => ({ ...provided, zIndex: 9999 }),
 														}}
 														menuPlacement="bottom" // Ensures the menu opens below the field
 														// menuPortalTarget={document.body} // Renders the dropdown in a portal (prevents clipping issues)
@@ -627,7 +628,10 @@ const MetaField = ({
 													render={({ field }) => (
 														<Select
 															styles={{
-																menu: provided => ({ ...provided, zIndex: 9999 }),
+																menu: provided => ({
+																	...provided,
+																	zIndex: 9999,
+																}),
 															}}
 															value={categoryOptions.find(op => op.value === field.value)}
 															menuPlacement="auto"
@@ -642,7 +646,7 @@ const MetaField = ({
 									</Grid>
 								</div>
 								{!isBasicType && (
-									<div style={{ padding: '0px 35px' }}>
+									<div style={{ padding: '0px 35px', marginTop: '20px' }}>
 										<SortableComponent setItems={setItems} items={items} />
 									</div>
 								)}

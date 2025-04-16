@@ -12,6 +12,7 @@ import { get } from 'lodash';
 import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
@@ -395,13 +396,13 @@ function HeaderFunction(props) {
 										variant="outlined"
 										margin="normal"
 										fullWidth
-										value={moment(field?.value || '').format('yyyy-MM-DD')}
+										value={moment(field?.value || '').format('YYYY-MM-DD')}
 										onChange={e => {
 											field.onChange(e.target.value);
 										}}
 										onBlur={e => {
 											handleUpdateCheck({
-												depositDate: moment(e.target.value).toISOString(),
+												depositDate: moment.utc(e.target.value).toISOString(),
 											});
 										}}
 										InputLabelProps={{
@@ -533,4 +534,27 @@ function HeaderFunction(props) {
 	);
 }
 
+// Add missing prop types
+HeaderFunction.propTypes = {
+	check: PropTypes.shape({
+		payor: PropTypes.shape({
+			name: PropTypes.string,
+			_id: PropTypes.string,
+		}),
+		payee: PropTypes.shape({
+			name: PropTypes.string,
+			_id: PropTypes.string,
+			number: PropTypes.string,
+		}),
+		checkNumber: PropTypes.string,
+		checkDate: PropTypes.string,
+		checkAmount: PropTypes.number,
+		source: PropTypes.string,
+		sourceId: PropTypes.string,
+		depositDate: PropTypes.string,
+	}),
+	setCheck: PropTypes.func.isRequired,
+	value: PropTypes.any, // Add missing prop validation
+	onChange: PropTypes.func, // Add missing prop validation
+};
 export default memo(HeaderFunction);

@@ -28,6 +28,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	const resetPagination = useRef(false); // Flag to reset pagination
 	const previousPagination = useRef(); // Store previous pagination values
 	const columnsType = useRef({}); // Store column types
+	const prevScroll = useRef({ top: 0, left: 0 });
 
 	// Apollo client instance
 	const client = useApolloClient();
@@ -425,7 +426,17 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				return;
 			}
 
-			const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
+			const { scrollHeight, scrollTop, scrollLeft, clientHeight } = containerRefElement;
+
+			const prevTop = prevScroll.current.top;
+			const prevLeft = prevScroll.current.left;
+
+			if (scrollLeft !== prevLeft && scrollTop === prevTop) {
+				prevScroll.current = { top: scrollTop, left: scrollLeft };
+				return;
+			}
+
+			prevScroll.current = { top: scrollTop, left: scrollLeft };
 
 			const REFETCH_BUFFER = 200;
 

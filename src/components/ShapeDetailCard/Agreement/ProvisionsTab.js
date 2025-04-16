@@ -178,7 +178,9 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 				if (list.key === 'type') {
 					setProvisionsList(list.list);
 				} else if (list.key === 'frequency') {
-					setFrequenciesList(Array.from(new Set(['Annual', 'Monthly', 'Quarterly', 'Weekly', ...list.list])));
+					setFrequenciesList(
+						Array.from(new Set(['Annual', 'Monthly', 'Quarterly', 'Weekly', 'One-Time', ...list.list]))
+					);
 				}
 			});
 		}

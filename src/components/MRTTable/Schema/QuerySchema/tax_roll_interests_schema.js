@@ -28,13 +28,13 @@ const TaxRollInterestsMeta = {
 	isInFiniteScroll: true,
 	TableSchema: [
 		{
-			...CommonSchema.SELECT_STRING_COLUMN,
+			...CommonSchema.INITAIL_PINNED,
 			header: 'Api Number',
 			id: 'api',
 			name: 'api',
 		},
 		{
-			...CommonSchema.SELECT_STRING_COLUMN,
+			...CommonSchema.INITAIL_PINNED,
 			header: 'Well Name',
 			id: 'wellName',
 			name: 'wellName',
@@ -44,6 +44,30 @@ const TaxRollInterestsMeta = {
 			header: 'County',
 			id: 'county',
 			name: 'county',
+		},
+		{
+			...CommonSchema.SELECT_STRING_COLUMN,
+			header: 'Block',
+			id: 'block',
+			name: 'block',
+		},
+		{
+			...CommonSchema.SELECT_STRING_COLUMN,
+			header: 'Section',
+			id: 'section',
+			name: 'section',
+		},
+		{
+			...CommonSchema.SELECT_STRING_COLUMN,
+			header: 'Survey',
+			id: 'survey',
+			name: 'survey',
+		},
+		{
+			...CommonSchema.SELECT_STRING_COLUMN,
+			header: 'Abstract',
+			id: 'abstract',
+			name: 'abstract',
 		},
 		{
 			...CommonSchema.SELECT_STRING_COLUMN,
@@ -59,7 +83,7 @@ const TaxRollInterestsMeta = {
 		},
 		{
 			...CommonSchema.NUMBER_COLUMN,
-			header: 'Lease Acers',
+			header: 'Lease Acres',
 			id: 'leaseAcres',
 			name: 'leaseAcres',
 		},
@@ -82,7 +106,7 @@ const TaxRollInterestsMeta = {
 			name: 'type',
 		},
 		{
-			...CommonSchema.NUMBER_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			header: 'Amount',
 			id: 'amount',
 			name: 'amount',

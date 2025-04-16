@@ -510,7 +510,7 @@ class TableESStateControllerHandler extends StateController {
 			TableSchema: _TableSchema,
 			tableCss,
 			groupedField,
-			grouping: groupedField ? [groupedField] : [],
+			grouping: groupedField || [],
 			footerProps: [],
 			ExternalFilter,
 			defaultSort,
@@ -518,6 +518,7 @@ class TableESStateControllerHandler extends StateController {
 			commentsCounter: [],
 			tagsList: [],
 			isTrackedList: [],
+			isSummaryGrid: rest.isSummaryGrid ?? false,
 		};
 
 		const _defaultFilters = defaultFilters || this.getValue('defaultFilters') || [];

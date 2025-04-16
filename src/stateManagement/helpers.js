@@ -378,8 +378,11 @@ export const handleMRTSchema = ({
 	handleVisiblityMenuClick();
 	handleColumnMenuClick();
 
-	const groupedField =
-		_TableSchema.find(column => column.isGrouped)?.accessorKey || _TableSchema.find(column => column.isGrouped)?.id;
+	const colsWithGrouping = _TableSchema
+		.filter(column => column.isGrouped)
+		.map(column => column.accessorKey || column.id);
+
+	const groupedField = colsWithGrouping.length ? colsWithGrouping : null;
 
 	const columnVisibility = _TableSchema.reduce(
 		(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: !cur?.hidden }),

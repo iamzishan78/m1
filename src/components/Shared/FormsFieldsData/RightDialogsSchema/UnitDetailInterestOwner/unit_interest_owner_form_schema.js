@@ -1,3 +1,4 @@
+import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
@@ -519,7 +520,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 		{
 			label: 'Campaigns',
 			name: 'campaigns',
-			renderField: 'campaigns',
+			renderField: 'campaignName',
 		},
 		{
 			label: 'Campaign Priority',

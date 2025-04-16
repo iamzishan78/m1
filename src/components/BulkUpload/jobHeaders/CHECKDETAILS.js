@@ -1,6 +1,5 @@
 const checkDetailsKeys = [
 	{
-		// unmapped
 		label: 'UID',
 		mapped_key: 'Line Number',
 		required: true,
@@ -8,7 +7,6 @@ const checkDetailsKeys = [
 		showAsSample: false,
 	},
 	{
-		// unmapped
 		label: 'Payor',
 		mapped_key: '',
 		required: false,
@@ -37,34 +35,30 @@ const checkDetailsKeys = [
 		showAsSample: false,
 	},
 	{
-		// unmapped
 		label: 'M1 Property ID',
 		mapped_key: '',
 		required: false,
 		actual_key: 'property._id',
 	},
 	{
-		// unmapped
 		label: 'Payor Prop #',
 		mapped_key: '',
 		required: false,
 		actual_key: 'property.purchaserNumber',
 	},
 	{
-		label: 'Operator CC',
+		label: 'Operator Prop #',
 		mapped_key: '',
 		required: false,
 		actual_key: 'property.number',
 	},
 	{
-		// unmapped
 		label: 'Accounting Ref ID',
 		mapped_key: '',
 		required: false,
 		actual_key: 'property.internalID',
 	},
 	{
-		// unmapped
 		label: 'Property Name',
 		mapped_key: '',
 		required: false,
@@ -91,34 +85,13 @@ const checkDetailsKeys = [
 		showAsSample: false,
 	},
 	{
-		label: 'Owner Percent',
-		mapped_key: '',
-		required: false,
-		actual_key: 'check.payee.percent',
-		showAsSample: false,
-	},
-	{
-		label: 'Distribution Percent',
-		mapped_key: '',
-		required: false,
-		actual_key: 'check.payee.distributionPercent',
-		showAsSample: false,
-	},
-	{
-		label: 'BTU Factor',
-		mapped_key: '',
-		required: false,
-		actual_key: 'BTU',
-	},
-	{
-		// Prod Date
 		label: 'Sales Date',
 		mapped_key: '',
 		required: true,
 		actual_key: 'date',
 	},
 	{
-		label: 'Product Code Description',
+		label: 'Product Code',
 		mapped_key: '',
 		required: false,
 		actual_key: 'product',
@@ -130,7 +103,6 @@ const checkDetailsKeys = [
 		actual_key: 'property.description',
 	},
 	{
-		// unmapped
 		label: 'Decimal Interest',
 		mapped_key: '',
 		required: false,
@@ -143,34 +115,22 @@ const checkDetailsKeys = [
 		actual_key: 'interestType',
 	},
 	{
-		label: 'Price',
+		label: 'Avg Price',
 		mapped_key: '',
 		required: false,
 		actual_key: 'price',
 	},
 	{
-		label: 'Gross Volume',
+		label: 'Property Gross Volume',
 		mapped_key: '',
 		required: false,
 		actual_key: 'grossPropertyVolume',
 	},
 	{
-		label: 'Gross Value',
+		label: 'Property Gross Revenue',
 		mapped_key: '',
 		required: false,
 		actual_key: 'grossPropertyValue',
-	},
-	{
-		label: 'Gross Taxes',
-		mapped_key: '',
-		required: false,
-		actual_key: 'grossPropertyTaxes',
-	},
-	{
-		label: 'Gross Deducts',
-		mapped_key: '',
-		required: false,
-		actual_key: 'grossPropertyDeducts',
 	},
 	{
 		label: 'Owner Volume',
@@ -185,56 +145,42 @@ const checkDetailsKeys = [
 		actual_key: 'grossOwnerValue',
 	},
 	{
-		label: 'Owner Taxes',
+		label: 'Owner Tax Amount',
 		mapped_key: '',
 		required: false,
 		actual_key: 'ownerTax',
 	},
 	{
-		label: 'Tax Type 1',
+		label: 'Tax Type',
 		mapped_key: '',
 		required: false,
 		actual_key: 'taxType',
 	},
 	{
-		label: 'Owner Deducts',
+		label: 'Owner Deduct Amount',
 		mapped_key: '',
 		required: false,
 		actual_key: 'ownerDeducts',
 	},
 	{
-		label: 'Deduct Type 1',
+		label: 'Deduct Code',
 		mapped_key: '',
 		required: false,
 		actual_key: 'deductType',
 	},
 	{
-		label: 'Owner Net Value',
+		label: 'Owner Net Revenue',
 		mapped_key: '',
 		required: false,
 		actual_key: 'netOwnerValue',
 	},
-	{
-		label: 'Net Value',
-		mapped_key: '',
-		required: false,
-		actual_key: 'netValue',
-	},
 
 	{
-		// unmapped
 		label: 'Line Number',
 		mapped_key: '',
 		required: true,
 		actual_key: 'lineNumber',
 		showAsSample: false,
-	},
-
-	{
-		label: 'Detail Line Notation',
-		mapped_key: '',
-		required: false,
-		actual_key: 'detailLineNotation',
 	},
 ];
 

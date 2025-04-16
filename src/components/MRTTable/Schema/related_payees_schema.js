@@ -1,4 +1,3 @@
- 
 import React from 'react';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
@@ -97,7 +96,14 @@ const RelatedPaymentsMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('_id');
-				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'contact'} />;
+				return (
+					<CommentCell
+						id={id}
+						value={renderedCellValue.length}
+						targetLabel={'contact'}
+						tableKey={'RelatedPayeesTable'}
+					/>
+				);
 			},
 		},
 	],

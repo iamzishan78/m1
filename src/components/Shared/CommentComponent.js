@@ -44,6 +44,14 @@ import CommentsAutoComplete from './CommentsAutoComplete';
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
+// Hook into DOMPurify to safely allow target="_blank"
+DOMPurify.addHook('afterSanitizeAttributes', node => {
+	if (node.tagName === 'A') {
+		node.setAttribute('target', '_blank');
+		node.setAttribute('rel', 'noopener noreferrer');
+	}
+});
+
 const useStyles = makeStyles(() => ({
 	container: ({ isFileDetail }) => ({
 		backgroundColor: '#F6F8F9',
@@ -302,7 +310,7 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 					}
 
 					return (
-						<p key={splittedWord} className={classes.commentWords}>
+						<p className={classes.commentWords} key={index}>
 							{splittedWord}
 						</p>
 					);
@@ -312,7 +320,7 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 					const sanitizedData = () => ({
 						__html: DOMPurify.sanitize(urlify(_word)),
 					});
-					return <span key={_word} className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()}></span>;
+					return <span className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()} key={index}></span>;
 				}
 			})}
 		</div>
@@ -373,18 +381,6 @@ export default function CommentComponent(props) {
 
 	const { data: commentResponse } = useQuery(GET_COMMENT_TYPES);
 
-	useEffect(() => {
-		if (commentResponse && Array.isArray(commentResponse.commentsType)) {
-			const commentsType = commentResponse?.commentsType || [];
-			const uniqueCommonType = uniqBy(commentsType, e => {
-				return e.commentType;
-			});
-			const formattedOptions = uniqueCommonType.map(c => ({ label: c.commentType, value: c.commentType }));
-			formattedOptions.push({ label: 'All', value: 'All' });
-			setCommentTypes(formattedOptions);
-		}
-	}, [commentResponse]);
-
 	const sortArrayBasedOnTs = array => {
 		const compare = (a, b) => {
 			if (a.ts < b.ts) {
@@ -402,6 +398,18 @@ export default function CommentComponent(props) {
 
 		return array;
 	};
+
+	useEffect(() => {
+		if (commentResponse && Array.isArray(commentResponse.commentsType)) {
+			const commentsType = commentResponse?.commentsType || [];
+			const uniqueCommonType = uniqBy(commentsType, e => {
+				return e.commentType;
+			});
+			const formattedOptions = uniqueCommonType.map(c => ({ label: c.commentType, value: c.commentType }));
+			formattedOptions.push({ label: 'All', value: 'All' });
+			setCommentTypes(formattedOptions);
+		}
+	}, [commentResponse]);
 
 	useEffect(() => {
 		getAllMongoUsers();
@@ -1119,16 +1127,16 @@ export const CommentText = ({ eachComment, users }) => {
 										let id = sWord.split('{{')[1];
 										id = id.split('}}')[0];
 										return (
-											<p key={id} className={`${classes.commentWords} blue`}>
+											<p className={`${classes.commentWords} blue`} key={index}>
 												{firstPart}@{users?.find(user => user._id === id)?.name}
 												{secondPart}{' '}
 											</p>
 										);
 									} else if (sWord === '') {
-										return <br key={''} />;
+										return <br key={index} />;
 									} else {
 										return (
-											<p key={sWord} className={classes.commentWords}>
+											<p className={classes.commentWords} key={index}>
 												{sWord} <br />{' '}
 											</p>
 										);
@@ -1139,13 +1147,13 @@ export const CommentText = ({ eachComment, users }) => {
 					}
 
 					return (
-						<p key={splittedWord} className={classes.commentWords}>
+						<p className={classes.commentWords} key={index}>
 							{splittedWord}
 						</p>
 					);
 				} else {
 					return (
-						<p key={word} className={classes.commentWords}>
+						<p className={classes.commentWords} key={index}>
 							{word}{' '}
 						</p>
 					);
@@ -1228,33 +1236,76 @@ const ActionMenu = ({
 	);
 };
 
-CommonCommentText.propTypes = {
-	eachComment: PropTypes.object,
-	users: PropTypes.object,
-	isPinned: PropTypes.bool,
-};
-CommentText.propTypes = {
-	eachComment: PropTypes.object,
-	users: PropTypes.object,
-};
-
 CommentComponent.propTypes = {
 	targetSourceId: PropTypes.string,
-	commentsHeight: PropTypes.string,
+	commentsHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	targetLabel: PropTypes.string,
-	multipleIds: PropTypes.array,
-	activityLog: PropTypes.array,
+	activityLog: PropTypes.arrayOf(
+		PropTypes.shape({
+			type: PropTypes.string,
+			ownerName: PropTypes.string,
+			notes: PropTypes.string,
+			outcome: PropTypes.string,
+			_ts: PropTypes.string,
+			isExternal: PropTypes.bool,
+		})
+	),
+	multipleIds: PropTypes.bool,
 	setNewCommentId: PropTypes.func,
-	showCommentType: PropTypes.string,
+	cardWidthExpanded: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	cardLeft: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	cardTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	cardWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	title: PropTypes.string,
+	subTitle: PropTypes.string,
+	parent: PropTypes.string,
+	mouseX: PropTypes.number,
+	mouseY: PropTypes.number,
+	position: PropTypes.string,
+	showCommentType: PropTypes.bool,
 };
+
+const commentPropTypes = PropTypes.shape({
+	_id: PropTypes.string.isRequired,
+	comment: PropTypes.string,
+	commentType: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.shape({
+			commentType: PropTypes.string,
+		}),
+	]),
+	pin: PropTypes.bool,
+});
+
+CommonCommentText.propTypes = {
+	eachComment: commentPropTypes,
+	users: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string,
+			name: PropTypes.string,
+		})
+	),
+	isPinned: PropTypes.bool,
+};
+
 ActionMenu.propTypes = {
-	pinToTop: PropTypes.func,
-	unpinFromTop: PropTypes.func,
-	showActions: PropTypes.func,
-	eachComment: PropTypes.object,
-	setEditCommentId: PropTypes.func,
-	setEditComment: PropTypes.func,
-	deleteComment: PropTypes.func,
-	setShowActions: PropTypes.func,
-	setIsEdit: PropTypes.func,
+	pinToTop: PropTypes.func.isRequired,
+	unpinFromTop: PropTypes.func.isRequired,
+	showActions: PropTypes.bool.isRequired,
+	eachComment: commentPropTypes.isRequired,
+	setEditCommentId: PropTypes.func.isRequired,
+	setEditComment: PropTypes.func.isRequired,
+	deleteComment: PropTypes.func.isRequired,
+	setShowActions: PropTypes.func.isRequired,
+	setIsEdit: PropTypes.func.isRequired,
+};
+
+CommentText.propTypes = {
+	eachComment: commentPropTypes.isRequired,
+	users: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string,
+			name: PropTypes.string,
+		})
+	),
 };
