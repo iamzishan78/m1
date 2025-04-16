@@ -64,6 +64,9 @@ const useStyles = makeStyles(() => ({
 		display: 'flex',
 		flexDirection: 'column',
 		justifyContent: 'flex-end',
+		'& a': {
+			color: 'blue !important',
+		},
 	}),
 	comment: () => ({
 		position: 'relative',
