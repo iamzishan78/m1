@@ -307,16 +307,7 @@ export default function RevenueAnalytics(props) {
 	}, [filters, toDate, fromDate]);
 
 	useEffect(() => {
-		if (!fromDate || !isValidDate(fromDate)) {
-			return;
-		}
-
 		if (tabs[tab] === 'Revenue by Month') {
-			if (selectedFilter === CUSTOM_DATES.ALL_DATES) {
-				setFromDate(null);
-				setToDate(null);
-			}
-
 			PropertiesRevenueController.updateState({
 				customProps: {
 					filters,
