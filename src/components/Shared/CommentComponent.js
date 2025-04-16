@@ -14,7 +14,6 @@ import {
 } from '@material-ui/icons';
 
 import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
-import DOMPurify from 'dompurify';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ru from 'javascript-time-ago/locale/ru';
@@ -40,17 +39,10 @@ import { updatePinComments } from 'store/actions/commonActions';
 import { UserSession } from 'utils/user';
 
 import CommentsAutoComplete from './CommentsAutoComplete';
+import CustomTypography from './components/Fields/CustomTypography';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
-
-// Hook into DOMPurify to safely allow target="_blank"
-DOMPurify.addHook('afterSanitizeAttributes', node => {
-	if (node.tagName === 'A') {
-		node.setAttribute('target', '_blank');
-		node.setAttribute('rel', 'noopener noreferrer');
-	}
-});
 
 const useStyles = makeStyles(() => ({
 	container: ({ isFileDetail }) => ({
@@ -193,14 +185,6 @@ const typeOptions = [
 	{ label: 'Mailer', value: 'mailer' },
 ];
 
-function urlify(text) {
-	const urlRegex = /(https?:\/\/[^\s]+)/g;
-
-	return text.replace(urlRegex, url => {
-		return '<a href="' + url + '">' + url + '</a>';
-	});
-}
-
 export function getLikedPeoplesName(comment, myUserId) {
 	const { likedBy } = comment;
 	const names = (likedBy || []).map(user => {
@@ -309,18 +293,11 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 						);
 					}
 
-					return (
-						<p className={classes.commentWords} key={index}>
-							{splittedWord}
-						</p>
-					);
+					return <CustomTypography key={index} className={classes.commentWords} value={splittedWord} />;
 				} else {
 					// Process regular words, ensure spaces are correctly handled
 					const _word = index !== formatComment.length - 1 ? `${word}` : word;
-					const sanitizedData = () => ({
-						__html: DOMPurify.sanitize(urlify(_word)),
-					});
-					return <span className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()} key={index}></span>;
+					return <CustomTypography key={index} className={classes.commentWords} value={_word} />;
 				}
 			})}
 		</div>

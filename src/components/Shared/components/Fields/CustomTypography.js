@@ -28,21 +28,26 @@ function CustomTypography({ value }) {
 
 	return (
 		<Typography component="span">
-			{subStrings.map((subString, index) =>
-				validator.isURL(subString, { require_protocol: false }) ? (
-					<>
-						<Link key={index} className={classes.link} href={normalizeUrl(subString)} target="_blank">
-							{subString}
+			{subStrings.map((subString, index) => {
+				// Remove trailing punctuation for URL validation
+				const cleanString = subString.replace(/[.,;!?]$/, '');
+
+				// Keep original string for display
+				return validator.isURL(cleanString, { require_protocol: false }) ? (
+					<React.Fragment key={index}>
+						<Link className={classes.link} href={normalizeUrl(cleanString)} target="_blank">
+							{cleanString}
 						</Link>
+						{subString.slice(cleanString.length)} {/* Add back any trimmed punctuation */}
 						{index < subStrings.length - 1 && ' '}
-					</>
+					</React.Fragment>
 				) : (
 					<Typography component="span" key={index}>
 						{subString}
 						{index < subStrings.length - 1 && ' '}
 					</Typography>
-				)
-			)}
+				);
+			})}
 		</Typography>
 	);
 }
