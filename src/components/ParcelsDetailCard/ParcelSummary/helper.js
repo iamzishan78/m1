@@ -282,9 +282,14 @@ export const handleLayerChangeOnQtr = (stateApp, layerData, qtrQtr, qtr) => {
 	}
 	layerDataCopy.qtrQtrSelection.qtrQtr = qtrQtr;
 	layerDataCopy.qtrQtrSelection.selectedQtr = qtr;
+	try {
+		newShape = turf.intersect(layerDataCopy.shape.geometry, newShape.geometry);
+	} catch (e) {
+		console.log(e);
+	}
 	if (newShape) {
 		layerDataCopy.shape.geometry = newShape.geometry;
-		layerDataCopy.shape.properties.shapeArea = calculateLandArea(newShape);
+		layerDataCopy.shape.properties.shapeArea = calculateLandArea(newShape, true);
 	}
 	return layerDataCopy;
 };

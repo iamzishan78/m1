@@ -341,7 +341,7 @@ const ShapeActionsPopup = props => {
 
 	const convertMenuAction = action => {
 		setShowConvertMenu(false);
-		const area = parseInt(calculateLandArea(currentFeature).replace(/,/g, ''));
+		const area = parseInt(calculateLandArea(currentFeature));
 		if (area > 500000) {
 			setLimitExceed(true);
 		} else if (action === 'convert') {

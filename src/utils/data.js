@@ -699,7 +699,6 @@ export const paymentGridsInitialData = [
 
 export const bypassTenants = [
 	'localhost',
-	// "m1Preview",
 	'm1dev',
 	'm1cypress',
 	'm1staging',
@@ -708,20 +707,17 @@ export const bypassTenants = [
 	'covenant',
 	'sansaba',
 	'farmers',
-	// "m1Production",
-	// "m1Development",
-	// "GHR",
-	// "Quality",
-	// "Foss",
-	// "SantaFe",
-	// "Republic",
-	// "Venator",
+	'Quality',
+	'SantaFe',
+	'SITL',
+	'Jetstream',
+	'Elberta',
 	'Frontier',
 	'm1demo',
-	// "Vector",
-	// "TableRock",
-	// "Providence",
-	// "Pheasant"
+	'Vector',
+	'TableRock',
+	'Providence',
+	'Pheasant',
 ];
 
 export const simpleAuthBypass = false;

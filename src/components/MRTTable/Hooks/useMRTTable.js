@@ -408,7 +408,7 @@ const useMRTTable = tableKey => {
 							Controller.syncFilters(result);
 
 							result.forEach(filter => {
-								const { mode } = tableState?.filterModes?.[filter.id] || {};
+								let { mode } = tableState?.filterModes?.[filter.id] || {};
 
 								let { value } = filter;
 								const { type, oRFilter, columnType, searchType, isMapViewFilter } = filter;
@@ -420,6 +420,9 @@ const useMRTTable = tableKey => {
 								}
 								if (columnType === 'date') {
 									value = filter.value;
+									mode = ['greaterThanOrEqualTo', 'lessThanOrEqualTo', 'betweenInclusive'].includes(mode)
+										? mode
+										: 'betweenInclusive';
 								}
 
 								Controller.setFilter({

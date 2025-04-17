@@ -145,6 +145,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 						nraSum: getCommaValue(_contact.contactInterests.nraSum),
 						offerPriceSum: getCommaValue(_contact.contactInterests.offerPriceSum),
 						maxOfferPriceSum: getCommaValue(_contact.contactInterests.maxOfferPriceSum),
+						currentOfferPriceSum: getCommaValue(_contact.contactInterests.currentOfferPriceSum),
 						closedPriceSum: getCommaValue(_contact.contactInterests.closedPriceSum), // Add thousand comma seprator to closedPriceSum
 					},
 				};
@@ -261,7 +262,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 										},
 										InputProps: {
 											inputComponent:
-												field.type === 'currency'
+												field.type === 'currency' || field.type === 'currencySimple'
 													? CurrencyFormatCustom
 													: field.key.includes('nraSum')
 														? NumberFormatComma
@@ -276,6 +277,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 												field.key.includes('offerPriceSum') ||
 												field.key.includes('nraSum') ||
 												field.key.includes('maxOfferPriceSum') ||
+												field.key.includes('currentOfferPriceSum') ||
 												field.key.includes('closedPriceSum')
 											) {
 												value = parseFloat(value).toFixed(2);
@@ -295,6 +297,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 												field.key.includes('offerPriceSum') ||
 												field.key.includes('nraSum') ||
 												field.key.includes('maxOfferPriceSum') ||
+												field.key.includes('currentOfferPriceSum') ||
 												field.key.includes('closedPriceSum')
 											) {
 												currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''));
@@ -302,7 +305,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 
 											const prevValue = get(contactData, field.key) || '';
 
-											if (currValue != prevValue) {
+											if (currValue !== prevValue) {
 												updateFieldData(field.key, currValue);
 											}
 

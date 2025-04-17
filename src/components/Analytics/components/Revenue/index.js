@@ -301,8 +301,18 @@ export default function RevenueAnalytics(props) {
 				}
 			}
 		}
+		months.sort((a, b) => {
+			const [monthA, yearA] = a.split('/');
+			const [monthB, yearB] = b.split('/');
+
+			const dateA = new Date(`${yearA}-${monthA}-01`);
+			const dateB = new Date(`${yearB}-${monthB}-01`);
+
+			return dateA - dateB;
+		});
 		setMonths(months);
 	};
+
 	useEffect(() => {
 		const newFilters = tableController(TableKey).getExternalFilter();
 		if (comparisonReport === 'Check Detail Comparison') {

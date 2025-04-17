@@ -656,7 +656,7 @@ class DrawStateControllerHandler extends StateController {
 				projectName: '',
 				sdNotes: '',
 				sdGrossAcres: '',
-				shapeArea: calculateLandArea(abstractShape),
+				shapeArea: calculateLandArea(abstractShape, true),
 				shapeCenter: calculateShapeCenter(abstractShape.geometry),
 				shapeLabelLayer: '',
 				id: featureId,
@@ -752,7 +752,7 @@ class DrawStateControllerHandler extends StateController {
 				layerSubType,
 				shapeLabel: shapeName,
 				...properties,
-				shapeArea: calculateLandArea(abstractShape),
+				shapeArea: calculateLandArea(abstractShape, true),
 				shapeCenter: calculateShapeCenter(abstractShape.geometry),
 				id: featureId,
 			},
@@ -905,7 +905,7 @@ class DrawStateControllerHandler extends StateController {
 		layerData.shapeJson.properties = {
 			...layerData.shapeJson.properties,
 			originalProperties: abstractShape?.properties,
-			shapeArea: calculateLandArea(abstractShape),
+			shapeArea: calculateLandArea(abstractShape, true),
 			shapeCenter: calculateShapeCenter(abstractShape?.geometry),
 		};
 		const customLayerData = {

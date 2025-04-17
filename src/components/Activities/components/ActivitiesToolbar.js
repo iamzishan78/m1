@@ -126,7 +126,7 @@ const ActivitiesToolbar = ({
 	mongoUsers,
 	activities,
 	operatorList,
-	type,
+	type = 'Activity',
 	...toolbar
 }) => {
 	const classes = useToolbarStyles();
@@ -151,61 +151,127 @@ const ActivitiesToolbar = ({
 
 	const acitvityOwnerOptions = React.useMemo(() => {
 		let ownerOptions = [{ label: 'All', value: 'all' }];
-		if (activities) {
-			const uniqueOwners = new Map();
-			activities.forEach(activity => {
-				const activityDate = moment(parseInt(activity.dateTime));
-				const selectedMonth = moment(selectedDate);
-				const weekStart = moment(selectedDate).startOf('week');
-				const weekEnd = moment(selectedDate).endOf('week');
-				if (
-					activity.ownerId &&
-					activity.ownerName &&
-					!uniqueOwners.has(activity.ownerId) &&
-					(activityFilterByType === 'all' || activity.type === activityFilterByType)
-				) {
-					if (
-						(activityDate.isSame(selectedMonth, 'month') && view === Views.MONTH) ||
-						(activityDate.isBetween(weekStart, weekEnd, undefined, '[]') && view === Views.WEEK) || // '[]' includes start and end dates
-						stateApp.activityDisplayType !== 'calendar'
-					) {
-						uniqueOwners.set(activity.ownerId, activity.ownerName);
-						ownerOptions.push({ value: activity.ownerId, label: activity.ownerName });
-					}
-				}
-			});
+		if (!activities) {
+			return ownerOptions;
 		}
+
+		const uniqueOwners = new Map();
+		activities.forEach(activity => {
+			if (!activity.ownerId || !activity.ownerName) {
+				return;
+			}
+
+			const activityDate = moment(parseInt(activity.dateTime));
+			const selectedMonth = moment(selectedDate);
+			const weekStart = moment(selectedDate).startOf('week');
+			const weekEnd = moment(selectedDate).endOf('week');
+
+			const typeMatch = activityFilterByType === 'all' || activity.type === activityFilterByType;
+			const responsiblePartyMatch =
+				type !== 'Obligation' ||
+				activityFilterByResponsibleParty === 'all' ||
+				activity.responsibleParty === activityFilterByResponsibleParty;
+
+			if (!uniqueOwners.has(activity.ownerId) && typeMatch && responsiblePartyMatch) {
+				if (
+					(activityDate.isSame(selectedMonth, 'month') && view === Views.MONTH) ||
+					(activityDate.isBetween(weekStart, weekEnd, undefined, '[]') && view === Views.WEEK) || // '[]' includes start and end dates
+					stateApp.activityDisplayType !== 'calendar'
+				) {
+					uniqueOwners.set(activity.ownerId, activity.ownerName);
+					ownerOptions.push({ value: activity.ownerId, label: activity.ownerName });
+				}
+			}
+		});
+
 		return ownerOptions;
-	}, [activities, activityFilterByType, selectedDate, view, stateApp.activityDisplayType]);
+	}, [
+		activities,
+		activityFilterByType,
+		activityFilterByResponsibleParty,
+		selectedDate,
+		view,
+		stateApp.activityDisplayType,
+	]);
 
 	const responsiblePartyOptions = React.useMemo(() => {
-		let ownerOptions = [{ label: 'All', value: 'all' }];
-		if (activities) {
-			const uniqueOwners = new Map();
-
-			activities.forEach(activity => {
-				const activityDate = moment(parseInt(activity.dateTime));
-				const selectedMonth = moment(selectedDate);
-				const weekStart = moment(selectedDate).startOf('week');
-				const weekEnd = moment(selectedDate).endOf('week');
-				if (
-					activity.responsibleParty &&
-					!uniqueOwners.has(activity.responsibleParty) &&
-					(activityFilterByType === 'all' || activity.type === activityFilterByType)
-				) {
-					if (
-						(activityDate.isSame(selectedMonth, 'month') && view === Views.MONTH) ||
-						(activityDate.isBetween(weekStart, weekEnd, undefined, '[]') && view === Views.WEEK) || // '[]' includes start and end dates
-						stateApp.activityDisplayType !== 'calendar'
-					) {
-						uniqueOwners.set(activity.responsibleParty, activity.responsibleParty);
-						ownerOptions.push({ value: activity.responsibleParty, label: activity.responsibleParty });
-					}
-				}
-			});
+		if (type !== 'Obligation') {
+			return [];
 		}
+
+		let ownerOptions = [{ label: 'All', value: 'all' }];
+		if (!activities) {
+			return ownerOptions;
+		}
+
+		const uniqueOwners = new Map();
+		activities.forEach(activity => {
+			if (!activity.responsibleParty) {
+				return;
+			}
+
+			const activityDate = moment(parseInt(activity.dateTime));
+			const selectedMonth = moment(selectedDate);
+			const weekStart = moment(selectedDate).startOf('week');
+			const weekEnd = moment(selectedDate).endOf('week');
+
+			const typeMatch = activityFilterByType === 'all' || activity.type === activityFilterByType;
+			const ownerMatch = activityFilterByOwner === 'all' || activity.ownerId === activityFilterByOwner;
+
+			if (!uniqueOwners.has(activity.responsibleParty) && typeMatch && ownerMatch) {
+				if (
+					(activityDate.isSame(selectedMonth, 'month') && view === Views.MONTH) ||
+					(activityDate.isBetween(weekStart, weekEnd, undefined, '[]') && view === Views.WEEK) || // '[]' includes start and end dates
+					stateApp.activityDisplayType !== 'calendar'
+				) {
+					uniqueOwners.set(activity.responsibleParty, activity.responsibleParty);
+					ownerOptions.push({ value: activity.responsibleParty, label: activity.responsibleParty });
+				}
+			}
+		});
 		return ownerOptions;
-	}, [activities, activityFilterByType, selectedDate, view, stateApp.activityDisplayType]);
+	}, [activities, activityFilterByType, activityFilterByOwner, selectedDate, view, stateApp.activityDisplayType]);
+
+	const filteredActivityTypesOptions = React.useMemo(() => {
+		if (!activities) {
+			return type === 'Activity' ? activitiesTypesOptions : obligationOptions;
+		}
+
+		let activityOptions = [{ label: 'All', value: 'all' }];
+		const uniqueTypes = new Map();
+		activities.forEach(activity => {
+			const activityDate = moment(parseInt(activity.dateTime));
+			const selectedMonth = moment(selectedDate);
+			const weekStart = moment(selectedDate).startOf('week');
+			const weekEnd = moment(selectedDate).endOf('week');
+
+			const ownerMatch = activityFilterByOwner === 'all' || activity.ownerId === activityFilterByOwner;
+			const responsiblePartyMatch =
+				type !== 'Obligation' ||
+				activityFilterByResponsibleParty === 'all' ||
+				activity.responsibleParty === activityFilterByResponsibleParty;
+
+			if (activity.type && !uniqueTypes.has(activity.type) && ownerMatch && responsiblePartyMatch) {
+				if (
+					(activityDate.isSame(selectedMonth, 'month') && view === Views.MONTH) ||
+					(activityDate.isBetween(weekStart, weekEnd, undefined, '[]') && view === Views.WEEK) || // '[]' includes start and end dates
+					stateApp.activityDisplayType !== 'calendar'
+				) {
+					uniqueTypes.set(activity.type, activity.type);
+					activityOptions.push({ value: activity.type, label: activity.type });
+				}
+			}
+		});
+
+		return activityOptions;
+	}, [
+		activities,
+		activityFilterByOwner,
+		activityFilterByResponsibleParty,
+		selectedDate,
+		view,
+		stateApp.activityDisplayType,
+	]);
 
 	return (
 		<div className={classes.root}>
@@ -214,12 +280,12 @@ const ActivitiesToolbar = ({
 					{type === 'Activity' && (
 						<Autocomplete
 							id="activityFilterByType"
-							options={activitiesTypesOptions}
+							options={filteredActivityTypesOptions}
 							getOptionLabel={option => option.label}
 							style={{ width: 220 }}
 							size="small"
-							defaultValue={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
-							value={activitiesTypesOptions.find(o => o.value === activityFilterByType)}
+							defaultValue={filteredActivityTypesOptions.find(o => o.value === activityFilterByType)}
+							value={filteredActivityTypesOptions.find(o => o.value === activityFilterByType)}
 							onChange={(_, value) => {
 								setActivityFilterByType(value?.value ?? 'all');
 							}}
@@ -231,12 +297,12 @@ const ActivitiesToolbar = ({
 					{type === 'Obligation' && (
 						<Autocomplete
 							id="obligationType"
-							options={obligationOptions}
+							options={filteredActivityTypesOptions}
 							getOptionLabel={option => option.label}
 							style={{ width: 220 }}
 							size="small"
-							defaultValue={obligationOptions.find(o => o.value === activityFilterByType)}
-							value={obligationOptions.find(o => o.value === activityFilterByType)}
+							defaultValue={filteredActivityTypesOptions.find(o => o.value === activityFilterByType)}
+							value={filteredActivityTypesOptions.find(o => o.value === activityFilterByType)}
 							onChange={(_, value) => {
 								setActivityFilterByType(value?.value ?? 'all');
 							}}

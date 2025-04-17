@@ -45,6 +45,7 @@ function AllDialogs(props) {
 	const updateRows = rows => {
 		tableGlobalController.updateState({
 			dialog: {
+				...rest,
 				type,
 				selectedRows: rows,
 			},
