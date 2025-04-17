@@ -4,8 +4,11 @@ import { Controller } from 'react-hook-form';
 import { AddIcCall, Autorenew, EmailOutlined, Textsms, Voicemail } from '@mui/icons-material';
 import { CircularProgress, Grid, IconButton, InputAdornment, TextField, Tooltip, Box } from '@mui/material';
 
+
 import PropTypes from 'prop-types';
 import validator from 'validator';
+
+import DailpadIcon from 'components/Shared/components/svgIcons/DailpadIcon';
 
 import UrlTooltip from './UrlTooltip';
 
@@ -47,23 +50,36 @@ const sx = {
 // Define a configuration object for adornments
 const adornmentConfig = {
 	email: {
-		icon: <EmailOutlined htmlColor="#757575" />,
-		tooltip: 'Email',
-		action: value => `mailto: ${value}`,
+		icons: [
+			{
+				showIcon: () => true,
+				icon: <EmailOutlined htmlColor="#757575" />,
+				tooltip: 'Email',
+				action: value => `mailto: ${value}`,
+			},
+			{
+				showIcon: (dialpadIds, dialpadFeature) => dialpadIds?.length > 0 && dialpadFeature,
+				icon: <DailpadIcon htmlColor="#757575" />,
+				tooltip: 'Dialpad',
+			},
+		],
 	},
 	phoneNumber: {
 		icons: [
 			{
+				showIcon: () => true,
 				icon: <Voicemail htmlColor="#757575" />,
 				tooltip: 'Voice Mail',
 				action: (value, handleAction) => handleAction({ phoneNumber: value, type: 'call' }),
 			},
 			{
+				showIcon: () => true,
 				icon: <Textsms htmlColor="#757575" />,
 				tooltip: 'Text SMS',
 				action: (value, handleAction) => handleAction({ phoneNumber: value, type: 'text_message' }),
 			},
 			{
+				showIcon: (dialpadIds, dialpadFeature) => dialpadIds?.length > 0 && dialpadFeature,
 				icon: <AddIcCall htmlColor="#757575" />,
 				tooltip: 'Call',
 				action: (value, handleAction, dialpadFeature, dialpadIds) => {
@@ -77,6 +93,11 @@ const adornmentConfig = {
 					}
 					return `tel: ${value}`;
 				},
+			},
+			{
+				showIcon: (dialpadIds, dialpadFeature) => dialpadIds?.length > 0 && dialpadFeature,
+				icon: <DailpadIcon htmlColor="#757575" />,
+				tooltip: 'Dialpad',
 			},
 		],
 	},
@@ -97,20 +118,24 @@ function renderAdornment({ value, type, handleAction, dialpadFeature, dialpadIds
 	}
 
 	if (config.icons) {
-		return config.icons.map(iconConfig => (
-			<InputAdornment position="end" key={iconConfig.tooltip}>
-				<Tooltip title={iconConfig.tooltip} placement="top">
-					<IconButton
-						id={'adornment-icon'}
-						style={sx.adornmentIcon}
-						href={iconConfig.href?.(value, dialpadFeature, dialpadIds)}
-						onClick={() => iconConfig.action(value, handleAction, dialpadFeature, dialpadIds)}
-					>
-						{iconConfig.icon}
-					</IconButton>
-				</Tooltip>
-			</InputAdornment>
-		));
+		return config.icons.map(
+			iconConfig =>
+				iconConfig.showIcon(dialpadIds, dialpadFeature) && (
+					<InputAdornment position="end" key={iconConfig.tooltip}>
+						{console.log({ dialpadIds, showIcon: iconConfig.showIcon(dialpadIds) })}
+						<Tooltip title={iconConfig.tooltip} placement="top">
+							<IconButton
+								id={'adornment-icon'}
+								style={sx.adornmentIcon}
+								href={iconConfig.href?.(value, dialpadFeature, dialpadIds)}
+								onClick={() => iconConfig.action?.(value, handleAction, dialpadFeature, dialpadIds)}
+							>
+								{iconConfig.icon}
+							</IconButton>
+						</Tooltip>
+					</InputAdornment>
+				)
+		);
 	}
 
 	return (
