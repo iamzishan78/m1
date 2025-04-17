@@ -11,6 +11,7 @@ import LayersIcon from '@material-ui/icons/Layers';
 import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { snapGridSideBarData } from 'components/MapGridCard/components/data';
 import { copy } from 'components/Shared/functions';
@@ -22,20 +23,22 @@ import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 import { GET_DATASETS } from 'graphQL/useQueryDataset';
 import { USER_MAP_SETTINGS_QUERY } from 'graphQL/useQueryUserMapSettings';
 
-import { scrollbarStyle } from 'styles/common';
 
-import { showErrorMessage, showSuccessMessage } from 'actions';
-import { AppContext } from 'AppContext';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { globalState } from 'stateManagement/initialStates';
 import { layerController } from 'stateManagement/layerStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
 
+import { scrollbarStyle } from 'styles/common';
+
+import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import DatasetMenu from './Menu';
 
 const useStyles = makeStyles(theme => ({
-	root: props => ({
+	root: {
 		background: '#0e111a',
 		overflow: 'auto',
 		maxHeight: '274px',
@@ -95,7 +98,7 @@ const useStyles = makeStyles(theme => ({
 		paddingLeft: '10px',
 		justifyContent: 'center',
 		alignItems: 'center',
-	}),
+	},
 	subContainer: props => ({
 		marginLeft: theme.spacing(props.depth * 2),
 	}),
@@ -104,16 +107,6 @@ const useStyles = makeStyles(theme => ({
 		marginBottom: '15px',
 	},
 }));
-
-const DatasetsMemo = memo(Datasets);
-export default function DatasetsContainer(props) {
-	const [stateApp] = useContext(AppContext);
-	const stateAppMemo = useMemo(
-		() => ({ layers: stateApp.layers, user: stateApp.user }),
-		[stateApp.layers, stateApp.user]
-	);
-	return <DatasetsMemo stateApp={stateAppMemo} headerButton={props.headerButton} search={props.search} />;
-}
 
 function Datasets({ headerButton, search, stateApp }) {
 	const classes = useStyles();
@@ -176,7 +169,7 @@ function Datasets({ headerButton, search, stateApp }) {
 	);
 
 	const onItemClick = dataset => {
-		const stateToUpdate = { mapGridCardActivated: false, selectedDataset: dataset };
+		const stateToUpdate = { selectedLayerControl: null, mapGridCardActivated: false, selectedDataset: dataset };
 		if (
 			dataset.sourceName === 'M1 Platform' &&
 			mapControlsStateValues.selectedDataset?.sourceName !== dataset.sourceName
@@ -275,10 +268,10 @@ function Datasets({ headerButton, search, stateApp }) {
 				)}
 			</StyledMenuSecondaryHeaderItem>
 			<div className={classes.root}>
-				{datasets?.map(({ sourceName, Icon, categories, ...rest }, index) => (
+				{datasets?.map(({ sourceName, Icon, categories, ...rest }) => (
 					<Grid
 						className="item"
-						key={sourceName + index}
+						key={`dataset-${sourceName}`}
 						data-testid={`dataset-${sourceName === 'M1 Platform' ? 'platform' : 'custom'}`}
 						onClick={() => onItemClick({ sourceName, Icon, categories, ...rest })}
 					>
@@ -333,3 +326,37 @@ function Datasets({ headerButton, search, stateApp }) {
 		</>
 	);
 }
+
+Datasets.propTypes = {
+	headerButton: PropTypes.shape({
+		fn: PropTypes.func.isRequired,
+	}),
+	search: PropTypes.string,
+	stateApp: PropTypes.shape({
+		user: PropTypes.shape({
+			_id: PropTypes.string.isRequired,
+			mongoId: PropTypes.string.isRequired,
+		}).isRequired,
+		layers: PropTypes.array.isRequired,
+	}).isRequired,
+};
+
+const DatasetsMemo = memo(Datasets);
+
+function DatasetsContainer({ headerButton, search }) {
+	const [stateApp] = useContext(AppContext);
+	const stateAppMemo = useMemo(
+		() => ({ layers: stateApp.layers, user: stateApp.user }),
+		[stateApp.layers, stateApp.user]
+	);
+	return <DatasetsMemo stateApp={stateAppMemo} headerButton={headerButton} search={search} />;
+}
+
+DatasetsContainer.propTypes = {
+	headerButton: PropTypes.shape({
+		fn: PropTypes.func.isRequired,
+	}),
+	search: PropTypes.string,
+};
+
+export default DatasetsContainer;
