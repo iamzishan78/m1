@@ -1,4 +1,3 @@
-import React from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
@@ -742,6 +741,9 @@ export const SUMMARY_FIELDS = contactData => {
 		maxOfferPriceSum = contactData?.contactInterests?.maxOfferPriceSum
 			? 'contactInterests.maxOfferPriceSum'
 			: 'evaluatedContactInterests.maxOfferPriceSum',
+		currentOfferPriceSum = contactData?.contactInterests?.currentOfferPriceSum
+			? 'contactInterests.currentOfferPriceSum'
+			: 'evaluatedContactInterests.currentOfferPriceSum',
 		offerPriceSum = contactData?.contactInterests?.offerPriceSum
 			? 'contactInterests.offerPriceSum'
 			: 'evaluatedContactInterests.offerPriceSum',
@@ -835,6 +837,12 @@ export const SUMMARY_FIELDS = contactData => {
 			label: 'Max Offer Amount',
 			key: maxOfferPriceSum,
 			type: 'currency',
+			position: 'right',
+		},
+		{
+			label: 'Current Offer Amount',
+			key: currentOfferPriceSum,
+			type: 'currencySimple',
 			position: 'right',
 		},
 		{

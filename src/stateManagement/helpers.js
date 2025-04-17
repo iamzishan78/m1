@@ -15,6 +15,7 @@ import {
 	stringFilterOptions,
 } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
+import { formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
@@ -23,7 +24,6 @@ import { tableController } from 'stateManagement/tableController';
 import { SMALL_TIMEOUT } from 'utils/consts';
 
 import { globalStateController } from './globalStateController';
-import { formatDate } from 'components/Shared/functions';
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -380,8 +380,11 @@ export const handleMRTSchema = ({
 	handleVisiblityMenuClick();
 	handleColumnMenuClick();
 
-	const groupedField =
-		_TableSchema.find(column => column.isGrouped)?.accessorKey || _TableSchema.find(column => column.isGrouped)?.id;
+	const colsWithGrouping = _TableSchema
+		.filter(column => column.isGrouped)
+		.map(column => column.accessorKey || column.id);
+
+	const groupedField = colsWithGrouping.length ? colsWithGrouping : null;
 
 	const columnVisibility = _TableSchema.reduce(
 		(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: !cur?.hidden }),

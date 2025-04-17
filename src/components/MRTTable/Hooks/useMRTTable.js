@@ -149,6 +149,20 @@ const useMRTTable = tableKey => {
 			enableStickyFooter: true,
 			enableSorting: tableStateValues?.grouping.length === 0,
 			enableFullScreenToggle: false,
+			muiExpandAllButtonProps: {
+				onClickCapture: () => {
+					if (tableContainerRef.current) {
+						fetchMoreOnBottomReached?.(tableContainerRef.current);
+					}
+				},
+			},
+			muiExpandButtonProps: {
+				onClickCapture: () => {
+					if (tableContainerRef.current) {
+						fetchMoreOnBottomReached?.(tableContainerRef.current);
+					}
+				},
+			},
 
 			...(tableStateValues.enableEditing && {
 				createDisplayMode: tableStateValues.createDisplayMode,
@@ -393,7 +407,7 @@ const useMRTTable = tableKey => {
 							Controller.syncFilters(result);
 
 							result.forEach(filter => {
-								const { mode } = tableState?.filterModes?.get({ noproxy: true })?.[filter.id] || {};
+								let { mode } = tableState?.filterModes?.get({ noproxy: true })?.[filter.id] || {};
 
 								let { value } = filter;
 								const { type, oRFilter, columnType, searchType, isMapViewFilter } = filter;
@@ -405,6 +419,9 @@ const useMRTTable = tableKey => {
 								}
 								if (columnType === 'date') {
 									value = filter.value;
+									mode = ['greaterThanOrEqualTo', 'lessThanOrEqualTo', 'betweenInclusive'].includes(mode)
+										? mode
+										: 'betweenInclusive';
 								}
 
 								Controller.setFilter({

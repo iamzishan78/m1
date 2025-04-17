@@ -47,6 +47,30 @@ const TaxRollInterestsMeta = {
 		},
 		{
 			...CommonSchema.SELECT_STRING_COLUMN,
+			header: 'Block',
+			id: 'block',
+			name: 'block',
+		},
+		{
+			...CommonSchema.SELECT_STRING_COLUMN,
+			header: 'Section',
+			id: 'section',
+			name: 'section',
+		},
+		{
+			...CommonSchema.SELECT_STRING_COLUMN,
+			header: 'Survey',
+			id: 'survey',
+			name: 'survey',
+		},
+		{
+			...CommonSchema.SELECT_STRING_COLUMN,
+			header: 'Abstract',
+			id: 'abstract',
+			name: 'abstract',
+		},
+		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Lease ID',
 			id: 'leaseId',
 			name: 'leaseId',

@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
-import { Tabs, Tab } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/styles';
+import { Tabs, Tab } from '@material-ui/core';
 
 // Components
+import RevenueSection from './RevenueSection';
 import AdjustmentSection from './AdjustmentSection';
 import ProductsSection from './Products';
-import RevenueSection from './RevenueSection';
+import { debounce } from 'lodash';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -115,45 +116,31 @@ const StyledTab = withStyles(theme => ({
 export default function DetailTabsSection({ monthsInterval, portfolioSummary, ...rest }) {
 	const classes = useStyles();
 	const [tab, setTab] = useState(0);
+	const [isButtonScroll, setButtonScroll] = useState(false);
+	const selectedTabRef = useRef(null);
 	const [adjustmentTotals, setAdjustmentTotals] = useState([]);
 	const [netRevenueTotals, setNetRevenueTotals] = useState([]);
 
-	const sectionsRef = useRef([]); // References for all tab sections
-	const observer = useRef(null); // Intersection Observer reference
-
 	useEffect(() => {
-		// Set up Intersection Observer
-		observer.current = new IntersectionObserver(
-			entries => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting) {
-						// Get the index of the currently visible section
-						const index = sectionsRef.current.indexOf(entry.target);
-						setTab(index);
-					}
-				});
-			},
-			{
-				root: null, // Defaults to the viewport
-				threshold: 0.5, // At least 50% of the section must be visible
-			}
-		);
+		selectedTabRef.current &&
+			selectedTabRef.current.scrollIntoView({
+				behavior: 'smooth',
+				block: 'start',
+				inline: 'start',
+			});
+	}, [tab]);
 
-		// Observe all sections
-		sectionsRef.current.forEach(section => {
-			if (section) {
-				observer.current.observe(section);
-			}
-		});
+	const handleScroll = e => {
+		if (!isButtonScroll) {
+			const { scrollTop } = e.target;
+			if (scrollTop <= 335 && tab !== 0) setTab(0);
+			else if (scrollTop > 335 && scrollTop <= 1060 && tab !== 1) setTab(1);
+			else if (scrollTop > 1060 && tab !== 2) setTab(2);
+		}
+		handleEndScroll();
+	};
 
-		// Cleanup observer on unmount
-		return () => {
-			if (observer.current) {
-				observer.current.disconnect();
-			}
-		};
-	}, [rest.loading]);
-
+	const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
 	const adjustmentsRef = useCallback(obj => {
 		if (obj != null) {
 			setAdjustmentTotals(obj);
@@ -166,17 +153,17 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary, ..
 		}
 	}, []);
 
-	const handleTabChange = (event, newTab) => {
-		sectionsRef.current[newTab]?.scrollIntoView({
-			behavior: 'smooth',
-			block: 'start',
-		});
-	};
-
 	return (
 		<div className={classes.tabsSection}>
 			<div className={classes.tabsHeader}>
-				<StyledTabs value={tab} onChange={handleTabChange} aria-label="ant example">
+				<StyledTabs
+					value={tab}
+					onChange={(event, tab) => {
+						setButtonScroll(true);
+						setTab(tab);
+					}}
+					aria-label="ant example"
+				>
 					<StyledTab label="Revenue" />
 					<StyledTab label="Adjustments" />
 					<StyledTab label="Products" />
@@ -189,8 +176,9 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary, ..
 					backgroundColor: '#f3f3f3',
 					maxHeight: rest.isRevenueTab ? 'calc(100vh - 305px)' : 'calc(100vh - 270px)',
 				}}
+				onScroll={handleScroll}
 			>
-				<div className={classes.revenueSection} ref={el => (sectionsRef.current[0] = el)}>
+				<div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
 					<RevenueSection
 						monthsInterval={monthsInterval}
 						portfolioSummary={portfolioSummary}
@@ -199,7 +187,7 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary, ..
 						loading={rest.loading}
 					/>
 				</div>
-				<div className={classes.adjustmentSection} ref={el => (sectionsRef.current[1] = el)}>
+				<div className={classes.adjustmentSection} ref={tab === 1 ? selectedTabRef : null}>
 					<AdjustmentSection
 						monthsInterval={monthsInterval}
 						portfolioSummary={portfolioSummary}
@@ -207,7 +195,7 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary, ..
 						loading={rest.loading}
 					/>
 				</div>
-				<div className={classes.productSection} ref={el => (sectionsRef.current[2] = el)}>
+				<div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>
 					<ProductsSection
 						monthsInterval={monthsInterval}
 						portfolioSummary={portfolioSummary}

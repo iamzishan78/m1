@@ -176,13 +176,18 @@ export default function CSVFileReader(props) {
 		}
 	};
 
+	const normalizeFieldName = fieldName => {
+		return fieldName.replace(/_/g, ' ').toLowerCase().trim();
+	};
+
 	const mapped_headers_from_CSV = data => {
 		if (data.length > 0) {
-			let uniqueKeys = Object.keys(data[0].data);
-			let matchedKeys = [...jobStateValues.m1neralHeaders];
-			uniqueKeys = [...matchedKeys.filter(mk => !uniqueKeys.includes(mk.label)).map(mk => mk.label), ...uniqueKeys];
+			const uniqueKeys = Object.keys(data[0].data);
+			const matchedKeys = [...jobStateValues.m1neralHeaders];
 			for (let index in uniqueKeys) {
-				const matchedKey = matchedKeys.find(el => el?.label === uniqueKeys[index]);
+				const matchedKey = matchedKeys.find(
+					el => normalizeFieldName(el?.label) === normalizeFieldName(uniqueKeys[index])
+				);
 
 				uniqueKeys[index] = {
 					mapped_key: uniqueKeys[index],

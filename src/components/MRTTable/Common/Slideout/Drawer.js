@@ -7,7 +7,7 @@ import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 const useStyles = makeStyles(theme => ({
 	root: {
-		height: '100vh',
+		height: 'calc(100vh - 52px)',
 		padding: '10px',
 		position: 'absolute',
 		right: 0,
