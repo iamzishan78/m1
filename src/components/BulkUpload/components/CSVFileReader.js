@@ -87,6 +87,20 @@ const mainContent = {
 	padding: '14px 0px 0px  0px',
 };
 
+function convertToDate(input) {
+	input = input.toString().padStart(4, '0'); // Ensure the string is 4 digits
+	let month = input.length === 3 ? '01' : input.slice(0, input.length - 2);
+	let year = '20' + input.slice(-2); // Always assuming 2000s
+	let day = '01';
+
+	// Pad single-digit month
+	if (month.length === 1) {
+		month = '0' + month;
+	}
+
+	return `${month}/${day}/${year}`;
+}
+
 function transformData(dataArray) {
 	const data = dataArray?.[0]?.data || {};
 	if (dataArray.length === 1 && Object.values(data).every(value => value === undefined)) {
@@ -140,6 +154,7 @@ function transformData(dataArray) {
 			const deductType = item[`Deduct Type ${i}`];
 			const grossDeduct = item[`Gross Deduct ${i}`];
 			const netDeduct = item[`Net Deduct ${i}`];
+			const prodDate = item[`Prod Date`];
 
 			const isFirstRow = i === 1;
 			if (taxType || grossTax || netTax || deductType || grossDeduct || netDeduct) {
@@ -149,6 +164,7 @@ function transformData(dataArray) {
 						...Object.fromEntries(
 							Object.entries(nonRepeatingValues).map(([key, val]) => [key, isFirstRow ? val : null])
 						),
+						'Prod Date': convertToDate(prodDate),
 						'Tax Type': taxType,
 						'Gross Tax': grossTax,
 						'Net Tax': netTax,

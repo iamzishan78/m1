@@ -122,7 +122,7 @@ const CHECKDETAILSENERGY = [
 	},
 	{
 		label: 'GrsDeduct',
-		mapped_key: 'Gross Deducts',
+		mapped_key: 'Gross Deduct',
 		required: false,
 		actual_key: 'propertyDeducts',
 	},
@@ -157,12 +157,6 @@ const CHECKDETAILSENERGY = [
 		mapped_key: 'Deduct Type',
 		required: false,
 		actual_key: 'deductType',
-	},
-	{
-		label: 'Gross Deduct',
-		mapped_key: '',
-		required: false,
-		actual_key: 'grossDeduct',
 	},
 	{
 		label: 'Owner Deduct Amount',

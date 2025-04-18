@@ -213,9 +213,9 @@ const RevenueStatementHeadCells = [
 		options: { sort: true, filter: true },
 	},
 	{
-		name: 'grossDeduct',
+		name: 'propertyDeducts',
 		label: 'Gross Deduct',
-		esKey: 'grossDeduct',
+		esKey: 'propertyDeducts',
 		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { currency: true }) },
 	},
 	{
