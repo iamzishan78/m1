@@ -901,29 +901,37 @@ class DrawStateControllerHandler extends StateController {
 		const { currentFeature } = this.getValues(['currentFeature']);
 
 		const abstractShape = this.getAbstractGeoSource(abstractData, currentFeature);
-		layerData.shapeJson.geometry = abstractShape?.geometry;
-		layerData.shapeJson.properties = {
-			...layerData.shapeJson.properties,
-			originalProperties: abstractShape?.properties,
-			shapeArea: calculateLandArea(abstractShape, true),
-			shapeCenter: calculateShapeCenter(abstractShape?.geometry),
+
+		const updatedLayerData = {
+			...layerData,
+			shapeJson: {
+				...layerData.shapeJson,
+				geometry: abstractShape?.geometry,
+				properties: {
+					...layerData.shapeJson.properties,
+					originalProperties: abstractShape?.properties,
+					shapeArea: calculateLandArea(abstractShape, true),
+					shapeCenter: calculateShapeCenter(abstractShape?.geometry),
+				},
+			},
 		};
+
 		const customLayerData = {
-			shapeJson: layerData.shapeJson,
-			shape: JSON.stringify(layerData.shapeJson),
-			layer: layerData.layer,
-			name: layerData.shapeLabel,
-			user: layerData.user?._id,
+			shapeJson: updatedLayerData.shapeJson,
+			shape: JSON.stringify(updatedLayerData.shapeJson),
+			layer: updatedLayerData.layer,
+			name: updatedLayerData.shapeLabel,
+			user: updatedLayerData.user?._id,
 		};
 
 		updateCustomLayer({
 			variables: {
-				customLayerId: layerData._id,
+				customLayerId: updatedLayerData._id,
 				customLayer: customLayerData,
 			},
 		}).then(() => {
 			jobController.toggleBulkUpload();
-			const newPath = `/map/${layerData.layer}s/${layerData._id}`;
+			const newPath = `/map/${updatedLayerData.layer}s/${updatedLayerData._id}`;
 			if (history.location.pathname !== newPath) {
 				history.replace(newPath);
 			}
@@ -933,7 +941,7 @@ class DrawStateControllerHandler extends StateController {
 		});
 		const jsonLayer = copy(customLayerData.shapeJson);
 		jsonLayer.layer = { id: customLayerData.layer };
-		jsonLayer.id = layerData._id;
+		jsonLayer.id = updatedLayerData._id;
 
 		findBoundsMap([jsonLayer], window.mapRef);
 		drawBoundary(jsonLayer);
@@ -941,12 +949,12 @@ class DrawStateControllerHandler extends StateController {
 			selectedShape: {
 				...jsonLayer.properties,
 				feature: jsonLayer,
-				id: layerData._id,
+				id: updatedLayerData._id,
 			},
 		});
 
 		this.actionClose(dispatch);
-		this.updateSelectedLayerFeature(dispatch, layerData);
+		this.updateSelectedLayerFeature(dispatch, updatedLayerData);
 	}
 
 	confirmShapeEditing({

@@ -58,13 +58,18 @@ function CustomAutoComplete({
 }) {
 	const client = useApolloClient();
 	const filter = createFilterOptions();
-	const [options, setOptions] = useState(Array.isArray(defaultOptions) ? defaultOptions : []);
+	const [options, setOptions] = useState([]);
+	const [fieldValue, setFieldValue] = useState(null);
 	const [isLoading, setIsLoading] = useState(loading);
 	const watchValue = watch ? watch(name) : '';
 
 	useEffect(() => {
-		setOptions(defaultOptions);
+		setOptions(Array.isArray(defaultOptions) ? defaultOptions : []);
 	}, [defaultOptions]);
+
+	useEffect(() => {
+		setFieldValue(value ?? null);
+	}, [value]);
 
 	useEffect(() => {
 		setIsLoading(loading);
@@ -121,12 +126,12 @@ function CustomAutoComplete({
 	const autoCompleteChnage = ({ reason, newValue, oldValue, fieldOnChange }) => {
 		const value = newValue ? newValue.value || newValue : null;
 		onChange?.({ value, oldValue, reason });
-		fieldOnChange?.(value);
+		fieldOnChange ? fieldOnChange(value) : setFieldValue(value);
 	};
 
 	const textFieldChange = event => {
 		const value = event.target.value;
-		isESSearch && fetchOptions(value);
+		query && fetchOptions(value);
 		onTextFieldChange?.(value);
 	};
 
@@ -201,7 +206,7 @@ function CustomAutoComplete({
 				filterOptions={filterOptions}
 				getOptionLabel={getOptionLabel}
 				getOptionSelected={getOptionSelected}
-				value={getValue(field?.value ?? null)}
+				value={getValue(field?.value ?? fieldValue)}
 				options={getOptionsArray(field?.value)}
 				noOptionsText={isLoading ? <CircularProgress size={20} /> : 'No options'}
 				onBlur={event => {
