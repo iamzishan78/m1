@@ -258,7 +258,7 @@ const AddNewRelatedAgreementDialog = ({ customLayerId, handleClose, parentType, 
 												value: 'agreement',
 											},
 										]}
-										renderOption={option => {
+										renderOption={({ option }) => {
 											if (option.id === 'newEntity') {
 												return;
 											}

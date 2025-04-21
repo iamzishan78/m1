@@ -1,32 +1,10 @@
-// QUERIES
 import React, { useState, useEffect } from 'react';
-
-import { Popper, Typography } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import { Popper } from '@material-ui/core';
 
 import { useLazyQuery } from '@apollo/client';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
-import loadashFilter from 'lodash/filter';
-
-// const styles = (theme) => ({
-//   popper: {
-//     width: "560px"
-//     // maxWidth: "fit-content",
-//   },
-// });
-
-// const PopperMy = (props) => {
-//   return (
-//     <Popper
-//       style={{ maxWidth: "fit-content" }}
-//       placement="bottom-start"
-//       {...props}
-//     />
-//   );
-// };
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 const AutoCompleteField = ({
 	placeholder,
@@ -42,12 +20,9 @@ const AutoCompleteField = ({
 }) => {
 	const [open, setOpen] = useState(false);
 	const [options, setOptions] = useState([]);
-	// const [value, setValue] = useState({ key: value });
 	const [search, setSearch] = useState(value);
 	const { label, filterKey, type } = column;
 	const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: 'no-cache' });
-
-	const filter = createFilterOptions();
 
 	useEffect(() => {
 		getFiltersAction('');
@@ -94,136 +69,78 @@ const AutoCompleteField = ({
 		return <Popper {...props} style={{ maxWidth: 'fit-content', ...rest.style }} placement="bottom-start" />;
 	};
 
+	const getCustomOptionLabel = option => {
+		if (typeof option.key === 'string') {
+			return option;
+		} else {
+			const filterSpace = option?.key?.filter(item => item !== '');
+
+			if (!filterSpace) {
+				return '';
+			}
+
+			return `#-${filterSpace[0]}${filterSpace[1] ? ` - ${filterSpace[1]}` : ''}`;
+		}
+	};
+
 	return (
-		<Autocomplete
-			id={`filter-autocomplete-${label || 'es-field'}`}
-			PopperComponent={PopperMy}
-			open={open}
-			onOpen={() => {
-				setOpen(true);
-			}}
-			onClose={() => {
-				setOpen(false);
-			}}
-			value={value}
-			inputValue={search}
-			getOptionSelected={(option, value) => option?.key === value.key}
-			getOptionLabel={option => {
-				if (typeof option.key === 'string') {
-					return option;
-				} else {
-					// const spliteData = option?.key.split(" ");
-					const filterSpace = option?.key?.filter(item => item !== '');
-
-					if (!filterSpace) {
-						return '';
-					}
-
-					return `#-${filterSpace[0]}${filterSpace[1] ? ` - ${filterSpace[1]}` : ''}`;
-				}
-			}}
-			onChange={(e, value, reason) => {
-				if (reason === 'clear' || !value?.key) {
-					return setSearch('');
-				}
-
-				if (typeof value.key === 'string') {
-					setSearch(value.key);
-					onChange(value.key);
-					return;
-				}
-				const valuesLength = value.key.length;
-				// Starting selecting from last value which in agreement case it  would be shapelabel
-				const lastValue = value.key?.[valuesLength - 1];
-				const val = lastValue && lastValue !== '' ? lastValue : value.key.find(val => val !== '') || '';
-				const index = value.key.indexOf(val);
-				setSearch(val);
-				onChange(val, index >= 0 ? index : 0);
-			}}
-			fullWidth
-			autoHighlight
-			options={options}
-			loading={loading}
-			renderOption={(props, value) => {
-				if (props?.id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add '{props.key}'</Typography>;
-				}
-				const matches = match(props.key, value?.inputValue);
-				const parts = parse(props.key, matches);
-
-				return (
-					<li {...props}>
-						<div>
-							{parts.map((part, index) => (
-								<span
-									key={index}
-									style={{
-										fontWeight: part.highlight ? 700 : 400,
-									}}
-								>
-									{typeof part.text === 'string' ? part.text : part.text?.join(' - ')}
-								</span>
-							))}
-						</div>
-					</li>
-				);
-			}}
-			filterOptions={(options, params) => {
-				let inputValue = params.inputValue;
-				const filtered = filter(options, { ...params, inputValue });
-
-				const isExist = loadashFilter(filtered, f => {
-					return typeof f.key === 'string' ? f.key === inputValue : f.key.includes(inputValue);
-				});
-				// Suggest the creation of a new value
-				if (inputValue !== '' && (!isExist || isExist.length === 0)) {
-					filtered.unshift({
-						id: 'newEntity',
-						key: inputValue,
-					});
-				}
-				return filtered;
-			}}
-			renderInput={params => (
-				<TextField
-					{...params}
-					placeholder={placeholder}
-					variant={variant}
-					autoFocus={true}
-					label={label}
-					onChange={e => {
-						handleChange(e.target.value);
-					}}
-					onKeyDown={e => {
-						if (e.code === 'Tab') {
-							// e.preventDefault();
-							// e.stopPropagation();
-							const ops = options.filter(op => op.key.startsWith(search));
-							if (ops[0] && ops[0].key) {
-								onChange(ops[0].key);
+		<>
+			<CustomAutoComplete
+				id={`filter-autocomplete-${label || 'es-field'}`}
+				PopperComponent={PopperMy}
+				open={open}
+				onOpen={() => {
+					setOpen(true);
+				}}
+				onClose={() => {
+					setOpen(false);
+				}}
+				inputValue={search}
+				fieldConfig={{
+					loading,
+					variant,
+					getCustomOptionLabel,
+					...(rest.renderOption && { renderOptionComp: rest.renderOption }),
+					textfieldRestProps: {
+						onKeyDown: e => {
+							if (e.code === 'Tab') {
+								const ops = options.filter(op => op.key.startsWith(search));
+								if (ops[0] && ops[0].key) {
+									onChange(ops[0].key);
+								}
 							}
+						},
+					},
+				}}
+				fieldAttributes={{
+					label,
+					value,
+					placeholder,
+					defaultOptions: options,
+				}}
+				fieldEvents={{
+					onTextFieldChange: value => handleChange(value),
+					onChange: ({ value, reason }) => {
+						if (reason === 'clear' || !value?.key) {
+							return setSearch('');
 						}
-					}}
-					fullWidth
-					InputProps={{
-						...params.InputProps,
-						endAdornment: (
-							<React.Fragment>
-								{loading ? <CircularProgress color="inherit" size={20} /> : null}
-								{params.InputProps.endAdornment}
-							</React.Fragment>
-						),
-					}}
-				/>
-			)}
-			{...rest}
-		/>
-	);
-};
 
-AutoCompleteField.defaultProps = {
-	variant: 'standard',
-	placeholder: '',
+						if (typeof value.key === 'string') {
+							setSearch(value.key);
+							onChange(value.key);
+							return;
+						}
+						const valuesLength = value.key.length;
+						const lastValue = value.key?.[valuesLength - 1];
+						const val = lastValue && lastValue !== '' ? lastValue : value.key.find(val => val !== '') || '';
+						const index = value.key.indexOf(val);
+						setSearch(val);
+						onChange(val, index >= 0 ? index : 0);
+					},
+				}}
+			/>
+		</>
+	);
 };
 
 export default AutoCompleteField;

@@ -247,8 +247,9 @@ const AddNewRelatedAgreementDialog = props => {
 												value: 'agreement',
 											},
 										]}
-										renderOption={option => {
-											if (option.id === 'newEntity') {
+										renderOption={({ option }) => {
+											if (!option) return;
+											if (option?.id === 'newEntity') {
 												return;
 											}
 											let parts = parse([option.key[4], option.key[2]], []);

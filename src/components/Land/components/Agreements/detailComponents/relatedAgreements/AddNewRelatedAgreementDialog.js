@@ -229,7 +229,7 @@ const AddNewRelatedAgreementDialog = props => {
 										extendSearchQuery="*"
 										variant="outlined"
 										style={{ maxWidth: '560px', width: '560px' }}
-										filterOptions={(options, params) => {
+										filterOptions={options => {
 											return options;
 										}}
 										filters={[
@@ -238,9 +238,9 @@ const AddNewRelatedAgreementDialog = props => {
 												value: 'agreement',
 											},
 										]}
-										renderOption={option => {
+										renderOption={({ option }) => {
 											if (option.id === 'newEntity') {
-												return;
+												return null;
 											}
 											let parts = parse([option.key[4], option.key[2]], Array());
 											const type =
