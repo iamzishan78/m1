@@ -1,57 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
-import { Grid, Typography } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-
 import { useLazyQuery } from '@apollo/client';
 import { uniqBy } from 'lodash';
-import loadashFilter from 'lodash/filter';
+import PropTypes from 'prop-types';
+
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { US_STATES } from 'utils/data';
-
-const newOptionsParams = {
-	renderOption: option => {
-		if (option._id === 'newEntity') {
-			return <Typography style={{ color: 'midnightblue' }}>Add '{option.key}'</Typography>;
-		}
-
-		return (
-			<Grid container spacing={0}>
-				<Grid container item xs={12} alignItems="center">
-					<Grid item xs>
-						<span style={{ fontWeight: 400 }}>{option.key}</span>
-
-						{/* <Typography variant="body2" color="textSecondary">
-                      {option}
-                  </Typography> */}
-					</Grid>
-				</Grid>
-			</Grid>
-		);
-	},
-	filterOptions: (options, params) => {
-		const inputValue = params.inputValue;
-		if (!inputValue) {
-			return options;
-		}
-		const filtered = createFilterOptions()(options, { ...params, inputValue });
-		const isExist = loadashFilter(filtered, filter => {
-			return filter?.key?.toLowerCase() === inputValue?.toLowerCase();
-		});
-		// Suggest the creation of a new value
-		if (inputValue !== '' && (!isExist || isExist.length === 0)) {
-			filtered.unshift({
-				key: inputValue,
-				_id: 'newEntity',
-			});
-		}
-		return filtered;
-	},
-};
 
 export const AutoCompleteLandgrid = React.memo(
 	({
@@ -66,105 +24,15 @@ export const AutoCompleteLandgrid = React.memo(
 		variant,
 		compoundValue,
 		newOptions,
-		// newOptionFilters,
 		onBlur,
 		disabled = false,
-		// autoCompleteType = 'AgreementShapeOwner',
 	}) => {
-		const [open, setOpen] = useState(false);
 		const [options, setOptions] = useState([]);
 		const [search, setSearch] = useState(value);
-		// const { filterKey, type } = column
+
 		const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_DB_FILTERS, {
 			fetchPolicy: 'no-cache',
 		});
-
-		// const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
-
-		// const condition = useMemo(
-		// 	() => Object.entries(newOptionFilters || {}).reduce((acc, [key, val]) => ({ ...acc, [`${key}`]: val }), {}),
-		// 	[newOptionFilters]
-		// );
-
-		// useEffect(() => {
-		// 	if (!newOptions) return;
-
-		// 	getautoCompleteList({
-		// 		variables: {
-		// 			type: autoCompleteType,
-		// 			data: { key: label.toLowerCase(), inTract: autoCompleteType === 'AgreementShapeOwner', condition },
-		// 		},
-		// 	});
-		// }, [label, condition]);
-
-		// const autoCompleteList = React.useMemo(
-		// 	() => dataAutoCompleteList?.autoCompleteList || [],
-		// 	[dataAutoCompleteList?.autoCompleteList]
-		// );
-
-		useEffect(() => {
-			setSearch(value);
-		}, [value]);
-
-		useEffect(() => {
-			getFiltersAction('');
-		}, [filters, compoundValue]);
-
-		useEffect(() => {
-			if (!filtersData) {
-				return;
-			}
-
-			const keys = Object.keys(filtersData);
-			if (!keys || !filtersData[keys[0]] || !filtersData[keys[0]]?.hits) {
-				return;
-			}
-
-			let hits = filtersData[keys[0]].hits;
-			if (label === 'State') {
-				hits = hits.map(hit => ({ ...hit, key: US_STATES[hit.key] || null })).filter(hit => hit.key);
-			}
-			// hits = hits.map((hit) => ({ ...hit, key: hit.key, label: hit.key.toUpperCase() }))
-
-			if (label === 'Township') {
-				hits = uniqBy(
-					hits.map(hit => ({ ...hit, key: hit.key.split(' ')[0] })),
-					'key'
-				);
-			}
-			if (label === 'Range') {
-				if (compoundValue) {
-					hits = hits.filter(hit => hit.key.includes(compoundValue));
-				}
-				hits = uniqBy(
-					hits.map(hit => ({ ...hit, key: hit.key.split(' ')[1] })),
-					'key'
-				);
-			}
-
-			return setOptions(hits);
-
-			// const uniqueVals = [
-			// 	...new Set([...hits.map(hit => hit.key?.toLowerCase()), ...autoCompleteList.map(val => val?.toLowerCase())]),
-			// ];
-
-			// const hitsObj = hits.reduce((acc, val) => ({ ...acc, ...(val?.key ? { [val.key.toLowerCase()]: val } : {}) }), {});
-			// const autoCompleteListObj = autoCompleteList.reduce(
-			// 	(acc, val) => ({ ...acc, ...(val ? { [val.toLowerCase()]: { key: val } } : {}) }),
-			// 	{}
-			// );
-
-			// const combinedHits = uniqueVals.map(val => hitsObj[val] || autoCompleteListObj[val]).filter(val => val);
-
-			// setOptions(combinedHits);
-		}, [filtersData, compoundValue]);
-
-		const handleChange = search => {
-			setSearch(search);
-			if (label !== 'State') {
-				getFiltersAction(search);
-			}
-		};
 
 		const getFiltersAction = search => {
 			const rawSearch = search;
@@ -182,7 +50,6 @@ export const AutoCompleteLandgrid = React.memo(
 					extendSearchQuery,
 					size: label === 'County' ? 1000 : 70,
 					filterAggs: {
-						// query: rawSearch,
 						field: typeof filterKey === 'string' ? filterKey : undefined,
 						fields: typeof filterKey !== 'string' ? filterKey : undefined,
 						size: label === 'County' ? 1000 : 70,
@@ -191,56 +58,96 @@ export const AutoCompleteLandgrid = React.memo(
 			});
 		};
 
+		useEffect(() => {
+			setSearch(value);
+		}, [value]);
+
+		useEffect(() => {
+			getFiltersAction('');
+		}, [filters, compoundValue]);
+
+		useEffect(() => {
+			if (!filtersData) {return;}
+
+			const keys = Object.keys(filtersData);
+			if (!keys || !filtersData[keys[0]] || !filtersData[keys[0]]?.hits) {return;}
+
+			let hits = filtersData[keys[0]].hits;
+			if (label === 'State') {
+				hits = hits.map(hit => ({ ...hit, key: US_STATES[hit.key] || null })).filter(hit => hit.key);
+			}
+
+			if (label === 'Township') {
+				hits = uniqBy(
+					hits.map(hit => ({ ...hit, key: hit.key.split(' ')[0] })),
+					'key'
+				);
+			}
+
+			if (label === 'Range') {
+				if (compoundValue) {
+					hits = hits.filter(hit => hit.key.includes(compoundValue));
+				}
+				hits = uniqBy(
+					hits.map(hit => ({ ...hit, key: hit.key.split(' ')[1] })),
+					'key'
+				);
+			}
+
+			setOptions(hits.map(hit => ({ value: hit.key, label: hit.key })));
+		}, [filtersData, compoundValue]);
+
 		return (
-			<Autocomplete
-				id={`filter-autocomplete-${label}`}
-				open={open}
-				onOpen={() => {
-					setOpen(true);
+			<CustomAutoComplete
+				fieldAttributes={{
+					name: label,
+					label,
+					value: search,
+					defaultOptions: options,
 				}}
-				onClose={() => {
-					setOpen(false);
+				fieldConfig={{
+					variant: variant || 'outlined',
+					margin: 'dense',
+					disabled,
+					allowNewOptions: newOptions,
+					loading,
 				}}
-				disabled={disabled}
-				// value={{ key: value, _id: value }}
-				inputValue={search?.toString() || ''}
-				getOptionSelected={(option, value) => option.key === value.key}
-				getOptionLabel={option => option?.key?.toString().replace(/^\,|\,$/gm, '')}
-				onChange={(e, value, reason) => {
-					if (reason === 'clear' || !value?.key) {
-						setSearch('');
-						onChange(e, {});
-					} else {
-						setSearch(value.key);
-						onChange(e, value || '');
-					}
+				fieldEvents={{
+					onChange: ({ value }) => {
+						setSearch(value);
+						onChange(value ? { key: value } : {});
+					},
+					onBlur,
+					onTextFieldChange: value => {
+						if (label !== 'State') {
+							getFiltersAction(value);
+						}
+					},
 				}}
-				options={options}
-				loading={loading}
-				renderInput={params => (
-					<TextField
-						{...params}
-						label={label}
-						margin="dense"
-						value={search}
-						variant={variant}
-						onChange={e => {
-							handleChange(e.target.value);
-						}}
-						onBlur={onBlur}
-						InputProps={{
-							...params.InputProps,
-							endAdornment: (
-								<React.Fragment>
-									{loading ? <CircularProgress color="inherit" size={20} /> : null}
-									{params.InputProps.endAdornment}
-								</React.Fragment>
-							),
-						}}
-					/>
-				)}
-				{...(newOptions ? newOptionsParams : {})}
 			/>
 		);
 	}
 );
+
+AutoCompleteLandgrid.displayName = 'AutoCompleteLandgrid';
+
+AutoCompleteLandgrid.propTypes = {
+	onChange: PropTypes.func.isRequired,
+	filterKey: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]).isRequired,
+	type: PropTypes.string,
+	extendSearchQuery: PropTypes.object,
+	esIndex: PropTypes.string,
+	filters: PropTypes.array,
+	label: PropTypes.string.isRequired,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+	variant: PropTypes.string,
+	compoundValue: PropTypes.string,
+	newOptions: PropTypes.bool,
+	onBlur: PropTypes.func,
+	disabled: PropTypes.bool,
+};
+
+AutoCompleteLandgrid.defaultProps = {
+	esIndex: 'platformData:landgrid',
+	disabled: false,
+};
