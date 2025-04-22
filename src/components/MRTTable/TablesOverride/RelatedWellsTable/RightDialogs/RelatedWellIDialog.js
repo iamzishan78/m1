@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+
 import { CircularProgress, Dialog, ListItemIcon, ListItemText, Menu, MenuItem } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
@@ -12,6 +13,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
@@ -412,7 +414,6 @@ function RelatedWellsDialog(props) {
 		</div>
 	);
 
-	console.log('wellInterest', props.wellInterest);
 	return (
 		<>
 			{deleteDialogOpen && (
@@ -434,5 +435,23 @@ function RelatedWellsDialog(props) {
 		</>
 	);
 }
+
+RelatedWellsDialog.propTypes = {
+	wellInterest: PropTypes.shape({
+		_id: PropTypes.string,
+		apiNumber: PropTypes.string,
+		api: PropTypes.string,
+		globalWell: PropTypes.string,
+		wellName: PropTypes.string,
+		leaseId: PropTypes.string,
+		lease: PropTypes.string,
+		leaseAcres: PropTypes.number,
+	}),
+	shapeType: PropTypes.string.isRequired,
+	shapeId: PropTypes.string.isRequired,
+	open: PropTypes.bool.isRequired,
+	width: PropTypes.string,
+	onClose: PropTypes.func.isRequired,
+};
 
 export default RelatedWellsDialog;

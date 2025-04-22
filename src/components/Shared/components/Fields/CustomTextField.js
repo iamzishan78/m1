@@ -4,7 +4,6 @@ import { Controller } from 'react-hook-form';
 import { AddIcCall, Autorenew, EmailOutlined, Textsms, Voicemail } from '@mui/icons-material';
 import { CircularProgress, Grid, IconButton, InputAdornment, TextField, Tooltip, Box } from '@mui/material';
 
-
 import PropTypes from 'prop-types';
 import validator from 'validator';
 
@@ -122,7 +121,6 @@ function renderAdornment({ value, type, handleAction, dialpadFeature, dialpadIds
 			iconConfig =>
 				iconConfig.showIcon(dialpadIds, dialpadFeature) && (
 					<InputAdornment position="end" key={iconConfig.tooltip}>
-						{console.log({ dialpadIds, showIcon: iconConfig.showIcon(dialpadIds) })}
 						<Tooltip title={iconConfig.tooltip} placement="top">
 							<IconButton
 								id={'adornment-icon'}
