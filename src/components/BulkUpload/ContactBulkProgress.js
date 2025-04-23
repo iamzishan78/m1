@@ -167,6 +167,7 @@ const ContactBulkProgress = () => {
 					refetchHelper(['getContactPurchaseData']);
 				} else if (name === 'Sync Dialpad Contacts') {
 					message = lastMessage;
+					refetchHelper(['getDailpadContact']);
 				} else if (type === 'contacts') {
 					message =
 						status === 'Created'
