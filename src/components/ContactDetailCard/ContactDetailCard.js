@@ -639,7 +639,7 @@ function ContactDetailCard(props) {
 		dispatch(showInfoMessage('Syncing contact to Dialpad...'));
 		syncContactToDialpad({
 			variables: { contactId: contactData?._id },
-			refetchQueries: ['getContact'],
+			refetchQueries: ['getContact', 'getDailpadContact'],
 			awaitRefetchQueries: true,
 		}).then(({ data }) => {
 			if (data?.syncContactToDialpad && !data.syncContactToDialpad?.success) {
