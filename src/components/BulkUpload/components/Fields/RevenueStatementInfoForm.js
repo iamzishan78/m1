@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Controller } from 'react-hook-form';
-
+import { get } from 'lodash';
 import { Grid, TextField, InputAdornment, Select, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-
+import { Controller } from 'react-hook-form';
 import { useLazyQuery } from '@apollo/client';
-import { get } from 'lodash';
-import _ from 'lodash';
 
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
-
+import _ from 'lodash';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-
-import { jobController } from 'stateManagement/jobStateController';
+import { jobController } from 'hookstate/jobStateController';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -59,9 +55,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 	const [searchOperator, setSearchOperator] = useState('');
 
 	useEffect(() => {
-		if (uploaderFormValues) {
-			reset(uploaderFormValues);
-		}
+		if (uploaderFormValues) reset(uploaderFormValues);
 		return () => {
 			const values = getValues();
 			Object.keys(values).forEach(key => {
@@ -79,6 +73,15 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 			});
 		};
 	}, []);
+
+	useEffect(() => {
+		const importType = watch('importType');
+		if (importType) {
+			jobController.updateState({
+				jobSubType: importType,
+			});
+		}
+	}, [watch('importType')]);
 
 	useEffect(() => {
 		getPayorList({
@@ -287,6 +290,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 									render={params => (
 										<Select {...params} fullWidth margin="dense" variant="outlined">
 											<MenuItem value="Standard M1 Import">Standard M1 Import</MenuItem>
+											<MenuItem value="CHECKDETAILSENERGY">EnergyLink Import</MenuItem>
 										</Select>
 									)}
 								/>
