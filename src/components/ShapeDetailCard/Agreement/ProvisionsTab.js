@@ -362,12 +362,15 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 																value={value}
 															>
 																{standardProvisions?.map(p => (
-																	<MenuItem value={p.type}>{p.type}</MenuItem>
+																	<MenuItem key={p.type} value={p.type}>
+																		{p.type}
+																	</MenuItem>
 																))}
 															</Select>
 														</FormControl>
 													) : (
 														<AutoCompleteWithNewOption
+															size="medium"
 															variant="outlined"
 															id="provisionType"
 															label="Provision Type"
@@ -486,6 +489,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 											defaultValue={item.frequency}
 											render={({ field: { onChange, value } }) => (
 												<AutoCompleteWithNewOption
+													size="medium"
 													variant="outlined"
 													label="Frequency"
 													options={frequenciesList}
