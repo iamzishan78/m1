@@ -2,12 +2,13 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Grid, TextField } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
 import get from 'lodash/get';
 import moment from 'moment';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
@@ -113,27 +114,30 @@ export default function CustomDatesActivities({
 		<div style={{ display: 'flex' }}>
 			<Grid container direction="row" display="flex" alignItems="center" spacing={3} xs={12}>
 				<Grid item xs={2} sm={2} md={2} lg={2} xl={2} style={{ marginTop: '2px' }}>
-					<Autocomplete
-						size="small"
-						value={selectedDate}
-						onChange={(event, newValue) => {
-							const updatedValue = newValue === null ? CUSTOM_DATES.ALL_DATES : newValue;
-							setSelectedDate(updatedValue); // Update the state
-							handleDateTypeChange(updatedValue); // Call your function
-						}}
-						options={Object.values(CUSTOM_DATES)}
-						renderInput={params => (
-							<TextField
-								{...params}
-								variant="outlined"
-								label="Date Range"
-								placeholder=""
-								style={{ backgroundColor: 'white' }}
-							/>
-						)}
-						defaultValue={CUSTOM_DATES.ALL_DATES}
+					<CustomAutoComplete
 						disableListWrap
 						id="custom-date-dropdown"
+						fieldAttributes={{
+							value: selectedDate,
+							defaultOptions: Object.values(CUSTOM_DATES),
+							defaultValue: CUSTOM_DATES.ALL_DATES,
+							label: 'Date Range',
+						}}
+						fieldEvents={{
+							onChange: ({ value }) => {
+								const updatedValue = value === null ? CUSTOM_DATES.ALL_DATES : value;
+								setSelectedDate(updatedValue); // Update the state
+								handleDateTypeChange(updatedValue); // Call your function
+							},
+						}}
+						fieldConfig={{
+							variant: 'outlined',
+							textfieldRestProps: {
+								style: {
+									backgroundColor: 'white',
+								},
+							},
+						}}
 					/>
 				</Grid>
 				<Grid item xs={2.4} sm={2.4} md={2.4} lg={2.4} xl={2.4}>
@@ -299,37 +303,35 @@ const CampaignFilter = ({
 	}, [search, selectedFilters.qualifier, tableFilters, appliedFilters, stateApp.landAnalyticsSearchQuery]);
 
 	return (
-		<Autocomplete
-			size="small"
-			onChange={(e, selectedValue, reason) => {
-				if (reason === 'clear' || !selectedValue) {
-					setSearch('');
-					setValue('');
-				} else {
-					setSearch(selectedValue.name);
-					setValue(selectedValue);
-				}
+		<CustomAutoComplete
+			fieldEvents={{
+				onChange: ({ value, reason }) => {
+					if (reason === 'clear' || !value) {
+						setSearch('');
+						setValue('');
+					} else {
+						setSearch(value?.name ?? '');
+						setValue(value);
+					}
+				},
+				onTextFieldChange: val => {
+					setSearch(val);
+				},
 			}}
-			value={value}
-			inputValue={search?.toString()}
-			options={get(filtersData, 'getDbFilters.hits', [])
-				.map(d => d.key)
-				.filter(Boolean)}
-			getOptionLabel={op => op?.name || ''}
-			getOptionSelected={(op, value) => op?.name === value?.name || ''}
-			renderInput={params => (
-				<TextField
-					{...params}
-					variant="outlined"
-					label="Campaign Name"
-					placeholder=""
-					onChange={e => {
-						setSearch(e.target.value);
-					}}
-					style={{ backgroundColor: 'white' }}
-				/>
-			)}
-			defaultValue={null}
+			fieldAttributes={{
+				label: 'Campaign Name',
+				value: value,
+				inputSearchText: search?.toString(),
+				defaultOptions: get(filtersData, 'getDbFilters.hits', [])
+					.map(d => d.key)
+					.filter(Boolean),
+			}}
+			fieldConfig={{
+				variant: 'outlined',
+				textfieldRestProps: {
+					style: { backgroundColor: 'white' },
+				},
+			}}
 			disableListWrap
 			id="custom-date-dropdown"
 		/>
@@ -401,36 +403,34 @@ const QualifierFilter = ({
 	]);
 
 	return (
-		<Autocomplete
-			size="small"
-			onChange={(e, selectedValue, reason) => {
-				if (reason === 'clear' || !selectedValue?.key) {
-					setSearch('');
-					setValue('');
-				} else {
-					setSearch(selectedValue.key);
-					setValue(selectedValue.key);
-				}
+		<CustomAutoComplete
+			fieldEvents={{
+				onChange: ({ value: selectedValue, reason }) => {
+					if (reason === 'clear' || !selectedValue?.key) {
+						setSearch('');
+						setValue('');
+					} else {
+						setSearch(selectedValue.key);
+						setValue(selectedValue.key);
+					}
+				},
+				onTextFieldChange: val => {
+					setSearch(val);
+				},
 			}}
-			value={value}
-			inputValue={search?.toString()}
-			options={get(filtersData, 'getDbFilters.hits', [])}
-			getOptionSelected={(option, value) => option.key === value}
-			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '') || ''}
-			renderInput={params => (
-				<TextField
-					{...params}
-					variant="outlined"
-					//label="Activity Owner"
-					label={label}
-					placeholder=""
-					onChange={e => {
-						setSearch(e.target.value);
-					}}
-					style={{ backgroundColor: 'white' }}
-				/>
-			)}
-			defaultValue={null}
+			fieldAttributes={{
+				label: label,
+				value: value,
+				inputSearchText: search?.toString(),
+				defaultOptions: get(filtersData, 'getDbFilters.hits', []),
+			}}
+			fieldConfig={{
+				variant: 'outlined',
+				getCustomOptionLabel: option => option?.key?.toString().replace(/^,|,$/gm, '') || '',
+				textfieldRestProps: {
+					style: { backgroundColor: 'white' },
+				},
+			}}
 			disableListWrap
 			id="custom-date-dropdown"
 		/>
@@ -439,21 +439,19 @@ const QualifierFilter = ({
 
 const EntityFilter = ({ label }) => {
 	const options = ['Contacts'];
-
 	return (
-		<Autocomplete
-			size="small"
-			options={options}
-			defaultValue="Contacts"
-			renderInput={params => (
-				<TextField
-					{...params}
-					variant="outlined"
-					label={label}
-					id="custom-entity-dropdown"
-					style={{ backgroundColor: 'white' }}
-				/>
-			)}
+		<CustomAutoComplete
+			fieldAttributes={{
+				label: label,
+				defaultValue: 'Contacts',
+				defaultOptions: options,
+			}}
+			fieldConfig={{
+				variant: 'outlined',
+				textfieldRestProps: {
+					style: { backgroundColor: 'white' },
+				},
+			}}
 		/>
 	);
 };

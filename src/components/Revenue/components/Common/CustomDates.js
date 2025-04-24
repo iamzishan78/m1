@@ -7,6 +7,8 @@ import { makeStyles } from '@material-ui/styles';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+
 import { CUSTOM_DATES } from 'utils/data';
 import { handleCustomDateTypeChange } from 'utils/helper';
 
@@ -126,31 +128,31 @@ export default function Portfolio({
 				</Grid>
 			)}
 			<Grid item xs md={datesInputWidth} style={{ marginTop: '2px', maxWidth: '30%' }}>
-				<Autocomplete
-					size="small"
-					value={value}
-					onChange={(event, newValue) => {
-						const newVal = newValue ? newValue : defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES;
-						handleDateTypeChange(newVal);
-						setValue(newVal);
-					}}
-					options={Object.values(CUSTOM_DATES).filter(value => {
-						if (!isProperties && value === 'All Dates') {
-							return false;
-						} else {
+				<CustomAutoComplete
+					fieldAttributes={{
+						label: 'Check Date Range',
+						defaultValue: defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES,
+						value: value,
+						defaultOptions: Object.values(CUSTOM_DATES).filter(val => {
+							if (!isProperties && val === 'All Dates') {
+								return false;
+							}
 							return true;
-						}
-					})}
-					renderInput={params => (
-						<TextField
-							{...params}
-							label="Check Date Range"
-							variant="outlined"
-							placeholder=""
-							style={{ backgroundColor: 'white' }}
-						/>
-					)}
-					defaultValue={defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES}
+						}),
+					}}
+					fieldEvents={{
+						onChange: ({ value }) => {
+							const newVal = value ?? defaultRange ?? CUSTOM_DATES.ALL_DATES;
+							handleDateTypeChange(newVal);
+							setValue(newVal);
+						},
+					}}
+					fieldConfig={{
+						variant: 'outlined',
+						textfieldRestProps: {
+							style: { backgroundColor: 'white' },
+						},
+					}}
 					disableListWrap
 					id="custom-date-dropdown"
 				/>
