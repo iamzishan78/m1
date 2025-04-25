@@ -279,7 +279,7 @@ export default function FieldContent({
 							purchaseData: trimmedEditContent,
 							isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 						},
-						refetchQueries: ['getContactPurchaseData', 'getDailpadContact'],
+						refetchQueries: ['getContactPurchaseData', 'getDailpadContact', 'getContact'],
 						awaitRefetchQueries: false,
 					}).then(({ data }) => {
 						if (data?.updateContactPurchaseData && !data.updateContactPurchaseData?.success) {
