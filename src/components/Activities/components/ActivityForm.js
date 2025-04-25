@@ -2,8 +2,6 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 
 import { FormControl, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import get from 'lodash/get';
@@ -12,6 +10,7 @@ import PropTypes from 'prop-types';
 import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
 import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
@@ -645,17 +644,27 @@ export default function ActivityForm({ setSelectedActivityId }) {
 					</Grid>
 
 					<Grid item xs={9}>
-						<Autocomplete
+						<CustomAutoComplete
+							fieldAttributes={{
+								name: 'activityStatus',
+								label: 'Activity Status',
+								value: activityStatusOptions.find(option => option.value === status),
+								defaultOptions: activityStatusOptions,
+							}}
+							fieldEvents={{
+								onChange: ({ value }) => {
+									formStateController.updateState({ status: value });
+								},
+							}}
+							fieldConfig={{
+								margin: 'dense',
+								variant: 'outlined',
+								textfieldRestProps: {
+									className: classes.fieldWidth,
+								},
+							}}
 							id="activity-status"
 							disableClearable
-							className={classes.fieldWidth}
-							options={activityStatusOptions}
-							onChange={(e, option) => formStateController.updateState({ status: option.value })}
-							value={activityStatusOptions.find(option => option.value === status)}
-							getOptionLabel={option => option.label}
-							renderInput={params => (
-								<TextField {...params} margin="dense" variant="outlined" label="Activity Status" />
-							)}
 						/>
 					</Grid>
 				</Grid>
