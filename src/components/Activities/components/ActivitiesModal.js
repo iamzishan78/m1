@@ -2,10 +2,9 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import { useHistory } from 'react-router-dom';
 
-import { Grid, CircularProgress, Dialog, DialogTitle, TextField } from '@material-ui/core';
+import { CircularProgress, Dialog, DialogTitle, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import CallIcon from '@material-ui/icons/Call';
 import ContactMailIcon from '@material-ui/icons/ContactMail';
 import DocumentIcon from '@material-ui/icons/DescriptionOutlined';
@@ -17,7 +16,6 @@ import PersonIcon from '@material-ui/icons/Person';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import TextMsgIcon from '@material-ui/icons/Textsms';
 import TaskIcon from '@material-ui/icons/WatchLater';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
@@ -26,6 +24,7 @@ import moment from 'moment';
 
 import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { workspaceTenantName } from 'components/Shared/functions';
 
 import { tableGlobalController } from 'stateManagement/tableController';
@@ -764,33 +763,25 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 									)}
 								</span>
 								<div style={{ width: '76%', marginRight: 24 }}>
-									<Autocomplete
-										className={classes.fieldWidth}
-										options={openDeals}
-										onChange={(e, deal) => {
-											setDealId(deal?._id);
+									<CustomAutoComplete
+										fieldAttributes={{
+											name: 'associatedDeal',
+											label: 'Associated Deal',
+											value: dealValue,
+											defaultOptions: openDeals,
 										}}
-										value={dealValue}
-										getOptionSelected={option => option.id === dealId}
-										getOptionLabel={option => option.name}
-										renderOption={option => {
-											return (
-												<Grid container spacing={0}>
-													<Grid container item xs={12} alignItems="center">
-														<Grid item xs>
-															<span style={{ fontWeight: 400 }}>{option.name}</span>
-
-															<Typography variant="body2" color="textSecondary">
-																{option.label}
-															</Typography>
-														</Grid>
-													</Grid>
-												</Grid>
-											);
+										fieldEvents={{
+											onChange: ({ value }) => {
+												setDealId(value?._id);
+											},
 										}}
-										renderInput={params => (
-											<TextField margin="dense" {...params} label="Associated Deal" variant="outlined" />
-										)}
+										fieldConfig={{
+											margin: 'dense',
+											variant: 'outlined',
+											textfieldRestProps: {
+												className: classes.fieldWidth,
+											},
+										}}
 									/>
 								</div>
 							</div>
@@ -841,18 +832,25 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 									<PersonIcon />
 								</span>
 								<div style={{ width: '76%', margin: '7.5px 0', marginRight: 24 }}>
-									<Autocomplete
-										className={clsx(classes.fieldWidth, !owner.id && errors.owner && classes.error)}
-										options={users.filter(u => u.text)}
-										onChange={(e, user) => {
-											setOwner({ name: user?.text, id: user?.value });
+									<CustomAutoComplete
+										fieldAttributes={{
+											name: 'activityOwner',
+											label: 'Activity Owner',
+											value: users.find(user => user.value === owner.id) || null,
+											defaultOptions: users.filter(u => u.text),
 										}}
-										value={users.find(user => user.value === owner.id) || null}
-										getOptionLabel={option => option.text}
-										getOptionSelected={option => option.value === owner.id}
-										renderInput={params => (
-											<TextField margin="dense" {...params} variant="outlined" label="Activity Owner" />
-										)}
+										fieldEvents={{
+											onChange: ({ value }) => {
+												setOwner({ name: value?.text, id: value?.value });
+											},
+										}}
+										fieldConfig={{
+											margin: 'dense',
+											variant: 'outlined',
+											textfieldRestProps: {
+												className: clsx(classes.fieldWidth, !owner.id && errors.owner && classes.error),
+											},
+										}}
 									/>
 
 									{!addNew && (
@@ -886,17 +884,27 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 							<div className={classes.row}>
 								<span className={classes.rowIcon}></span>
 								<div style={{ width: '76%', margin: '0px 24px 7.5px 0px', marginRight: 24 }}>
-									<Autocomplete
+									<CustomAutoComplete
+										fieldAttributes={{
+											name: 'activityStatus',
+											label: 'Activity Status',
+											value: activityStatusOptions.find(option => option.value === closed),
+											defaultOptions: activityStatusOptions,
+										}}
+										fieldEvents={{
+											onChange: ({ value }) => {
+												setClosed(value);
+											},
+										}}
+										fieldConfig={{
+											margin: 'dense',
+											variant: 'outlined',
+											textfieldRestProps: {
+												className: classes.fieldWidth,
+											},
+										}}
+										// disableClearable
 										id="activity-status"
-										disableClearable
-										className={classes.fieldWidth}
-										options={activityStatusOptions}
-										onChange={(event, option) => setClosed(option.value)}
-										value={activityStatusOptions.find(option => option.value === closed)}
-										getOptionLabel={option => option.label}
-										renderInput={params => (
-											<TextField {...params} margin="dense" variant="outlined" label="Activity Status" />
-										)}
 									/>
 								</div>
 							</div>
