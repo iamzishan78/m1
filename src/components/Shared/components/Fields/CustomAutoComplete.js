@@ -124,7 +124,7 @@ function CustomAutoComplete({
 	};
 
 	const autoCompleteChnage = ({ reason, newValue, oldValue, fieldOnChange }) => {
-		const value = newValue ? newValue.value || newValue : null;
+		const value = newValue ? (newValue.value ?? newValue) : null;
 		onChange?.({ value, oldValue, reason });
 		fieldOnChange ? fieldOnChange(value) : setFieldValue(value);
 	};
