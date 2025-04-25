@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Grid, Divider, Tab, Tabs, TextField, Box } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Grid, Divider, Tab, Tabs, Box } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
@@ -13,6 +12,7 @@ import DetailTabsSection from 'components/Analytics/components/Revenue/DetailTab
 import MRTTable from 'components/MRTTable';
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
 import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { copy, deepEqual } from 'components/Shared/functions';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 
@@ -370,25 +370,28 @@ export default function RevenueAnalytics(props) {
 				</StyledTabs>
 				{tabs[tab] === 'Comparisons' && (
 					<Grid item xs md={2} style={{ marginTop: '2px', minWidth: '395px' }}>
-						<Autocomplete
-							size="small"
-							value={comparisonReport} // Controlled value
-							onChange={(event, newValue) => setComparisonReport(newValue)}
-							options={['Check Detail Comparison', 'Sales Volume vs Reported Production']}
-							renderInput={params => (
-								<form autoComplete="off">
-									<TextField
-										{...params}
-										variant="outlined"
-										placeholder=""
-										style={{ backgroundColor: 'white' }}
-										fullWidth={true}
-									/>
-								</form>
-							)}
-							defaultValue={'Check Detail Comparison'}
-							disableListWrap
+						<CustomAutoComplete
+							fieldAttributes={{
+								name: 'comparisonReport',
+								label: 'Comparison Report',
+								value: comparisonReport,
+								defaultValue: 'Check Detail Comparison', // Added defaultValue here
+								defaultOptions: ['Check Detail Comparison', 'Sales Volume vs Reported Production'],
+							}}
+							fieldEvents={{
+								onChange: ({ value }) => {
+									setComparisonReport(value);
+								},
+							}}
+							fieldConfig={{
+								margin: 'dense',
+								variant: 'outlined',
+								textfieldRestProps: {
+									style: { backgroundColor: 'white' },
+								},
+							}}
 							id="custom-date-dropdown"
+							disableClearable
 						/>
 					</Grid>
 				)}
