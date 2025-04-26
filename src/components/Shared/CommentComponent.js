@@ -807,7 +807,7 @@ export default function CommentComponent(props) {
 								let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
 
 								const commentorText = eachComment?.user?.name || eachComment?.user?.email;
-								
+
 								return (
 									commentorText && (
 										<Fragment key={index}>

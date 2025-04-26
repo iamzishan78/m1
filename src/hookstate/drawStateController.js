@@ -23,10 +23,7 @@ import {
 } from 'components/MapControls/commonHelper';
 import { spatialDataAttributes } from 'components/MapControls/components/DrawShapes/constants';
 import { makeGeoJSONFromStrings } from 'components/Map/DeckGL/helpers/common';
-import {
-	calculateLandArea,
-	shapeTypeLayers,
-} from 'components/Shared/functions/shapeLayer';
+import { calculateLandArea, shapeTypeLayers } from 'components/Shared/functions/shapeLayer';
 import { DRAWING_MODES } from 'components/Navigation/NavigationContext';
 import { popupController } from './popupStateController';
 import { globalStateController } from './globalStateController';
@@ -37,8 +34,6 @@ import { layerController } from './layerStateController';
 import { navController } from './navStateController';
 import { drawInitialState, drawState } from './initialStates';
 import { mapControlsController } from './mapControlsController';
-
-
 
 const drawStateControllerHandler = state => {
 	/* --------------------------- DrawShapes Actions --------------------------- */
@@ -65,8 +60,11 @@ const drawStateControllerHandler = state => {
 		const [feature] = features;
 		const draw = window.drawRef;
 
-		const { currentFeature, lastSelectedDrawMode, reDrawShape } =
-			drawController.getValues(['currentFeature', 'lastSelectedDrawMode', 'reDrawShape']);
+		const { currentFeature, lastSelectedDrawMode, reDrawShape } = drawController.getValues([
+			'currentFeature',
+			'lastSelectedDrawMode',
+			'reDrawShape',
+		]);
 
 		if (feature) addCustomShapeProperties(feature, draw);
 
@@ -91,8 +89,7 @@ const drawStateControllerHandler = state => {
 		});
 
 		setTimeout(() => {
-			if (currentFeatureUpdate && !reDrawShape)
-				drawController.actionEdit();
+			if (currentFeatureUpdate && !reDrawShape) drawController.actionEdit();
 
 			draw?.deleteAll();
 			draw?.add(currentFeatureUpdate);
@@ -113,17 +110,14 @@ const drawStateControllerHandler = state => {
 		// Don't run when shape is in rotate state
 		if (feature?.properties?.isrotate) return;
 
-		const { shapeEdit, lastSelectedDrawMode } = drawController.getValues([
-			'shapeEdit',
-			'lastSelectedDrawMode',
-		]);
+		const { shapeEdit, lastSelectedDrawMode } = drawController.getValues(['shapeEdit', 'lastSelectedDrawMode']);
 
 		if (feature && !feature.id.includes('edit_polygon'))
 			drawController.updateState({
 				editDraw: false,
 				currentFeature: feature,
 				featureOrMapShape: feature,
-				multiSelectLandGrids: false
+				multiSelectLandGrids: false,
 			});
 
 		const drawFeatures = window.drawRef?.getAll();
@@ -139,10 +133,7 @@ const drawStateControllerHandler = state => {
 	};
 
 	const actionClose = (dispatch, additionalProps = {}) => {
-		const { shapeEditMode, showAddShapePopup } = drawController.getValues([
-			'shapeEditMode',
-			'showAddShapePopup',
-		]);
+		const { shapeEditMode, showAddShapePopup } = drawController.getValues(['shapeEditMode', 'showAddShapePopup']);
 
 		clearMapAndCloseShapeActionsPopup();
 
@@ -244,13 +235,12 @@ const drawStateControllerHandler = state => {
 		let newFeature;
 		const featureId = hat();
 
-		const { selectedAbstracts, shapeToExtend, shapeEditMode, currentFeature } =
-			drawController.getValues([
-				'selectedAbstracts',
-				'shapeToExtend',
-				'shapeEditMode',
-				'currentFeature',
-			]);
+		const { selectedAbstracts, shapeToExtend, shapeEditMode, currentFeature } = drawController.getValues([
+			'selectedAbstracts',
+			'shapeToExtend',
+			'shapeEditMode',
+			'currentFeature',
+		]);
 
 		selectedAbstracts.forEach((abstractFeature, index) => {
 			if (index < selectedAbstracts.length - 1 && !newFeature) {
@@ -267,9 +257,9 @@ const drawStateControllerHandler = state => {
 					data: newFeature,
 					pickable: true,
 					filled: true,
-					getFillColor: [173, 216, 230, 150]
+					getFillColor: [173, 216, 230, 150],
 				},
-				window.mapRef.getLayer("Land Grid_selection")?.implementation
+				window.mapRef.getLayer('Land Grid_selection')?.implementation
 			);
 
 		if (!newFeature) newFeature = currentFeature;
@@ -303,13 +293,9 @@ const drawStateControllerHandler = state => {
 
 	/* -------------------------- ShapeAOIPopup Actions ------------------------- */
 
-
 	const handleSaveAOIToShape = ({ dataName, upsertCustomLayer, updateCustomLayer }) => {
 		const dataType = 'interest';
-		const { currentFeature, selectedAoi } = drawController.getValues([
-			'currentFeature',
-			'selectedAoi',
-		]);
+		const { currentFeature, selectedAoi } = drawController.getValues(['currentFeature', 'selectedAoi']);
 
 		const spatialData = {
 			sdType: dataType,
@@ -321,10 +307,7 @@ const drawStateControllerHandler = state => {
 		addCustomShapeProperties(currentFeature, window.drawRef);
 
 		spatialDataAttributes.forEach(attribute => {
-			if (
-				spatialData[attribute] != null ||
-				typeof spatialData[attribute] !== 'undefined'
-			) {
+			if (spatialData[attribute] != null || typeof spatialData[attribute] !== 'undefined') {
 				if (currentFeature) currentFeature.properties[attribute] = spatialData[attribute];
 			}
 		});
@@ -348,7 +331,7 @@ const drawStateControllerHandler = state => {
 				upsertCustomLayer({
 					variables: { customLayer: customLayerData },
 				}).then(() => {
-					layerController.resetBounds('Area of Interest') // reset bounds as AOI
+					layerController.resetBounds('Area of Interest'); // reset bounds as AOI
 				});
 			else if (updateCustomLayer) {
 				updateCustomLayer({
@@ -357,8 +340,8 @@ const drawStateControllerHandler = state => {
 						customLayer: customLayerData,
 					},
 				}).then(() => {
-					layerController.resetBounds('Area of Interest') // reset bounds as AOI
-				});;
+					layerController.resetBounds('Area of Interest'); // reset bounds as AOI
+				});
 			}
 		}
 
@@ -369,8 +352,7 @@ const drawStateControllerHandler = state => {
 
 	/* ------------------------ ShapeActionsPopup Actions ----------------------- */
 
-	const isLine = () =>
-		drawController.getValue('currentFeature')?.geometry?.type === 'LineString';
+	const isLine = () => drawController.getValue('currentFeature')?.geometry?.type === 'LineString';
 
 	const updateSelectedLayerFeature = (dispatch, customLayer) => {
 		let feature = copy(customLayer.shapeJson);
@@ -397,7 +379,7 @@ const drawStateControllerHandler = state => {
 			polygonFilter: null,
 		});
 
-		navController.updateState({ drawingMode: null, filterDrawing: [] })
+		navController.updateState({ drawingMode: null, filterDrawing: [] });
 
 		drawController.updateState({
 			shapeActionsFilterSelected: false,
@@ -410,15 +392,12 @@ const drawStateControllerHandler = state => {
 			selectedAoi,
 			featureToEdit,
 			currentFeature,
-		} = drawController.getValues([
-			'shapeEdit',
-			'selectedAoi',
-			'featureToEdit',
-			'currentFeature',
-		]);
+		} = drawController.getValues(['shapeEdit', 'selectedAoi', 'featureToEdit', 'currentFeature']);
 		const selectedFeature = drawController.getValue('currentFeature');
 
-		const enableEditOnly = shapeTypeLayers.includes(featureToEdit?.properties?.layerType || featureToEdit?.properties?.sdType);
+		const enableEditOnly = shapeTypeLayers.includes(
+			featureToEdit?.properties?.layerType || featureToEdit?.properties?.sdType
+		);
 
 		const shapeEdit = _shapeEdit ?? shapeEditVal;
 		// If shape doesn't exist! AOI case
@@ -437,7 +416,7 @@ const drawStateControllerHandler = state => {
 			window.drawRef?.changeMode('static');
 		}
 
-		navController.updateState({ drawingMode: DRAWING_MODES.DRAW_CIRCLE })
+		navController.updateState({ drawingMode: DRAWING_MODES.DRAW_CIRCLE });
 
 		setFeatureProperty(window.drawRef, selectedFeature.id, 'shapeEdit', !shapeEdit);
 		drawShapeLayerToggle(!shapeEdit ? 'visible' : 'none');
@@ -464,13 +443,12 @@ const drawStateControllerHandler = state => {
 					shapeEdit: false,
 				});
 			}
-		} catch (err) {
-		}
+		} catch (err) {}
 	};
 
 	const actionShowWellsAndOwners = dispatch => {
 		if (isLine()) return;
-		layerFiltersController.clearWellsFilters()
+		layerFiltersController.clearWellsFilters();
 		const selectedFeature = drawController.getValue('currentFeature');
 
 		drawController.updateState({
@@ -486,12 +464,12 @@ const drawStateControllerHandler = state => {
 	const applyFilter = () => {
 		const selectedFeature = drawController.getValue('currentFeature');
 
-		layerFiltersController.setPolygonFilter(selectedFeature?.geometry)
+		layerFiltersController.setPolygonFilter(selectedFeature?.geometry);
 
 		// Changing shape to Blue
 		window.drawRef?.changeMode('simple_select');
 
-		navController.updateState({ drawingMode: null, filterDrawing: ['within', selectedFeature] })
+		navController.updateState({ drawingMode: null, filterDrawing: ['within', selectedFeature] });
 
 		drawController.updateState({
 			shapeActionsFilterSelected: true,
@@ -537,7 +515,7 @@ const drawStateControllerHandler = state => {
 		if (!abstractGeo) return abstractShape;
 		const featuresList = makeGeoJSONFromStrings(abstractGeo).features;
 		if (!featuresList) return abstractShape;
-		const foundFeatures = featuresList.filter((feature) => {
+		const foundFeatures = featuresList.filter(feature => {
 			try {
 				var intersection = turf.intersect(abstractShape, feature);
 				return !!intersection;
@@ -554,8 +532,7 @@ const drawStateControllerHandler = state => {
 				},
 				{ area: 0, feature: null }
 			);
-			if (result?.feature?.properties)
-				abstractShape.properties = result.feature.properties;
+			if (result?.feature?.properties) abstractShape.properties = result.feature.properties;
 		}
 		return abstractShape;
 	};
@@ -579,22 +556,15 @@ const drawStateControllerHandler = state => {
 		return parcelName;
 	};
 
-	const saveAndOpenParcelDetail = (
-		upsertCustomLayer,
-		dispatch,
-		history,
-		abstractData
-	) => {
+	const saveAndOpenParcelDetail = (upsertCustomLayer, dispatch, history, abstractData) => {
 		const user = globalStateController.getValue('user');
 		const { currentFeature } = drawController.getValues(['currentFeature']);
 
 		if (!user?._id) return;
 
 		const abstractShape = getAbstractGeoSource(abstractData, currentFeature);
-		abstractShape.properties.State =
-			abstractShape?.properties?.State || abstractShape?.properties?.StateAbbreviation;
-		abstractShape.properties.Section =
-			abstractShape?.properties?.Section || abstractShape?.properties?.ShortName;
+		abstractShape.properties.State = abstractShape?.properties?.State || abstractShape?.properties?.StateAbbreviation;
+		abstractShape.properties.Section = abstractShape?.properties?.Section || abstractShape?.properties?.ShortName;
 		abstractShape.properties.Meridian =
 			abstractShape?.properties?.Meridian || abstractShape?.properties?.PrincipalMeridian;
 		const parcelName = getParcelAndShapeName(abstractShape);
@@ -632,32 +602,21 @@ const drawStateControllerHandler = state => {
 			variables: { customLayer: customLayerData },
 		}).then(result => {
 			if (!result?.data?.upsertCustomLayer?.success) {
-				dispatch(
-					showErrorMessage(
-						result?.data?.upsertCustomLayer?.message
-					)
-				);
-				return
+				dispatch(showErrorMessage(result?.data?.upsertCustomLayer?.message));
+				return;
 			}
-			jobController.toggleBulkUpload()
+			jobController.toggleBulkUpload();
 			updateSelectedLayerFeature(dispatch, result.data.upsertCustomLayer.customLayer);
 			const layerId = result.data.upsertCustomLayer.customLayer._id;
 			if (layerId) {
 				const newPath = `/map/parcels/${layerId}`;
 				if (history.location.pathname !== newPath) history.replace(newPath);
 			}
-			layerController.resetBounds(result?.data?.upsertCustomLayer?.customLayer?.layer)
+			layerController.resetBounds(result?.data?.upsertCustomLayer?.customLayer?.layer);
 		});
 	};
 
-	const saveAndOpenShapeDetail = (
-		upsertCustomLayer,
-		dispatch,
-		history,
-		abstractData,
-		layerType,
-		layerSubType
-	) => {
+	const saveAndOpenShapeDetail = (upsertCustomLayer, dispatch, history, abstractData, layerType, layerSubType) => {
 		const user = globalStateController.getValue('user');
 		const { currentFeature } = drawController.getValues(['currentFeature']);
 
@@ -666,28 +625,21 @@ const drawStateControllerHandler = state => {
 		const abstractShape = getAbstractGeoSource(abstractData, currentFeature);
 		let shapeSubtitle = '';
 		const shapeName = getParcelAndShapeName(abstractShape);
-		const state =
-			abstractShape?.properties?.State || abstractShape?.properties?.StateAbbreviation;
-		const section =
-			abstractShape?.properties?.Section || abstractShape?.properties?.ShortName;
+		const state = abstractShape?.properties?.State || abstractShape?.properties?.StateAbbreviation;
+		const section = abstractShape?.properties?.Section || abstractShape?.properties?.ShortName;
 		let blockTownship = `BLK ${abstractShape?.properties?.Block || ''}`;
-		if (
-			!abstractShape?.properties?.Block &&
-			(abstractShape?.properties?.Township || '')
-		) {
+		if (!abstractShape?.properties?.Block && (abstractShape?.properties?.Township || '')) {
 			blockTownship = `TOWN ${abstractShape?.properties?.Township || ''}`;
 		}
 		if (abstractShape?.properties?.County && state) {
 			if (layerType === 'unit') {
 				if (abstractShape.properties.State === 'TX')
-					shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''
-						} - ${blockTownship}${section ? `, SEC ${section}` : ''}`;
-				else
-					shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''
-						} - ${shapeName}`;
+					shapeSubtitle = `${abstractShape?.properties?.County}, ${
+						state || ''
+					} - ${blockTownship}${section ? `, SEC ${section}` : ''}`;
+				else shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''} - ${shapeName}`;
 			}
-			if (layerType === 'agreement')
-				shapeSubtitle = `${abstractShape?.properties?.County}, ${state}`;
+			if (layerType === 'agreement') shapeSubtitle = `${abstractShape?.properties?.County}, ${state}`;
 		}
 		let properties = {};
 		if (layerType === 'unit')
@@ -698,11 +650,9 @@ const drawStateControllerHandler = state => {
 				uOperator: '',
 				uStatus: '',
 			};
-		if (layerType === 'agreement')
-			properties = { agreementName: shapeName, agreementType: layerSubType };
-		if (globalStateController.getValue('testCase') === 'AgreementDraw')
-			properties.agreementNumber = '1234';
-		
+		if (layerType === 'agreement') properties = { agreementName: shapeName, agreementType: layerSubType };
+		if (globalStateController.getValue('testCase') === 'AgreementDraw') properties.agreementNumber = '1234';
+
 		const featureId = hat();
 		const newShapeFeature = {
 			id: featureId,
@@ -733,34 +683,24 @@ const drawStateControllerHandler = state => {
 			variables: { customLayer: customLayerData, userId: globalStateController.getValue('user').mongoId },
 		}).then(result => {
 			if (!result?.data?.upsertCustomLayer?.success) {
-				dispatch(
-					showErrorMessage(
-						result?.data?.upsertCustomLayer?.message
-					)
-				);
-				return
+				dispatch(showErrorMessage(result?.data?.upsertCustomLayer?.message));
+				return;
 			}
-			jobController.toggleBulkUpload()
+			jobController.toggleBulkUpload();
 			updateSelectedLayerFeature(dispatch, result.data.upsertCustomLayer.customLayer);
 			const layerId = result.data.upsertCustomLayer.customLayer._id;
 			const type =
 				result.data.upsertCustomLayer.customLayer?.shapeJson?.properties?.agreementType ||
 				result.data.upsertCustomLayer.customLayer?.shapeJson?.properties?.type;
 			if (layerId && type) {
-				let newPath = `/map/${type}s/${layerId}`
-				history.location.pathname !== newPath && history.replace(newPath)
+				let newPath = `/map/${type}s/${layerId}`;
+				history.location.pathname !== newPath && history.replace(newPath);
 			}
-			layerController.resetBounds(result?.data?.upsertCustomLayer?.customLayer?.layer)
+			layerController.resetBounds(result?.data?.upsertCustomLayer?.customLayer?.layer);
 		});
 	};
 
-	const updateAndOpenShapeDetail = (
-		updateCustomLayer,
-		dispatch,
-		history,
-		abstractData,
-		layerData
-	) => {
+	const updateAndOpenShapeDetail = (updateCustomLayer, dispatch, history, abstractData, layerData) => {
 		const { currentFeature } = drawController.getValues(['currentFeature']);
 
 		const abstractShape = getAbstractGeoSource(abstractData, currentFeature);
@@ -785,10 +725,12 @@ const drawStateControllerHandler = state => {
 				customLayer: customLayerData,
 			},
 		}).then(() => {
-			jobController.toggleBulkUpload()
+			jobController.toggleBulkUpload();
 			const newPath = `/map/${layerData.layer}s/${layerData._id}`;
 			if (history.location.pathname !== newPath) history.replace(newPath);
-			layerController.resetBounds(customLayerData?.shapeJson?.identifier || customLayerData?.shapeJson?.layer?.id || customLayerData?.layer)
+			layerController.resetBounds(
+				customLayerData?.shapeJson?.identifier || customLayerData?.shapeJson?.layer?.id || customLayerData?.layer
+			);
 		});
 		const jsonLayer = copy(customLayerData.shapeJson);
 		jsonLayer.layer = { id: customLayerData.layer };
@@ -815,7 +757,11 @@ const drawStateControllerHandler = state => {
 			'currentFeature',
 		]);
 
-		const isShapeResizeMode = shapeTypeLayers.includes(featureToEdit?.properties?.layerType || featureToEdit?.properties?.sdType || featureToEdit?.properties?.layerSubType);
+		const isShapeResizeMode = shapeTypeLayers.includes(
+			featureToEdit?.properties?.layerType ||
+				featureToEdit?.properties?.sdType ||
+				featureToEdit?.properties?.layerSubType
+		);
 
 		let drawFeature = null;
 		if (isShapeResizeMode && shapeEditMode === 'rotate') {
@@ -877,17 +823,17 @@ const drawStateControllerHandler = state => {
 			refetchQueries: ['getCustomLayers'],
 			awaitRefetchQueries: true,
 		}).then(() => {
-			jobController.toggleBulkUpload()
+			jobController.toggleBulkUpload();
 			if (isShapeResizeMode) {
 				let newPath = '';
 
-				const type = featureToEdit?.properties?.agreementType || featureToEdit?.properties?.type
+				const type = featureToEdit?.properties?.agreementType || featureToEdit?.properties?.type;
 
 				if (type) {
 					newPath = `/map/${type}s/${featureToEdit?.id}`;
-					history.location.pathname !== newPath && history.replace(newPath)
+					history.location.pathname !== newPath && history.replace(newPath);
 				}
-				layerController.resetBounds(customLayerData?.shapeJson?.identifier || customLayerData?.shapeJson?.layer?.id)
+				layerController.resetBounds(customLayerData?.shapeJson?.identifier || customLayerData?.shapeJson?.layer?.id);
 			}
 		});
 		setTimeout(() => actionClose(dispatch, { rotateableFeature: drawFeature }), 0);

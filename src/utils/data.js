@@ -674,17 +674,17 @@ export const bypassTenants = [
 	'covenant',
 	'sansaba',
 	'farmers',
-	"Quality",
-	"SantaFe",
-  "SITL",
-  'Jetstream',
-  'Elberta',
+	'Quality',
+	'SantaFe',
+	'SITL',
+	'Jetstream',
+	'Elberta',
 	'Frontier',
 	'm1demo',
-	"Vector",
-	"TableRock",
-	"Providence",
-	"Pheasant"
+	'Vector',
+	'TableRock',
+	'Providence',
+	'Pheasant',
 ];
 
 export const simpleAuthBypass = false;
