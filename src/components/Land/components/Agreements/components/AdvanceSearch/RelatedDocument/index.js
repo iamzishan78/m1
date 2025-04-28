@@ -75,6 +75,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 		column: {
 			label: filter.label,
 			filterKey: filter.filterKey,
+			isDate: filter.isDate,
 		},
 		index,
 		onChange,
@@ -106,19 +107,26 @@ export default function RelatedDocumentFilters(props) {
 		if (stateApp.landSearchFilters.relatedDocuments?.length === 0 && filterList.find(fl => fl.length !== 0)) {
 			setFilterList([[], [], [], [], [], [], []]);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [stateApp.landSearchFilters.relatedDocuments]);
 
 	const changeLandProvisions = React.useMemo(
 		() =>
 			debounce((request, callback, index) => {
-				const { filterKey } = callback;
+				const { filterKey, isDate } = callback;
 				const landProvisionsFilters = [...stateApp.landSearchFilters.relatedDocuments];
 				const _index = landProvisionsFilters.findIndex(f => f.field === filterKey);
-				if (_index === -1 && request[0] !== null) {
-					landProvisionsFilters.push({ field: filterKey, value: request[0] });
-				} else if (request.length > 0 && request[0] !== null) {
-					landProvisionsFilters[_index].value = request[0];
+				if (_index === -1 && ![undefined, null].includes(request[0])) {
+					landProvisionsFilters.push({
+						field: filterKey,
+						value: request[0],
+						...(isDate && { type: 'advanced', columnType: 'date', searchType: 'betweenInclusive' }),
+					});
+				} else if (request.length > 0 && ![undefined, null].includes(request[0])) {
+					landProvisionsFilters[_index] = {
+						field: filterKey,
+						value: request[0],
+						...(isDate && { type: 'advanced', columnType: 'date', searchType: 'betweenInclusive' }),
+					};
 				} else if (_index !== -1) {
 					landProvisionsFilters.splice(_index, 1);
 				}

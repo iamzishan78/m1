@@ -208,7 +208,7 @@ export const AutoCompleteFilter = React.memo(
 				disableListWrap
 				ListboxComponent={ListboxComponent}
 				value={multiple && !value ? [] : value}
-				inputValue={customStartCaseString(search?.toString(), isDate)}
+				inputValue={isDate ? search?.toString() : customStartCaseString(search?.toString(), isDate)}
 				getOptionSelected={(option, value) => option.key === value.key}
 				getOptionLabel={option =>
 					customStartCaseString(capitalizeFirstLetter(option?.key?.toString().replace(/^,|,$/gm, '')), isDate)
