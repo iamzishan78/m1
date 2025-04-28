@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { get } from 'lodash';
-import { Grid, TextField, InputAdornment, Select, MenuItem } from '@material-ui/core';
+import { Grid, TextField, Select, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Controller } from 'react-hook-form';
 import { useLazyQuery } from '@apollo/client';
 
-import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
-import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import _ from 'lodash';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import { jobController } from 'hookstate/jobStateController';
+import { jobController } from 'stateManagement/jobStateController.js';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		padding: '10px 33%',
 	},
