@@ -131,6 +131,7 @@ function CustomAutoComplete({
 
 	const textFieldChange = event => {
 		const value = event.target.value;
+		setFieldValue(value);
 		query && fetchOptions(value);
 		onTextFieldChange?.(value);
 	};
@@ -140,7 +141,15 @@ function CustomAutoComplete({
 			return typeof fieldValue === 'string' ? [fieldValue] : fieldValue || [];
 		}
 
-		return (fieldValue && options?.find(opt => opt.value === fieldValue || opt === fieldValue)) || value || null;
+		const fallbackValue = value || null;
+
+		if (!fieldValue) {return fallbackValue;}
+
+		if (typeof fieldValue === 'string') {
+			return options?.find(opt => opt.value === fieldValue || opt === fieldValue) || fieldValue;
+		}
+
+		return options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue)) || fieldValue;
 	};
 
 	const getOptionsArray = value => {
