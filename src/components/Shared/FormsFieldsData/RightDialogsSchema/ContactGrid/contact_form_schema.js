@@ -22,7 +22,7 @@ const zipCopde = inputtxt => {
 	return false;
 };
 
-const contactForm = ({ getValues, setValue }) => {
+const contactForm = ({ getValues, setValue, dialpadFeature }) => {
 	const formFields = [
 		{
 			label: 'First Name',
@@ -56,7 +56,7 @@ const contactForm = ({ getValues, setValue }) => {
 			label: 'Home phone',
 			name: 'homePhone',
 			onChange: value => {
-				if (phonenumber(value)) {
+				if (!dialpadFeature || phonenumber(value)) {
 					setValue('homePhone', value);
 				} else {
 					setValue('homePhone', '');
@@ -67,7 +67,7 @@ const contactForm = ({ getValues, setValue }) => {
 			label: 'Mobile Phone',
 			name: 'mobilePhone',
 			onChange: value => {
-				if (phonenumber(value)) {
+				if (!dialpadFeature || phonenumber(value)) {
 					setValue('mobilePhone', value);
 				} else {
 					setValue('mobilePhone', '');

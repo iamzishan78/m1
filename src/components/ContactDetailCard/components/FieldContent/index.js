@@ -95,6 +95,10 @@ export default function FieldContent({
 	const [updateMelissaAddress] = useMutation(UPDATEMELISSAADDRESS);
 	const classes = useStyles({ noMargin, loading: loading || loadingPurchaseData, fieldsCount });
 
+	const dialpadFeature = React.useMemo(() => {
+		return stateApp.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION);
+	}, [stateApp.user]);
+
 	// contactOwnerId field used in autocomplete of contact owner
 	const ignorableFieldsInCount = ['contactOwnerId'];
 
@@ -540,9 +544,13 @@ export default function FieldContent({
 							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
 							onChange={e => {
 								const { value } = e.target;
+								let currValue = value;
+								if (row?.isPhoneNumber) {
+									currValue = !dialpadFeature || phonenumber(value) ? value : '';
+								}
 								setEditContent(prev => ({
 									...prev,
-									[fieldName]: row?.isPhoneNumber && !phonenumber(value) ? '' : value,
+									[fieldName]: currValue,
 								}));
 							}}
 							onKeyDown={event => keyDownHandler(event, [fieldName])}

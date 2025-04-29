@@ -294,7 +294,11 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 														if (currValue !== prevValue) updateFieldData(field.key, currValue);
 													}}
 													onChange={({ target: { value } }) => {
-														params.onChange(field.isPhoneNumber && !phonenumber(value) ? '' : value);
+														let currValue = value;
+														if (field.isPhoneNumber) {
+															currValue = !dialpadFeature || phonenumber(value) ? value : '';
+														}
+														params.onChange(currValue);
 													}}
 													onKeyUp={e => {
 														if (e.key === 'Enter') e.target.blur();
