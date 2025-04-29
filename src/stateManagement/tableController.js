@@ -911,6 +911,7 @@ const tableESStateControllerHandler = state => ({
 			search,
 			columnVirtualization,
 			layerIdentifier,
+			searchFields: oldSearchFields,
 		} = state.get({
 			noproxy: true,
 		});
@@ -924,7 +925,7 @@ const tableESStateControllerHandler = state => ({
 		const {
 			_TableSchema,
 			tableCss,
-			// searchFields,
+			searchFields,
 			groupedField,
 			ExternalFilter,
 			columnVisibility,
@@ -941,9 +942,11 @@ const tableESStateControllerHandler = state => ({
 			layerIdentifier,
 		});
 
+		if (!isEqual(searchFields, oldSearchFields)) {
+			genericState.searchFields = searchFields;
+		}
 		genericState.TableSchema = _TableSchema;
 		genericState.tableCss = tableCss;
-		// genericState.searchFields = searchFields; // causes infinite loop
 		genericState.groupedField = groupedField;
 		genericState.ExternalFilter = ExternalFilter;
 		genericState.columnVisibility = columnVisibility;
