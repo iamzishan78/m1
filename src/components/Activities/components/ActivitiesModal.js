@@ -22,9 +22,8 @@ import clsx from 'clsx';
 import get from 'lodash/get';
 import moment from 'moment';
 
-import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
-import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
 import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
 import { workspaceTenantName } from 'components/Shared/functions';
 
 import { tableGlobalController } from 'stateManagement/tableController';
@@ -38,6 +37,7 @@ import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
 import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
 import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
 import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
+import { GET_ES_FILTER_LIST } from '../../../graphQL/useQueryESFilterList';
 import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider';
 import AutocompEntityNamesVirtualizeList from '../../MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
 import { setStateIfDeepEqual } from '../../Shared/functions';
@@ -654,20 +654,33 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 							</div>
 							<div className={classes.row}>
 								<span className={classes.rowIcon}></span>
-								<AutoCompleteAddNewField
+								<CustomAutoComplete
 									ref={outcomeFieldRef}
-									queryParams={{
-										esIndex: 'activities_flat', // Set the correct index to get outcome options
-										filterKey: 'outcome.keyword',
-										size: 50,
+									fieldAttributes={{
+										value: outcome,
+										label: 'Outcome',
+										query: GET_ES_FILTER_LIST,
+										variables: {
+											esIndex: 'activities_flat',
+											filterKey: 'outcome.keyword',
+											size: 50,
+										},
+										getOptions: hits => [
+											...outcomeOptions,
+											...get(hits, 'data.getESFilterList.hits', []).map(doc => doc.key),
+										],
 									}}
-									onChange={data => {
-										setOutcome(data.name);
+									fieldConfig={{
+										size: 'small',
+										variant: 'outlined',
+										allowNewOptions: true,
+										textfieldRestProps: {
+											style: { width: '76%', marginRight: 24 },
+										},
 									}}
-									defaultOptions={outcomeOptions}
-									value={outcome}
-									style={{ width: '76%', marginRight: 24 }}
-									inputProps={{ variant: 'outlined', size: 'small', label: 'Outcome' }}
+									fieldEvents={{
+										onChange: ({ value }) => setOutcome(value),
+									}}
 								/>
 							</div>
 							<div className={classes.row}>
@@ -836,12 +849,14 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 										fieldAttributes={{
 											name: 'activityOwner',
 											label: 'Activity Owner',
-											value: users.find(user => user.value === owner.id) || null,
-											defaultOptions: users.filter(u => u.text),
+											value: users.find(user => user.value === owner.id)?.text || null,
+											defaultOptions: users.map(user => {
+												return { name: user.text, _id: user.value };
+											}),
 										}}
 										fieldEvents={{
 											onChange: ({ value }) => {
-												setOwner({ name: value?.text, id: value?.value });
+												setOwner({ name: value?.name, id: value?._id });
 											},
 										}}
 										fieldConfig={{

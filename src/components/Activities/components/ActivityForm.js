@@ -7,7 +7,6 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 
-import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
 import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
 import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
@@ -520,19 +519,26 @@ export default function ActivityForm({ setSelectedActivityId }) {
 					</Grid>
 
 					<Grid item xs={9}>
-						<AutoCompleteAddNewField
+						<CustomAutoComplete
 							ref={outcomeFieldRef}
-							queryParams={{
-								esIndex: 'activities_flat', // Set the correct index to get outcome options
-								filterKey: 'outcome.keyword',
-								size: 50,
+							fieldAttributes={{
+								value: outcome,
+								defaultOptions: outcomeOptions,
+								queryParams: {
+									esIndex: 'activities_flat',
+									filterKey: 'outcome.keyword',
+									size: 50,
+								},
 							}}
-							onChange={data => {
-								formStateController.updateState({ outcome: data.name });
+							fieldConfig={{
+								variant: 'outlined',
+								size: 'small',
 							}}
-							defaultOptions={outcomeOptions}
-							value={outcome}
-							inputProps={{ variant: 'outlined', size: 'small' }}
+							fieldEvents={{
+								onChange: ({ value }) => {
+									formStateController.updateState({ outcome: value });
+								},
+							}}
 						/>
 					</Grid>
 				</Grid>

@@ -33,7 +33,7 @@ import { UserSession } from 'utils/user';
 import { showErrorMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
-import AutoCompleteAddNewField from './FieldContent/AutoCompleteAddNewField';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { outcomeOptions } from './FieldContent/helper';
 
 const useStyles = makeStyles(theme => ({
@@ -566,18 +566,26 @@ function AddActivityDialog(props) {
 				)}
 				size="small"
 			>
-				<AutoCompleteAddNewField
-					queryParams={{
-						esIndex: 'activities_flat',
-						filterKey: 'outcome.keyword',
-						size: 50,
+				<CustomAutoComplete
+					fieldAttributes={{
+						value: outcome,
+						defaultOptions: outcomeOptions,
+						queryParams: {
+							esIndex: 'activities_flat',
+							filterKey: 'outcome.keyword',
+							size: 50,
+						},
 					}}
-					onChange={data => {
-						setOutcome(data.name);
+					fieldConfig={{
+						variant: 'outlined',
+						size: 'small',
+						label: 'Outcome',
 					}}
-					defaultOptions={outcomeOptions}
-					value={outcome}
-					inputProps={{ variant: 'outlined', size: 'small', label: 'Outcome' }}
+					fieldEvents={{
+						onChange: ({ value }) => {
+							setOutcome(value);
+						},
+					}}
 				/>
 			</FormControl>
 			<div className={classes.dateTimeRow}>
@@ -716,24 +724,27 @@ function AddActivityDialog(props) {
 				margin="dense"
 				variant="outlined"
 			/>
-			<Autocomplete
-				className={clsx(!owner.id && errors.owner && classes.error)}
-				options={activityStatus}
-				onChange={(event, newValue) => {
-					setClosed(newValue);
+			<CustomAutoComplete
+				fieldAttributes={{
+					name: 'activityStatus',
+					label: 'Activity Status',
+					value: activityStatus.find(item => item?.value === closed?.value),
+					defaultOptions: activityStatus,
+					getOptionLabel: option => option.key,
 				}}
-				value={activityStatus.find(item => item?.value === closed?.value) || null}
-				getOptionLabel={option => option.key}
-				renderInput={params => (
-					<TextField
-						className={clsx(classes.inputField)}
-						margin="dense"
-						{...params}
-						variant="outlined"
-						InputLabelProps={{ shrink: true }}
-						label="Activity Status"
-					/>
-				)}
+				fieldEvents={{
+					onChange: ({ value }) => {
+						setClosed(value);
+					},
+				}}
+				fieldConfig={{
+					margin: 'dense',
+					variant: 'outlined',
+					textfieldRestProps: {
+						className: clsx(classes.inputField, !owner.id && errors.owner && classes.error),
+					},
+				}}
+				disableClearable
 			/>
 
 			<div className={classes.btnGroup} style={{ width: '100%' }}>
