@@ -90,13 +90,108 @@ const mainContent = {
 	padding: '14px 0px 0px  0px',
 };
 
+function convertToDate(input) {
+	input = input.toString().padStart(4, '0'); // Ensure the string is 4 digits
+	let month = input.length === 3 ? '01' : input.slice(0, input.length - 2);
+	let year = '20' + input.slice(-2); // Always assuming 2000s
+	let day = '01';
+
+	// Pad single-digit month
+	if (month.length === 1) {
+		month = '0' + month;
+	}
+
+	return `${month}/${day}/${year}`;
+}
+
+function transformData(dataArray) {
+	const data = dataArray?.[0]?.data || {};
+	if (dataArray.length === 1 && Object.values(data).every(value => value === undefined)) {
+		return dataArray;
+	}
+
+	const taxFieldPrefixes = ['Tax Type', 'Gross Tax', 'Net Tax'];
+	const deductFieldPrefixes = ['Deduct Type', 'Gross Deduct', 'Net Deduct'];
+	const maxCount = 10;
+
+	// Define non-repeating keys
+	const nonRepeatingKeys = [
+		'Gross Volume',
+		'Gross Value',
+		'Price',
+		'Gross Deducts',
+		'Net Value',
+		'Owner Value',
+		'Owner Net Value ',
+	];
+
+	const transformed = [];
+
+	dataArray.forEach(entry => {
+		const item = entry.data;
+		const meta = entry.meta || null;
+		const error = entry.error || null;
+
+		// Separate non-repeating values
+		const nonRepeatingValues = {};
+		nonRepeatingKeys.forEach(key => {
+			nonRepeatingValues[key] = item[key];
+		});
+
+		// Other fields (excluding tax & deduct & non-repeating)
+		const otherData = {};
+		Object.keys(item).forEach(key => {
+			const isTax = taxFieldPrefixes.some(prefix => key.startsWith(prefix));
+			const isDeduct = deductFieldPrefixes.some(prefix => key.startsWith(prefix));
+			const isNonRepeating = nonRepeatingKeys.includes(key);
+			if (!isTax && !isDeduct && !isNonRepeating) {
+				otherData[key] = item[key];
+			}
+		});
+
+		// rows
+		for (let i = 1; i <= maxCount; i++) {
+			const taxType = item[`Tax Type ${i}`];
+			const grossTax = item[`Gross Tax ${i}`];
+			const netTax = item[`Net Tax ${i}`];
+			const deductType = item[`Deduct Type ${i}`];
+			const grossDeduct = item[`Gross Deduct ${i}`];
+			const netDeduct = item[`Net Deduct ${i}`];
+			const prodDate = item[`Prod Date`];
+
+			const isFirstRow = i === 1;
+			if (taxType || grossTax || netTax || deductType || grossDeduct || netDeduct) {
+				transformed.push({
+					data: {
+						...otherData,
+						...Object.fromEntries(
+							Object.entries(nonRepeatingValues).map(([key, val]) => [key, isFirstRow ? val : null])
+						),
+						'Prod Date': convertToDate(prodDate),
+						'Tax Type': taxType,
+						'Gross Tax': grossTax,
+						'Net Tax': netTax,
+						'Deduct Type': deductType,
+						'Gross Deduct': grossDeduct,
+						'Net Deduct': netDeduct,
+					},
+					meta,
+					error,
+				});
+			}
+		}
+	});
+
+	return transformed;
+}
+
 export default function CSVFileReader(props) {
 	const dispatch = useDispatch();
 	const [stateNav] = useContext(NavigationContext);
 	const classes = useStyles({ disabled: props.disabled });
 	let unmounted = useRef(false);
 
-	const { jobStateValues } = jobController.useState(['m1neralHeaders', 'jobType'], 'jobStateValues');
+	const { jobStateValues } = jobController.useState(['m1neralHeaders', 'jobType', 'jobSubType'], 'jobStateValues');
 
 	const csvColumns = [Object.fromEntries(jobStateValues.m1neralHeaders.map(col => [col.label, '']))];
 
@@ -161,6 +256,10 @@ export default function CSVFileReader(props) {
 					});
 				}
 
+				if (jobStateValues.jobType === 'CHECKDETAILS' && jobStateValues.jobSubType === 'CHECKDETAILSENERGY') {
+					data = transformData(data);
+				}
+
 				mapped_headers_from_CSV(data);
 				jobController.updateState({
 					csvDataList: data,
@@ -186,7 +285,9 @@ export default function CSVFileReader(props) {
 			const matchedKeys = [...jobStateValues.m1neralHeaders];
 			for (let index in uniqueKeys) {
 				const matchedKey = matchedKeys.find(
-					el => normalizeFieldName(el?.label) === normalizeFieldName(uniqueKeys[index])
+					el =>
+						normalizeFieldName(el?.label) === normalizeFieldName(uniqueKeys[index]) ||
+						normalizeFieldName(el?.mapped_key) === normalizeFieldName(uniqueKeys[index])
 				);
 
 				uniqueKeys[index] = {

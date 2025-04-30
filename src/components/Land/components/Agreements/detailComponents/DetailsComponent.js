@@ -25,6 +25,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { get, set } from 'lodash';
 import moment from 'moment';
 
+import RelatedFile from 'components/Document/components/RelatedFile';
 import LegalDescription from 'components/Land/components/Agreements/detailComponents/legalDescription';
 import Provisions from 'components/Land/components/Agreements/detailComponents/provisions';
 import RelatedAgreementsTable from 'components/Land/components/Agreements/detailComponents/relatedAgreements';
@@ -47,15 +48,16 @@ import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions
 import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
 
+import { detailCardController } from 'stateManagement/detailCardController';
+import { jobController } from 'stateManagement/jobStateController';
+import { popupController } from 'stateManagement/popupStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
+
 import { PaymentFeatureTenants } from 'utils/data';
 import { UserSession } from 'utils/user';
 
 import { setLandReduxKey } from 'actions';
 import { AppContext } from 'AppContext';
-import { detailCardController } from 'stateManagement/detailCardController';
-import { jobController } from 'stateManagement/jobStateController';
-import { popupController } from 'stateManagement/popupStateController';
-import { tableGlobalController } from 'stateManagement/tableController';
 
 import { DrawerContext } from './DrawerContext';
 import RelatedDocumets from './relatedDocuments';
@@ -722,7 +724,7 @@ export function DetailComponents(props) {
 						marginRight: 24,
 						height: 'calc(100vh - 270px)',
 						overflow: 'auto',
-						width: !!drawer ? 620 : 0,
+						width: drawer ? 620 : 0,
 						background: 'white',
 						overflowY: 'auto',
 					}}

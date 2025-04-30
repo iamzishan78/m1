@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 
-import { Tooltip, FormControlLabel, Switch } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
+
+import { Tooltip, FormControlLabel, Switch, Grid, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+
+import PropTypes from 'prop-types';
 
 import { layerController } from 'stateManagement/layerStateController.js';
 import { mapControlsController } from 'stateManagement/mapControlsController.js';
@@ -44,7 +45,10 @@ const LayerStylingControl = ({ isHover, layer }) => {
 				<KeyboardArrowRightIcon
 					fontSize="small"
 					htmlColor={isHover ? 'white' : '#808ba3'}
-					onClick={() => handleColorPicker(layer)}
+					onClick={() => {
+						mapControlsController.updateState({ selectedDataset: null, mapGridCardActivated: false });
+						handleColorPicker(layer);
+					}}
 				/>
 			</Tooltip>
 		</IconButton>
@@ -102,6 +106,35 @@ const LayerControls = ({ layer, updateLayer, isHover }) => {
 			</Grid>
 		</>
 	);
+};
+
+LayerStylingControl.propTypes = {
+	isHover: PropTypes.bool,
+	layer: PropTypes.shape({
+		layerSettings: PropTypes.shape({
+			colorable: PropTypes.bool,
+			interaction: PropTypes.shape({
+				interactionAble: PropTypes.bool,
+			}),
+			visiable: PropTypes.bool,
+		}),
+		name: PropTypes.string,
+	}).isRequired,
+};
+
+LayerControls.propTypes = {
+	layer: PropTypes.shape({
+		name: PropTypes.string,
+		layerSettings: PropTypes.shape({
+			colorable: PropTypes.bool,
+			visiable: PropTypes.bool,
+			interaction: PropTypes.shape({
+				interactionAble: PropTypes.bool,
+			}),
+		}),
+	}).isRequired,
+	updateLayer: PropTypes.func.isRequired,
+	isHover: PropTypes.bool,
 };
 
 export default React.memo(LayerControls, deepEqualObjects);

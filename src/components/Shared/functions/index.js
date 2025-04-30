@@ -124,7 +124,9 @@ export function customStartCaseString(str, isDate) {
 	}
 
 	if (isDate) {
-		return moment.parseZone(new Date(+str)).format('MM/DD/YY');
+		let date = moment.parseZone(new Date(+str)).format('MM/DD/YY');
+		if (date === 'Invalid date') date = moment.parseZone(new Date(str)).format('MM/DD/YY');
+		return date === 'Invalid date' ? '' : date;
 	}
 
 	if (str && str.split(' ').length < 2) {

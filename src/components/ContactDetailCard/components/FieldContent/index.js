@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import _ from 'lodash';
+import { useDispatch } from 'react-redux';
 
 import { Typography, Grid } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -10,7 +9,9 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
+import _ from 'lodash';
 import loadashFilter from 'lodash/filter';
+import PropTypes from 'prop-types';
 
 import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import CopyPurchaseInfo from 'components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo';
@@ -27,6 +28,9 @@ import useStyles from 'components/ContactDetailCard/components/FieldContent/styl
 import { phoneStatusOptions, contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import { phonenumber } from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
+import { formatDate } from 'components/Shared/functions';
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
 import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
 
@@ -37,18 +41,13 @@ import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
 import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
 
+import { showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
 import AutoCompleteAddNewField from './AutoCompleteAddNewField';
 import CampaignField from './CampaignField';
 import EntityType from './EntityType';
 import { timeZoneOptions } from './timeZoneList';
-import { formatDate } from 'components/Shared/functions';
-
-import { useDispatch } from 'react-redux';
-import { showErrorMessage } from 'actions';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import { phonenumber } from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -486,30 +485,22 @@ export default function FieldContent({
 							)}
 						/>
 					) : fieldName.startsWith('custom_data') && metaField?.type === 'dropdown' ? (
-						<Autocomplete
-							id={'fieldContentInput' + fieldName}
-							key={'fieldContentInput' + fieldName}
-							options={metaField?.dropdownOptions.map(option => option?.value)}
-							getOptionLabel={option => option || editContent[fieldName]}
-							onChange={(e, data) => {
-								e.persist();
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: data || '',
-								}));
-							}}
+						<ReactSelectField
+							fullWidth
+							showUnderline
+							showChevron={true}
+							index={'contacts'}
+							dropdownOptions={metaField?.dropdownOptions}
+							column={metaField}
+							isSingleSelect={true}
 							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							autoComplete
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-							style={{ width: '100%' }}
-							renderInput={params => (
-								<TextField
-									{...params}
-									label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
-									className={classes.editTextField}
-								/>
-							)}
+							onCustomKeyChange={value => {
+								const fields = {};
+								fields[fieldName] = value;
+								setEdit(null);
+								setEditContent({ ...fields });
+								handleUpdating(value);
+							}}
 						/>
 					) : fieldName.startsWith('custom_data') && metaField?.type === 'multiselect' ? (
 						<ReactSelectField
