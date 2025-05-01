@@ -10,7 +10,7 @@ const AutoCompleteWithNewOption = ({ options, onChange, value, onBlur, disabled 
 			fieldAttributes={{
 				label: rest.label,
 				value: value ? { _id: value, name: value } : null,
-				defaultOptions: options?.map(type => ({ _id: type, name: type })) || [],
+				optionArray: options?.map(type => ({ _id: type, name: type })) || [],
 			}}
 			fieldConfig={{
 				size: rest.size ?? 'small',

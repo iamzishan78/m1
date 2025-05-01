@@ -235,7 +235,7 @@ const RenderCustomFields = ({
 			fieldAttributes={{
 				label,
 				name,
-				defaultOptions: options,
+				optionArray: options,
 				inputSearchText: searchText,
 			}}
 			fieldEvents={{

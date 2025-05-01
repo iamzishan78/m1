@@ -171,7 +171,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 										}}
 										fieldAttributes={{
 											value: item.type ?? '',
-											defaultOptions: partyTypes,
+											optionArray: partyTypes,
 										}}
 										fieldEvents={{
 											onChange: ({ value }) => {

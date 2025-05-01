@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 
 import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
-
 function RenderRow(props) {
 	const { data, index, style } = props;
 	return (
@@ -46,7 +45,7 @@ function AutoCompleteFieldComponent(props) {
 				label,
 				value,
 				defaultValue,
-				defaultOptions: options,
+				optionArray: options,
 			}}
 			fieldConfig={{
 				variant: variant || 'outlined',

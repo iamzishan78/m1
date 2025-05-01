@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
 
-
 import { useLazyQuery } from '@apollo/client';
 import pick from 'lodash/pick';
 import PropTypes from 'prop-types';
@@ -76,7 +75,7 @@ const AutoCompleteParcelOwners = ({ onChange, value, parcel, onBlur, ...other })
 				name: 'parcelOwner',
 				label: other?.label,
 				value,
-				defaultOptions: options,
+				optionArray: options,
 				placeholder: other?.placeholder || null,
 			}}
 			fieldConfig={{

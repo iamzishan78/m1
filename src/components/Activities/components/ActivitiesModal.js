@@ -781,7 +781,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 											name: 'associatedDeal',
 											label: 'Associated Deal',
 											value: dealValue,
-											defaultOptions: openDeals,
+											optionArray: openDeals,
 										}}
 										fieldEvents={{
 											onChange: ({ value }) => {
@@ -850,7 +850,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 											name: 'activityOwner',
 											label: 'Activity Owner',
 											value: users.find(user => user.value === owner.id)?.text || null,
-											defaultOptions: users.map(user => {
+											optionArray: users.map(user => {
 												return { name: user.text, _id: user.value };
 											}),
 										}}
@@ -904,7 +904,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 											name: 'activityStatus',
 											label: 'Activity Status',
 											value: activityStatusOptions.find(option => option.value === closed),
-											defaultOptions: activityStatusOptions,
+											optionArray: activityStatusOptions,
 										}}
 										fieldEvents={{
 											onChange: ({ value }) => {

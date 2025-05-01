@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { Views } from 'react-big-calendar';
 
-
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import IconButton from '@material-ui/core/IconButton';
@@ -11,7 +10,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-
 
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -286,7 +284,7 @@ const ActivitiesToolbar = ({
 							}}
 							fieldAttributes={{
 								label: 'Activity Type',
-								defaultOptions: filteredActivityTypesOptions,
+								optionArray: filteredActivityTypesOptions,
 								defaultValue: filteredActivityTypesOptions.find(o => o.value === activityFilterByType),
 								value: filteredActivityTypesOptions.find(o => o.value === activityFilterByType),
 							}}
@@ -306,7 +304,7 @@ const ActivitiesToolbar = ({
 							}}
 							fieldAttributes={{
 								label: 'Obligation Type',
-								defaultOptions: filteredActivityTypesOptions,
+								optionArray: filteredActivityTypesOptions,
 								defaultValue: filteredActivityTypesOptions.find(o => o.value === activityFilterByType),
 								value: filteredActivityTypesOptions.find(o => o.value === activityFilterByType),
 							}}
@@ -327,7 +325,7 @@ const ActivitiesToolbar = ({
 						}}
 						fieldAttributes={{
 							label: type === 'Obligation' ? 'Assigned To' : 'Owner',
-							defaultOptions: acitvityOwnerOptions,
+							optionArray: acitvityOwnerOptions,
 							defaultValue: acitvityOwnerOptions.find(u => u.value === activityFilterByOwner),
 							value: acitvityOwnerOptions.find(u => u.value === activityFilterByOwner),
 						}}
@@ -349,7 +347,7 @@ const ActivitiesToolbar = ({
 							}}
 							fieldAttributes={{
 								label: 'Responsible Party',
-								defaultOptions: responsiblePartyOptions,
+								optionArray: responsiblePartyOptions,
 								defaultValue: responsiblePartyOptions.find(u => u.value === activityFilterByResponsibleParty),
 								value: responsiblePartyOptions.find(u => u.value === activityFilterByResponsibleParty),
 							}}

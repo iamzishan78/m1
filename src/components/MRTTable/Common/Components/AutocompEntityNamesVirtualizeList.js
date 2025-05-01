@@ -267,7 +267,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 				placeholder,
 				value: nameAutValue,
 				defaultValue: nameAutValue,
-				defaultOptions: mongoEntitiesArray,
+				optionArray: mongoEntitiesArray,
 			}}
 			fieldEvents={{
 				onChange: ({ value }) => {

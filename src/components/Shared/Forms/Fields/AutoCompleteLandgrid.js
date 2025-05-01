@@ -4,7 +4,6 @@ import { useLazyQuery } from '@apollo/client';
 import { uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 
-
 import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
@@ -67,10 +66,14 @@ export const AutoCompleteLandgrid = React.memo(
 		}, [filters, compoundValue]);
 
 		useEffect(() => {
-			if (!filtersData) {return;}
+			if (!filtersData) {
+				return;
+			}
 
 			const keys = Object.keys(filtersData);
-			if (!keys || !filtersData[keys[0]] || !filtersData[keys[0]]?.hits) {return;}
+			if (!keys || !filtersData[keys[0]] || !filtersData[keys[0]]?.hits) {
+				return;
+			}
 
 			let hits = filtersData[keys[0]].hits;
 			if (label === 'State') {
@@ -103,7 +106,7 @@ export const AutoCompleteLandgrid = React.memo(
 					name: label,
 					label,
 					value: search,
-					defaultOptions: options,
+					optionArray: options,
 				}}
 				fieldConfig={{
 					variant: variant || 'outlined',

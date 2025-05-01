@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-
 import { Grid, Typography } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 
@@ -66,7 +65,7 @@ const AutoCompleteShapeLayer = ({ value, shapeType, setSelectedShapeLayer }) => 
 			fieldAttributes={{
 				name: 'shapeLayer',
 				value,
-				defaultOptions: layerList || [],
+				optionArray: layerList || [],
 			}}
 			fieldConfig={{
 				variant: 'outlined',

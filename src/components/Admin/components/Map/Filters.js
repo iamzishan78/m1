@@ -6,7 +6,6 @@ import { makeStyles } from '@material-ui/styles';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-
 import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 const useStyles = makeStyles(() => ({
@@ -38,7 +37,7 @@ const LastCheckDateFilter = ({ calculationOption, setCalculationOption, options 
 					}}
 					fieldAttributes={{
 						value: calculationOption?.value,
-						defaultOptions: options,
+						optionArray: options,
 						options: options.map(option => option.value),
 					}}
 					fieldEvents={{

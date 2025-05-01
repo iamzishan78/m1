@@ -523,7 +523,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 							ref={outcomeFieldRef}
 							fieldAttributes={{
 								value: outcome,
-								defaultOptions: outcomeOptions,
+								optionArray: outcomeOptions,
 								queryParams: {
 									esIndex: 'activities_flat',
 									filterKey: 'outcome.keyword',
@@ -655,7 +655,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 								name: 'activityStatus',
 								label: 'Activity Status',
 								value: activityStatusOptions.find(option => option.value === status),
-								defaultOptions: activityStatusOptions,
+								optionArray: activityStatusOptions,
 							}}
 							fieldEvents={{
 								onChange: ({ value }) => {

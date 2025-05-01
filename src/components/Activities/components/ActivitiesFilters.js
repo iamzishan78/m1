@@ -119,7 +119,7 @@ export default function CustomDatesActivities({
 						id="custom-date-dropdown"
 						fieldAttributes={{
 							value: selectedDate,
-							defaultOptions: Object.values(CUSTOM_DATES),
+							optionArray: Object.values(CUSTOM_DATES),
 							defaultValue: CUSTOM_DATES.ALL_DATES,
 							label: 'Date Range',
 						}}
@@ -322,7 +322,7 @@ const CampaignFilter = ({
 				label: 'Campaign Name',
 				value: value,
 				inputSearchText: search?.toString(),
-				defaultOptions: get(filtersData, 'getDbFilters.hits', [])
+				optionArray: get(filtersData, 'getDbFilters.hits', [])
 					.map(d => d.key)
 					.filter(Boolean),
 			}}
@@ -422,7 +422,7 @@ const QualifierFilter = ({
 				label: label,
 				value: value,
 				inputSearchText: search?.toString(),
-				defaultOptions: get(filtersData, 'getDbFilters.hits', []),
+				optionArray: get(filtersData, 'getDbFilters.hits', []),
 			}}
 			fieldConfig={{
 				variant: 'outlined',
@@ -444,7 +444,7 @@ const EntityFilter = ({ label }) => {
 			fieldAttributes={{
 				label: label,
 				defaultValue: 'Contacts',
-				defaultOptions: options,
+				optionArray: options,
 			}}
 			fieldConfig={{
 				variant: 'outlined',

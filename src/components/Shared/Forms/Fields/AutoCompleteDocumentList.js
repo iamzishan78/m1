@@ -107,7 +107,7 @@ const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
 			fieldAttributes={{
 				value: value,
 				placeholder: 'Search documents',
-				defaultOptions: documents || [],
+				optionArray: documents || [],
 			}}
 			fieldEvents={{
 				onBlur,

@@ -376,7 +376,7 @@ export default function RevenueAnalytics(props) {
 								label: 'Comparison Report',
 								value: comparisonReport,
 								defaultValue: 'Check Detail Comparison', // Added defaultValue here
-								defaultOptions: ['Check Detail Comparison', 'Sales Volume vs Reported Production'],
+								optionArray: ['Check Detail Comparison', 'Sales Volume vs Reported Production'],
 							}}
 							fieldEvents={{
 								onChange: ({ value }) => {

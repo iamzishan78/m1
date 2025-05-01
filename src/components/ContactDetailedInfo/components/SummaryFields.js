@@ -315,7 +315,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 								<CustomAutoComplete
 									fieldAttributes={{
 										value: contactData[field.key] ?? '',
-										defaultOptions: field.key === 'status' ? contactStatusOptions : [],
+										optionArray: field.key === 'status' ? contactStatusOptions : [],
 										query: GET_ES_FILTER_LIST,
 										variables: {
 											esIndex: 'contacts_flat',

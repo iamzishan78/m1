@@ -50,7 +50,7 @@ function CustomAutoComplete({
 		placeholder = '',
 		isESSearch = false,
 		defaultValue = null,
-		defaultOptions = null,
+		optionArray = null,
 		inputSearchText = null,
 		getOptions = options => options,
 	} = {},
@@ -64,8 +64,8 @@ function CustomAutoComplete({
 	const watchValue = watch ? watch(name) : '';
 
 	useEffect(() => {
-		setOptions(Array.isArray(defaultOptions) ? defaultOptions : []);
-	}, [defaultOptions]);
+		setOptions(Array.isArray(optionArray) ? optionArray : []);
+	}, [optionArray]);
 
 	useEffect(() => {
 		setFieldValue(value ?? null);
@@ -143,7 +143,9 @@ function CustomAutoComplete({
 
 		const fallbackValue = value || null;
 
-		if (!fieldValue) {return fallbackValue;}
+		if (!fieldValue) {
+			return fallbackValue;
+		}
 
 		if (typeof fieldValue === 'string') {
 			return options?.find(opt => opt.value === fieldValue || opt === fieldValue) || fieldValue;
@@ -325,7 +327,7 @@ CustomAutoComplete.propTypes = {
 		placeholder: PropTypes.string,
 		isESSearch: PropTypes.bool,
 		defaultValue: PropTypes.any,
-		defaultOptions: PropTypes.array,
+		optionArray: PropTypes.array,
 		inputSearchText: PropTypes.string,
 		getOptions: PropTypes.func,
 	}),

@@ -569,7 +569,7 @@ function AddActivityDialog(props) {
 				<CustomAutoComplete
 					fieldAttributes={{
 						value: outcome,
-						defaultOptions: outcomeOptions,
+						optionArray: outcomeOptions,
 						queryParams: {
 							esIndex: 'activities_flat',
 							filterKey: 'outcome.keyword',
@@ -729,7 +729,7 @@ function AddActivityDialog(props) {
 					name: 'activityStatus',
 					label: 'Activity Status',
 					value: activityStatus.find(item => item?.value === closed?.value),
-					defaultOptions: activityStatus,
+					optionArray: activityStatus,
 					getOptionLabel: option => option.key,
 				}}
 				fieldEvents={{

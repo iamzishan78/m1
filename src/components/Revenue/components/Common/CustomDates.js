@@ -133,7 +133,7 @@ export default function Portfolio({
 						label: 'Check Date Range',
 						defaultValue: defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES,
 						value: value,
-						defaultOptions: Object.values(CUSTOM_DATES).filter(val => {
+						optionArray: Object.values(CUSTOM_DATES).filter(val => {
 							if (!isProperties && val === 'All Dates') {
 								return false;
 							}

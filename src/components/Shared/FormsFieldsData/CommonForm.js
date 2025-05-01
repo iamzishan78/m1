@@ -73,7 +73,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 									name: item.name,
 									title: item.label,
 									label: item.label,
-									defaultOptions: item.defaultOptions,
+									optionArray: item.defaultOptions,
 									getOptions: item.getOptions,
 									query: item.query,
 									variables: item.variables,

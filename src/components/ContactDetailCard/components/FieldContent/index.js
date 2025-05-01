@@ -432,7 +432,7 @@ export default function FieldContent({
 							<CustomAutoComplete
 								fieldAttributes={{
 									value: editContent[fieldName] === null ? '' : editContent[fieldName],
-									defaultOptions: statusOptions.filter(option => option),
+									optionArray: statusOptions.filter(option => option),
 								}}
 								fieldEvents={{
 									onChange: ({ value }) => {
@@ -467,7 +467,7 @@ export default function FieldContent({
 								fieldAttributes={{
 									value: editContent[fieldName] === null ? '' : editContent[fieldName],
 									label: fieldsCount > 1 ? textFieldLabels(fieldName) : null,
-									defaultOptions: timeZoneOptions,
+									optionArray: timeZoneOptions,
 								}}
 								fieldConfig={{
 									size: 'small',
@@ -520,7 +520,7 @@ export default function FieldContent({
 							<CustomAutoComplete
 								fieldAttributes={{
 									value: editContent[fieldName] === null ? '' : editContent[fieldName],
-									defaultOptions: outcomeOptions,
+									optionArray: outcomeOptions,
 									queryParams: {
 										esIndex: 'contacts_flat',
 										filterKey: 'outcome.keyword',
@@ -562,7 +562,7 @@ export default function FieldContent({
 								fieldAttributes={{
 									value: editContent[fieldName] === null ? '' : editContent[fieldName],
 									label: fieldsCount > 1 ? textFieldLabels(fieldName) : null,
-									defaultOptions: phoneStatusOptions,
+									optionArray: phoneStatusOptions,
 								}}
 								fieldConfig={{
 									size: 'small',
@@ -597,7 +597,7 @@ export default function FieldContent({
 											fieldAttributes={{
 												value: editContent[fieldName] === null ? '' : editContent[fieldName],
 												label: fieldsCount > 1 ? textFieldLabels(fieldName) : null,
-												defaultOptions: metaField?.dropdownOptions.map(option => option?.value),
+												optionArray: metaField?.dropdownOptions.map(option => option?.value),
 											}}
 											fieldConfig={{
 												size: 'small',

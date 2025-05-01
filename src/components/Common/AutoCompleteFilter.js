@@ -202,7 +202,7 @@ export const AutoCompleteFilter = React.memo(
 				fieldAttributes={{
 					label: custom?.filterLabel || label,
 					value: filterList[index][0],
-					defaultOptions: options,
+					optionArray: options,
 				}}
 				fieldConfig={{
 					variant: others?.variant || 'standard',

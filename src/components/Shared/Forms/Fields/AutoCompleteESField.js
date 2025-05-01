@@ -84,62 +84,60 @@ const AutoCompleteField = ({
 	};
 
 	return (
-		<>
-			<CustomAutoComplete
-				id={`filter-autocomplete-${label || 'es-field'}`}
-				PopperComponent={PopperMy}
-				open={open}
-				onOpen={() => {
-					setOpen(true);
-				}}
-				onClose={() => {
-					setOpen(false);
-				}}
-				inputValue={search}
-				fieldConfig={{
-					loading,
-					variant,
-					getCustomOptionLabel,
-					...(rest.renderOption && { renderOptionComp: rest.renderOption }),
-					textfieldRestProps: {
-						onKeyDown: e => {
-							if (e.code === 'Tab') {
-								const ops = options.filter(op => op.key.startsWith(search));
-								if (ops[0] && ops[0].key) {
-									onChange(ops[0].key);
-								}
+		<CustomAutoComplete
+			id={`filter-autocomplete-${label || 'es-field'}`}
+			PopperComponent={PopperMy}
+			open={open}
+			onOpen={() => {
+				setOpen(true);
+			}}
+			onClose={() => {
+				setOpen(false);
+			}}
+			inputValue={search}
+			fieldConfig={{
+				loading,
+				variant,
+				getCustomOptionLabel,
+				...(rest.renderOption && { renderOptionComp: rest.renderOption }),
+				textfieldRestProps: {
+					onKeyDown: e => {
+						if (e.code === 'Tab') {
+							const ops = options.filter(op => op.key.startsWith(search));
+							if (ops[0] && ops[0].key) {
+								onChange(ops[0].key);
 							}
-						},
-					},
-				}}
-				fieldAttributes={{
-					label,
-					value,
-					placeholder,
-					defaultOptions: options,
-				}}
-				fieldEvents={{
-					onTextFieldChange: value => handleChange(value),
-					onChange: ({ value, reason }) => {
-						if (reason === 'clear' || !value?.key) {
-							return setSearch('');
 						}
+					},
+				},
+			}}
+			fieldAttributes={{
+				label,
+				value,
+				placeholder,
+				optionArray: options,
+			}}
+			fieldEvents={{
+				onTextFieldChange: value => handleChange(value),
+				onChange: ({ value, reason }) => {
+					if (reason === 'clear' || !value?.key) {
+						return setSearch('');
+					}
 
-						if (typeof value.key === 'string') {
-							setSearch(value.key);
-							onChange(value.key);
-							return;
-						}
-						const valuesLength = value.key.length;
-						const lastValue = value.key?.[valuesLength - 1];
-						const val = lastValue && lastValue !== '' ? lastValue : value.key.find(val => val !== '') || '';
-						const index = value.key.indexOf(val);
-						setSearch(val);
-						onChange(val, index >= 0 ? index : 0);
-					},
-				}}
-			/>
-		</>
+					if (typeof value.key === 'string') {
+						setSearch(value.key);
+						onChange(value.key);
+						return;
+					}
+					const valuesLength = value.key.length;
+					const lastValue = value.key?.[valuesLength - 1];
+					const val = lastValue && lastValue !== '' ? lastValue : value.key.find(val => val !== '') || '';
+					const index = value.key.indexOf(val);
+					setSearch(val);
+					onChange(val, index >= 0 ? index : 0);
+				},
+			}}
+		/>
 	);
 };
 

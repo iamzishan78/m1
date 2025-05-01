@@ -44,7 +44,7 @@ const AutoCompleteTypeComponent = ({
 				name: typeKey,
 				value: value ? { _id: value, name: value } : null,
 				label,
-				defaultOptions: types?.map(type => ({ _id: type, name: type })) || [],
+				optionArray: types?.map(type => ({ _id: type, name: type })) || [],
 			}}
 			fieldConfig={{
 				variant: other.variant ?? 'standard',
