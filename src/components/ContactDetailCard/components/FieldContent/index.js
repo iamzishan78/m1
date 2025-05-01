@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Typography, Grid, TextField, Link, CircularProgress } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import { TextField, Link, CircularProgress } from '@material-ui/core';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { get, has } from 'lodash';
-import loadashFilter from 'lodash/filter';
 import PropTypes from 'prop-types';
 
-import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import CopyPurchaseInfo from 'components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo';
 import {
 	textFieldLabels,
@@ -24,6 +20,7 @@ import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
 import { contactStatusOptions, phoneStatusOptions } from 'components/ContactDetailedInfo/helper';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import CustomTypography from 'components/Shared/components/Fields/CustomTypography';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
@@ -46,9 +43,7 @@ import { AppContext } from 'AppContext';
 import CampaignField from './CampaignField';
 import EntityType from './EntityType';
 import { timeZoneOptions } from './timeZoneList';
-import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
-const filter = createFilterOptions();
 export default function FieldContent({
 	children,
 	id,
@@ -395,24 +390,39 @@ export default function FieldContent({
 				switch (fieldName) {
 					case 'contactStatus':
 						component = (
-							<ContactStatus
-								className={classes.maxWidth}
-								setValue={value => {
-									let val = value.name;
-									const data = contactStatusOptions.find(s => s.label === val);
-									if (data) {
-										val = data.value;
-									}
-									setEditContent(editContent => ({
-										...editContent,
-										[fieldName]: val,
-									}));
-									handleUpdating(val);
+							<CustomAutoComplete
+								fieldAttributes={{
+									label: 'Status',
+									value: editContent[fieldName] === null ? '' : editContent[fieldName],
+									query: GET_ES_FILTER_LIST,
+									variables: {
+										esIndex: 'contacts_flat',
+										filterKey: 'contactStatus.keyword',
+										size: 50,
+									},
+									getOptions: res => res?.data?.getESFilterList?.hits?.map(hit => hit.key).filter(option => option),
 								}}
-								fieldKey="contactStatus"
-								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+								fieldConfig={{
+									size: 'small',
+									margin: 'dense',
+									variant: 'outlined',
+								}}
+								fieldEvents={{
+									onChange: ({ value }) => {
+										let val = value;
+										const data = contactStatusOptions.find(s => s.label === val);
+										if (data) {
+											val = data.value;
+										}
+										setEditContent(editContent => ({
+											...editContent,
+											[fieldName]: val,
+										}));
+										handleUpdating(val);
+									},
+									onBlur: () => onBlurHandler([fieldName]),
+								}}
 								onKeyDown={event => keyDownHandler(event, [fieldName])}
-								onBlur={() => onBlurHandler([fieldName])}
 							/>
 						);
 						break;
@@ -421,12 +431,8 @@ export default function FieldContent({
 						component = (
 							<CustomAutoComplete
 								fieldAttributes={{
-									value,
-									label: 'Status',
-									defaultOptions:
-										options?.map(type => {
-											return { _id: type, name: type };
-										}) ?? [],
+									value: editContent[fieldName] === null ? '' : editContent[fieldName],
+									defaultOptions: statusOptions.filter(option => option),
 								}}
 								fieldEvents={{
 									onChange: ({ value }) => {
@@ -444,7 +450,9 @@ export default function FieldContent({
 									onBlur: () => onBlurHandler([fieldName]),
 								}}
 								fieldConfig={{
+									variant: 'outlined',
 									textfieldRestProps: {
+										className: classes.editTextField,
 										autoFocus: true,
 									},
 								}}
@@ -876,4 +884,5 @@ FieldContent.propTypes = {
 	row: PropTypes.object,
 	handleQuickActionActivity: PropTypes.func,
 	metafields: PropTypes.array,
+	purchaseDataId: PropTypes.string,
 };

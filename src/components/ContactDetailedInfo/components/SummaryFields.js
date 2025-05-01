@@ -1,26 +1,24 @@
-import React, { useEffect, useState, Fragment, useRef, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Grid, TextField, InputAdornment, CircularProgress, IconButton } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useMutation } from '@apollo/client';
 import { get, set, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 
-import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import { SUMMARY_FIELDS, featureFlagChanges, contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { NumberFormatComma } from 'components/Shared/Forms/Formatting/NumberFormatComma';
-import { phonenumber } from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
-
-import { globalStateController } from 'stateManagement/globalStateController';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
 import { showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
@@ -105,10 +103,6 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 	const dispatch = useDispatch();
 
 	const { user } = useSelector(state => state.app);
-
-	const globalState = globalStateController.useState(['dialpadContact'], 'globalStateValues');
-	const { basicInfo: basicPhoneKeys = [] } = globalState?.globalStateValues?.dialpadContact?.phoneKeys ?? {}; // Default to an empty object
-	const { basicInfo: basicEmailKeys = [] } = globalState?.globalStateValues?.dialpadContact?.emailKeys ?? {}; // Default to an empty object
 
 	const [updateContact] = useMutation(UPDATECONTACT, {
 		onCompleted: data => {
@@ -318,15 +312,26 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 									}}
 								/>
 							) : (
-								<AutoCompleteWithAddNew
-									className={classes.maxWidth}
-									setValue={value => {
-										updateFieldData(field.key, value.name);
+								<CustomAutoComplete
+									fieldAttributes={{
+										value: contactData[field.key] ?? '',
+										defaultOptions: field.key === 'status' ? contactStatusOptions : [],
+										query: GET_ES_FILTER_LIST,
+										variables: {
+											esIndex: 'contacts_flat',
+											filterKey: field.key + '.keyword',
+											size: 50,
+										},
+										getOptions: res => res?.data?.getESFilterList?.hits?.map(hit => hit.key).filter(option => option),
 									}}
-									fieldKey={field.key}
-									defaultOptions={field.key === 'status' ? contactStatusOptions : []}
-									value={contactData[field.key] ?? ''}
-									variant="outlined"
+									fieldConfig={{
+										size: 'small',
+										margin: 'dense',
+										variant: 'outlined',
+									}}
+									fieldEvents={{
+										onChange: ({ value }) => updateFieldData(field.key, value ?? ''),
+									}}
 								/>
 							)}
 						</Grid>
