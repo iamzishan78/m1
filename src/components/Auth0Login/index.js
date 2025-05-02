@@ -2,9 +2,8 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useAuth0 } from '@auth0/auth0-react';
+import PropTypes from 'prop-types';
 import queryString from 'query-string';
-
-import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 
 import { BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
 import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
@@ -19,6 +18,8 @@ import { apolloClientEndpointDev, isDev } from 'utils/helper';
 import { UserSession } from 'utils/user';
 
 import { setApolloHeaders } from 'AppContext';
+
+import { tenantsCredentials } from './helpers';
 
 const Auth0Login = props => {
 	const dispatch = useDispatch();
@@ -138,13 +139,11 @@ const Auth0Login = props => {
 		if (!apolloClientEndpoint) {
 			let tenant = tenantsCredentials(tenantName);
 			globalStateController.updateState({
-				myMSALObj: null,
 				apolloClientEndpoint:
 					isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant?.apolloClientEndpoint,
 			});
 			window.setStateApp(stateApp => ({
 				...stateApp,
-				myMSALObj: null,
 				apolloClientEndpoint: tenant?.apolloClientEndpoint,
 				graphqlScope: tenant?.graphqlScope,
 			}));
@@ -185,3 +184,7 @@ const Auth0Login = props => {
 };
 
 export default Auth0Login;
+
+Auth0Login.propTypes = {
+	location: PropTypes.object,
+};

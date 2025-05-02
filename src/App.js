@@ -24,9 +24,6 @@ import Providers from 'Providers';
 import ActivitiesProvider from './components/Activities/ActivitiesProvider';
 import AlertsProvider from './components/Alerts/AlertsProvider';
 import Auth0Login from './components/Auth0Login';
-import AzureLogin from './components/AzureLogin';
-import ForgotPassword from './components/AzureLogin/ForgotPassword';
-import SignUpCard from './components/AzureLogin/SignUpCard';
 import BulkUpload from './components/BulkUpload/BulkUpload';
 import ContactDetailsProvider from './components/ContactDetailCard/ContactDetailsProvider';
 import ContactDetailedInfoProvider from './components/ContactDetailedInfo/ContactDetailedInfoProvider';
@@ -60,9 +57,7 @@ const PrivateRoute = ({ component, ...options }) => {
 		apolloClient &&
 		userSessionIsLoaded
 			? component
-			: globalStateController.isAuth0Bypass()
-				? Auth0Login
-				: AzureLogin;
+			: Auth0Login;
 
 	return (
 		<div>
@@ -84,8 +79,6 @@ function App() {
 								path={['/', '/map/:type/:paramId', '/map/:type/:paramId/:lati/:longi']}
 								component={MapProvider}
 							/>
-							<Route exact path="/signup" component={SignUpCard} />
-							<Route exact path="/forgotpassword" component={ForgotPassword} />
 							<PrivateRoute path="/flow" component={TransactProvider} />
 							<PrivateRoute path="/documents" component={DocumentProvider} />
 							<PrivateRoute exact path="/documents/:documentId/view" component={DocumentProvider} />

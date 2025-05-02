@@ -1,7 +1,7 @@
 import { get, isEqual, isInteger, isObject } from 'lodash';
 import moment from 'moment';
 
-import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
+import { tenantsCredentials } from 'components/Auth0Login/helpers';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 
@@ -789,7 +789,7 @@ export const getActivityAnalyticsFilters = appliedFilters => {
 
 export const compareObjects = (child, parent) => {
 	for (const key in child) {
-		if (child.hasOwnProperty(key)) {
+		if (Object.prototype.hasOwnProperty.call(child, key)) {
 			const childValue = child[key];
 			const parentValue = get(parent, key);
 
