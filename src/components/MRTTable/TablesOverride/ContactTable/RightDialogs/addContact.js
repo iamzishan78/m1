@@ -18,6 +18,8 @@ import { useForm } from 'react-hook-form';
 import { extractValueRecursively } from 'components/MRTTable/utils/helper';
 import { useDispatch } from 'react-redux';
 import { showErrorMessage } from 'actions';
+import { AppContext } from 'AppContext';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
 const useStyles = makeStyles(theme => ({
 	dialogContent: {
@@ -60,6 +62,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function AddContactDialogContent(props) {
+	const [stateApp] = React.useContext(AppContext);
 	const Controller = sideDialogController('contactDialog');
 	const formState = Controller.useCompleteState();
 	const formStateValues = formState?.get({ noproxy: true });
@@ -72,10 +75,15 @@ export default function AddContactDialogContent(props) {
 
 	const { firstName } = getValues() || {};
 
+	const dialpadFeature = React.useMemo(() => {
+		return stateApp.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION);
+	}, [stateApp.user]);
+
 	const formSchema = useMemo(() => {
 		return contactForm({
 			getValues,
 			setValue,
+			dialpadFeature,
 		});
 	}, [formState?.rerenderJson]);
 

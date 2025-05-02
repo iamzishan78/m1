@@ -23,6 +23,7 @@ import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
 import { GETMONGOUSERS } from '../../../../../graphQL/useQueryGetUsers';
 import Taps from '../../../Taps';
 import { tableGlobalController } from 'hookstate/tableController';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
 const phonenumber = inputtxt => {
   if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
@@ -117,6 +118,10 @@ export default function AddContactDialogContent(props) {
 
   const { user } = useSelector(state => state.app);
   const showGenericPhones = React.useMemo(() => user.features?.find(f => f.name === 'showGenericPhones'), [user]);
+
+  const dialpadFeature = React.useMemo(() => {
+		return stateApp.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION);
+	}, [stateApp.user]);
 
   const [getPaginatedContacts, { loading: loadingContacts, data: dataContacts }] = useLazyQuery(
     PAGINATEDCONTACTSQUERY,
@@ -379,10 +384,15 @@ export default function AddContactDialogContent(props) {
           multiline
           value={newContact.homePhone}
           onChange={e => {
-            if (phonenumber(e.target.value)) {
+            if (!dialpadFeature || phonenumber(e.target.value)) {
               setNewContact({
                 ...newContact,
                 homePhone: e.target.value,
+              });
+            } else {
+              setNewContact({
+               ...newContact,
+                homePhone: '',
               });
             }
           }}
@@ -398,10 +408,15 @@ export default function AddContactDialogContent(props) {
           multiline
           value={newContact.mobilePhone}
           onChange={e => {
-            if (phonenumber(e.target.value)) {
+            if (!dialpadFeature || phonenumber(e.target.value)) {
               setNewContact({
                 ...newContact,
                 mobilePhone: e.target.value,
+              });
+            } else {
+              setNewContact({
+              ...newContact,
+                mobilePhone: '',
               });
             }
           }}
