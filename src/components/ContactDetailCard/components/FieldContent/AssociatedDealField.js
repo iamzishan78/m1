@@ -14,10 +14,6 @@ const styleClasses = {
 	root: {
 		backgroundColor: '#ECEDED',
 		color: '#606060',
-		borderRadius: '4px',
-	},
-	disabled: {
-		backgroundColor: '#f0f0f0 !important',
 	},
 	showIcon: {
 		caretColor: 'transparent',
@@ -53,11 +49,6 @@ export default function AssociatedDealField(props) {
 	}, [dealsData]);
 
 	useEffect(() => {
-		const associatedDeal = props.value ? (typeof props.value === 'string' ? [props.value] : props.value) : [];
-		setInputValue(associatedDeal);
-	}, [props.value]);
-
-	useEffect(() => {
 		getOpenDeals();
 	}, [getOpenDeals]);
 
@@ -69,7 +60,6 @@ export default function AssociatedDealField(props) {
 	};
 
 	const handleChange = ({ value, reason }) => {
-		console.log({ value });
 		let deal,
 			payload = {
 				relatedObjectType: props.targetLabel,
