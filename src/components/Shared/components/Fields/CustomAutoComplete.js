@@ -39,6 +39,7 @@ function CustomAutoComplete({
 		textfieldRestProps = {},
 		textFieldInputProps = {},
 		getCustomOptionLabel = null,
+		containerSpacing = 1,
 	} = {},
 	fieldAttributes: {
 		name = '',
@@ -50,7 +51,7 @@ function CustomAutoComplete({
 		placeholder = '',
 		isESSearch = false,
 		defaultValue = null,
-		optionArray = null,
+		optionArray = [],
 		inputSearchText = null,
 		getOptions = options => options,
 	} = {},
@@ -134,7 +135,7 @@ function CustomAutoComplete({
 	};
 
 	const textFieldChange = event => {
-		if (multiple) return;
+		if (multiple) {return;}
 
 		const value = event.target.value;
 		setFieldValue(value);
@@ -280,7 +281,7 @@ function CustomAutoComplete({
 	const fieldXs = layout === 'horizontal' ? 9 : 12;
 
 	return (
-		<Grid container spacing={1}>
+		<Grid container spacing={containerSpacing}>
 			{title && (
 				<Grid item xs={titleXs} sx={{ display: 'flex', alignItems: 'center' }}>
 					<Box component={titleComponent}>{title}</Box>
@@ -323,6 +324,7 @@ CustomAutoComplete.propTypes = {
 		textfieldRestProps: PropTypes.object,
 		textFieldInputProps: PropTypes.object,
 		getCustomOptionLabel: PropTypes.func,
+		containerSpacing: PropTypes.number,
 	}),
 	fieldAttributes: PropTypes.shape({
 		name: PropTypes.string,

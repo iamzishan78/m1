@@ -1,18 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { Typography, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
-import { useLazyQuery } from '@apollo/client';
-import loadashFilter from 'lodash/filter';
+import PropTypes from 'prop-types';
 
 import { entityTypeOptions } from 'components/ContactDetailedInfo/helper';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-
-const filter = createFilterOptions();
 
 export default function EntityType({ setDocumentType, value, ...other }) {
 	const useStyles = makeStyles({
@@ -30,130 +25,78 @@ export default function EntityType({ setDocumentType, value, ...other }) {
 
 	const classes = useStyles();
 
-	const [options, setOptions] = useState([]);
 	const [search, setSearch] = useState(value);
-
-	const [getEntityTypeFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
 		setSearch(value);
 	}, [value]);
 
-	useEffect(() => {
-		getEntityTypeFilters({
-			variables: {
-				esIndex: 'contacts_flat',
-				filterKey: 'ownerType.keyword',
-				size: 50,
-			},
-		});
-	}, []);
-
-	useEffect(() => {
-		if (filtersData?.getESFilterList?.hits) {
-			let filterData = filtersData.getESFilterList.hits.filter(hit => hit.key).map(hit => hit.key);
-			for (let i = 0; i < entityTypeOptions.length; i++) {
-				filterData = filterData.filter(d => d !== entityTypeOptions[i].value && d !== entityTypeOptions[i].label);
-			}
-			for (let i = 0; i < entityTypeOptions.length; i++) {
-				filterData.push(entityTypeOptions[i].label);
-			}
-			setOptions(filterData);
-		}
-	}, [filtersData]);
-
 	const onInputChange = (event, value) => {
 		setSearch(value);
 	};
 
-	const getOptions = useMemo(() => options.map(type => ({ _id: type, name: type })), [options]);
-
 	return (
-		<Autocomplete
-			id="entityType"
-			defaultValue={search}
-			value={search}
-			disableListWrap
-			classes={classes}
-			oepn={true}
-			options={getOptions}
-			getOptionLabel={option => {
-				// Value selected with enter, right from the input
-				if (typeof option === 'string') {
-					return option;
-				}
-				// Add "xxx" option created dynamically
-				if (option.inputValue) {
-					return option.name;
-				}
-
-				if (option?.name) {
-					return option.name;
-				} else {
-					return '';
-				}
-			}}
-			getOptionSelected={(option, value) => {
-				return option?._id === search;
-			}}
-			renderOption={option => {
-				if (option._id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
-				}
-				return (
-					<Grid container spacing={0}>
-						<Grid container item xs={12} alignItems="center">
-							<Grid item xs>
-								<span style={{ fontWeight: 400 }}>{typeof option === 'object' ? option.name : option}</span>
-							</Grid>
-						</Grid>
-					</Grid>
-				);
-			}}
-			onInputChange={onInputChange}
-			filterOptions={(options, params) => {
-				let inputValue = JSON.parse(JSON.stringify(search));
-				if (inputValue.name) {
-					inputValue = inputValue.name;
-				}
-				const filtered = filter(options, { ...params, inputValue });
-				const isExist = loadashFilter(filtered, filter => {
-					return filter._id === inputValue;
-				});
-				// Suggest the creation of a new value
-				if (inputValue !== '' && (!isExist || isExist.length === 0)) {
-					filtered.unshift({
-						name: inputValue,
-						_id: 'newEntity',
-					});
-				}
-				return filtered;
-			}}
-			onChange={(event, newValue) => {
-				if (typeof newValue === 'string') {
-					setDocumentType({ _id: newValue, name: newValue });
-				} else if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') {
-						setDocumentType(newValue);
-					} else {
-						setDocumentType({ _id: 'newEntity', name: newValue.name });
+		<CustomAutoComplete
+			fieldAttributes={{
+				name: 'entityType',
+				label: 'Entity Type',
+				value: search,
+				defaultValue: search,
+				variables: {
+					esIndex: 'contacts_flat',
+					filterKey: 'ownerType.keyword',
+					size: 50,
+				},
+				optionArray: [],
+				query: GET_ES_FILTER_LIST,
+				getOptions: hits => {
+					let filterData = hits?.data?.getESFilterList?.hits?.filter(hit => hit.key).map(hit => hit.key);
+					for (let i = 0; i < entityTypeOptions.length; i++) {
+						filterData = filterData.filter(d => d !== entityTypeOptions[i].value && d !== entityTypeOptions[i].label);
 					}
-				} else {
-					setSearch('');
-					setDocumentType({ _id: '', name: '' });
-				}
+					for (let i = 0; i < entityTypeOptions.length; i++) {
+						filterData.push(entityTypeOptions[i].label);
+					}
+					return filterData;
+				},
 			}}
-			renderInput={params => (
-				<TextField
-					margin="dense"
-					{...params}
-					InputProps={{
-						...params.InputProps,
-					}}
-					size="small"
-				/>
-			)}
+			fieldEvents={{
+				onChange: ({ value }) => {
+					if (typeof value === 'string') {
+						setDocumentType({ _id: value, name: value });
+					} else if (value && value._id) {
+						if (value._id !== 'newEntity') {
+							setDocumentType(value);
+						} else {
+							setDocumentType({ _id: 'newEntity', name: value.name });
+						}
+					} else {
+						setSearch('');
+						setDocumentType({ _id: '', name: '' });
+					}
+				},
+				onInputChange,
+			}}
+			fieldConfig={{
+				margin: 'dense',
+				size: 'small',
+			}}
+			disableListWrap
+			disableClearable={false}
+			classes={classes}
+			id="entityType"
 			{...other}
 		/>
 	);
 }
+
+EntityType.propTypes = {
+	setDocumentType: PropTypes.func.isRequired,
+	value: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.shape({
+			_id: PropTypes.string,
+			name: PropTypes.string,
+		}),
+	]),
+};
