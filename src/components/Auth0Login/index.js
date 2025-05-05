@@ -56,8 +56,6 @@ const Auth0Login = props => {
 			tenantId: sessionData.tenantId,
 			mongoId: mongoUser._id,
 			roles: mongoUser.roles,
-			isAuth0: true,
-			authToken: sessionData.auth0Token,
 			accessToken: sessionData.auth0Token,
 			authTokenExpires: sessionData.authenticationToken.expiresOn,
 		};
@@ -70,7 +68,7 @@ const Auth0Login = props => {
 		window.setStateNav(stateNav => ({ ...stateNav, defaultOn: true }));
 	};
 
-	async function loginUser(email, authToken, idToken) {
+	async function loginUser(email, idToken) {
 		var options = {
 			method: 'POST',
 			headers: {
@@ -82,7 +80,7 @@ const Auth0Login = props => {
 			}),
 		};
 		let endpoint = globalStateController.getValue('apolloClientEndpoint');
-		options = setApolloHeaders(options, authToken, idToken);
+		options = setApolloHeaders(options, idToken);
 		return await fetch(endpoint, options)
 			.then(response => response.json())
 			.then(response => {
@@ -96,7 +94,7 @@ const Auth0Login = props => {
 			.catch(error => console.log(error));
 	}
 
-	async function userSettings(userId, authToken, idToken, type) {
+	async function userSettings(userId, idToken, type) {
 		var options = {
 			method: 'POST',
 			headers: {
@@ -108,7 +106,7 @@ const Auth0Login = props => {
 			}),
 		};
 		let endpoint = globalStateController.getValue('apolloClientEndpoint');
-		options = setApolloHeaders(options, authToken, idToken);
+		options = setApolloHeaders(options, idToken);
 		return await fetch(endpoint, options)
 			.then(response => response.json())
 			.then(response => {
@@ -157,7 +155,7 @@ const Auth0Login = props => {
 					return;
 				}
 
-				const loginRes = await loginUser(id.email, id.__raw, id.__raw);
+				const loginRes = await loginUser(id.email, id.__raw);
 				if (!loginRes?.user) {
 					UserSession.deleteSession();
 					return;
@@ -169,8 +167,7 @@ const Auth0Login = props => {
 				UserSession.setStorageItem('tenantName', tenantName);
 
 				// Fetch user settings
-				const authToken = loginRes.sessionData.auth0Token || loginRes.sessionData.token;
-				const userMapSettings = await userSettings(loginRes.user._id, authToken, id.__raw, 'baseMap');
+				const userMapSettings = await userSettings(loginRes.user._id, id.__raw, 'baseMap');
 
 				handleLogin(loginRes, userMapSettings);
 			} catch (error) {

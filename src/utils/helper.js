@@ -80,8 +80,9 @@ export const getURL = () => {
 
 export const getHeaders = () => {
 	const session = UserSession.getSession();
-	const headers = { 'X-ZUMO-AUTH': session.authToken };
-	headers['X-MS-TOKEN-AAD-ID-TOKEN'] = session.accessToken;
+	const headers = {
+		'ID-TOKEN': session.accessToken,
+	};
 	return headers;
 };
 

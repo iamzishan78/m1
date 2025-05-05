@@ -11,7 +11,6 @@ export const globalInitialState = {
 	mapReady: false,
 	showFieldModal: false,
 	apolloClientEndpoint: null,
-	x_zumo_auth: null,
 	cypress: null,
 	testCase: null,
 	tenant: null,

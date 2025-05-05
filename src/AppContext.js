@@ -186,15 +186,15 @@ const AppProvider = props => {
 	);
 };
 
-const setApolloHeaders = (config, authToken, idToken) => {
+const setApolloHeaders = (config, idToken) => {
 	if (!config) {
 		config = {};
 	}
 	if (!config.headers) {
-		config.headers = {};
+		config.headers = {
+			'ID-TOKEN': idToken,
+		};
 	}
-	config.headers['X-ZUMO-AUTH'] = authToken;
-	config.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
 	return config;
 };
 

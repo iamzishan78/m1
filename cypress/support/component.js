@@ -47,7 +47,6 @@ Cypress.Commands.add('mount', (component, { disableContactBulkProgress, testCase
 	// This includes setting various authentication and user data, as well as specific flags and metadata for the test.
 	globalStateController.setState({
 		apolloClientEndpoint: ldata.url, // Sets the GraphQL endpoint URL.
-		x_zumo_auth: ldata.x_zumo_auth, // Authentication token for Azure Mobile Services.
 		access_token: ldata.access_token, // OAuth2 access token.
 		user: userData, // User data object.
 		cypress: {
