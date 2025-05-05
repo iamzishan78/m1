@@ -106,7 +106,7 @@ function Providers({ children }) {
 	const updateApolloClient = (endpoint, token, idToken) => {
 		const session = UserSession.getSession();
 
-		if (globalStateController.getValue('bypassLogin') && session && !token) {
+		if (session && !token) {
 			idToken = session.accessToken;
 			token = session.accessToken;
 		}

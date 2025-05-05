@@ -1,7 +1,5 @@
 import { copy } from 'components/Shared/functions';
 
-import { globalStateController } from 'stateManagement/globalStateController';
-
 const tenants = JSON.parse(process.env.REACT_APP_TENANS_CREDENTIALS);
 
 const emailRegex =
@@ -25,10 +23,6 @@ export const tenantsCredentials = tenantName => {
 		if (tenants[i].name.toUpperCase() === tenantName.toUpperCase()) {
 			found = tenants[i];
 		}
-	}
-
-	if (found?.name) {
-		globalStateController.setBypassLogin(found);
 	}
 
 	return copy(found);

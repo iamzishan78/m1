@@ -194,9 +194,7 @@ const setApolloHeaders = (config, authToken, idToken) => {
 		config.headers = {};
 	}
 	config.headers['X-ZUMO-AUTH'] = authToken;
-	if (isDev || globalStateController.getValue('bypassLogin')) {
-		config.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
-	}
+	config.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
 	return config;
 };
 

@@ -17,6 +17,7 @@ import RevenueProvider from 'components/Revenue/RevenueProvider';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 
+import { simpleAuthBypass } from 'utils/data';
 import { UserSession } from 'utils/user';
 
 import Providers from 'Providers';
@@ -41,7 +42,6 @@ import { history } from './store';
 
 const PrivateRoute = ({ component, ...options }) => {
 	const user = globalStateController.getValue('user');
-	globalStateController.useState(['bypassLogin', 'bypassType']);
 	const { isAuthenticated } = useAuth0();
 
 	const userSessionIsLoaded = useSelector(({ session }) => session.isLoaded);
@@ -53,7 +53,7 @@ const PrivateRoute = ({ component, ...options }) => {
 
 	const finalComponent =
 		user &&
-		(Date.parse(user.authTokenExpires) > Date.now() || (globalStateController.isAuth0Bypass() && isAuthenticated)) &&
+		(Date.parse(user.authTokenExpires) > Date.now() || (!simpleAuthBypass && isAuthenticated)) &&
 		apolloClient &&
 		userSessionIsLoaded
 			? component
