@@ -5,7 +5,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import PropTypes from 'prop-types';
 import queryString from 'query-string';
 
-import { BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
+import { LOGIN_MUTATION } from 'graphQL/useMutationLogin';
 import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
 
 import { globalStateController } from 'stateManagement/globalStateController';
@@ -77,7 +77,7 @@ const Auth0Login = props => {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				query: BYPASS_LOGIN_MUTATION.loc.source.body,
+				query: LOGIN_MUTATION.loc.source.body,
 				variables: { email },
 			}),
 		};
@@ -86,10 +86,10 @@ const Auth0Login = props => {
 		return await fetch(endpoint, options)
 			.then(response => response.json())
 			.then(response => {
-				return response?.data?.bypassLogin?.success
+				return response?.data?.login?.success
 					? {
-							user: response.data.bypassLogin.user,
-							sessionData: response.data.bypassLogin.sessionData,
+							user: response.data.login.user,
+							sessionData: response.data.login.sessionData,
 						}
 					: null;
 			})
