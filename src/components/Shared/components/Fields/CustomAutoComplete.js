@@ -68,8 +68,11 @@ function CustomAutoComplete({
 	}, [optionArray]);
 
 	useEffect(() => {
-		if (value) {setFieldValue(value ?? null);}
-		else {setFieldValue(defaultValue ?? null);}
+		if (value) {
+			setFieldValue(value ?? null);
+		} else {
+			setFieldValue(defaultValue ?? null);
+		}
 	}, [value, defaultValue]);
 
 	useEffect(() => {
@@ -131,6 +134,8 @@ function CustomAutoComplete({
 	};
 
 	const textFieldChange = event => {
+		if (multiple) return;
+
 		const value = event.target.value;
 		setFieldValue(value);
 		query && fetchOptions(value);
@@ -183,6 +188,7 @@ function CustomAutoComplete({
 			return (
 				<Typography
 					{...props}
+					key={option._id || option}
 					style={{ color: 'midnightblue', paddingLeft: '12px' }}
 				>{`Add '${option.value || option}'`}</Typography>
 			);
@@ -190,14 +196,14 @@ function CustomAutoComplete({
 
 		if (renderOptionComp) {
 			return (
-				<Grid container spacing={0} {...props}>
+				<Grid container spacing={0} {...props} key={option._id || option}>
 					{renderOptionComp({ props, option })}
 				</Grid>
 			);
 		}
 
 		return (
-			<Grid container spacing={0} {...props}>
+			<Grid container spacing={0} {...props} key={option._id || option}>
 				<Grid container item xs={12} alignItems="center">
 					<Grid item xs>
 						<Typography variant="body2">{getOptionLabel(option)}</Typography>
