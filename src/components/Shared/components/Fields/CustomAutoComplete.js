@@ -68,8 +68,9 @@ function CustomAutoComplete({
 	}, [optionArray]);
 
 	useEffect(() => {
-		setFieldValue(value ?? null);
-	}, [value]);
+		if (value) {setFieldValue(value ?? null);}
+		else {setFieldValue(defaultValue ?? null);}
+	}, [value, defaultValue]);
 
 	useEffect(() => {
 		setIsLoading(loading);
@@ -141,7 +142,7 @@ function CustomAutoComplete({
 			return typeof fieldValue === 'string' ? [fieldValue] : fieldValue || [];
 		}
 
-		const fallbackValue = value || null;
+		const fallbackValue = value || defaultValue || null;
 
 		if (!fieldValue) {
 			return fallbackValue;
