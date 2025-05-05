@@ -31,17 +31,18 @@ import AutorenewIcon from '@material-ui/icons/Autorenew';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import SearchIcon from '@material-ui/icons/Search';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
 import _ from 'lodash';
 import get from 'lodash/get';
+import PropTypes from 'prop-types';
 
 import TractForm from 'components/Common/TableAddDialog/Common/TractForm';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loaders from 'components/Loaders';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import { getParcelOriginalProperties } from 'components/ParcelsDetailCard/utils/GetParcelOriginalProps';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import AutoCompleteParcelOwners from 'components/Shared/Forms/Fields/AutoCompleteParcelOwners';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
@@ -655,56 +656,75 @@ function AddAgreementOwnerAndTractDialog(props) {
 				<TextField id="tractId" style={{ display: 'none' }} {...register('tract.tractId')} />
 				<Grid container direction="row" spacing={1} className={classes.qtrCalls}>
 					<Grid item xs={3}>
-						<Autocomplete
-							options={qtrOptions}
-							getOptionLabel={option => option}
-							value={tract?.qtrQtrSelection?.selectedQtr?.[0] ?? ''}
-							onChange={(e, newInputValue) => {
-								handleChangeQtr(newInputValue, 0);
+						<CustomAutoComplete
+							fieldAttributes={{
+								label: 'QTR 1',
+								value: tract?.qtrQtrSelection?.selectedQtr?.[0] ?? '',
+								optionArray: qtrOptions,
 							}}
-							renderInput={params => (
-								<TextField {...params} variant="outlined" label="QTR 1" size="small" className={classes.maxWidth} />
-							)}
+							fieldEvents={{
+								onChange: ({ value }) => {
+									handleChangeQtr(value, 0);
+								},
+							}}
+							fieldConfig={{
+								variant: 'outlined',
+								size: 'small',
+							}}
 						/>
 					</Grid>
 					<Grid item xs={3}>
-						<Autocomplete
-							options={qtrOptions}
-							id="autocompleteQTR2"
-							getOptionLabel={option => option}
-							value={tract?.qtrQtrSelection?.selectedQtr?.[1] ?? ''}
-							onChange={(e, newInputValue) => {
-								handleChangeQtr(newInputValue, 1);
+						<CustomAutoComplete
+							fieldAttributes={{
+								label: 'QTR 2',
+								value: tract?.qtrQtrSelection?.selectedQtr?.[1] ?? '',
+								optionArray: qtrOptions,
 							}}
-							renderInput={params => (
-								<TextField {...params} variant="outlined" label="QTR 2" size="small" className={classes.maxWidth} />
-							)}
+							fieldEvents={{
+								onChange: ({ value }) => {
+									handleChangeQtr(value, 1);
+								},
+							}}
+							fieldConfig={{
+								variant: 'outlined',
+								size: 'small',
+							}}
 						/>
 					</Grid>
 					<Grid item xs={3}>
-						<Autocomplete
-							options={qtrOptions}
-							getOptionLabel={option => option}
-							value={tract?.qtrQtrSelection?.selectedQtr?.[2] ?? ''}
-							onChange={(e, newInputValue) => {
-								handleChangeQtr(newInputValue, 2);
+						<CustomAutoComplete
+							fieldAttributes={{
+								label: 'QTR 3',
+								value: tract?.qtrQtrSelection?.selectedQtr?.[2] ?? '',
+								optionArray: qtrOptions,
 							}}
-							renderInput={params => (
-								<TextField {...params} variant="outlined" label="QTR 3" size="small" className={classes.maxWidth} />
-							)}
+							fieldEvents={{
+								onChange: ({ value }) => {
+									handleChangeQtr(value, 2);
+								},
+							}}
+							fieldConfig={{
+								variant: 'outlined',
+								size: 'small',
+							}}
 						/>
 					</Grid>
 					<Grid item xs={3}>
-						<Autocomplete
-							options={qtrOptions}
-							getOptionLabel={option => option}
-							value={tract?.qtrQtrSelection?.selectedQtr?.[3] ?? ''}
-							onChange={(e, newInputValue) => {
-								handleChangeQtr(newInputValue, 3);
+						<CustomAutoComplete
+							fieldAttributes={{
+								label: 'QTR 4',
+								value: tract?.qtrQtrSelection?.selectedQtr?.[3] ?? '',
+								optionArray: qtrOptions,
 							}}
-							renderInput={params => (
-								<TextField {...params} variant="outlined" label="QTR 4" size="small" className={classes.maxWidth} />
-							)}
+							fieldEvents={{
+								onChange: ({ value }) => {
+									handleChangeQtr(value, 3);
+								},
+							}}
+							fieldConfig={{
+								variant: 'outlined',
+								size: 'small',
+							}}
 						/>
 					</Grid>
 				</Grid>
@@ -1307,5 +1327,38 @@ function AddAgreementOwnerAndTractDialog(props) {
 		</>
 	);
 }
+
+AddAgreementOwnerAndTractDialog.propTypes = {
+	layerType: PropTypes.string.isRequired,
+	onClose: PropTypes.func.isRequired,
+	seletedOwner: PropTypes.shape({
+		contact: PropTypes.shape({
+			_id: PropTypes.string,
+			entityDetail: PropTypes.shape({
+				name: PropTypes.string,
+			}),
+		}),
+		realtedObject: PropTypes.string,
+		tract: PropTypes.shape({
+			tractId: PropTypes.string,
+			tractName: PropTypes.string,
+		}),
+		ownerEntity: PropTypes.string,
+		ownerName: PropTypes.string,
+		isTractOwner: PropTypes.bool,
+		depthTo: PropTypes.string,
+		depthFrom: PropTypes.string,
+		parcelOwnersRadioBValue: PropTypes.string,
+	}),
+	shapeId: PropTypes.string.isRequired,
+	shapeType: PropTypes.string.isRequired,
+	seletedTract: PropTypes.shape({
+		_id: PropTypes.string,
+	}),
+	deleteFunc: PropTypes.func,
+	drawerContainer: PropTypes.object,
+	open: PropTypes.bool,
+	width: PropTypes.number,
+};
 
 export default AddAgreementOwnerAndTractDialog;

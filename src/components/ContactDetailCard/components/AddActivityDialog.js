@@ -14,13 +14,14 @@ import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { ADDACTIVITY, UPDATEACTIVITY, DELETEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
@@ -33,7 +34,6 @@ import { UserSession } from 'utils/user';
 import { showErrorMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
-import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { outcomeOptions } from './FieldContent/helper';
 
 const useStyles = makeStyles(theme => ({
@@ -90,11 +90,13 @@ const useStyles = makeStyles(theme => ({
 	},
 
 	inputField: {
-		height: 41,
-		marginBottom: '20px',
-
-		'& .MuiOutlinedInput-root': {
+		'&&': {
 			height: 41,
+			marginBottom: '20px',
+
+			'& .MuiOutlinedInput-root': {
+				height: 41,
+			},
 		},
 	},
 	error: {
@@ -656,59 +658,65 @@ function AddActivityDialog(props) {
 				InputLabelProps={{ shrink: true }}
 				value={contactData?.name}
 			/>
-			<Autocomplete
-				options={openDeals}
-				onChange={(e, deal) => {
-					setDealId(deal?._id);
+			<CustomAutoComplete
+				fieldAttributes={{
+					label: 'Associated Deal',
+					value: openDeals?.find(deal => deal._id === dealId) || null,
+					optionArray: openDeals,
 				}}
-				value={openDeals?.find(deal => deal._id === dealId) || null}
-				getOptionSelected={option => option.id === dealId}
-				getOptionLabel={option => option.name}
-				renderOption={option => {
-					return (
-						<Grid container spacing={0}>
-							<Grid container item xs={12} alignItems="center">
-								<Grid item xs>
-									<span style={{ fontWeight: 400 }}>{option.name}</span>
-
-									<Typography variant="body2" color="textSecondary">
-										{option.label}
-									</Typography>
-								</Grid>
+				fieldEvents={{
+					onChange: ({ value }) => {
+						setDealId(value?._id); // Or handle accordingly if value is a string/other type
+					},
+				}}
+				fieldConfig={{
+					variant: 'outlined',
+					size: 'small',
+					margin: 'dense',
+					inputClassName: clsx(classes.inputField),
+					textfieldRestProps: {
+						InputLabelProps: { shrink: true },
+					},
+					containerSpacing: 0,
+				}}
+				renderOptionComp={({ props, option }) => (
+					<Grid container spacing={0} {...props}>
+						<Grid container item xs={12} alignItems="center">
+							<Grid item xs>
+								<span style={{ fontWeight: 400 }}>{option.name}</span>
+								<Typography variant="body2" color="textSecondary">
+									{option.label}
+								</Typography>
 							</Grid>
 						</Grid>
-					);
-				}}
-				renderInput={params => (
-					<TextField
-						className={clsx(classes.inputField)}
-						margin="dense"
-						{...params}
-						InputLabelProps={{ shrink: true }}
-						label="Associated Deal"
-						variant="outlined"
-					/>
+					</Grid>
 				)}
 			/>
-			<Autocomplete
-				className={clsx(!owner.id && errors.owner && classes.error)}
-				options={users.filter(u => u.text)}
-				onChange={(e, user) => {
-					setOwner({ name: user?.text, id: user?.value });
+
+			<CustomAutoComplete
+				fieldAttributes={{
+					name: 'owner',
+					label: 'Activity Owner',
+					value: users.find(user => user.value === owner.id) || null,
+					optionArray: users.filter(u => u.text),
+					getOptions: options => options, // No transformation needed
+					getCustomOptionLabel: option => option.text,
 				}}
-				value={users.find(user => user.value === owner.id) || null}
-				getOptionLabel={option => option.text}
-				getOptionSelected={option => option.value === owner.id}
-				renderInput={params => (
-					<TextField
-						className={clsx(classes.inputField)}
-						margin="dense"
-						{...params}
-						variant="outlined"
-						InputLabelProps={{ shrink: true }}
-						label="Activity Owner"
-					/>
-				)}
+				fieldEvents={{
+					onChange: ({ value }) => {
+						setOwner({ name: value?.text, id: value?.value });
+					},
+				}}
+				fieldConfig={{
+					variant: 'outlined',
+					margin: 'dense',
+					required: true,
+					inputClassName: clsx(classes.inputField),
+					textfieldRestProps: {
+						InputLabelProps: { shrink: true },
+					},
+					containerSpacing: 0,
+				}}
 			/>
 			<TextField
 				label="Activity Created By"
@@ -792,3 +800,34 @@ function AddActivityDialog(props) {
 }
 
 export default AddActivityDialog;
+
+AddActivityDialog.propTypes = {
+	selectedActivity: PropTypes.shape({
+		_id: PropTypes.string,
+		notes: PropTypes.string,
+		ownerName: PropTypes.string,
+		ownerId: PropTypes.string,
+		dealId: PropTypes.string,
+		type: PropTypes.string,
+		name: PropTypes.string,
+		isClosed: PropTypes.bool,
+		dateTime: PropTypes.string,
+		endDateTime: PropTypes.string,
+	}),
+	onClose: PropTypes.func.isRequired,
+	contactData: PropTypes.shape({
+		_id: PropTypes.string,
+		name: PropTypes.string,
+	}),
+	defaultActivityType: PropTypes.string,
+	actionActivityData: PropTypes.shape({
+		activity_name: PropTypes.string,
+		activity_type: PropTypes.string,
+		activity_outcome: PropTypes.string,
+		activity_notes: PropTypes.string,
+		activity_status: PropTypes.shape({
+			key: PropTypes.string,
+			value: PropTypes.bool,
+		}),
+	}),
+};
