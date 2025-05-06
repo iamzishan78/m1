@@ -60,7 +60,7 @@ const PrivateRoute = ({ component, ...options }) => {
 		apolloClient &&
 		userSessionIsLoaded
 			? component
-			: globalStateController.getValue('tenant')
+			: !simpleAuthBypass && globalStateController.getValue('tenant')
 				? Auth0Login
 				: LoginCard;
 
