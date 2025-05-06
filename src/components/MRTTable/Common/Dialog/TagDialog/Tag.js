@@ -2,15 +2,14 @@
 import React, { useContext, useState, useEffect } from 'react';
 
 import { CircularProgress } from '@material-ui/core';
-import Chip from '@material-ui/core/Chip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import ClearIcon from '@material-ui/icons/Clear';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Chip from '@material-ui/core/Chip';
 
 import { useMutation, useLazyQuery } from '@apollo/client';
 
@@ -137,7 +136,6 @@ export default function Tags(props) {
 	const [tFActive, setTFActive] = useState(false);
 	const [textValue, setTextValue] = useState('');
 	const [loadingTags, setLoadingTags] = useState(true);
-	const [addInDropDown, setAddInDropDown] = useState(false);
 	const [publicTag, setPublicTag] = useState(true);
 
 	const showPlusAddIcon = () => {
@@ -271,11 +269,7 @@ export default function Tags(props) {
 
 	const NewTag = async tagText => {
 		tagText = UpperAndCleanTagText(tagText);
-		if (addInDropDown && tagText === addInDropDown) {
-			tagText = UpperAndCleanTagText(textValue);
-		}
 		setTextValue('');
-
 		let found = false;
 		tagsArray.forEach(tag => {
 			if (tag.tag === tagText) {
@@ -420,7 +414,7 @@ export default function Tags(props) {
 			DeleteTag(TagIdOIds);
 		} else if (e.type === 'click') {
 			/// /A new tag by click on the dropdown
-			NewTag(e.target.innerText);
+			NewTag(v[v.length - 1].value ?? e.target.innerText);
 		}
 	};
 
@@ -436,24 +430,8 @@ export default function Tags(props) {
 	const AddingAddRowToDropDown = () => {
 		const { cleanArray } = cleanDropDownArray();
 
-		if (addInDropDown) {
-			cleanArray.unshift(addInDropDown);
-		}
 		return cleanArray;
 	};
-
-	useEffect(() => {
-		const { cleanArray, tags } = cleanDropDownArray();
-		if (
-			cleanArray.indexOf(UpperAndCleanTagText(textValue)) === -1 &&
-			tags.indexOf(UpperAndCleanTagText(textValue)) === -1 &&
-			textValue.trim() !== ''
-		) {
-			setAddInDropDown(`Add "${UpperAndCleanTagText(textValue)}"`);
-		} else {
-			setAddInDropDown(false);
-		}
-	}, [textValue]);
 
 	function ToggleSharedButton() {
 		return (
@@ -496,16 +474,41 @@ export default function Tags(props) {
 						</Grid>
 					)}
 					<Grid item xs={12}>
-						<Autocomplete
+						<CustomAutoComplete
 							className={classes.chip}
-							multiple
-							id="tags-outlined"
-							onChange={(e, newValue) => {
-								handleChangeTags(e, newValue);
+							fieldConfig={{
+								multiple: true,
+								variant: props.variant || 'outlined',
+								allowNewOptions: true,
+								inputClassName: classes.input,
+								textfieldRestProps: {
+									className: classes.input,
+									fullWidth: true,
+									onClick: () => {
+										if (props.type === 'textfield') {
+											setTFActive(true);
+										}
+									},
+									onBlur: () => {
+										setTFActive(false);
+									},
+								},
+								textFieldInputProps: {
+									endAdornment: upsertLoading || removeLoading ? <CircularProgress color="secondary" /> : <></>,
+								},
 							}}
-							options={AddingAddRowToDropDown().map(option => option)}
-							value={tagsArray}
-							freeSolo
+							fieldAttributes={{
+								value: tagsArray,
+								optionArray: AddingAddRowToDropDown().map(option => option),
+								placeholder: !showPlusAddIcon() ? '' : '+',
+								inputSearchText: textValue,
+							}}
+							fieldEvents={{
+								onChange: ({ event, value }) => {
+									handleChangeTags(event, value);
+								},
+								onTextFieldChange: value => setTextValue(value),
+							}}
 							renderTags={(value, getTagProps) =>
 								value
 									.filter(
@@ -522,31 +525,7 @@ export default function Tags(props) {
 										/>
 									))
 							}
-							renderInput={params => (
-								<TextField
-									{...params}
-									variant={props.variant ? props.variant : 'outlined'}
-									className={classes.input}
-									placeholder={!showPlusAddIcon() ? '' : '+'}
-									fullWidth
-									value={textValue}
-									onChange={e => {
-										setTextValue(e.target.value);
-									}}
-									onClick={() => {
-										if (props.type === 'textfield') {
-											setTFActive(true);
-										}
-									}}
-									onBlur={() => {
-										setTFActive(false);
-									}}
-									InputProps={{
-										...params.InputProps,
-										endAdornment: upsertLoading || removeLoading ? <CircularProgress color="secondary" /> : <></>,
-									}}
-								/>
-							)}
+							id="tags-outlined"
 						/>
 					</Grid>
 				</Grid>

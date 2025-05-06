@@ -128,9 +128,9 @@ function CustomAutoComplete({
 		}
 	};
 
-	const autoCompleteChnage = ({ reason, newValue, oldValue, fieldOnChange }) => {
+	const autoCompleteChnage = ({ event, reason, newValue, oldValue, fieldOnChange }) => {
 		const value = newValue ? (newValue.value ?? newValue) : null;
-		onChange?.({ value, oldValue, reason });
+		onChange?.({ value, oldValue, reason, event });
 		fieldOnChange ? fieldOnChange(value) : setFieldValue(value);
 	};
 
@@ -230,8 +230,9 @@ function CustomAutoComplete({
 					onBlur?.(event);
 					field?.onBlur?.(event);
 				}}
-				onChange={(_, value, reason) =>
+				onChange={(event, value, reason) =>
 					autoCompleteChnage({
+						event,
 						reason,
 						newValue: value,
 						oldValue: field?.value,
