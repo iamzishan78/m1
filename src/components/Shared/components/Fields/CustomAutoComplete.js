@@ -135,7 +135,9 @@ function CustomAutoComplete({
 	};
 
 	const textFieldChange = event => {
-		if (multiple) {return;}
+		if (multiple) {
+			return;
+		}
 
 		const value = event.target.value;
 		setFieldValue(value);
@@ -148,17 +150,13 @@ function CustomAutoComplete({
 			return typeof fieldValue === 'string' ? [fieldValue] : fieldValue || [];
 		}
 
-		const fallbackValue = value || defaultValue || null;
-
-		if (!fieldValue) {
-			return fallbackValue;
-		}
+		const fallbackValue = value ?? defaultValue ?? null;
 
 		if (typeof fieldValue === 'string') {
-			return options?.find(opt => opt.value === fieldValue || opt === fieldValue) || fieldValue;
+			return options?.find(opt => opt.value === fieldValue || opt === fieldValue) || (fieldValue ?? fallbackValue);
 		}
 
-		return options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue)) || fieldValue;
+		return options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue)) || (fieldValue ?? fallbackValue);
 	};
 
 	const getOptionsArray = value => {
