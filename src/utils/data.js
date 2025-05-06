@@ -697,6 +697,8 @@ export const paymentGridsInitialData = [
 	{ index: 0, value: 'costAllocations', label: 'Cost Allocation', showCounts: true },
 ];
 
+export const simpleAuthBypass = false;
+
 export const OWNERTYPE = {
 	CORPORATION: 'CORPORATION',
 };
