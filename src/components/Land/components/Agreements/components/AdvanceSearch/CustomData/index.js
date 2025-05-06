@@ -1,11 +1,12 @@
 import React, { useContext, useState, useEffect, useMemo } from 'react';
 
-import { Grid, TextField } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery } from '@apollo/client';
 import _ from 'lodash';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
@@ -14,13 +15,24 @@ import { AppContext } from 'AppContext';
 const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
 	return (
 		<FormControl fullWidth>
-			<Autocomplete
+			<CustomAutoComplete
+				fieldAttributes={{
+					name: 'customData',
+					label,
+					value,
+					optionArray: options || [],
+				}}
+				fieldConfig={{
+					variant: 'outlined',
+					loading,
+					textfieldRestProps: {
+						fullWidth: true,
+					},
+				}}
+				fieldEvents={{
+					onChange: ({ value }) => onChange(null, value),
+				}}
 				id="combo-box-demo"
-				options={options}
-				loading={loading}
-				onChange={onChange}
-				value={value}
-				renderInput={params => <TextField {...params} label={label} variant="outlined" fullWidth />}
 			/>
 		</FormControl>
 	);
