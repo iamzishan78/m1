@@ -20,6 +20,7 @@ import { UserSession } from 'utils/user';
 import { setApolloHeaders } from 'AppContext';
 
 import { tenantsCredentials } from './helpers';
+import { simpleAuthBypass } from '../../utils/data';
 
 const Auth0Login = props => {
 	const dispatch = useDispatch();
@@ -56,8 +57,8 @@ const Auth0Login = props => {
 			tenantId: sessionData.tenantId,
 			mongoId: mongoUser._id,
 			roles: mongoUser.roles,
-			accessToken: sessionData.auth0Token,
-			authTokenExpires: sessionData.authenticationToken.expiresOn,
+			accessToken: simpleAuthBypass ? sessionData.token : sessionData.auth0Token,
+			authTokenExpires: simpleAuthBypass ? sessionData.token.expiresOn : null,
 		};
 		globalStateController.updateState({ user });
 		mapStateController.updateState({ mapVars, defaultMapVars });

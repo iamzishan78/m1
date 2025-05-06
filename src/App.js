@@ -47,13 +47,13 @@ const PrivateRoute = ({ component, ...options }) => {
 	const userSessionIsLoaded = useSelector(({ session }) => session.isLoaded);
 	const apolloClient = useApolloClient();
 
-	if (user && Date.parse(user.authTokenExpires) < Date.now()) {
+	if (user && simpleAuthBypass && Date.parse(user.authTokenExpires) < Date.now()) {
 		UserSession.deleteSession();
 	}
 
 	const finalComponent =
 		user &&
-		(Date.parse(user.authTokenExpires) > Date.now() || (!simpleAuthBypass && isAuthenticated)) &&
+		((simpleAuthBypass && Date.parse(user.authTokenExpires) > Date.now()) || (!simpleAuthBypass && isAuthenticated)) &&
 		apolloClient &&
 		userSessionIsLoaded
 			? component
