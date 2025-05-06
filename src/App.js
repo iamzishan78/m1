@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 
 import AdminProvider from 'components/Admin/AdminProvider';
 import AnalyticsProvider from 'components/Analytics/AnalyticsProvider';
+import LoginCard from 'components/Auth0Login/LoginCard';
 import DataProvider from 'components/Data/DataProvider';
 import Land from 'components/Land';
 import RevenueProvider from 'components/Revenue/RevenueProvider';
@@ -44,6 +45,8 @@ const PrivateRoute = ({ component, ...options }) => {
 	const user = globalStateController.getValue('user');
 	const { isAuthenticated } = useAuth0();
 
+	globalStateController.useState(['tenant']);
+
 	const userSessionIsLoaded = useSelector(({ session }) => session.isLoaded);
 	const apolloClient = useApolloClient();
 
@@ -57,7 +60,9 @@ const PrivateRoute = ({ component, ...options }) => {
 		apolloClient &&
 		userSessionIsLoaded
 			? component
-			: Auth0Login;
+			: globalStateController.getValue('tenant')
+				? Auth0Login
+				: LoginCard;
 
 	return (
 		<div>

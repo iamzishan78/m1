@@ -191,10 +191,9 @@ const setApolloHeaders = (config, idToken) => {
 		config = {};
 	}
 	if (!config.headers) {
-		config.headers = {
-			'ID-TOKEN': idToken,
-		};
+		config.headers = {};
 	}
+	config.headers['ID-TOKEN'] = idToken;
 	return config;
 };
 
