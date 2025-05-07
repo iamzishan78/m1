@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-
 import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import CustomAutoComplete from './components/Fields/CustomAutoComplete';
 
 const UserList = ({ setValue, value, ...rest }) => {
 	const [users, setUsers] = useState([]);
@@ -31,18 +31,30 @@ const UserList = ({ setValue, value, ...rest }) => {
 	}, [userLists]);
 
 	return (
-		<Autocomplete
-			{...rest}
-			options={users.filter(u => u.text)}
-			onChange={(e, user) => {
-				setValue(user);
+		<CustomAutoComplete
+			fieldAttributes={{
+				value: { value },
 			}}
-			value={value}
+			fieldEvents={{
+				onChange: ({ value }) => setValue(value),
+			}}
+			fieldConfig={{
+				size: 'small',
+				textfieldRestProps: {
+					multiline: true,
+				},
+			}}
+			options={users.filter(u => u.text)}
 			getOptionLabel={option => option.text}
-			getOptionSelected={option => option.value === value}
-			renderInput={params => <TextField size="small" {...params} multiline />}
+			getOptionSelected={(option, selectedValue) => option.value === selectedValue?.value}
+			{...rest}
 		/>
 	);
 };
 
 export default UserList;
+
+UserList.propTypes = {
+	setValue: PropTypes.func.isRequired,
+	value: PropTypes.string,
+};

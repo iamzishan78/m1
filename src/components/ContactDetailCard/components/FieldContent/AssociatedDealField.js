@@ -1,98 +1,38 @@
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import ClearIcon from '@material-ui/icons/Clear';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-
+import React, { useState, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
+import { uniqBy } from 'lodash';
+import Chip from '@material-ui/core/Chip';
+import ClearIcon from '@material-ui/icons/Clear';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import 'components/Shared/Tagger.css';
 
-import { uniqBy } from 'lodash';
-
-import React, { useState, useEffect } from 'react';
-
 import { OPENDEALS } from 'graphQL/useQueryOpenDeals';
 
-const useStyles = makeStyles(theme => ({
-	rootDiv: {
-		'& > * + *': {
-			marginTop: theme.spacing(5),
-		},
-		'& .MuiAutocomplete-clearIndicator': {
-			display: 'none',
-		},
+const styleClasses = {
+	root: {
+		backgroundColor: '#ECEDED',
+		color: '#606060',
 	},
-	switchButtom: {
-		float: 'right',
-		width: 'fit-content',
-		alignSelf: 'flex-end',
-		marginRight: 0,
-		'& span.MuiTypography-body1': {
-			fontSize: '0.9rem',
-		},
+	showIcon: {
+		caretColor: 'transparent',
+		color: '#008ebf',
+		backgroundColor: '#D5F4FF',
+		maxWidth: '33px',
+		width: '33px',
+		height: '32px',
+		fontSize: '25px',
+		margin: '3px',
+		padding: '0px !important',
+		borderRadius: '50%',
+		textAlign: 'center',
+		cursor: 'pointer',
 	},
-	switchTextDeselected: {
-		color: 'rgb(141, 141, 141)',
-	},
-	publicLeftBottom: {
-		float: 'none',
-		flexDirection: 'row',
-		alignSelf: 'unset',
-		margin: 0,
-		'& .MuiTypography-root': {
-			display: 'none',
-		},
-		'& .h4Before': { margin: '0 13px', color: '#202020 !important' },
-		'& .h4After': { margin: '0 0 0 13px', color: '#B7B7B7 !important' },
-	},
-	chip: {
-		'& .MuiChip-root': {
-			backgroundColor: '#ECEDED',
-			color: '#606060',
-			borderRadius: '4px',
-		},
-		'& .MuiChip-root.Mui-disabled': {
-			backgroundColor: '#f0f0f0 !important',
-		},
-		'& .MuiInputBase-input.Mui-disabled': {
-			display: 'none',
-		},
-	},
-	input: {
-		'& input': {
-			caretColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'transparent'),
-			color: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '#008ebf'),
-			backgroundColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '#D5F4FF'),
-			maxWidth: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '33px'),
-			width: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '33px'),
-			height: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '32px'),
-			fontSize: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '25px'),
-			margin: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '3px'),
-			padding: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '0px !important'),
-			borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '50%'),
-			textAlign: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'center'),
-			cursor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'pointer'),
-			'&:hover': {
-				boxShadow: ({ showPlusAddIcon }) =>
-					!showPlusAddIcon
-						? ''
-						: '0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)',
-				backgroundColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'rgba(0, 0, 0, 0.08)'),
-			},
-
-			transition: ({ showPlusAddIcon }) =>
-				!showPlusAddIcon
-					? ''
-					: 'background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
-		},
-	},
-}));
+};
 
 export default function AssociatedDealField(props) {
 	const [options, setOptions] = useState([]);
-	const [inputValue, setInputValue] = useState([]);
 	const [tFActive, setTFActive] = useState(false);
 
 	const [getOpenDeals, { data: dealsData }] = useLazyQuery(OPENDEALS, {
@@ -103,15 +43,10 @@ export default function AssociatedDealField(props) {
 		if (dealsData?.openDeals?.deals) {
 			const allFiltersData = dealsData?.openDeals?.deals.map(deal => ({ name: deal.name, _id: deal._id }));
 			// making records uniq
-			const uniqData = uniqBy(allFiltersData, '_id');
-			setOptions(uniqData.filter(d => d));
+			const uniqData = uniqBy(allFiltersData, '_id').filter(d => d);
+			setOptions(uniqData);
 		}
 	}, [dealsData]);
-
-	useEffect(() => {
-		const associatedDeal = props.value ? (typeof props.value === 'string' ? [props.value] : props.value) : [];
-		setInputValue(associatedDeal);
-	}, [props.value]);
 
 	useEffect(() => {
 		getOpenDeals();
@@ -123,9 +58,8 @@ export default function AssociatedDealField(props) {
 		}
 		return true;
 	};
-	const classes = useStyles({ ...props, showPlusAddIcon: showPlusAddIcon() });
 
-	const handleChange = (values, reason) => {
+	const handleChange = ({ value, reason }) => {
 		let deal,
 			payload = {
 				relatedObjectType: props.targetLabel,
@@ -133,77 +67,69 @@ export default function AssociatedDealField(props) {
 				isDeleted: false,
 			};
 		if (reason === 'select-option') {
-			deal = dealsData?.openDeals?.deals.find(deal => deal.name === values[values.length - 1]);
+			deal = dealsData?.openDeals?.deals.find(deal => deal.name === value[value.length - 1]);
 			if (deal) {
 				payload.descriptorObject = deal._id;
 			}
 		} else {
+			const currentValue = Array.isArray(value) ? value : [];
+			const previousValue = Array.isArray(props.value) ? props.value : [];
 			const deletedDeal = dealsData?.openDeals?.deals.find(
-				deal => deal.name === inputValue.find(v => !values.includes(v))
+				deal => deal.name === previousValue.find(v => !currentValue.includes(v))
 			);
 			if (deletedDeal) {
 				payload.descriptorObject = deletedDeal._id;
 			}
 			payload.isDeleted = true;
 		}
-		props.onChange(values, payload.descriptorObject);
-
-		setInputValue(values);
+		props.onChange(value, payload.descriptorObject);
 	};
 
-	const getOptionDisabled = option => inputValue.findIndex(selectedOption => selectedOption._id === option._id) !== -1;
+	const getOptionDisabled = option => {
+		const currentValue = Array.isArray(props.value) ? props.value : [];
+		return currentValue.findIndex(selectedOption => selectedOption._id === option._id) !== -1;
+	};
 
 	return (
-		<div id="taggerRoot" className={classes.rootDiv}>
-			<Grid container>
-				<Grid item xs={12} md={12}>
-					<Autocomplete
-						className={classes.chip}
-						id="tags-outlined"
-						onChange={(e, newValue, reason) => handleChange(newValue, reason)}
-						multiple
-						options={options}
-						getOptionLabel={option => option.name}
-						value={inputValue || null}
-						getOptionSelected={option => option._id === inputValue._id}
-						getOptionDisabled={getOptionDisabled}
-						freeSolo
-						disabled={props.disabled}
-						renderTags={(value, getTagProps) => {
-							return value.map((tag, index) => (
-								<Chip
-									key={index}
-									id={tag._id}
-									label={tag.name}
-									{...getTagProps({ index })}
-									deleteIcon={!props.disabled ? <ClearIcon /> : <></>}
-								/>
-							));
-						}}
-						renderInput={params => (
-							<TextField
-								{...params}
-								variant={'standard'}
-								className={classes.input}
-								placeholder={!showPlusAddIcon() ? '' : '+'}
-								fullWidth
-								onClick={() => {
-									if (props.type === 'textfield') {
-										setTFActive(true);
-									}
-								}}
-								onBlur={() => {
-									setTFActive(false);
-								}}
-								InputProps={{
-									...params.InputProps,
-									disableUnderline: !props.simpleChips,
-								}}
-							/>
-						)}
-					/>
-				</Grid>
-			</Grid>
+		<div id="taggerRoot">
+			<CustomAutoComplete
+				getOptionDisabled={getOptionDisabled}
+				renderTags={(value, getTagProps) => {
+					return value.map((tag, index) => (
+						<Chip
+							key={tag._id}
+							id={tag._id}
+							label={tag.name}
+							{...getTagProps({ index })}
+							deleteIcon={!props.disabled ? <ClearIcon /> : <></>}
+						/>
+					));
+				}}
+				fieldConfig={{
+					variant: 'standard',
+					multiple: true,
+					disabled: props.disabled,
+					chipStyles: styleClasses.root,
+					textFieldInputProps: {
+						disableUnderline: !props.simpleChips,
+						style: showPlusAddIcon() ? styleClasses.showIcon : {},
+					},
+				}}
+				fieldAttributes={{
+					value: props.value,
+					optionArray: options,
+					placeholder: !showPlusAddIcon() ? '' : '+',
+				}}
+				fieldEvents={{
+					onChange: handleChange,
+					onBlur: () => setTFActive(false),
+					onTextFieldChange: () => {
+						if (props.type === 'textfield') {
+							setTFActive(true);
+						}
+					},
+				}}
+			/>
 		</div>
 	);
 }

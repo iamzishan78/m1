@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import ClearIcon from '@material-ui/icons/Clear';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Chip from '@material-ui/core/Chip';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { UPSERT_CAMPAIGN_DESCRIPTORS } from 'graphQL/useMutationCampaign';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
@@ -30,19 +28,16 @@ const useStyles = makeStyles(theme => ({
 		'& .MuiChip-root': {
 			backgroundColor: '#ECEDED',
 			color: '#606060',
-			whiteSpace: 'normal', // Allow text to wrap
-			height: 'auto', // Auto height to accommodate multiple lines
-			maxWidth: '100%', // Ensure the chip doesn't exceed its container width
+			whiteSpace: 'normal',
+			height: 'auto',
+			maxWidth: '100%',
 			borderRadius: '4px',
 		},
 		'& .MuiChip-label': {
-			whiteSpace: 'normal', // Enable text wrapping within the label
-			textAlign: 'left', // Align text to the left
-			padding: '8px 12px', // Add some padding to the label
-			overflowWrap: 'break-word', // Break long words
-			// "&;disabled": {
-			//   backgroundColor: "#f0f0f0 !important"
-			// }
+			whiteSpace: 'normal',
+			textAlign: 'left',
+			padding: '8px 12px',
+			overflowWrap: 'break-word',
 		},
 		'& .MuiChip-root.Mui-disabled': {
 			backgroundColor: '#f0f0f0 !important',
@@ -128,7 +123,7 @@ export default function CampaignField(props) {
 	};
 	const classes = useStyles({ ...props, showPlusAddIcon: showPlusAddIcon() });
 
-	const handleChange = (values, reason) => {
+	const handleChange = ({ value: values, reason }) => {
 		let campaign,
 			payload = {
 				relatedObjectType: props.targetLabel,
@@ -136,7 +131,7 @@ export default function CampaignField(props) {
 				isDeleted: false,
 			};
 
-		if (reason === 'select-option') {
+		if (reason === 'selectOption') {
 			campaign = values[values.length - 1];
 			if (campaign) {
 				payload.descriptorObject = campaign._id;
@@ -165,58 +160,49 @@ export default function CampaignField(props) {
 	};
 
 	return (
-		<div id="taggerRoot" className={classes.rootDiv}>
-			<Grid container>
-				<Grid item xs={12} md={12}>
-					<Autocomplete
-						className={classes.chip}
-						multiple
-						id="tags-outlined"
-						data-testid="campaign-name-autocomplete"
-						onChange={(e, newValue, reason) => handleChange(newValue, reason)}
-						options={options}
-						getOptionLabel={op => op?.name || ''}
-						getOptionSelected={(op, value) => op?.name === value?.name}
-						value={inputValue}
-						freeSolo
-						disabled={props.disabled}
-						renderTags={(value, getTagProps) => {
-							return value.map((tag, index) => (
-								<Chip
-									key={tag._id}
-									id={index}
-									label={tag.name}
-									{...getTagProps({ index })}
-									deleteIcon={!props.disabled ? <ClearIcon /> : <></>}
-									data-testid="campaign-name-chip"
-								/>
-							));
-						}}
-						renderInput={params => (
-							<TextField
-								{...params}
-								variant={'standard'}
-								className={params.inputProps.value ? '' : classes.input}
-								placeholder={!showPlusAddIcon() ? '' : '+'}
-								fullWidth
-								onClick={() => {
-									if (props.type === 'textfield') {
-										setTFActive(true);
-									}
-								}}
-								onBlur={() => {
-									setTFActive(false);
-								}}
-								InputProps={{
-									...params.InputProps,
-									disableUnderline: !props.simpleChips,
-								}}
-							/>
-						)}
+		<CustomAutoComplete
+			fieldConfig={{
+				variant: 'standard',
+				disabled: props.disabled,
+				multiple: true,
+				textFieldInputProps: {
+					disableUnderline: !props.simpleChips,
+				},
+				inputClassName: !showPlusAddIcon() ? '' : classes.input,
+				textfieldRestProps: {
+					onClick: () => {
+						if (props.type === 'textfield') {
+							setTFActive(true);
+						}
+					},
+					onBlur: () => {
+						setTFActive(false);
+					},
+				},
+			}}
+			fieldAttributes={{
+				value: inputValue,
+				optionArray: options,
+				placeholder: !showPlusAddIcon() ? '' : '+',
+			}}
+			fieldEvents={{
+				onChange: handleChange,
+			}}
+			freeSolo
+			data-testid="campaign-name-autocomplete"
+			renderTags={(value, getTagProps) => {
+				return value.map((tag, index) => (
+					<Chip
+						key={tag._id}
+						id={index}
+						label={tag.name}
+						{...getTagProps({ index })}
+						deleteIcon={!props.disabled ? <ClearIcon /> : <></>}
+						data-testid="campaign-name-chip"
 					/>
-				</Grid>
-			</Grid>
-		</div>
+				));
+			}}
+		/>
 	);
 }
 

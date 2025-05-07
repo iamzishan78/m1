@@ -39,6 +39,7 @@ function CustomAutoComplete({
 		textfieldRestProps = {},
 		textFieldInputProps = {},
 		getCustomOptionLabel = null,
+		containerSpacing = 1,
 	} = {},
 	fieldAttributes: {
 		name = '',
@@ -50,7 +51,7 @@ function CustomAutoComplete({
 		placeholder = '',
 		isESSearch = false,
 		defaultValue = null,
-		optionArray = null,
+		optionArray = [],
 		inputSearchText = null,
 		getOptions = options => options,
 	} = {},
@@ -68,8 +69,12 @@ function CustomAutoComplete({
 	}, [optionArray]);
 
 	useEffect(() => {
-		setFieldValue(value ?? null);
-	}, [value]);
+		if (value) {
+			setFieldValue(value ?? null);
+		} else {
+			setFieldValue(defaultValue ?? null);
+		}
+	}, [value, defaultValue]);
 
 	useEffect(() => {
 		setIsLoading(loading);
@@ -123,13 +128,17 @@ function CustomAutoComplete({
 		}
 	};
 
-	const autoCompleteChnage = ({ reason, newValue, oldValue, fieldOnChange }) => {
+	const autoCompleteChnage = ({ event, reason, newValue, oldValue, fieldOnChange }) => {
 		const value = newValue ? (newValue.value ?? newValue) : null;
-		onChange?.({ value, oldValue, reason });
+		onChange?.({ value, oldValue, reason, event });
 		fieldOnChange ? fieldOnChange(value) : setFieldValue(value);
 	};
 
 	const textFieldChange = event => {
+		if (multiple) {
+			return;
+		}
+
 		const value = event.target.value;
 		setFieldValue(value);
 		query && fetchOptions(value);
@@ -141,17 +150,13 @@ function CustomAutoComplete({
 			return typeof fieldValue === 'string' ? [fieldValue] : fieldValue || [];
 		}
 
-		const fallbackValue = value || null;
-
-		if (!fieldValue) {
-			return fallbackValue;
-		}
+		const fallbackValue = value ?? defaultValue ?? null;
 
 		if (typeof fieldValue === 'string') {
-			return options?.find(opt => opt.value === fieldValue || opt === fieldValue) || fieldValue;
+			return options?.find(opt => opt.value === fieldValue || opt === fieldValue) || (fieldValue ?? fallbackValue);
 		}
 
-		return options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue)) || fieldValue;
+		return options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue)) || (fieldValue ?? fallbackValue);
 	};
 
 	const getOptionsArray = value => {
@@ -182,6 +187,7 @@ function CustomAutoComplete({
 			return (
 				<Typography
 					{...props}
+					key={option._id || option}
 					style={{ color: 'midnightblue', paddingLeft: '12px' }}
 				>{`Add '${option.value || option}'`}</Typography>
 			);
@@ -189,14 +195,14 @@ function CustomAutoComplete({
 
 		if (renderOptionComp) {
 			return (
-				<Grid container spacing={0} {...props}>
+				<Grid container spacing={0} {...props} key={option._id || option}>
 					{renderOptionComp({ props, option })}
 				</Grid>
 			);
 		}
 
 		return (
-			<Grid container spacing={0} {...props}>
+			<Grid container spacing={0} {...props} key={option._id || option}>
 				<Grid container item xs={12} alignItems="center">
 					<Grid item xs>
 						<Typography variant="body2">{getOptionLabel(option)}</Typography>
@@ -224,8 +230,9 @@ function CustomAutoComplete({
 					onBlur?.(event);
 					field?.onBlur?.(event);
 				}}
-				onChange={(_, value, reason) =>
+				onChange={(event, value, reason) =>
 					autoCompleteChnage({
+						event,
 						reason,
 						newValue: value,
 						oldValue: field?.value,
@@ -273,7 +280,7 @@ function CustomAutoComplete({
 	const fieldXs = layout === 'horizontal' ? 9 : 12;
 
 	return (
-		<Grid container spacing={1}>
+		<Grid container spacing={containerSpacing}>
 			{title && (
 				<Grid item xs={titleXs} sx={{ display: 'flex', alignItems: 'center' }}>
 					<Box component={titleComponent}>{title}</Box>
@@ -316,6 +323,7 @@ CustomAutoComplete.propTypes = {
 		textfieldRestProps: PropTypes.object,
 		textFieldInputProps: PropTypes.object,
 		getCustomOptionLabel: PropTypes.func,
+		containerSpacing: PropTypes.number,
 	}),
 	fieldAttributes: PropTypes.shape({
 		name: PropTypes.string,
