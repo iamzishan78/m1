@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
+
 import { Typography } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery } from '@apollo/client';
 import debounce from 'lodash/debounce';
+import PropTypes from 'prop-types';
 
 // Queries
 
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	secondaryText: {
 		color: 'grey',
 		fontSize: '15px',
@@ -35,11 +36,11 @@ function WellSearchApiField({ esIndex, fields, filters = [], optionsParams, targ
 	const [selectedOption, setSelectedOption] = useState(null);
 	const [focused, setFocused] = useState(false);
 
-	const [getDbData, { data: constDataWells }] = useLazyQuery(GET_DB_DATA, { fetchPolicy: 'no-cache' });
+	const [getDbData, { loading, data: constDataWells }] = useLazyQuery(GET_DB_DATA, { fetchPolicy: 'no-cache' });
 	// searching wells
 	const callWellESSearch = React.useMemo(
 		() =>
-			debounce((request, callback) => {
+			debounce(request => {
 				getDbData({
 					variables: {
 						index: esIndex,
@@ -55,7 +56,6 @@ function WellSearchApiField({ esIndex, fields, filters = [], optionsParams, targ
 					},
 				});
 			}, 500),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[]
 	);
 
@@ -79,47 +79,56 @@ function WellSearchApiField({ esIndex, fields, filters = [], optionsParams, targ
 
 	return (
 		<FormControl variant="outlined" fullWidth size="small">
-			<Autocomplete
-				options={foundWells || []}
-				onChange={(e, option) => {
-					onChange(option);
+			<CustomAutoComplete
+				filterOptions={options => options}
+				fieldAttributes={{
+					optionArray: foundWells || [],
+					value: selectedOption,
+					label: `Search for ${targetLabel} by name`,
 				}}
-				value={selectedOption}
-				getOptionLabel={(option, value) => option.wellName}
-				filterOptions={x => x}
-				loading
+				fieldConfig={{
+					loading,
+					variant: 'outlined',
+					margin: 'dense',
+					size: 'small',
+					textfieldRestProps: {
+						focused: focused,
+						required: true,
+						InputLabelProps: { shrink: true },
+						onBlur: () => setFocused(false),
+					},
+					renderOptionComp: ({ option }) => {
+						return (
+							<div>
+								<Typography variant="subtitle1">{option[optionsParams[0]]}</Typography>
+								<p className={classes.secondaryText}>{option?.[optionsParams[1]]}</p>
+							</div>
+						);
+					},
+				}}
+				fieldEvents={{
+					onChange: ({ value }) => {
+						value && onChange(value);
+					},
+					onTextFieldChange: value => callWellESSearch({ input: value ?? '' }),
+				}}
 				id="wellSearch"
-				loadingText={
-					<div className={classes.alignCenter}>
-						<CircularProgress />
-					</div>
-				}
-				renderOption={option => {
-					return (
-						<div>
-							<Typography variant="subtitle1">{option[optionsParams[0]]}</Typography>
-							<p className={classes.secondaryText}>{option?.[optionsParams[1]]}</p>
-						</div>
-					);
-				}}
-				renderInput={params => (
-					<TextField
-						margin="dense"
-						focused={focused}
-						{...params}
-						required
-						variant="outlined"
-						label={`Search for ${targetLabel} by name`}
-						InputLabelProps={{ shrink: true }}
-						onChange={event => {
-							callWellESSearch({ input: event.target.value }, results => null);
-						}}
-						onBlur={() => setFocused(false)}
-					/>
-				)}
 			/>
 		</FormControl>
 	);
 }
+
+WellSearchApiField.propTypes = {
+	esIndex: PropTypes.string.isRequired,
+	fields: PropTypes.arrayOf(PropTypes.string).isRequired,
+	filters: PropTypes.arrayOf(PropTypes.object),
+	optionsParams: PropTypes.arrayOf(PropTypes.string).isRequired,
+	targetLabel: PropTypes.string.isRequired,
+	onSelectOption: PropTypes.func.isRequired,
+};
+
+WellSearchApiField.defaultProps = {
+	filters: [],
+};
 
 export default WellSearchApiField;
