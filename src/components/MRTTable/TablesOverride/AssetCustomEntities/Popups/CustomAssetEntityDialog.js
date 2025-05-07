@@ -180,7 +180,7 @@ function CustomAssetEntityDialog() {
 				name: data.asset_name,
 				modelKeys,
 				creationPlace: data.creation_place,
-				shapeType: data.shape_type,
+				shapeType: data.creation_place === 'RightDialog' ? '' : data.shape_type,
 			},
 		}).then(res => {
 			if (res?.data?.upsertCustomAssetInfo) {
