@@ -7,7 +7,7 @@ import AssetEntityToolbar from '../TablesOverride/AssetCustomEntities/Toolbars/A
 
 const esIndex = 'customentitiesmodelkeys_flat';
 
-const customAssetMeta = {
+const AssetCustomEntitiesModelKeysMeta = {
 	esIndex,
 	pageSize: 50,
 	pagination: {
@@ -134,4 +134,4 @@ const customAssetMeta = {
 	],
 };
 
-export default customAssetMeta;
+export default AssetCustomEntitiesModelKeysMeta;
