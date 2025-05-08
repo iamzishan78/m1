@@ -6,10 +6,10 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import Chips from '../Common/TableCells/Chips';
 import AssetCustomEntitiesToolbar from '../TablesOverride/AssetCustomEntities/Toolbars/AssetCustomEntities';
 
-const esIndex = 'assetcustomentities_flat';
+const modelName = 'AssetCustomEntities';
 
 const AssetCustomEntitiesMeta = {
-	esIndex,
+	modelName,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,
@@ -20,6 +20,12 @@ const AssetCustomEntitiesMeta = {
 	columnVirtualization: false,
 	isDeleteDisabled: true,
 	CustomToolBar: AssetCustomEntitiesToolbar,
+	defaultFilters: [
+		{
+			field: 'type',
+			value: 'Custom',
+		},
+	],
 	TableSchema: [
 		{
 			...CommonSchema.MONGO_ID,
@@ -88,18 +94,10 @@ const AssetCustomEntitiesMeta = {
 				actualKey: 'name', //label
 			},
 		},
-		{
-			...CommonSchema.CREATED_BY,
-		},
-		{
-			...CommonSchema.LAST_UPDATED_BY,
-		},
-		{
-			...CommonSchema.CREATED_DATE,
-		},
-		{
-			...CommonSchema.LAST_UPDATED_DATE,
-		},
+		CommonSchema.CREATED_BY,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_DATE,
 	],
 };
 
