@@ -538,6 +538,11 @@ export default function Tags(props) {
 									onClick={() => {
 										if (props.type === 'textfield') {
 											setTFActive(true);
+											getUserAvailableTags({
+												variables: {
+													userId: stateApp.user.mongoId,
+												},
+											});
 										}
 									}}
 									onBlur={() => {

@@ -357,7 +357,7 @@ export default function Comments(props) {
 					objectType: props.targetLabel,
 					commentType: selectedCommentType,
 					pin: false,
-					tenant: UserSession.getStorageItem('tenantName'),
+					tenant: window.sessionStorage.getItem('tenantName'),
 				},
 			},
 			refetchQueries: [
@@ -504,13 +504,11 @@ export default function Comments(props) {
 							)}
 						</Grid>
 					)}
-					{!props.hideShareCommentsToggle && (
-						<Grid item xs={12} style={{ marginBottom: '8px' }} data-testid="shared-comment-section">
+					{props.hideSharedCommentCheck ? null : (
+						<Grid item xs={12} style={{ marginBottom: '8px' }}>
 							<FormGroup style={{ display: 'block' }}>
 								{(props.detailCard || props.handleRightDialogClose) && (
-									<h4 className={classes.sharedCommentLabel} data-testid="share-comments-label">
-										Share comments
-									</h4>
+									<h4 className={classes.sharedCommentLabel}>Share comments</h4>
 								)}
 								<FormControlLabel
 									className={`${classes.switchButtom} ${!publicComment ? classes.switchTextDeselected : ''}`}
@@ -521,7 +519,6 @@ export default function Comments(props) {
 												setPublicComment(!publicComment);
 											}}
 											name="checkedC"
-											data-testid="share-comments-switch"
 										/>
 									}
 									label={!props.detailCard && !props.handleRightDialogClose ? 'Shared' : ''}
