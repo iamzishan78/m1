@@ -1,3 +1,190 @@
+const CHECKDETAILSENERGY = [
+	{
+		label: 'UID',
+		mapped_key: 'Line Number',
+		required: true,
+		actual_key: 'lineNumber',
+		showAsSample: false,
+	},
+	{
+		label: 'Payor',
+		mapped_key: '',
+		required: false,
+		actual_key: 'check.payor.name',
+		showAsSample: false,
+	},
+	{
+		label: 'Check Number',
+		mapped_key: '',
+		required: false,
+		actual_key: 'check.checkNumber',
+		showAsSample: false,
+	},
+	{
+		label: 'Check Amount',
+		mapped_key: '',
+		required: false,
+		actual_key: 'check.checkAmount',
+		showAsSample: false,
+	},
+	{
+		label: 'Check Date',
+		mapped_key: '',
+		required: false,
+		actual_key: 'check.checkDate',
+		showAsSample: false,
+	},
+	{
+		label: 'M1 Property ID',
+		mapped_key: '',
+		required: false,
+		actual_key: 'property._id',
+	},
+	{
+		label: 'Payor Prop #',
+		mapped_key: 'Operator CC',
+		required: true,
+		actual_key: 'property.purchaserNumber',
+	},
+	{
+		label: 'Accounting Ref ID',
+		mapped_key: '',
+		required: false,
+		actual_key: 'property.internalID',
+	},
+	{
+		label: 'Property Name',
+		mapped_key: '',
+		required: false,
+		actual_key: 'property.name',
+	},
+	{
+		label: 'Operator Name',
+		mapped_key: '',
+		required: false,
+		actual_key: 'property.operator',
+	},
+	{
+		label: 'Owner Number',
+		mapped_key: '',
+		required: false,
+		actual_key: 'check.payee.number',
+		showAsSample: false,
+	},
+	{
+		label: 'Owner Name',
+		mapped_key: '',
+		required: false,
+		actual_key: 'check.payee.name',
+		showAsSample: false,
+	},
+	{
+		label: 'Decimal Interest',
+		mapped_key: 'Distribution Percent',
+		required: false,
+		actual_key: 'disbursement',
+	},
+	{
+		label: 'Sales Date',
+		mapped_key: 'Prod Date',
+		required: true,
+		actual_key: 'date',
+	},
+	{
+		label: 'Product Code',
+		mapped_key: 'Product Code Description',
+		required: false,
+		actual_key: 'product',
+	},
+	{
+		label: 'Interest Type',
+		mapped_key: '',
+		required: false,
+		actual_key: 'interestType',
+	},
+	{
+		label: 'Avg Price',
+		mapped_key: 'Price',
+		required: false,
+		actual_key: 'price',
+	},
+	{
+		label: 'Property Gross Volume',
+		mapped_key: 'Gross Volume',
+		required: false,
+		actual_key: 'grossPropertyVolume',
+	},
+	{
+		label: 'Property Gross Revenue',
+		mapped_key: 'Gross Value',
+		required: false,
+		actual_key: 'grossPropertyValue',
+	},
+	{
+		label: 'GrsDeduct',
+		mapped_key: 'Gross Deduct',
+		required: false,
+		actual_key: 'propertyDeducts',
+	},
+	{
+		label: 'Owner Value',
+		mapped_key: '',
+		required: false,
+		actual_key: 'grossOwnerValue',
+	},
+	// Tax keys
+	{
+		label: 'Tax Type',
+		mapped_key: '',
+		required: false,
+		actual_key: 'taxType',
+	},
+	{
+		label: 'GrsSevTax',
+		mapped_key: 'Gross Tax',
+		required: false,
+		actual_key: 'propertyTax',
+	},
+	{
+		label: 'Owner Tax Amount',
+		mapped_key: 'Net Tax',
+		required: false,
+		actual_key: 'ownerTax',
+	},
+	// Deduct keys
+	{
+		label: 'Deduct Code',
+		mapped_key: 'Deduct Type',
+		required: false,
+		actual_key: 'deductType',
+	},
+	{
+		label: 'Owner Deduct Amount',
+		mapped_key: 'Net Deduct',
+		required: false,
+		actual_key: 'ownerDeducts',
+	},
+	{
+		label: 'Owner Net Revenue',
+		mapped_key: 'Owner Net Value',
+		required: false,
+		actual_key: 'netOwnerValue',
+	},
+	{
+		label: 'NetVal',
+		mapped_key: 'Net Value',
+		required: false,
+		actual_key: 'netPropertyValue',
+	},
+	{
+		label: 'Line Number',
+		mapped_key: '',
+		required: true,
+		actual_key: 'lineNumber',
+		showAsSample: false,
+	},
+];
+
 const checkDetailsKeys = [
 	{
 		label: 'UID',
@@ -182,6 +369,14 @@ const checkDetailsKeys = [
 		actual_key: 'lineNumber',
 		showAsSample: false,
 	},
+
+	// {
+	//     label: "Purchaser Name",
+	//     mapped_key: "",
+	//     required: false,
+	//     actual_key: "property.purchaser.name",
+	// },
 ];
 
+export { CHECKDETAILSENERGY };
 export default checkDetailsKeys;

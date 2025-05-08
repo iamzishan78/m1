@@ -2,15 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 
-import { Grid, TextField, Select, MenuItem, IconButton, Typography } from '@material-ui/core';
+import { useForm, Controller } from 'react-hook-form';
 import { makeStyles } from '@material-ui/core/styles';
+import { Grid, TextField, Select, MenuItem, IconButton, Typography } from '@material-ui/core';
 import { Clear } from '@material-ui/icons';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
-
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
-import { get, debounce } from 'lodash';
 import loadashFilter from 'lodash/filter';
-import moment from 'moment';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import StateField from './State';
+import CountyField from './County';
+import AssociatedWellsList from 'components/Shared/Wells/AssociatedWells';
+import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 
 import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
@@ -36,7 +38,7 @@ const useStyles = makeStyles(() => ({
 	fieldsSection: {
 		margin: '0px 0px',
 		'& .MuiOutlinedInput-root': {
-			height: '46px !important',
+			height: `46px !important`,
 			borderRadius: '6px !important',
 		},
 	},
@@ -92,7 +94,7 @@ const useStyles = makeStyles(() => ({
 	textArea: {
 		margin: '0px 0px',
 		'& .MuiOutlinedInput-root': {
-			height: 'auto !important',
+			height: `auto !important`,
 			borderRadius: '6px !important',
 		},
 	},
@@ -233,9 +235,7 @@ export default function HeaderSection(props) {
 	};
 
 	const setEntity = entityDetails => {
-		if (entityDetails && !checkIfContact(entityDetails?._id)) {
-			setEntityToConvert({ ...entityDetails, isEntity: true });
-		}
+		if (entityDetails && !checkIfContact(entityDetails?._id)) setEntityToConvert({ ...entityDetails, isEntity: true });
 	};
 
 	const handleUpdate = debounce((key, value) => {
@@ -513,21 +513,15 @@ export default function HeaderSection(props) {
 													return option.name;
 												}
 
-												if (option?.name) {
-													return option.name;
-												} else {
-													return '';
-												}
+												if (option?.name) return option.name;
+												else return '';
 											}}
 											getOptionSelected={(option, value) => {
 												return option?._id === value?._id;
 											}}
 											renderOption={option => {
-												if (option.isNew) {
-													return (
-														<Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>
-													);
-												}
+												if (option.isNew)
+													return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
 
 												return (
 													<Grid container spacing={0}>
@@ -594,11 +588,8 @@ export default function HeaderSection(props) {
 											nameAutValue={field.value ? field.value : { _id: '', name: '' }}
 											className={classes.field}
 											setNameAutValue={value => {
-												if (value) {
-													contactEntity(value?._id, 'owner');
-												} else {
-													handleUpdate('owner', null);
-												}
+												if (value) contactEntity(value?._id, 'owner');
+												else handleUpdate('owner', null);
 											}}
 											renderInput={params2 => (
 												<TextField
@@ -781,12 +772,8 @@ export default function HeaderSection(props) {
 										const normalizeValue = value => {
 											if (value) {
 												const formattedValue = value.replace(/\s+/g, '').toLowerCase();
-												if (formattedValue === 'inpay') {
-													return 'InPay';
-												}
-												if (formattedValue === 'notinpay') {
-													return 'NotInPay';
-												}
+												if (formattedValue === 'inpay') return 'InPay';
+												if (formattedValue === 'notinpay') return 'NotInPay';
 											}
 											return '';
 										};
@@ -868,21 +855,15 @@ export default function HeaderSection(props) {
 													return option.name;
 												}
 
-												if (option?.name) {
-													return option.name;
-												} else {
-													return '';
-												}
+												if (option?.name) return option.name;
+												else return '';
 											}}
 											getOptionSelected={(option, value) => {
 												return option?._id === value?._id;
 											}}
 											renderOption={option => {
-												if (option.isNew) {
-													return (
-														<Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>
-													);
-												}
+												if (option.isNew)
+													return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
 
 												return (
 													<Grid container spacing={0}>
@@ -961,21 +942,15 @@ export default function HeaderSection(props) {
 													return option.name;
 												}
 
-												if (option?.name) {
-													return option.name;
-												} else {
-													return '';
-												}
+												if (option?.name) return option.name;
+												else return '';
 											}}
 											getOptionSelected={(option, value) => {
 												return option?._id === value?._id;
 											}}
 											renderOption={option => {
-												if (option.isNew) {
-													return (
-														<Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>
-													);
-												}
+												if (option.isNew)
+													return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
 
 												return (
 													<Grid container spacing={0}>

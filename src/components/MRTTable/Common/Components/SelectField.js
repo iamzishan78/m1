@@ -277,21 +277,25 @@ const SelectField = ({
 		// toggleOpen();
 		if (act?.value !== 'editOption' && act?.value !== 'search') {
 			if (isSingleSelect) {
-				onCustomKeyChange(act?.value !== defaultValue.value ? act?.value : null);
+				if (act?.value && act.value !== defaultValue.value) {
+					onCustomKeyChange(act.value);
+				}
 				onClose();
 				setIsOpen(false);
 			} else {
 				let newValue = value ? copy(value) : [];
 				const selectedValue = act?.value !== defaultValue.value ? act?.value : null;
-				if (!Array.isArray(newValue) || newValue?.length === 0) {
-					newValue = [selectedValue];
-				} else if (newValue.includes(selectedValue)) {
-					const index = newValue.findIndex(v => v === selectedValue);
-					newValue.splice(index, 1);
-				} else {
-					newValue.push(selectedValue);
+				if (selectedValue) {
+					if (!Array.isArray(newValue) || newValue?.length === 0) {
+						newValue = [selectedValue];
+					} else if (newValue.includes(selectedValue)) {
+						const index = newValue.findIndex(v => v === selectedValue);
+						newValue.splice(index, 1);
+					} else {
+						newValue.push(selectedValue);
+					}
+					onCustomKeyChange(newValue);
 				}
-				onCustomKeyChange(newValue);
 			}
 		}
 	};

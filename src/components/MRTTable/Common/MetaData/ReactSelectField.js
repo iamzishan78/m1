@@ -188,7 +188,7 @@ const ReactSelectField = ({
 export default ReactSelectField;
 
 const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleSelect, tooltipView, column }) => {
-	let tooltipValues = value?.slice(1) || [];
+	let tooltipValues = Array.isArray(value) ? value.slice(1) : [];
 	const isBulletPointMeta = column.iconType === 'Bullet Point';
 
 	const ToolTipView = () => {

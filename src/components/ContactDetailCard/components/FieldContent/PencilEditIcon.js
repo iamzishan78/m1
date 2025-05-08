@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 
-import { Grid, IconButton } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Tooltip from '@material-ui/core/Tooltip';
-import CheckSharpIcon from '@material-ui/icons/CheckSharp';
-import ClearSharpIcon from '@material-ui/icons/ClearSharp';
-import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
-
+import { Grid, IconButton, Button, Tooltip } from '@material-ui/core';
 import AddIcCallIcon from '@mui/icons-material/AddIcCall';
+import {
+	CheckSharp as CheckSharpIcon,
+	ClearSharp as ClearSharpIcon,
+	CreateTwoTone as CreateTwoToneIcon,
+} from '@material-ui/icons';
 
 import PropTypes from 'prop-types';
 

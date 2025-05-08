@@ -1,3 +1,4 @@
+import * as turf from '@turf/turf';
 import {
 	getDrawAdustedShape,
 	getNewShapeFromSelectedQuarters,
@@ -274,9 +275,7 @@ export const handleLayerChangeOnQtr = (stateApp, layerData, qtrQtr, qtr) => {
 		newShape = getNewShapeFromSelectedQuarters(feature, values);
 	}
 
-	if (!layerDataCopy.qtrQtrSelection) {
-		layerDataCopy.qtrQtrSelection = {};
-	}
+	if (!layerDataCopy.qtrQtrSelection) layerDataCopy.qtrQtrSelection = {};
 	if (!layerDataCopy?.qtrQtrSelection?.originalGeometry) {
 		layerDataCopy.qtrQtrSelection.originalGeometry = layerDataCopy.shape.geometry;
 	}
