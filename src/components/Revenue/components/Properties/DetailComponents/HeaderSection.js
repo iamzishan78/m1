@@ -1,35 +1,32 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { get, debounce } from 'lodash';
+import moment from 'moment';
 import { useHistory } from 'react-router-dom';
 
-import { Grid, TextField, Select, MenuItem, IconButton, Typography } from '@material-ui/core';
+import { useForm, Controller } from 'react-hook-form';
 import { makeStyles } from '@material-ui/core/styles';
+import { Grid, TextField, Select, MenuItem, IconButton, Typography } from '@material-ui/core';
 import { Clear } from '@material-ui/icons';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
-
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
-import { get, debounce } from 'lodash';
 import loadashFilter from 'lodash/filter';
-import moment from 'moment';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import StateField from './State';
+import CountyField from './County';
+import AssociatedWellsList from 'components/Shared/Wells/AssociatedWells';
+import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 
 import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';
-import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
-import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
-import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
-import AssociatedWellsList from 'components/Shared/Wells/AssociatedWells';
-
-import { UPDATE_PROPERTY } from 'graphQL/useMutationUpdateProperty';
-import { CONTACT_ENTITY } from 'graphQL/useQueryContactEntity';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import { GET_AUTOCOMPLETE_PROPERTY_LIST } from 'graphQL/useQueryGetProperty';
-import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
-
-import { showInfoMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
-import CountyField from './County';
-import StateField from './State';
+import { CONTACT_ENTITY } from 'graphQL/useQueryContactEntity';
+import { UPDATE_PROPERTY } from 'graphQL/useMutationUpdateProperty';
+import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { GET_AUTOCOMPLETE_PROPERTY_LIST } from 'graphQL/useQueryGetProperty';
+import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
+import { useDispatch } from 'react-redux';
+import { showInfoMessage } from 'actions';
+import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
 
 const useStyles = makeStyles(theme => ({
 	titleText: {
@@ -40,7 +37,7 @@ const useStyles = makeStyles(theme => ({
 	fieldsSection: {
 		margin: '0px 0px',
 		'& .MuiOutlinedInput-root': {
-			height: '46px !important',
+			height: `46px !important`,
 			borderRadius: '6px !important',
 		},
 	},
@@ -96,7 +93,7 @@ const useStyles = makeStyles(theme => ({
 	textArea: {
 		margin: '0px 0px',
 		'& .MuiOutlinedInput-root': {
-			height: 'auto !important',
+			height: `auto !important`,
 			borderRadius: '6px !important',
 		},
 	},
@@ -248,9 +245,7 @@ export default function HeaderSection(props) {
 	};
 
 	const setEntity = entityDetails => {
-		if (entityDetails && !checkIfContact(entityDetails?._id)) {
-			setEntityToConvert({ ...entityDetails, isEntity: true });
-		}
+		if (entityDetails && !checkIfContact(entityDetails?._id)) setEntityToConvert({ ...entityDetails, isEntity: true });
 	};
 
 	const updatePropertyData = (key, value) => {
@@ -601,19 +596,15 @@ export default function HeaderSection(props) {
 													return option.name;
 												}
 
-												if (option?.name) {
-													return option.name;
-												} else {
-													return '';
-												}
+												if (option?.name) return option.name;
+												else return '';
 											}}
 											getOptionSelected={(option, value) => {
 												return option?._id === value?._id;
 											}}
 											renderOption={option => {
-												if (option.isNew) {
+												if (option.isNew)
 													return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
-												}
 
 												return (
 													<Grid container spacing={0}>
@@ -680,11 +671,8 @@ export default function HeaderSection(props) {
 											nameAutValue={params.value ? params.value : { _id: '', name: '' }}
 											className={classes.field}
 											setNameAutValue={value => {
-												if (value) {
-													contactEntity(value?._id, 'owner');
-												} else {
-													handleUpdate('owner', null);
-												}
+												if (value) contactEntity(value?._id, 'owner');
+												else handleUpdate('owner', null);
 											}}
 											renderInput={params2 => (
 												<TextField
@@ -867,12 +855,8 @@ export default function HeaderSection(props) {
 										const normalizeValue = value => {
 											if (value) {
 												const formattedValue = value.replace(/\s+/g, '').toLowerCase();
-												if (formattedValue === 'inpay') {
-													return 'InPay';
-												}
-												if (formattedValue === 'notinpay') {
-													return 'NotInPay';
-												}
+												if (formattedValue === 'inpay') return 'InPay';
+												if (formattedValue === 'notinpay') return 'NotInPay';
 											}
 											return '';
 										};
@@ -954,19 +938,15 @@ export default function HeaderSection(props) {
 													return option.name;
 												}
 
-												if (option?.name) {
-													return option.name;
-												} else {
-													return '';
-												}
+												if (option?.name) return option.name;
+												else return '';
 											}}
 											getOptionSelected={(option, value) => {
 												return option?._id === value?._id;
 											}}
 											renderOption={option => {
-												if (option.isNew) {
+												if (option.isNew)
 													return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
-												}
 
 												return (
 													<Grid container spacing={0}>
@@ -1045,19 +1025,15 @@ export default function HeaderSection(props) {
 													return option.name;
 												}
 
-												if (option?.name) {
-													return option.name;
-												} else {
-													return '';
-												}
+												if (option?.name) return option.name;
+												else return '';
 											}}
 											getOptionSelected={(option, value) => {
 												return option?._id === value?._id;
 											}}
 											renderOption={option => {
-												if (option.isNew) {
+												if (option.isNew)
 													return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
-												}
 
 												return (
 													<Grid container spacing={0}>
@@ -1112,32 +1088,32 @@ export default function HeaderSection(props) {
 
 					{/* Field for approval status */}
 					{/* <Grid item xs={5}>
-						<Grid container className={classes.gridStyle}>
-							<Grid item xs={3}>
-								<div className={classes.label}>Approval Status</div>
-							</Grid>
-							<Grid item xs={8}>
-								<Controller
-									control={control}
-									name="approvalStatus"
-									render={params => (
-										<TextField
-											{...params}
-											className={classes.textField}
-											variant="outlined"
-											margin="dense"
-											type="text"
-											fullWidth
-											onChange={e => {
-												params.onChange(e.target.value);
-											}}
-											onBlur={e => updatePropertyData('approvalStatus', e.target.value)}
-										/>
-									)}
-								/>
-							</Grid>
-						</Grid>
-					</Grid> */}
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={3}>
+                <div className={classes.label}>Approval Status</div>
+              </Grid>
+              <Grid item xs={8}>
+                <Controller
+                  control={control}
+                  name="approvalStatus"
+                  render={(params) => (
+                    <TextField
+                      {...params}
+                      className={classes.textField}
+                      variant="outlined"
+                      margin="dense"
+                      type="text"
+                      fullWidth
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) => updatePropertyData("approvalStatus", e.target.value)}
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid> */}
 
 					<Grid item xs={12}>
 						<Grid container className={`${classes.gridStyle} ${classes.textArea}`}>

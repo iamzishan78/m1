@@ -67,19 +67,16 @@ const useStyles = makeStyles(() => ({
 				opacity: 1,
 				transition: 'visibility 0.3s, opacity 0.3s ease-in-out',
 			},
-
 			// Hide the quick actions
 			'& #voicemail-icon, & #textsms-icon, & #call-icon, & #mail-icon': {
 				visibility: 'hidden',
 				opacity: 0,
 				transition: 'visibility 0.3s, opacity 0.3s ease-in-out',
 			},
-
 			// On hover: Hide dialpad icon completely and show other quick action icons
 			'&:hover #dialpad-icon': {
 				display: 'none', // Completely removes it from layout
 			},
-
 			// Show the quick actions on hover
 			'&:hover #voicemail-icon, &:hover #textsms-icon, &:hover #call-icon, &:hover #mail-icon': {
 				visibility: 'visible',
@@ -300,12 +297,14 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 
 														const prevValue = get(contactData, field.key) || '';
 
-														if (currValue !== prevValue) {
-															updateFieldData(field.key, currValue);
-														}
+														if (currValue !== prevValue) updateFieldData(field.key, currValue);
 													}}
 													onChange={({ target: { value } }) => {
-														params.onChange(field.isPhoneNumber && !phonenumber(value) ? '' : value);
+														let currValue = value;
+														if (field.isPhoneNumber) {
+															currValue = !dialpadFeature || phonenumber(value) ? value : '';
+														}
+														params.onChange(currValue);
 													}}
 													onKeyUp={e => {
 														if (e.key === 'Enter') {

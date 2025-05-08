@@ -42,12 +42,6 @@ import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
 
 import { showErrorMessage } from 'actions';
-import { AppContext } from 'AppContext';
-
-import AutoCompleteAddNewField from './AutoCompleteAddNewField';
-import CampaignField from './CampaignField';
-import EntityType from './EntityType';
-import { timeZoneOptions } from './timeZoneList';
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -86,6 +80,13 @@ export default function FieldContent({
 	const [updateMelissa] = useMutation(UPDATEMELISSA);
 	const [updateMelissaAddress] = useMutation(UPDATEMELISSAADDRESS);
 	const classes = useStyles({ noMargin, loading: loading || loadingPurchaseData, fieldsCount });
+
+	const dialpadFeature = React.useMemo(() => {
+		return stateApp.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION);
+	}, [stateApp.user]);
+
+	// contactOwnerId field used in autocomplete of contact owner
+	const ignorableFieldsInCount = ['contactOwnerId'];
 
 	const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
 	// const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
@@ -279,10 +280,10 @@ export default function FieldContent({
 				if (isPurchased) {
 					updateContactPurchaseData({
 						variables: {
-							purchaseData: { ...trimmedEditContent, ...(purchaseDataId && { purchaseDataId }) },
+							purchaseData: trimmedEditContent,
 							isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 						},
-						refetchQueries: ['getContactPurchaseData', 'getDailpadContact'],
+						refetchQueries: ['getContactPurchaseData', 'getDailpadContact', 'getContact'],
 						awaitRefetchQueries: false,
 					}).then(({ data }) => {
 						if (data?.updateContactPurchaseData && !data.updateContactPurchaseData?.success) {
@@ -601,9 +602,13 @@ export default function FieldContent({
 							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
 							onChange={e => {
 								const { value } = e.target;
+								let currValue = value;
+								if (row?.isPhoneNumber) {
+									currValue = !dialpadFeature || phonenumber(value) ? value : '';
+								}
 								setEditContent(prev => ({
 									...prev,
-									[fieldName]: row?.isPhoneNumber && !phonenumber(value) ? '' : value,
+									[fieldName]: currValue,
 								}));
 							}}
 							onKeyDown={event => keyDownHandler(event, [fieldName])}
@@ -646,75 +651,64 @@ export default function FieldContent({
 			onBlur={() => onBlurHandler(['campaigns'])}
 		/>
 	) : (
-		(() => {
-			// Find the metafield object with an eskey matching a key in content
-			const metaField = metafields
-				? metafields.find(metafield => {
-						return Object.keys(content).includes(metafield.esKey);
-					})
-				: null;
-
-			return (
-				<span>
-					{childrenLeft && !onlyChildren && children ? children : ''}
-					{/* Wrap the contact details tab title inside span to fix it position */}
-					<span
-						style={{
-							marginTop: '4px',
-							display: 'inline-block',
-						}}
-					>
-						{textArray.length > 0
-							? onlyChildren
-								? children
-									? children
-									: ''
-								: formatFieldValue(textArray.join(', '), metaField)
-							: `${name ? name + ' ' : ''} Not Available`}{' '}
-					</span>
-					{!onlyChildren && !disabled && (
-						<PencilEditIcon
-							handleUpdating={handleUpdating}
-							anchorEl={edit}
-							setAnchorEl={setEdit}
-							content={inputsArray}
-							onClick={handleEditClick}
-							isCopy={true}
-							setEditContent={setEditContent}
-							editContent={content}
-							row={row}
-							handleQuickActionActivity={handleQuickActionActivity}
-							isPurchased={isPurchased}
-						/>
-					)}
-					{fieldType === FieldTypes.Contact && isMerged && (
-						<MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
-					)}
-					{isPurchased && (
-						<CopyPurchaseInfo
-							updateContact={updateContact}
-							userId={stateApp.user.mongoId}
-							content={content}
-							contactId={id}
-						/>
-					)}
-					{textArray.length > 0 && name === 'Address' ? ( // show google map and zillow icon when address exists
-						<>
-							<Link onClick={() => window.open(getAddressUrl(content), '_blank')}>
-								<GoogleMapIcon />
-							</Link>
-							<Link onClick={() => window.open(getZillowAddressUrl(content), '_blank')}>
-								<ZillowIcon />
-							</Link>
-						</>
-					) : (
-						''
-					)}
-					{!childrenLeft && !onlyChildren && children ? children : ''}
-					{isCurEdited ? ' (edited)' : ''}
-				</span>
-			);
-		})()
+		<span>
+			{childrenLeft && !onlyChildren && children ? children : ''}
+			{/* Wrap the contact details tab title inside span to fix it position */}
+			<span
+				style={{
+					marginTop: '4px',
+					display: 'inline-block',
+				}}
+			>
+				{textArray.length > 0
+					? onlyChildren
+						? children
+							? children
+							: ''
+						: textArray.join(', ')
+					: `${name ? name + ' ' : ''} Not Available`}{' '}
+			</span>
+			{!onlyChildren && !disabled && (
+				<PencilEditIcon
+					handleUpdating={handleUpdating}
+					anchorEl={edit}
+					setAnchorEl={setEdit}
+					content={inputsArray}
+					onClick={handleEditClick}
+					isCopy={true}
+					setEditContent={setEditContent}
+					editContent={content}
+					row={row}
+					handleQuickActionActivity={handleQuickActionActivity}
+					isPurchased={isPurchased}
+				/>
+			)}
+			{fieldType === FieldTypes.Contact && isMerged && (
+				<MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
+			)}
+			{isPurchased && (
+				<CopyPurchaseInfo
+					updateContact={updateContact}
+					userId={stateApp.user.mongoId}
+					content={content}
+					contactId={id}
+				/>
+			)}
+			{textArray.length > 0 && name === 'Address' ? ( // show google map and zillow icon when address exists
+				<>
+					<Link onClick={() => window.open(getAddressUrl(content), '_blank')}>
+						<GoogleMapIcon />
+					</Link>
+					<Link onClick={() => window.open(getZillowAddressUrl(content), '_blank')}>
+						<ZillowIcon />
+					</Link>
+				</>
+			) : (
+				''
+			)}
+			{!childrenLeft && !onlyChildren && children ? children : ''}
+			{isCurEdited ? ' (edited)' : ''}
+		</span>
 	);
 
 	return (
