@@ -173,7 +173,8 @@ export default class DeckGlOverlay {
 
 	static getLayer = layerId => {
 		if (!window.deckOverlay) {
-			throw new Error('DeckOverlay is not initialized.');
+			console.error('DeckOverlay is not initialized.');
+			return null;
 		}
 
 		const layers = window?.deckOverlay?._props?.layers || [];
