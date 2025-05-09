@@ -14,7 +14,7 @@ function DynamicAssetGrid() {
 	// Override meta for dynamic grid
 	const overrideMeta = useMemo(
 		() => ({
-			esIndex: activeModule.modelName,
+			modelName: activeModule.tableName,
 			assetName: activeModule.title,
 			fetchDynamicSchema: {
 				variables: {
