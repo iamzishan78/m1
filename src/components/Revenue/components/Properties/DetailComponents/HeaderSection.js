@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+import { get, debounce } from 'lodash';
+import moment from 'moment';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, TextField, Select, MenuItem, IconButton, Typography } from '@material-ui/core';
 import { Clear } from '@material-ui/icons';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import loadashFilter from 'lodash/filter';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 
@@ -432,23 +435,29 @@ export default function HeaderSection(props) {
 								<div className={classes.label}>Accounting Ref ID</div>
 							</Grid>
 							<Grid item xs={8}>
-								<Controller
+								<CustomAutoComplete
 									control={control}
-									name="internalID"
-									render={({ field }) => (
-										<TextField
-											{...field}
-											className={classes.textField}
-											variant="outlined"
-											margin="dense"
-											placeholder=""
-											fullWidth
-											onChange={e => {
-												field.onChange(e.target.value);
-											}}
-											onBlur={e => updatePropertyData('internalID', e.target.value)}
-										/>
-									)}
+									watch={watch}
+									fieldAttributes={{
+										name: 'internalID',
+										optionArray: [],
+									}}
+									fieldConfig={{
+										variant: 'outlined',
+										margin: 'dense',
+										size: 'small',
+										allowNewOptions: true,
+										textfieldRestProps: {
+											fullWidth: true,
+										},
+									}}
+									fieldEvents={{
+										onChange: ({ value }) => {
+											setValue('internalID', value || '');
+										},
+										onBlur: e => updatePropertyData('internalID', e.target.value),
+									}}
+									className={classes.field}
 								/>
 							</Grid>
 						</Grid>
@@ -488,82 +497,29 @@ export default function HeaderSection(props) {
 								<div className={classes.label}>Owner #</div>
 							</Grid>
 							<Grid item xs={8}>
-								<Controller
+								<CustomAutoComplete
 									control={control}
-									name="ownerNumber"
-									render={({ field }) => (
-										<Autocomplete
-											className={classes.field}
-											value={field.value ? { _id: field.value, name: field.value } : null}
-											disableListWrap
-											onBlur={e => updatePropertyData('ownerNumber', e.target.value)}
-											options={getMappedOptions(ownerOptions?.getAutoCompletePropertyList)}
-											getOptionLabel={option => {
-												// Value selected with enter, right from the input
-												if (typeof option === 'string') {
-													return option;
-												}
-												// Add "xxx" option created dynamically
-												if (option.inputValue) {
-													return option.name;
-												}
-
-												if (option?.name) return option.name;
-												else return '';
-											}}
-											getOptionSelected={(option, value) => {
-												return option?._id === value?._id;
-											}}
-											renderOption={option => {
-												if (option.isNew)
-													return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
-
-												return (
-													<Grid container spacing={0}>
-														<Grid container item xs={12} alignItems="center">
-															<Grid item xs>
-																<span style={{ fontWeight: 400 }}>{option.name}</span>
-															</Grid>
-														</Grid>
-													</Grid>
-												);
-											}}
-											filterOptions={(options, params) => {
-												const inputValue = params.inputValue;
-												const filtered = createFilterOptions()(options, {
-													...params,
-													inputValue,
-												});
-												const isExist = loadashFilter(filtered, filter => {
-													return filter._id === inputValue;
-												});
-												// Suggest the creation of a new value
-												if (inputValue !== '' && (!isExist || isExist.length === 0)) {
-													filtered.unshift({
-														value: inputValue,
-														name: inputValue,
-														isNew: true,
-													});
-												}
-												return filtered;
-											}}
-											onChange={(event, newValue) => {
-												setValue('ownerNumber', newValue?.value || '');
-											}}
-											renderInput={props => (
-												<TextField
-													variant={'outlined'}
-													margin="dense"
-													{...props}
-													InputProps={{
-														...props.InputProps,
-													}}
-													fullWidth
-													size="small"
-												/>
-											)}
-										/>
-									)}
+									watch={watch}
+									fieldAttributes={{
+										name: 'ownerNumber',
+										optionArray: getMappedOptions(ownerOptions?.getAutoCompletePropertyList),
+									}}
+									fieldConfig={{
+										variant: 'outlined',
+										margin: 'dense',
+										size: 'small',
+										allowNewOptions: true,
+										textfieldRestProps: {
+											fullWidth: true,
+										},
+									}}
+									fieldEvents={{
+										onChange: ({ value }) => {
+											setValue('ownerNumber', value || '');
+										},
+										onBlur: e => updatePropertyData('ownerNumber', e.target.value),
+									}}
+									className={classes.field}
 								/>
 							</Grid>
 						</Grid>
@@ -830,82 +786,29 @@ export default function HeaderSection(props) {
 								<div className={classes.label}>Prospect ID</div>
 							</Grid>
 							<Grid item xs={8}>
-								<Controller
+								<CustomAutoComplete
 									control={control}
-									name="prospectID"
-									render={({ field }) => (
-										<Autocomplete
-											className={classes.field}
-											value={field.value ? { _id: field.value, name: field.value } : null}
-											disableListWrap
-											onBlur={e => updatePropertyData('prospectID', e.target.value)}
-											options={getMappedOptions(prospectOptions?.shapeAutoCompleteList)}
-											getOptionLabel={option => {
-												// Value selected with enter, right from the input
-												if (typeof option === 'string') {
-													return option;
-												}
-												// Add "xxx" option created dynamically
-												if (option.inputValue) {
-													return option.name;
-												}
-
-												if (option?.name) return option.name;
-												else return '';
-											}}
-											getOptionSelected={(option, value) => {
-												return option?._id === value?._id;
-											}}
-											renderOption={option => {
-												if (option.isNew)
-													return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
-
-												return (
-													<Grid container spacing={0}>
-														<Grid container item xs={12} alignItems="center">
-															<Grid item xs>
-																<span style={{ fontWeight: 400 }}>{option.name}</span>
-															</Grid>
-														</Grid>
-													</Grid>
-												);
-											}}
-											filterOptions={(options, params) => {
-												const inputValue = params.inputValue;
-												const filtered = createFilterOptions()(options, {
-													...params,
-													inputValue,
-												});
-												const isExist = loadashFilter(filtered, filter => {
-													return filter._id === inputValue;
-												});
-												// Suggest the creation of a new value
-												if (inputValue !== '' && (!isExist || isExist.length === 0)) {
-													filtered.unshift({
-														value: inputValue,
-														name: inputValue,
-														isNew: true,
-													});
-												}
-												return filtered;
-											}}
-											onChange={(event, newValue) => {
-												setValue('prospectID', newValue?.value || '');
-											}}
-											renderInput={props => (
-												<TextField
-													variant={'outlined'}
-													margin="dense"
-													{...props}
-													InputProps={{
-														...props.InputProps,
-													}}
-													fullWidth
-													size="small"
-												/>
-											)}
-										/>
-									)}
+									watch={watch}
+									fieldAttributes={{
+										name: 'prospectID',
+										optionArray: getMappedOptions(prospectOptions?.shapeAutoCompleteList),
+									}}
+									fieldConfig={{
+										variant: 'outlined',
+										margin: 'dense',
+										size: 'small',
+										allowNewOptions: true,
+										textfieldRestProps: {
+											fullWidth: true,
+										},
+									}}
+									fieldEvents={{
+										onChange: ({ value }) => {
+											setValue('prospectID', value || '');
+											updatePropertyData('prospectID', value);
+										},
+									}}
+									className={classes.field}
 								/>
 							</Grid>
 						</Grid>
@@ -917,82 +820,29 @@ export default function HeaderSection(props) {
 								<div className={classes.label}>Acquisition ID</div>
 							</Grid>
 							<Grid item xs={9}>
-								<Controller
+								<CustomAutoComplete
 									control={control}
-									name="acquisitionID"
-									render={({ field }) => (
-										<Autocomplete
-											className={classes.field}
-											value={field.value ? { _id: field.value, name: field.value } : null}
-											disableListWrap
-											onBlur={e => updatePropertyData('acquisitionID', e.target.value)}
-											options={getMappedOptions(acquisitionOptions?.getAutoCompletePropertyList)}
-											getOptionLabel={option => {
-												// Value selected with enter, right from the input
-												if (typeof option === 'string') {
-													return option;
-												}
-												// Add "xxx" option created dynamically
-												if (option.inputValue) {
-													return option.name;
-												}
-
-												if (option?.name) return option.name;
-												else return '';
-											}}
-											getOptionSelected={(option, value) => {
-												return option?._id === value?._id;
-											}}
-											renderOption={option => {
-												if (option.isNew)
-													return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
-
-												return (
-													<Grid container spacing={0}>
-														<Grid container item xs={12} alignItems="center">
-															<Grid item xs>
-																<span style={{ fontWeight: 400 }}>{option.name}</span>
-															</Grid>
-														</Grid>
-													</Grid>
-												);
-											}}
-											filterOptions={(options, params) => {
-												const inputValue = params.inputValue;
-												const filtered = createFilterOptions()(options, {
-													...params,
-													inputValue,
-												});
-												const isExist = loadashFilter(filtered, filter => {
-													return filter._id === inputValue;
-												});
-												// Suggest the creation of a new value
-												if (inputValue !== '' && (!isExist || isExist.length === 0)) {
-													filtered.unshift({
-														value: inputValue,
-														name: inputValue,
-														isNew: true,
-													});
-												}
-												return filtered;
-											}}
-											onChange={(event, newValue) => {
-												setValue('acquisitionID', newValue?.value || '');
-											}}
-											renderInput={props => (
-												<TextField
-													variant={'outlined'}
-													margin="dense"
-													{...props}
-													InputProps={{
-														...props.InputProps,
-													}}
-													fullWidth
-													size="small"
-												/>
-											)}
-										/>
-									)}
+									watch={watch}
+									fieldAttributes={{
+										name: 'acquisitionID',
+										optionArray: getMappedOptions(acquisitionOptions?.getAutoCompletePropertyList),
+									}}
+									fieldConfig={{
+										variant: 'outlined',
+										margin: 'dense',
+										size: 'small',
+										allowNewOptions: true,
+										textfieldRestProps: {
+											fullWidth: true,
+										},
+									}}
+									fieldEvents={{
+										onChange: ({ value }) => {
+											setValue('acquisitionID', value || '');
+											updatePropertyData('acquisitionID', value);
+										},
+									}}
+									className={classes.field}
 								/>
 							</Grid>
 						</Grid>
