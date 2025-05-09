@@ -9,6 +9,7 @@ import { Typography, Slider, TextField, Box, Tabs, Tab } from '@mui/material';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import _ from 'lodash';
 
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
 import { aggregationLayers } from 'components/Shared/functions/shapeLayer';
@@ -24,11 +25,8 @@ import { layerStylingController } from 'stateManagement/layersStylingController'
 import { layerController } from 'stateManagement/layerStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
 
-import { AppContext } from 'AppContext';
-
 import { ifRgbaConvt, useStyles, WidthPicker } from './Common';
 import AggAutocomplete from './LayerAttributes/AggAutocomplete';
-import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
 import AttrsFillStyleDropdown from './LayerAttributes/AttrsFillStyleDropdown';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
 import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
@@ -72,8 +70,6 @@ function LayerStyling() {
 		binsWidth,
 		elevationScale,
 	} = layerStylingController.useCompleteState();
-	console.log(colorSteps);
-
 	const isAggLayer = aggregationLayers.includes(selectedLayer?.layerType);
 	const isHeatMap = selectedLayer?.layerType === 'heatmap layer';
 	const layerType = selectedLayer.layerPaintProps?.[0]?.paintType;
@@ -448,12 +444,24 @@ function LayerStyling() {
 								</div>
 								{enablefillColor && !isHeatMap && (
 									<>
-										<AttrsAutocomplete
-											options={options}
-											selectedValue={selectedValue}
-											setSelectedValue={value => layerStylingController.setSelectedValue(value)}
-											typography={'Color based on'}
-										/>
+										<div style={{ margin: '8px 0' }}>
+											<Typography style={{ fontSize: '1.2rem', margin: '8px 0' }}>{'Color based on'}</Typography>
+											<CustomAutoComplete
+												fieldAttributes={{
+													label: 'Select a field',
+													value: selectedValue,
+													optionArray: options,
+												}}
+												fieldConfig={{
+													variant: 'outlined',
+													size: 'medium',
+													margin: 'dense',
+												}}
+												fieldEvents={{
+													onChange: ({ value }) => layerStylingController.setSelectedValue(value),
+												}}
+											/>
+										</div>
 										<AttrsValuesDropdown
 											selectedValue={selectedValue}
 											selectedLayer={selectedLayer}
@@ -635,12 +643,24 @@ function LayerStyling() {
 									</div>
 									{enablefillColor && enableColorStyle && (
 										<>
-											<AttrsAutocomplete
-												options={options}
-												selectedValue={selectedFillStyle}
-												setSelectedValue={layerStylingController.setSelectedFillStyle}
-												typography={'Style based on'}
-											/>
+											<div style={{ margin: '8px 0' }}>
+												<Typography style={{ fontSize: '1.2rem', margin: '8px 0' }}>{'Style based on'}</Typography>
+												<CustomAutoComplete
+													fieldAttributes={{
+														label: 'Select a field',
+														value: selectedValue,
+														optionArray: options,
+													}}
+													fieldConfig={{
+														variant: 'outlined',
+														size: 'medium',
+														margin: 'dense',
+													}}
+													fieldEvents={{
+														onChange: ({ value }) => layerStylingController.setSelectedFillStyle(value),
+													}}
+												/>
+											</div>
 											<AttrsFillStyleDropdown
 												dropDownOptions={['dots', 'hatch-1x', 'hatch-2x', 'hatch-cross']}
 												selectedValue={selectedFillStyle}
@@ -681,12 +701,24 @@ function LayerStyling() {
 									)}
 									{enableStrokeColor && (
 										<>
-											<AttrsAutocomplete
-												options={options}
-												selectedValue={selectedStrokeValue}
-												setSelectedValue={value => layerStylingController.setSelectedStrokeValue(value)}
-												typography={'Color based on'}
-											/>
+											<div style={{ margin: '8px 0' }}>
+												<Typography style={{ fontSize: '1.2rem', margin: '8px 0' }}>{'Color based on'}</Typography>
+												<CustomAutoComplete
+													fieldAttributes={{
+														label: 'Select a field',
+														value: selectedValue,
+														optionArray: options,
+													}}
+													fieldConfig={{
+														variant: 'outlined',
+														size: 'medium',
+														margin: 'dense',
+													}}
+													fieldEvents={{
+														onChange: ({ value }) => layerStylingController.setSelectedStrokeValue(value),
+													}}
+												/>
+											</div>
 											<AttrsValuesDropdown
 												selectedValue={selectedStrokeValue}
 												selectedLayer={selectedLayer}
@@ -722,12 +754,24 @@ function LayerStyling() {
 										</div>
 										{enableStrokeColor && enableStrokeStyle && (
 											<>
-												<AttrsAutocomplete
-													options={options}
-													selectedValue={selectedLineStyle}
-													setSelectedValue={value => layerStylingController.setSelectedLineStyle(value)}
-													typography={'Style based on'}
-												/>
+												<div style={{ margin: '8px 0' }}>
+													<Typography style={{ fontSize: '1.2rem', margin: '8px 0' }}>{'Style based on'}</Typography>
+													<CustomAutoComplete
+														fieldAttributes={{
+															label: 'Select a field',
+															value: selectedValue,
+															optionArray: options,
+														}}
+														fieldConfig={{
+															variant: 'outlined',
+															size: 'medium',
+															margin: 'dense',
+														}}
+														fieldEvents={{
+															onChange: ({ value }) => layerStylingController.setSelectedLineStyle(value),
+														}}
+													/>
+												</div>
 												<AttrsFillStyleDropdown
 													dropDownOptions={['dots', 'dashed', 'connected']}
 													selectedValue={selectedLineStyle}
