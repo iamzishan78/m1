@@ -1,9 +1,7 @@
 import { get, isEqual, isInteger, isObject } from 'lodash';
 import moment from 'moment';
 
-import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
-
-import { globalStateController } from 'stateManagement/globalStateController';
+import { tenantsCredentials } from 'components/Auth0Login/helpers';
 
 import { wellsKeys } from 'utils/data';
 import { UserSession } from 'utils/user';
@@ -82,10 +80,9 @@ export const getURL = () => {
 
 export const getHeaders = () => {
 	const session = UserSession.getSession();
-	const headers = { 'X-ZUMO-AUTH': session.authToken };
-	if (isDev || globalStateController.getValue('bypassLogin')) {
-		headers['X-MS-TOKEN-AAD-ID-TOKEN'] = session.accessToken;
-	}
+	const headers = {
+		'ID-TOKEN': session.accessToken,
+	};
 	return headers;
 };
 
@@ -789,7 +786,7 @@ export const getActivityAnalyticsFilters = appliedFilters => {
 
 export const compareObjects = (child, parent) => {
 	for (const key in child) {
-		if (child.hasOwnProperty(key)) {
+		if (Object.prototype.hasOwnProperty.call(child, key)) {
 			const childValue = child[key];
 			const parentValue = get(parent, key);
 

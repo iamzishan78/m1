@@ -7,8 +7,8 @@ class UserSessionManager {
 		this.cookies = new Cookies();
 	}
 
-	saveUserSession({ authToken, accessToken }) {
-		const session = { authToken, accessToken };
+	saveUserSession({ accessToken }) {
+		const session = { accessToken };
 		this.cookies.set(COOKIES_USER_TOKEN, session, { path: '/' });
 	}
 

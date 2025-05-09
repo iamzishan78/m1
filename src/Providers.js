@@ -103,28 +103,24 @@ function Providers({ children }) {
 
 	const { stateValues } = globalStateController.useState(['apolloClientEndpoint', 'user', 'cypress']);
 
-	const updateApolloClient = (endpoint, token, idToken) => {
+	const updateApolloClient = (endpoint, idToken) => {
 		const session = UserSession.getSession();
 
-		if (globalStateController.getValue('bypassLogin') && session && !token) {
+		if (session && !idToken) {
 			idToken = session.accessToken;
-			token = session.accessToken;
 		}
 
 		let fetchOptions = { headers: [] };
-		if (token) {
-			fetchOptions.headers['X-ZUMO-AUTH'] = token;
-		}
 		if (idToken) {
-			fetchOptions.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
+			fetchOptions.headers['ID-TOKEN'] = idToken;
 		}
 		const cypress = globalStateController.getValue('cypress');
 		if (cypress) {
 			fetchOptions.headers['CYPRESS'] = 'true';
 			fetchOptions.headers['SPEC'] = cypress.spec || '';
 		}
-		if (apolloClient && token) {
-			fetchOptions = setApolloHeaders(apolloClient.link.options, token, idToken);
+		if (apolloClient && idToken) {
+			fetchOptions = setApolloHeaders(apolloClient.link.options, idToken);
 			fetchOptions.headers.batch = 'true';
 		}
 
@@ -177,9 +173,8 @@ function Providers({ children }) {
 
 	useEffect(() => {
 		if (stateValues.apolloClientEndpoint) {
-			const authToken = globalStateController.getValue('x_zumo_auth') || stateValues?.user?.authToken;
 			const accessToken = globalStateController.getValue('access_token') || stateValues?.user?.accessToken;
-			updateApolloClient(stateValues.apolloClientEndpoint, authToken, accessToken);
+			updateApolloClient(stateValues.apolloClientEndpoint, accessToken);
 		} else {
 			updateApolloClient();
 		}

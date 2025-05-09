@@ -131,8 +131,7 @@ export default function Flatten() {
 		// Return the curl command
 		return `curl -X POST ${url} \\
   -H "Content-Type: application/json" \\
-  -H "X-ZUMO-AUTH: ${headers['X-ZUMO-AUTH']}" \\
-  -H "X-MS-TOKEN-AAD-ID-TOKEN: ${headers['X-MS-TOKEN-AAD-ID-TOKEN']}" \\
+  -H "ID-TOKEN: ${headers['ID-TOKEN']}" \\
   -d '${jsonString}'`;
 	};
 

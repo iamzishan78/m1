@@ -697,29 +697,6 @@ export const paymentGridsInitialData = [
 	{ index: 0, value: 'costAllocations', label: 'Cost Allocation', showCounts: true },
 ];
 
-export const bypassTenants = [
-	'localhost',
-	'm1dev',
-	'm1cypress',
-	'm1staging',
-	'm1Staging',
-	'wildbasin',
-	'covenant',
-	'sansaba',
-	'farmers',
-	'Quality',
-	'SantaFe',
-	'SITL',
-	'Jetstream',
-	'Elberta',
-	'Frontier',
-	'm1demo',
-	'Vector',
-	'TableRock',
-	'Providence',
-	'Pheasant',
-];
-
 export const simpleAuthBypass = false;
 
 export const OWNERTYPE = {

@@ -1,17 +1,15 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { Card, Button } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-
-import { TextField } from '@mui/material';
+import InputBase from '@material-ui/core/InputBase';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 
 import queryString from 'query-string';
 import styled from 'styled-components';
-
-import { UserSession } from 'utils/user';
 
 const useStyles = makeStyles(theme => ({
 	select: {
@@ -19,7 +17,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	card: {
 		width: '400px',
-		// height: "425px",
+		height: '425px',
 		alignItems: 'center',
 		// backgroundColor: theme.palette.secondary.dark,
 		backgroundColor: '#0e111a',
@@ -35,12 +33,11 @@ const useStyles = makeStyles(theme => ({
 		marginLeft: '30px',
 	},
 
-	aadButton: {
+	loginButton: {
 		backgroundColor: '#17aadd',
 		width: '125px',
 		lineHeight: '1.4',
 		marginTop: '65px',
-		marginBottom: '40px',
 		paddingTop: '12px',
 		paddingBottom: '12px',
 		color: '#fff',
@@ -110,63 +107,91 @@ const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
 	padding-bottom: 20px;
 `;
 
-const BypassSignInCard = props => {
-	const { handleAADSignIn } = props;
+const BootstrapInput = withStyles(theme => ({
+	root: {
+		'label + &': {
+			marginTop: theme.spacing(3),
+		},
+	},
+	input: {
+		borderRadius: 4,
+		backgroundColor: theme.palette.common.white,
+		border: '1px solid #ced4da',
+		fontSize: 16,
+		width: '280px',
+		height: '25px',
+		padding: '10px',
+		marginTop: '10px',
+		transition: theme.transitions.create(['border-color', 'box-shadow']),
+		fontFamily: [
+			'-apple-system',
+			'BlinkMacSystemFont',
+			'"Segoe UI"',
+			'Roboto',
+			'"Helvetica Neue"',
+			'Arial',
+			'sans-serif',
+			'"Apple Color Emoji"',
+			'"Segoe UI Emoji"',
+			'"Segoe UI Symbol"',
+		].join(','),
+	},
+}))(InputBase);
 
+const SignInCard = props => {
+	const { handleSignIn: handleSignInFunc } = props;
 	const classes = useStyles();
-
 	const history = useHistory();
-	const query = queryString.parse(history.location.search);
+	const query = queryString.parse(history?.location?.search);
 
-	const sessionTenant = UserSession.getStorageItem('tenantName');
-
-	const [tenant, setTenant] = useState(
-		props.tenant || query.tenant || sessionTenant ? props.tenant || query.tenant || sessionTenant : ''
-	);
-	const [email, setEmail] = useState('');
+	const [tenant, setTenant] = useState(query.tenant || '');
 	const [error, setError] = useState(null);
 	const [tenantFlags, setTenantFlags] = useState({
 		error: false,
-		placeholder: null,
+		placeholder: 'i.e. M1neral',
 		autoFocus: false,
 	});
 
-	useEffect(() => {
-		if (tenant.trim() !== '' && tenant === props.tenant) {
-			signInAAD();
-		}
-	}, [props.tenant]);
-
-	const updateTenantFlags = (errorText, t = '') => {
-		setTenantFlags({
+	const updateTenantFlags = (errorText = null) => {
+		setTenantFlags(prevFlags => ({
+			...prevFlags,
 			error: true,
-			placeholder: 'i.e. M1neral',
 			autoFocus: true,
-		});
-		setTenant(t);
-		errorText ? setError(errorText) : setError(null);
+		}));
+		setTenant('');
+		setError(errorText);
 	};
 
-	const onEnterKey = e => {
-		if (e.keyCode === 13) {
-			e.preventDefault();
-			setError(null);
-			handleAADSignIn(tenant, updateTenantFlags, email);
-		}
-	};
-
-	const signInAAD = async () => {
-		if (tenant.trim() === '' || !email) {
-			updateTenantFlags('Not a valid workspace or email', tenant.trim());
+	const handleSignIn = async tenantValue => {
+		if (tenantValue.trim() === '') {
+			updateTenantFlags();
 		} else {
 			setError(null);
-			await handleAADSignIn(tenant, updateTenantFlags, email);
-
+			if (query.tenant?.trim()) {
+				await handleSignInFunc(tenantValue, updateTenantFlags);
+			} else {
+				handleSignInFunc(tenantValue, updateTenantFlags);
+			}
 			history.push(history.location.pathname);
 		}
 	};
 
-	const renderAADButtonAndLoader = props.ready ? (
+	useEffect(() => {
+		if (query.tenant?.trim()) {
+			handleSignIn(query.tenant);
+		}
+	}, [query.tenant]);
+
+	const onEnterKey = e => {
+		if (e.keyCode === 13) {
+			e.preventDefault();
+			handleSignIn(tenant);
+		}
+	};
+
+	const loading = query.tenant?.trim() ? true : props.ready;
+
+	const renderLoginButtonAndLoader = loading ? (
 		<CircularProgress color="secondary" size={28} className={classes.loader} />
 	) : (
 		<Button
@@ -174,8 +199,8 @@ const BypassSignInCard = props => {
 			disableElevation
 			type="submit"
 			id="workSpaceSignin"
-			className={classes.aadButton}
-			onClick={signInAAD}
+			className={classes.loginButton}
+			onClick={() => handleSignIn(tenant)}
 			onKeyDown={e => onEnterKey(e)}
 		>
 			Sign In
@@ -189,7 +214,7 @@ const BypassSignInCard = props => {
 				spacing={0}
 				direction="column"
 				alignItems="center"
-				justify="center"
+				justifyContent="center"
 				style={{ minHeight: 'calc(100vh - 70px)' }}
 			>
 				<Card square={true} className={classes.card}>
@@ -197,7 +222,7 @@ const BypassSignInCard = props => {
 						<M1neralLogo2 />
 					</div>
 
-					{!props.ready ? (
+					{!loading ? (
 						<React.Fragment>
 							<div
 								style={{
@@ -212,24 +237,13 @@ const BypassSignInCard = props => {
 							>
 								Sign in with your workspace name
 							</div>
-
-							<TextField
-								id="workspace-name-text"
-								sx={{
-									'& input': {
-										backgroundColor: '#fff',
-										borderRadius: '0.25rem',
-									},
-									width: '70%',
-									marginTop: '1rem',
-								}}
+							<BootstrapInput
 								error={tenantFlags.error}
-								helperText={error}
-								placeholder={tenantFlags.placeholder || 'Workspace'}
+								placeholder={tenantFlags.placeholder}
 								autoFocus={tenantFlags.autoFocus}
+								autoComplete="true"
 								onKeyDown={e => onEnterKey(e)}
 								onChange={e => setTenant(e.target.value)}
-								value={tenant}
 								onBlur={() => {
 									setError(null);
 									setTenantFlags({
@@ -241,34 +255,16 @@ const BypassSignInCard = props => {
 								onClick={() => {
 									setError(null);
 								}}
+								value={tenant}
 							/>
-							<TextField
-								id="email-text"
-								type="email"
-								sx={{
-									'& input': {
-										backgroundColor: '#fff',
-										borderRadius: '0.25rem',
-									},
-									width: '70%',
-									marginTop: '1rem',
-								}}
-								error={tenantFlags.error}
-								helperText={error}
-								placeholder={(tenantFlags.placeholder && 'username@m1neral.com') || 'Email'}
-								onKeyDown={e => onEnterKey(e)}
-								onChange={e => setEmail(e.target.value)}
-								value={email}
-								onBlur={() => {
-									setError(null);
-									setTenantFlags({
-										error: false,
-										placeholder: null,
-										autoFocus: false,
-									});
-								}}
-							/>
-							<>{renderAADButtonAndLoader}</>
+							<>
+								{renderLoginButtonAndLoader}
+								{error && (
+									<p id="errorSection" className={classes.errorSection}>
+										{error}
+									</p>
+								)}
+							</>
 						</React.Fragment>
 					) : (
 						<CircularProgress color="secondary" size={50} className={classes.loader} />
@@ -281,7 +277,7 @@ const BypassSignInCard = props => {
 					color: '#fff',
 				}}
 			>
-				© 2023 M1neral, LLC. All Rights Reserved.
+				© 2024 M1neral, LLC. All Rights Reserved.
 			</div>
 
 			<div className={classes.termsAndPrivacy}>
@@ -301,4 +297,4 @@ function areEqual(prevProps, nextProps) {
 	return Object.is(prevProps.tenant, nextProps.tenant);
 }
 
-export default React.memo(BypassSignInCard, areEqual);
+export default React.memo(SignInCard, areEqual);

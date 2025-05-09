@@ -77,6 +77,9 @@ export default function UserProfile() {
 		}
 	}, [profiledata]);
 
+	const handleProfileMenuOpen = event => setAnchorEl(event.currentTarget);
+	const handleMenuClose = () => setAnchorEl(null);
+
 	const openProfile = event => {
 		event.preventDefault();
 		handleMenuClose();
@@ -94,19 +97,6 @@ export default function UserProfile() {
 	const { isAuthenticated, logout } = useAuth0();
 
 	const handleLogout = async () => {
-		const currentAccounts = stateApp.myMSALObj?.getAllAccounts();
-		const currentAccount =
-			currentAccounts && currentAccounts.length === 1
-				? currentAccounts[0]
-				: (() => {
-						// Add choose account code here
-						return;
-					})();
-
-		const logoutRequest = {
-			account: currentAccount,
-		};
-
 		if (isAuthenticated) {
 			logout({
 				logoutParams: {
@@ -117,55 +107,8 @@ export default function UserProfile() {
 
 		setAnchorEl(null);
 
-		if (currentAccount) {
-			stateApp?.myMSALObj?.logout(logoutRequest);
-		}
 		UserSession.deleteSession();
 	};
-
-	const handleProfileMenuOpen = event => setAnchorEl(event.currentTarget);
-	const handleMenuClose = () => setAnchorEl(null);
-
-	const RenderMenu = React.memo(() => (
-		<Menu
-			anchorEl={anchorEl}
-			getContentAnchorEl={null}
-			anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-			transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-			id="primary-search-account-menu"
-			keepMounted
-			open={isMenuOpen}
-			onClose={handleMenuClose}
-			className={classes.userMenu}
-		>
-			<MenuItem disabled className={classes.userTenantTitle}>
-				<CheckIcon />
-				<Typography variant="inherit" color="textPrimary">
-					{' '}
-					{UserSession.getStorageItem('tenantName')}{' '}
-				</Typography>
-				<FiberManualRecordIcon style={{ color: '#34F125' }} fontSize="small" />
-			</MenuItem>
-			<Divider />
-			<MenuItem className={classes.userMenuItem} onClick={e => openProfile(e)} style={{ marginTop: 10 }}>
-				<Typography style={{ textDecoration: 'none', color: '#1daee1' }} variant="inherit">
-					My Account
-				</Typography>
-			</MenuItem>
-			{/* <FeatureFlag feature={FEATURES.USER_MANAGEMENT}>
-        </FeatureFlag> */}
-			{(stateApp?.user?.roles?.includes('Owner') || stateApp?.user?.roles?.includes('Admin')) && (
-				<MenuItem className={classes.userMenuItem} onClick={e => openUserManagement(e)}>
-					<Typography style={{ textDecoration: 'none', color: '#1daee1' }} variant="inherit">
-						User Management
-					</Typography>
-				</MenuItem>
-			)}
-			<MenuItem className={classes.userMenuItem} onClick={handleLogout}>
-				<Typography variant="inherit">Logout</Typography>
-			</MenuItem>
-		</Menu>
-	));
 
 	return (
 		<>
@@ -176,7 +119,44 @@ export default function UserProfile() {
 					<Avatar name={stateApp.user.displayName} size="38" round />
 				)}
 			</IconButton>
-			<RenderMenu />
+			<Menu
+				anchorEl={anchorEl}
+				getContentAnchorEl={null}
+				anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+				transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+				id="primary-search-account-menu"
+				keepMounted
+				open={isMenuOpen}
+				onClose={handleMenuClose}
+				className={classes.userMenu}
+			>
+				<MenuItem disabled className={classes.userTenantTitle}>
+					<CheckIcon />
+					<Typography variant="inherit" color="textPrimary">
+						{' '}
+						{UserSession.getStorageItem('tenantName')}{' '}
+					</Typography>
+					<FiberManualRecordIcon style={{ color: '#34F125' }} fontSize="small" />
+				</MenuItem>
+				<Divider />
+				<MenuItem className={classes.userMenuItem} onClick={e => openProfile(e)} style={{ marginTop: 10 }}>
+					<Typography style={{ textDecoration: 'none', color: '#1daee1' }} variant="inherit">
+						My Account
+					</Typography>
+				</MenuItem>
+				{/* <FeatureFlag feature={FEATURES.USER_MANAGEMENT}>
+        </FeatureFlag> */}
+				{(stateApp?.user?.roles?.includes('Owner') || stateApp?.user?.roles?.includes('Admin')) && (
+					<MenuItem className={classes.userMenuItem} onClick={e => openUserManagement(e)}>
+						<Typography style={{ textDecoration: 'none', color: '#1daee1' }} variant="inherit">
+							User Management
+						</Typography>
+					</MenuItem>
+				)}
+				<MenuItem className={classes.userMenuItem} onClick={handleLogout}>
+					<Typography variant="inherit">Logout</Typography>
+				</MenuItem>
+			</Menu>
 			{openProfileModal && <ProfileProvider />}
 			{openUserManagementModal && <UserManagementProvider />}
 		</>

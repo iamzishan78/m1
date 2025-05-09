@@ -167,7 +167,6 @@ const HexocetCanvas = () => {
 		canvasRef.current.addEventListener('mousemove', handleMouseMove);
 
 		return () => {
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 			canvasRef?.current?.removeEventListener('mousemove', handleMouseMove);
 		};
 	}, []);

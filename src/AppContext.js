@@ -5,20 +5,18 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import PropTypes from 'prop-types';
 import queryString from 'query-string';
 
+import { tenantsCredentials } from 'components/Auth0Login/helpers';
+
 import { globalStateController } from 'stateManagement/globalStateController';
 import { popupController } from 'stateManagement/popupStateController';
 
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
 import { UserSession } from 'utils/user';
 
-import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConfig';
-
 const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = props => {
 	const [stateApp, setStateApp] = useState({
-		myMSALObj: null,
-
 		apolloClientEndpoint: '',
 		graphqlScope: null, /// potentially login context?
 		user: globalStateController.getValue('user') || null, /// potenitally login context or maybe a specific user context??
@@ -114,7 +112,6 @@ const AppProvider = props => {
 			const query = queryString.parse(window.location.search);
 
 			let tenantName = query.tenant || UserSession.getStorageItem('tenantName') || '';
-			const isBypassTenant = globalStateController.isBypassTenant(tenantName);
 
 			let tenant = tenantsCredentials(tenantName);
 			if (tenant && !query.tenant) {
@@ -124,20 +121,14 @@ const AppProvider = props => {
 				tenant.apolloClientEndpoint =
 					isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
 
-				let myMSALObjInt = isBypassTenant ? null : MSALObj(tenant);
 				globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint });
 				setStateApp(state => {
 					return {
 						...state,
-						myMSALObj: myMSALObjInt,
 						apolloOriginalClientEndpoint: tenant.apolloOriginalClientEndpoint,
 						apolloClientEndpoint: tenant.apolloClientEndpoint,
 						graphqlScope: tenant.graphqlScope,
 					};
-				});
-			} else {
-				setStateApp(state => {
-					return { ...state, myMSALObj: false };
 				});
 			}
 		}
@@ -195,17 +186,14 @@ const AppProvider = props => {
 	);
 };
 
-const setApolloHeaders = (config, authToken, idToken) => {
+const setApolloHeaders = (config, idToken) => {
 	if (!config) {
 		config = {};
 	}
 	if (!config.headers) {
 		config.headers = {};
 	}
-	config.headers['X-ZUMO-AUTH'] = authToken;
-	if (isDev || globalStateController.getValue('bypassLogin')) {
-		config.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
-	}
+	config.headers['ID-TOKEN'] = idToken;
 	return config;
 };
 

@@ -7,7 +7,6 @@ import { ConnectedRouter } from 'connected-react-router';
 import Providers from 'Providers';
 import { history } from 'store';
 
-import AzureLogin from './components/AzureLogin';
 import 'components/Common/MRTable/common.css';
 import * as serviceWorker from './serviceWorker';
 
@@ -16,10 +15,7 @@ import 'react-toastify/dist/ReactToastify.min.css';
 ReactDOM.render(
 	<Providers>
 		{' '}
-		<ConnectedRouter history={history}>
-			{' '}
-			<AzureLogin history={history} />
-		</ConnectedRouter>
+		<ConnectedRouter history={history}></ConnectedRouter>
 	</Providers>,
 	document.getElementById('root')
 );

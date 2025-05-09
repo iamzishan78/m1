@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-export const BYPASS_LOGIN_MUTATION = gql`
-	mutation bypassLogin($email: String) {
-		bypassLogin(email: $email) {
+export const LOGIN_MUTATION = gql`
+	mutation login($email: String) {
+		login(email: $email) {
 			success
 			message
 			sessionData
