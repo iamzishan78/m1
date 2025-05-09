@@ -67,6 +67,7 @@ const AssetCustomEntitiesMeta = {
 			header: 'Control Columns',
 			Cell: ({ row }) => <Chips list={row?.original?.controlColumns} />,
 			isArrayKey: true,
+			isSearchField: false,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -82,6 +83,7 @@ const AssetCustomEntitiesMeta = {
 			name: 'associatedModels.name.keyword',
 			accessorKey: 'associatedModels.name',
 			header: 'Associated Models',
+			isSearchField: false,
 			Cell: ({ row }) => <Chips list={row?.original?.associatedModels} />,
 			isArrayKey: true,
 			handleArrayExport: {
