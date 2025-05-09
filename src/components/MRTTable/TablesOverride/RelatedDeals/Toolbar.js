@@ -8,6 +8,7 @@ import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown
 
 import { GETPIPELINE } from 'graphQL/useQueryPipeline';
 
+import { globalStateController } from 'stateManagement/globalStateController';
 import { tableController } from 'stateManagement/tableController';
 
 import { AppContext } from 'AppContext';
@@ -16,19 +17,26 @@ function DealsToolbar({ tableKey }) {
 	const [, setStateApp] = useContext(AppContext);
 	const { selectedPipe } = useSelector(({ Flow }) => Flow);
 
-	const [getPipeline, { data: pipelineData }] = useLazyQuery(GETPIPELINE, {
+	const [getPipeline, { loading }] = useLazyQuery(GETPIPELINE, {
 		fetchPolicy: 'cache-and-network',
 	});
 
 	useEffect(() => {
-		if (selectedPipe?._id) {
-			getPipeline({ variables: { id: selectedPipe._id } });
+		if (loading) {
+			globalStateController.updateState({ universalLoader: true });
+		} else {
+			globalStateController.updateState({ universalLoader: false });
 		}
-	}, [selectedPipe, getPipeline]);
+	}, [loading]);
 
 	const onClickedRow = useCallback(
-		selectedRow => {
-			const pipeline = pipelineData?.pipeline;
+		async selectedRow => {
+			if (!selectedRow?.stage?.pipeline?._id) {
+				return;
+			}
+
+			const { data } = await getPipeline({ variables: { id: selectedRow.stage.pipeline._id } });
+			const pipeline = data?.pipeline;
 			const lanes = pipeline?.lanes ?? [];
 			const lane = lanes.find(lane => lane.id === selectedRow?.stage?._id);
 			const card = lane?.cards?.find(card => card.id === selectedRow?._id);
@@ -57,7 +65,7 @@ function DealsToolbar({ tableKey }) {
 				activeDeal,
 			}));
 		},
-		[pipelineData, setStateApp]
+		[getPipeline, setStateApp]
 	);
 
 	const Controller = tableController(tableKey);

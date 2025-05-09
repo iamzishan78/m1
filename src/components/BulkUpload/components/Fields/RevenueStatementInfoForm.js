@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { Controller } from 'react-hook-form';
-
 import { Grid, TextField, Select, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { Controller } from 'react-hook-form';
 
-import { jobController } from 'stateManagement/jobStateController';
+import _ from 'lodash';
+import { jobController } from 'stateManagement/jobStateController.js';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		padding: '10px 33%',
 	},
@@ -46,9 +46,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 	const { control, reset, getValues, uploaderFormValues } = rest;
 
 	useEffect(() => {
-		if (uploaderFormValues) {
-			reset(uploaderFormValues);
-		}
+		if (uploaderFormValues) reset(uploaderFormValues);
 		return () => {
 			const values = getValues();
 			Object.keys(values).forEach(key => {
@@ -66,6 +64,35 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 			});
 		};
 	}, []);
+
+	useEffect(() => {
+		const importType = watch('importType');
+		if (importType) {
+			jobController.updateState({
+				jobSubType: importType,
+			});
+		}
+	}, [watch('importType')]);
+
+	useEffect(() => {
+		getPayorList({
+			variables: {
+				search: searchOperator ? `${searchOperator}*` : '*',
+				filterKey: 'payor.name.keyword',
+				esIndex: 'checks_flat',
+				size: 50,
+			},
+		});
+	}, [getPayorList, searchOperator]);
+
+	useEffect(() => {
+		const sortList = _.orderBy(payorListData?.getESFilterList?.hits, 'key', 'asc');
+		if (sortList?.length > 0) {
+			setPayyorList(sortList);
+		} else {
+			setPayyorList([]);
+		}
+	}, [payorListData]);
 
 	return (
 		<div className={classes.root}>
@@ -108,6 +135,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 									render={({ field }) => (
 										<Select {...field} fullWidth margin="dense" variant="outlined">
 											<MenuItem value="Standard M1 Import">Standard M1 Import</MenuItem>
+											<MenuItem value="CHECKDETAILSENERGY">EnergyLink Import</MenuItem>
 										</Select>
 									)}
 								/>

@@ -175,7 +175,11 @@ function ESAutoCompleteFilter({
 						? op.label.charAt(0).toUpperCase() + op.label.slice(1)
 						: op.label,
 			}))
-			.sort((a, b) => a.label.localeCompare(b.label));
+			.sort((a, b) => {
+				const labelA = typeof a.label === 'string' ? a.label : String(a.label ?? '');
+				const labelB = typeof b.label === 'string' ? b.label : String(b.label ?? '');
+				return labelA.localeCompare(labelB);
+			});
 
 		if (appendOptions.current) {
 			appendOptions.current = false;

@@ -538,6 +538,14 @@ function ContactDetailCard(props) {
 		}
 	}, [dailpadContactRes]);
 
+	useEffect(() => {
+		if (dailpadContactRes?.getDailpadContact?.dialpadContact) {
+			globalStateController.updateState({ dialpadContact: dailpadContactRes?.getDailpadContact?.dialpadContact });
+		} else {
+			globalStateController.updateState({ dialpadContact: {} });
+		}
+	}, [dailpadContactRes]);
+
 	const StyleBadge = withStyles({
 		badge: {
 			transform: 'unset',
@@ -611,14 +619,10 @@ function ContactDetailCard(props) {
 	};
 
 	const handleContactSync = async () => {
-		if (!contactData?.entityDetail?.firstName || !contactData?.entityDetail?.lastName) {
-			dispatch(showErrorMessage('First Name and Last Name are required to sync contact to Dialpad'));
-			return;
-		}
 		dispatch(showInfoMessage('Syncing contact to Dialpad...'));
 		syncContactToDialpad({
 			variables: { contactId: contactData?._id },
-			refetchQueries: ['getContact'],
+			refetchQueries: ['getContact', 'getDailpadContact'],
 			awaitRefetchQueries: true,
 		}).then(({ data }) => {
 			if (data?.syncContactToDialpad && !data.syncContactToDialpad?.success) {

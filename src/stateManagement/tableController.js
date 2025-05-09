@@ -1077,6 +1077,7 @@ class TableESStateControllerHandler extends StateController {
 			search,
 			columnVirtualization,
 			layerDataSourceName,
+			searchFields: oldSearchFields,
 		} = this.getValues([
 			'isGeneric',
 			'orderKeys',
@@ -1089,6 +1090,7 @@ class TableESStateControllerHandler extends StateController {
 			'search',
 			'columnVirtualization',
 			'layerDataSourceName',
+			'searchFields',
 		]);
 
 		if (!isGeneric || rows?.length === 0) {
@@ -1100,6 +1102,7 @@ class TableESStateControllerHandler extends StateController {
 		const {
 			_TableSchema,
 			tableCss,
+			searchFields,
 			groupedField,
 			ExternalFilter,
 			columnVisibility,
@@ -1116,6 +1119,9 @@ class TableESStateControllerHandler extends StateController {
 			layerDataSourceName,
 		});
 
+		if (!isEqual(searchFields, oldSearchFields)) {
+			genericState.searchFields = searchFields;
+		}
 		genericState.TableSchema = _TableSchema;
 		genericState.tableCss = tableCss;
 		genericState.groupedField = groupedField;

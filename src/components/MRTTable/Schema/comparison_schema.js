@@ -174,7 +174,7 @@ const ComparisonMeta = {
 			header: 'Well API',
 			Cell: ({ row }) => {
 				const apiNumbers = row?.original?.wells?.map(item => item.apiNumber) || [];
-				return apiNumbers?.length && apiNumbers?.length > 1 ? 'Multiple' : apiNumbers[0];
+				return apiNumbers?.length && apiNumbers?.length > 1 ? 'Multiple' : apiNumbers[0] || null;
 			},
 		},
 
@@ -185,7 +185,7 @@ const ComparisonMeta = {
 			header: 'Well Name',
 			Cell: ({ row }) => {
 				const wellName = row?.original?.wells?.map(item => item.wellName) || [];
-				return wellName?.length && wellName?.length > 1 ? 'Multiple' : wellName[0];
+				return wellName?.length && wellName?.length > 1 ? 'Multiple' : wellName[0] || null;
 			},
 		},
 
