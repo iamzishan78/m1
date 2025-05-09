@@ -142,6 +142,7 @@ const useMRTTable = tableKey => {
 			enableGrouping: tableStateValues?.enableGrouping ?? true,
 			enableColumnResizing: true,
 			enableRowSelection: !tableStateValues?.disableRowSelection,
+			positionCreatingRow: tableStateValues?.positionCreatingRow,
 			enableColumnPinning: true,
 			// enableMultiRowSelection: true,
 			// enableSelectAll: true,
