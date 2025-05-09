@@ -232,7 +232,7 @@ const CheckDetailsMeta = {
 				type: 'text',
 				validate: validateRequiredString,
 				isSelect: true,
-				label: 'Operator Property Number',
+				label: 'Operator Property #',
 				onChange: (value, id, rowData, rowId) => {
 					const TableSchema = tableController('CheckDetailsTable').getValue('TableSchema');
 
