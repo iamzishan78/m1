@@ -30,7 +30,6 @@ import { mapControlsController } from 'stateManagement/mapControlsController';
 import { scrollbarStyle } from 'styles/common';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
-import { AppContext } from 'AppContext';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import DatasetMenu from './Menu';
@@ -268,7 +267,7 @@ function Datasets({ headerButton, search }) {
 				)}
 			</StyledMenuSecondaryHeaderItem>
 			<div className={classes.root}>
-				{datasets?.map(({ sourceName, Icon, categories, ...rest }) => (
+				{datasets?.map(({ sourceName, Icon, categories, ...rest }, index) => (
 					<Grid
 						className="item"
 						key={`dataset-${sourceName}`}
@@ -287,7 +286,7 @@ function Datasets({ headerButton, search }) {
 										style={{ width: '100%' }}
 									>
 										<Grid item style={{ display: 'flex', flexDirection: 'inline' }}>
-											<NameWithTooltip
+											<Typography
 												style={{
 													color: '#ffff',
 													textOverflow: 'ellipsis',
@@ -295,10 +294,9 @@ function Datasets({ headerButton, search }) {
 													overflow: 'hidden',
 													width: '254px',
 												}}
-												index={index}
-												title={sourceName}
-												height={'18px'}
-											/>
+											>
+												{sourceName}
+											</Typography>
 										</Grid>
 										<Grid item className="actionIcons">
 											<GridOnIcon id={'grid-icon-' + sourceName} className="actionIcon" />
@@ -333,25 +331,9 @@ Datasets.propTypes = {
 		fn: PropTypes.func.isRequired,
 	}),
 	search: PropTypes.string,
-	stateApp: PropTypes.shape({
-		user: PropTypes.shape({
-			_id: PropTypes.string.isRequired,
-			mongoId: PropTypes.string.isRequired,
-		}).isRequired,
-		layers: PropTypes.array.isRequired,
-	}).isRequired,
 };
 
-const DatasetsMemo = memo(Datasets);
-
-function DatasetsContainer({ headerButton, search }) {
-	const [stateApp] = useContext(AppContext);
-	const stateAppMemo = useMemo(
-		() => ({ layers: stateApp.layers, user: stateApp.user }),
-		[stateApp.layers, stateApp.user]
-	);
-	return <DatasetsMemo stateApp={stateAppMemo} headerButton={headerButton} search={search} />;
-}
+const DatasetsContainer = memo(Datasets);
 
 DatasetsContainer.propTypes = {
 	headerButton: PropTypes.shape({
