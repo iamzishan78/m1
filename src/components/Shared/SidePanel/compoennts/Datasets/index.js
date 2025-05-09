@@ -30,9 +30,6 @@ import { mapControlsController } from 'stateManagement/mapControlsController';
 import { scrollbarStyle } from 'styles/common';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
-import { scrollbarStyle } from 'styles/common';
-
-import { showErrorMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
