@@ -120,7 +120,7 @@ const CategorySectionList = ({
 	});
 
 	useEffect(() => {
-		setUDLayersStates([]);
+		setUDLayersStates(state => state ?? []);
 		rowVirtualizer.measure();
 	}, [filteredLayers]);
 
