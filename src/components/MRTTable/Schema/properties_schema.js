@@ -67,9 +67,9 @@ const PropertiesMeta = {
 			// Cell rendering for Property column
 			Cell: ({ row }) => {
 				const history = useHistory();
-				const wells = row.getValue('wells.apiNumber');
-				const wellApiIndex = wells?.[0]?.apiNumber;
-				const wellName = wells?.[0]?.wellName;
+				const wellApiIndex = row.getValue('wells.apiNumber');
+				const wellName = row.getValue('wells.wellName');
+
 				return (
 					<div
 						style={{
@@ -118,12 +118,11 @@ const PropertiesMeta = {
 			id: 'wells.apiNumber',
 			header: 'Well API#',
 			isExport: 'apiNumber',
-			Cell: ({ renderedCellValue }) => {
-				if (renderedCellValue?.length > 0) {
-					return renderedCellValue?.length > 1 ? 'MULTIPLE' : renderedCellValue[0].apiNumber;
-				} else {
+			accessorFn: row => {
+				if (!row?.wells || row.wells.length === 0) {
 					return '';
 				}
+				return row.wells.length > 1 ? 'MULTIPLE' : row.wells[0].apiNumber;
 			},
 		},
 		{
@@ -132,12 +131,11 @@ const PropertiesMeta = {
 			id: 'wells.wellName',
 			header: 'Well Name',
 			isExport: 'wellName',
-			Cell: ({ renderedCellValue }) => {
-				if (renderedCellValue?.length > 0) {
-					return renderedCellValue?.length > 1 ? 'MULTIPLE' : renderedCellValue[0].wellName;
-				} else {
+			accessorFn: row => {
+				if (!row?.wells || row.wells.length === 0) {
 					return '';
 				}
+				return row.wells.length > 1 ? 'MULTIPLE' : row.wells[0].wellName;
 			},
 		},
 		{
