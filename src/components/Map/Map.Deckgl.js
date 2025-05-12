@@ -502,7 +502,7 @@ function Map({
 		);
 
 		const layer = layerStateValues.layers.find(
-			l => popupStateValues.selectedShapeFile.properties?.layerShapeName === l.layerIdentifier
+			l => popupStateValues.selectedShapeFile.properties?.layerIdentifier === l.layerIdentifier
 		);
 
 		udLayerClickHandler(popupStateValues.selectedShapeFile, layer);

@@ -181,7 +181,7 @@ const LayerMeta = {
 			filterFeatures: (features, dbLayer) =>
 				features.filter(
 					feature =>
-						feature?.properties?.layerShapeName === dbLayer.layerIdentifier &&
+						feature?.properties?.layerIdentifier === dbLayer.layerIdentifier &&
 						feature?.properties?.layerGeometry === dbLayer.layerGeometry
 				),
 			getProps: layerId => {
@@ -775,7 +775,7 @@ class LayerStateControllerHandler extends StateController {
 				: dbLayer.identifier;
 
 		const filterKey = isFileDataSource
-			? `${dbLayer.file}_${dbLayer.layerShapeName}`
+			? `${dbLayer.file}_${dbLayer.layerIdentifier}`
 			: isDynamicLayer
 				? 'DynamicAsset'
 				: getLayerKey(filterIdentifier, layerFiltersController.getAllValues());
