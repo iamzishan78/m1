@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Switch, FormControlLabel } from '@material-ui/core';
+import { FormControl, FormControlLabel, Radio, RadioGroup as MUIRadioGroup } from '@material-ui/core';
 
 import PropTypes from 'prop-types';
 
@@ -14,22 +14,25 @@ const BooleanField = ({ fieldData, field }) => {
 	} = detailCardController.useState(['page', 'loadingField']);
 	const { useUpdate } = Pages[page];
 	const { callApi } = useUpdate() || {};
-	const [checked, setChecked] = useState(Boolean(fieldData));
+	const [value, setValue] = useState(String(Boolean(fieldData)));
 
 	const handleChange = event => {
-		setChecked(event.target.checked);
-		callApi({ key: field.key, value: event.target.checked, field, previousValue: fieldData, resetFn: setChecked });
+		const newValue = event.target.value === 'true';
+		setValue(String(newValue));
+		callApi({ key: field.key, value: newValue, field, previousValue: fieldData, resetFn: setValue });
 	};
 
 	useEffect(() => {
-		setChecked(Boolean(fieldData));
+		setValue(String(Boolean(fieldData)));
 	}, [fieldData]);
 
 	return (
-		<FormControlLabel
-			control={<Switch checked={checked} onChange={handleChange} color="primary" />}
-			label={field.label}
-		/>
+		<FormControl component="fieldset">
+			<MUIRadioGroup row value={value} onChange={handleChange}>
+				<FormControlLabel value="true" control={<Radio color="primary" />} label="Yes" />
+				<FormControlLabel value="false" control={<Radio color="primary" />} label="No" />
+			</MUIRadioGroup>
+		</FormControl>
 	);
 };
 
