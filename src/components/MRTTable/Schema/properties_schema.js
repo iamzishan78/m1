@@ -67,9 +67,8 @@ const PropertiesMeta = {
 			// Cell rendering for Property column
 			Cell: ({ row }) => {
 				const history = useHistory();
-				const wellApiIndex = row.getValue('wells.apiNumber');
-				const wellName = row.getValue('wells.wellName');
-
+				const wellApiIndex = row.getValue('apiNumber');
+				const wellName = row.getValue('wellName');
 				return (
 					<div
 						style={{
@@ -114,29 +113,17 @@ const PropertiesMeta = {
 		// Columns for Well API Number and Well Name
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'wells.apiNumber.keyword',
-			id: 'wells.apiNumber',
+			name: 'apiNumber',
+			id: 'apiNumber',
 			header: 'Well API#',
 			isExport: 'apiNumber',
-			accessorFn: row => {
-				if (!row?.wells || row.wells.length === 0) {
-					return '';
-				}
-				return row.wells.length > 1 ? 'MULTIPLE' : row.wells[0].apiNumber;
-			},
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'wells.wellName.keyword',
-			id: 'wells.wellName',
+			name: 'wellName',
+			id: 'wellName',
 			header: 'Well Name',
 			isExport: 'wellName',
-			accessorFn: row => {
-				if (!row?.wells || row.wells.length === 0) {
-					return '';
-				}
-				return row.wells.length > 1 ? 'MULTIPLE' : row.wells[0].wellName;
-			},
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
