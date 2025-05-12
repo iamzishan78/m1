@@ -160,7 +160,7 @@ export default class DeckGlOverlay {
 						if (clickedFeature?.object?.geometry?.type === 'Point') {
 							drawWellBoundary(clickedFeature?.object?.geometry?.coordinates);
 						} else {
-							drawBoundary(clickedFeature.object);
+							drawBoundary(clickedFeature.object, 'boundary-layer', layer);
 						}
 					}
 
