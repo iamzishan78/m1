@@ -48,7 +48,7 @@ const MainGridRightContainer = () => {
 	return (
 		<>
 			<MetadataDrawer
-				height="95%"
+				height="100%"
 				commentsHeight="auto"
 				title="Additional Details"
 				documentsTitle="Recent Documents"
