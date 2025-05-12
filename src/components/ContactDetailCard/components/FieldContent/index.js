@@ -42,6 +42,9 @@ import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
 
 import { showErrorMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
+import CampaignField from './CampaignField';
 
 const filter = createFilterOptions();
 export default function FieldContent({
