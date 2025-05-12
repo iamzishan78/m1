@@ -185,7 +185,7 @@ const CategorySectionList = ({
 									transform: `translateY(${virtualRow.start}px)`,
 								}}
 							>
-								<Accordion className={classes.accordion}>
+								<Accordion className={classes.accordion} expanded={openUDLayers.findIndex(l => l === index) !== -1}>
 									<AccordionSummary
 										// expandIcon={<ExpandMoreIcon />}
 										aria-controls="panel1a-content"
