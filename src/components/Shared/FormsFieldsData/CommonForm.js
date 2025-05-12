@@ -72,7 +72,6 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 								fieldAttributes={{
 									name: item.name,
 									title: item.label,
-									label: item.label,
 									optionArray: item.defaultOptions,
 									getOptions: item.getOptions,
 									query: item.query,

@@ -59,14 +59,10 @@ function CustomAutoComplete({
 }) {
 	const client = useApolloClient();
 	const filter = createFilterOptions();
-	const [options, setOptions] = useState([]);
+	const [options, setOptions] = useState(optionArray);
 	const [fieldValue, setFieldValue] = useState(null);
 	const [isLoading, setIsLoading] = useState(loading);
 	const watchValue = watch ? watch(name) : '';
-
-	useEffect(() => {
-		setOptions(Array.isArray(optionArray) ? optionArray : []);
-	}, [optionArray]);
 
 	useEffect(() => {
 		if (value) {
