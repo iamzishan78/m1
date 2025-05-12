@@ -388,6 +388,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		callQuery({
 			pageIndex: 0,
+			pageSize: tableStateValues?.pageSize || PAGE_SIZE,
 			first: tableStateValues?.pageSize || PAGE_SIZE,
 			after: null,
 		});
