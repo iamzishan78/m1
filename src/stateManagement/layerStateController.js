@@ -1139,13 +1139,13 @@ class LayerStateControllerHandler extends StateController {
 					});
 				}
 
-				const layerFound = layers.find(l => l._id === layer._id);
+				const layerFound = layers.find(l => l.layerId === layer.layerId);
 				if (layerFound) {
 					set(layerFound, field, value);
 					if (field == 'layerSettings.showable') {
 						this.handleDeckLayer({ ...layerFound });
 						layersSettingsToUpdate.push({
-							_id: layerFound._id,
+							_id: layerFound.layerId,
 							layerSettings: layerFound.layerSettings,
 						});
 					}
