@@ -244,6 +244,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 				type: item?.keyType,
 				size: 350,
 				isPinned: !!item?.isControlColumn,
+				isSearchField: ['date', 'user'].includes(item?.keyType) ? false : true,
 			};
 
 			switch (item.keyType) {
@@ -273,7 +274,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 									/>
 								);
 							} else {
-								let value = item.keyType === 'date' ? formatDate(renderedCellValue) : renderedCellValue;
+								let value = item.keyType === 'date' ? formatDate(row.original[key]) : renderedCellValue;
 								return <>{value}</>;
 							}
 						},
