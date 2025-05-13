@@ -266,7 +266,7 @@ function AssetAssociationDialog() {
 									<Grid item>
 										<h3>Associated Model Keys</h3>
 									</Grid>
-									<DynamicForm control={control} setValue={setValue} />
+									<DynamicForm control={control} setValue={setValue} isAssociationDialog={true} />
 								</>
 							)}
 						</div>

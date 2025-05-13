@@ -21,7 +21,7 @@ import { removeSpaces } from 'components/MRTTable/utils/helper';
 
 import { tableGlobalController } from 'stateManagement/tableController';
 
-const DynamicForm = ({ control, setValue, errors, clearErrors }) => {
+const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDialog = false }) => {
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: 'fields',
@@ -173,6 +173,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors }) => {
 														checked={!!field.value}
 														onChange={e => field.onChange(e.target.checked)}
 														color="primary"
+														disabled={isAssociationDialog}
 													/>
 												}
 												label="Summary Field"
@@ -196,7 +197,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors }) => {
 														setValue(`fields[${index}].isRequired`, e.target.checked);
 													}}
 													color="primary"
-													disabled={hasControlColumnSelected && !field.value} // Disable if another control column is selected
+													disabled={(hasControlColumnSelected && !field.value) || isAssociationDialog} // Disable if another control column is selected
 												/>
 											}
 											label="Control Column"
@@ -216,6 +217,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors }) => {
 													checked={!!field.value}
 													onChange={e => field.onChange(e.target.checked)}
 													color="primary"
+													disabled={isAssociationDialog}
 												/>
 											}
 											label="Grid Column"
@@ -236,6 +238,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors }) => {
 														checked={!!field.value}
 														onChange={e => field.onChange(e.target.checked)}
 														color="primary"
+														disabled={isAssociationDialog}
 													/>
 												}
 												label="Dialog Field"
@@ -256,7 +259,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors }) => {
 													checked={!!field.value}
 													onChange={e => field.onChange(e.target.checked)}
 													color="primary"
-													disabled={isControlColumns[index]?.isControlColumn} // Disable when Control Column is selected
+													disabled={isControlColumns[index]?.isControlColumn || isAssociationDialog} // Disable when Control Column is selected
 												/>
 											}
 											label="Required"
@@ -297,6 +300,9 @@ const DynamicForm = ({ control, setValue, errors, clearErrors }) => {
 DynamicForm.propTypes = {
 	control: PropTypes.object.isRequired,
 	setValue: PropTypes.func.isRequired,
+	errors: PropTypes.object,
+	clearErrors: PropTypes.func,
+	isAssociationDialog: PropTypes.bool,
 };
 
 export default DynamicForm;
