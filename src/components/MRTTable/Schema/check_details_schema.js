@@ -3,7 +3,8 @@ import React from 'react';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { get, set } from 'lodash';
+import { get, set, merge } from 'lodash';
+import { createRow } from 'material-react-table';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
@@ -22,6 +23,39 @@ import CheckDetailsToolbar from '../TablesOverride/CheckDetailsTable/CheckDetail
 
 const esIndex = 'checkdetails_flat';
 
+const handleSubmitRow = (table, row, Controller) => {
+	const {
+		options: { onCreatingRowSave },
+		refs: { editInputRefs },
+		setCreatingRow,
+	} = table;
+
+	Object.values(editInputRefs?.current)
+		.filter(inputRef => row.id === inputRef?.name?.split('_')?.[0])
+		?.forEach(input => {
+			if (input.value !== undefined && Object.hasOwn(row?._valuesCache, input.name)) {
+				// @ts-ignore
+				row._valuesCache[input.name] = input.value;
+			}
+		});
+	onCreatingRowSave?.({
+		exitCreatingMode: () => {
+			Controller.clearEditing();
+
+			const { getDefaultValue } = Controller.getAllValues();
+
+			const defaultValue = getDefaultValue?.() || {};
+
+			setCreatingRow(createRow(table, defaultValue));
+
+			Controller.updateState({ isCreateMode: true });
+		},
+		row,
+		table,
+		values: row._valuesCache,
+	});
+};
+
 const CheckDetailsMeta = {
 	esIndex,
 	pageSize: 50,
@@ -34,7 +68,7 @@ const CheckDetailsMeta = {
 	columnVirtualization: false,
 	CustomToolBar: CheckDetailsToolbar,
 	isDeleteDisabled: true,
-
+	positionCreatingRow: 'bottom',
 	createDisplayMode: 'row', // ('modal', and 'custom' are also available)
 	editDisplayMode: 'table', // ('modal', 'row', 'cell', and 'custom' are also
 	enableEditing: true,
@@ -76,6 +110,9 @@ const CheckDetailsMeta = {
 			return;
 		}
 
+		const customProps = tableController('CheckDetailsTable').getValue('customProps');
+		obj.check = customProps?.checkId;
+
 		await client.mutate({
 			variables: { checkDetail: { ...obj } },
 			mutation: UPDATE_CHECK_DETAIL,
@@ -86,6 +123,13 @@ const CheckDetailsMeta = {
 		exitCreatingMode();
 
 		tableGlobalController.refetch();
+		setTimeout(() => {
+			const tableContainer = table.refs.tableContainerRef.current;
+			if (tableContainer) {
+				tableContainer.scrollLeft = 0;
+				tableContainer.scrollTop = tableContainer.scrollHeight;
+			}
+		}, 0);
 	},
 	getDefaultValue: () => {
 		const data = tableController('CheckDetailsTable').getValue('data');
@@ -103,9 +147,14 @@ const CheckDetailsMeta = {
 		return defaultValue;
 	},
 	handleUpdateData: async (client, rows) => {
+		const customProps = tableController('CheckDetailsTable').getValue('customProps');
+
 		await client.mutate({
 			variables: {
-				checkDetails: rows,
+				checkDetails: {
+					...rows,
+					check: customProps?.checkId,
+				},
 			},
 			mutation: UPDATE_CHECK_DETAILS,
 		});
@@ -183,6 +232,7 @@ const CheckDetailsMeta = {
 				type: 'text',
 				validate: validateRequiredString,
 				isSelect: true,
+				label: 'Operator Property #',
 				onChange: (value, id, rowData, rowId) => {
 					const TableSchema = tableController('CheckDetailsTable').getValue('TableSchema');
 
@@ -190,7 +240,7 @@ const CheckDetailsMeta = {
 
 					const { originals } = column;
 
-					const property = originals.find(property => property.number === value);
+					const property = originals?.find?.(property => property.number === value);
 
 					set(rowData, 'property', property);
 
@@ -439,6 +489,50 @@ const CheckDetailsMeta = {
 				tableKey: 'CheckDetailsTable',
 				type: 'text',
 				validate: validateRequiredString,
+				onKeyDown: async (e, table, value, key, _, id) => {
+					window.table = table;
+					if (e.key === 'Enter') {
+						e.preventDefault();
+						const Controller = tableController('CheckDetailsTable');
+						const { editedData, data } = Controller.getValues(['editedData', 'data']);
+						const validEditedEntries = Object.entries(editedData || {}).filter(([, value]) => !!value);
+						if (validEditedEntries.length > 0) {
+							const rowsToUpdate = Object.entries(editedData)
+								.filter(([, value]) => !!value)
+								.map(([key, value]) => {
+									const currentRow = data.rows.find(r => r._id === key);
+									return merge(currentRow, value);
+								});
+
+							rowsToUpdate[0] = {
+								...rowsToUpdate[0],
+								[key]: value,
+							};
+							const row =
+								id === 'mrt-row-create'
+									? {
+											id,
+											_valuesCache: rowsToUpdate[0],
+											original: rowsToUpdate[0],
+										}
+									: table.getRow(id);
+							row._valuesCache[key] = value;
+
+							handleSubmitRow(table, row, Controller);
+						} else {
+							const { getDefaultValue } = Controller.getAllValues();
+							const defaultValue = getDefaultValue?.() || {};
+							table.setCreatingRow(createRow(table, defaultValue));
+							setTimeout(() => {
+								const tableContainer = table.refs.tableContainerRef.current;
+								if (tableContainer) {
+									tableContainer.scrollLeft = 0;
+									tableContainer.scrollTop = tableContainer.scrollHeight;
+								}
+							}, 0);
+						}
+					}
+				},
 			}),
 		},
 		{

@@ -13,6 +13,7 @@ import vf_number from 'components/Shared/valueformatters/vf_number';
 import { tableController } from 'stateManagement/tableController';
 
 import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED, TO_FIXED } from 'utils/consts';
+
 import NavigationFlagField from '../Common/TableCells/NavigationFlagField';
 
 const ACTION_COLUMN = {
@@ -325,8 +326,8 @@ export const CommonSchema = {
 export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);
 
 export const editFieldProps =
-	({ tableKey, type, validate, isSelect = false, required = true, onChange }) =>
-	({ cell, row }) => {
+	({ tableKey, type, validate, isSelect = false, required = true, onChange, onKeyDown, ...rest }) =>
+	({ cell, row, table }) => {
 		const Controller = tableController(tableKey);
 
 		const {
@@ -378,5 +379,9 @@ export const editFieldProps =
 			onBlur: e => {
 				onBlur(e);
 			},
+			...(onKeyDown && {
+				onKeyDown: e => onKeyDown(e, table, value, cell.column.id, editedData[row.id], row.id),
+			}),
+			...rest,
 		};
 	};

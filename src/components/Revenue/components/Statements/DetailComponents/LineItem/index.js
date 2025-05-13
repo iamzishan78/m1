@@ -169,6 +169,9 @@ export default function LineItem({ checkId }) {
 							},
 						],
 						isExportDisabled: true,
+						customProps: {
+							checkId,
+						},
 					}}
 				/>
 			</div>
