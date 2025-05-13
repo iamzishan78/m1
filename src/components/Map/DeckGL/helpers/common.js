@@ -498,8 +498,8 @@ export const generateFileFilters = ({
 	// Altered query accordingly
 	if (fileLayer.layerIdentifier) {
 		mustQuery = [
-			{ 'properties.layerShapeName': fileAlternateName },
-			{ 'properties.layerShapeName': fileLayer.layerIdentifier },
+			{ 'properties.layerIdentifier': fileAlternateName },
+			{ 'properties.layerIdentifier': fileLayer.layerIdentifier },
 		];
 	}
 

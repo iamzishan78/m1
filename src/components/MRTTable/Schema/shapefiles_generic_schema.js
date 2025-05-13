@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 
 import { get } from 'lodash';
@@ -12,6 +13,7 @@ import { popupController } from 'stateManagement/popupStateController';
 const COLUMN_SIZE = 250;
 const ID_COLUMN_SIZE = 150;
 
+// eslint-disable-next-line no-unused-vars
 const onClickedRow = selectedRow => {};
 
 const ShapesFilesGenericMeta = {
@@ -32,7 +34,7 @@ const ShapesFilesGenericMeta = {
 	TableSchema: [],
 
 	esIndex: 'shapefile_flat',
-	orderKeys: ['_id', 'id', 'ID', 'layerShapeName', 'layerGeometry', 'geometry'],
+	orderKeys: ['_id', 'id', 'ID', 'layerIdentifier', 'layerGeometry', 'geometry'],
 	excludedKeys: ['sort', 'file', 'IsDeleted', 'isDeleted', 'flatSyncAt'],
 	nestedKey: 'properties',
 	generateSchema: (keys, rows) => {
