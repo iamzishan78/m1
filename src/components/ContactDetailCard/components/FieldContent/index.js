@@ -44,7 +44,10 @@ import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
 import { showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
+import AutoCompleteAddNewField from './AutoCompleteAddNewField';
 import CampaignField from './CampaignField';
+import EntityType from './EntityType';
+import { timeZoneOptions } from './timeZoneList';
 
 const filter = createFilterOptions();
 export default function FieldContent({

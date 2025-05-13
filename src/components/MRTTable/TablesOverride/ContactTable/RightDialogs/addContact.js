@@ -18,6 +18,15 @@ import { showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
+import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
+import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
+
+import { ADDCONTACT } from 'graphQL/useMutationAddContact';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { sideDialogController } from 'stateManagement/sideDialogController';
+import { tableGlobalController } from 'stateManagement/tableController';
+
 const useStyles = makeStyles(theme => ({
 	dialogContent: {
 		maxHeight: 'calc(100vh - 135px)',
