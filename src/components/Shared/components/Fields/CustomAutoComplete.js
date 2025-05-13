@@ -59,10 +59,14 @@ function CustomAutoComplete({
 }) {
 	const client = useApolloClient();
 	const filter = createFilterOptions();
-	const [options, setOptions] = useState(optionArray);
+	const [options, setOptions] = useState(query ? ['LOADING...'] : []);
 	const [fieldValue, setFieldValue] = useState(null);
 	const [isLoading, setIsLoading] = useState(loading);
 	const watchValue = watch ? watch(name) : '';
+
+	useEffect(() => {
+		if (Array.isArray(optionArray) && optionArray.length > 0) setOptions(optionArray);
+	}, [optionArray]);
 
 	useEffect(() => {
 		if (value) {
@@ -136,6 +140,7 @@ function CustomAutoComplete({
 		}
 
 		const value = event.target.value;
+		console.log('Here', { value });
 		setFieldValue(value);
 		query && fetchOptions(value);
 		onTextFieldChange?.(value);
@@ -146,12 +151,25 @@ function CustomAutoComplete({
 			return typeof fieldValue === 'string' ? [fieldValue] : fieldValue || [];
 		}
 
+		//If we have Query to call and value is passed
+		//but its the first render and no options are available to find the value,
+		// then return 'LOADING...' instead of the value.
+		if (query && ((options.length === 1 && options[0] === 'LOADING...') || isLoading)) {
+			// console.log('Here1');
+			return 'LOADING...';
+		}
+
 		const fallbackValue = value ?? defaultValue ?? null;
 
 		if (typeof fieldValue === 'string') {
-			return options?.find(opt => opt.value === fieldValue || opt === fieldValue) || (fieldValue ?? fallbackValue);
+			console.log('Here2');
+			return (
+				options?.find(opt => opt.value === fieldValue || opt._id === fieldValue || opt === fieldValue) ||
+				(fieldValue ?? fallbackValue)
+			);
 		}
 
+		// console.log('Here3', { fieldValue });
 		return options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue)) || (fieldValue ?? fallbackValue);
 	};
 

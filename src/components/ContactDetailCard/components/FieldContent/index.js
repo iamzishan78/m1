@@ -23,7 +23,6 @@ import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectF
 import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import CustomTypography from 'components/Shared/components/Fields/CustomTypography';
-import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { phonenumber } from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 import { formatDate } from 'components/Shared/functions';
@@ -34,6 +33,7 @@ import { UPDATE_CONTACT_PURCHASE_DATA } from 'graphQL/useMutationContactPurchase
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { UPDATEMELISSA, UPDATEMELISSAADDRESS } from 'graphQL/useMutationUpdateMelissaRecords';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
 
@@ -372,13 +372,27 @@ export default function FieldContent({
 			if (fieldName === 'contactOwner' || fieldName === 'contactOwnerId') {
 				if (fieldName === 'contactOwner') {
 					inputsArray.push(
-						<ContactAutoComplete
-							value={editContent.contactOwnerId ? editContent.contactOwnerId : ''}
-							onChange={(e, user) => {
-								setEditContent({ contactOwner: user.text, contactOwnerId: user.value });
+						<CustomAutoComplete
+							fieldAttributes={{
+								value: editContent.contactOwnerId ? editContent.contactOwnerId : '',
+								placeholder: 'Select Contact Owner',
+								query: GETMONGOUSERS,
+								getOptions: hits =>
+									hits.data.allMongoUsers
+										.map(user => ({
+											_id: user._id,
+											name: user.displayName || user.name,
+										}))
+										.filter(user => user.name),
+							}}
+							fieldEvents={{
+								onChange: ({ value: user }) => setEditContent({ contactOwner: user.name, contactOwnerId: user._id }),
+								onBlur: () => onBlurHandler(['contactOwner', 'contactOwnerId']),
+							}}
+							fieldConfig={{
+								size: 'medium',
 							}}
 							onKeyDown={event => keyDownHandler(event, ['contactOwner', 'contactOwnerId'])}
-							onBlur={() => onBlurHandler(['contactOwner', 'contactOwnerId'])}
 						/>
 					);
 				}

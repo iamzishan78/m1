@@ -65,6 +65,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 								error={error || errors?.[item.name]}
 								fieldConfig={{
 									margin: 'dense',
+									size: 'medium',
 									allowNewOptions: item.renderField === 'autoCompleteNewOption',
 									required: item.required,
 								}}
@@ -92,6 +93,8 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 									render={({ field }) => (
 										<CampaignField
 											{...field}
+											size="medium"
+											margin="dense"
 											value={field?.value}
 											onChange={values => {
 												sideDialogController(dialogKey).updateState({ [item.name]: values });

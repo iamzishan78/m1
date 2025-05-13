@@ -724,7 +724,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
 		{
 			label: 'Campaigns',
 			name: 'campaigns',
-			renderField: 'campaignName',
+			renderField: 'campaigns',
 		},
 		{
 			label: 'Campaign Priority',
