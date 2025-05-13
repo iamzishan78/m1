@@ -39,7 +39,7 @@ function AssetAssociationDialog() {
 
 	const { control, handleSubmit, watch, reset, setValue } = useForm({
 		defaultValues: {
-			associatedModels: '',
+			associatedModel: '',
 			fields: [],
 		},
 	});
@@ -95,7 +95,7 @@ function AssetAssociationDialog() {
 			AssetAssociationDialog: {},
 		});
 		reset({
-			associatedModels: '',
+			associatedModel: '',
 			fields: [],
 		});
 	};
@@ -111,27 +111,12 @@ function AssetAssociationDialog() {
 		Loader.createToast(toastType, `${capitalizedToastType} Entity Association in Progress`);
 		handleClose();
 
-		const { associatedModels = [], fields } = data;
-		const modelId = associatedModels._id;
-
-		// Find if the model already exists in selectedAsset's associated models
-		const existingModelIndex = selectedAsset?.associatedModels?.findIndex(model => model._id === modelId);
-
-		let resultantModels;
-
-		if (existingModelIndex >= 0) {
-			// If the model exists, update its keys
-			resultantModels = [...selectedAsset.associatedModels];
-			resultantModels[existingModelIndex] = { ...associatedModels, modelKeys: fields };
-		} else {
-			// If the model is new, add it to the array
-			resultantModels = [...selectedAsset.associatedModels, { ...associatedModels, modelKeys: fields }];
-		}
+		const { associatedModel } = data;
 
 		upsertAssociatedModels({
 			variables: {
-				name: selectedAsset.name,
-				associatedModels: resultantModels, // Use the updated array
+				tableName: selectedAsset.tableName,
+				associatedModel, // Use the updated array
 			},
 		}).then(res => {
 			if (res?.data?.upsertAssociatedModels) {
@@ -156,7 +141,7 @@ function AssetAssociationDialog() {
 			},
 		});
 		reset({
-			associatedModels: model,
+			associatedModel: model,
 			fields: model.modelKeys || defaultFields,
 		});
 	};
@@ -207,7 +192,7 @@ function AssetAssociationDialog() {
 								<Grid item xs={6}>
 									<Controller
 										control={control}
-										name="associatedModels"
+										name="associatedModel"
 										render={({ field }) => (
 											<TextField
 												select
