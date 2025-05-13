@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 
 import { Grid } from '@material-ui/core';
@@ -8,7 +9,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-
 import { useMutation } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
@@ -17,6 +17,13 @@ import { useDispatch } from 'react-redux';
 import { showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import { tableGlobalController } from 'stateManagement/tableController';
+import { sideDialogController } from 'stateManagement/sideDialogController';
+import { globalStateController } from 'stateManagement/globalStateController';
+
+import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
+import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
+import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 
 const useStyles = makeStyles(theme => ({
 	dialogContent: {
@@ -185,3 +192,7 @@ export default function AddContactDialogContent(props) {
 		</RightDialog>
 	);
 }
+
+AddContactDialogContent.propTypes = {
+	onClose: PropTypes.func.isRequired,
+};
