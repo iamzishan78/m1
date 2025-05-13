@@ -65,7 +65,7 @@ function CustomAutoComplete({
 	const watchValue = watch ? watch(name) : '';
 
 	useEffect(() => {
-		if (Array.isArray(optionArray) && optionArray.length > 0) setOptions(optionArray);
+		if (Array.isArray(optionArray) && optionArray.length > 0) {setOptions(optionArray);}
 	}, [optionArray]);
 
 	useEffect(() => {
@@ -88,7 +88,9 @@ function CustomAutoComplete({
 		setOptions([]);
 		try {
 			const res = await client.query({
-				variables: isESSearch ? { ...variables, search: { ...variables.search, query: value } } : variables,
+				variables: isESSearch
+					? { ...variables, search: { ...variables.search, query: value ? `*${value}*` : null } }
+					: variables,
 				query,
 			});
 			if (res) {
@@ -140,9 +142,8 @@ function CustomAutoComplete({
 		}
 
 		const value = event.target.value;
-		console.log('Here', { value });
 		setFieldValue(value);
-		query && fetchOptions(value);
+		isESSearch && fetchOptions(value);
 		onTextFieldChange?.(value);
 	};
 
@@ -151,25 +152,19 @@ function CustomAutoComplete({
 			return typeof fieldValue === 'string' ? [fieldValue] : fieldValue || [];
 		}
 
-		//If we have Query to call and value is passed
-		//but its the first render and no options are available to find the value,
-		// then return 'LOADING...' instead of the value.
 		if (query && ((options.length === 1 && options[0] === 'LOADING...') || isLoading)) {
-			// console.log('Here1');
 			return 'LOADING...';
 		}
 
 		const fallbackValue = value ?? defaultValue ?? null;
 
 		if (typeof fieldValue === 'string') {
-			console.log('Here2');
 			return (
 				options?.find(opt => opt.value === fieldValue || opt._id === fieldValue || opt === fieldValue) ||
 				(fieldValue ?? fallbackValue)
 			);
 		}
 
-		// console.log('Here3', { fieldValue });
 		return options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue)) || (fieldValue ?? fallbackValue);
 	};
 

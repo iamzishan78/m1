@@ -11,8 +11,6 @@ import CloseSharp from '@material-ui/icons/CloseSharp';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import SearchIcon from '@material-ui/icons/Search';
 
-import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
-
 import { useMutation, useQuery } from '@apollo/client';
 import set from 'lodash/set';
 import PropTypes from 'prop-types';
@@ -24,7 +22,7 @@ import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loader from 'components/Loaders';
 import BulkAddActivityForm from 'components/MRTTable/Common/Dialog/BulkUpdate/BulkAddActivityForm';
 import RelatedContact from 'components/MRTTable/Common/Dialog/BulkUpdate/RelatedContact';
-import FieldBulkAutoComplete from 'components/Shared/FieldBulkAutoComplete';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
 import { copy } from 'components/Shared/functions';
 
@@ -37,8 +35,9 @@ import { UPDATEBULKCONTACT } from 'graphQL/useMutationUpdateBulkContact';
 import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
-import { PUBLICTAGSQUERY } from 'graphQL/useQueryPublicTags';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import { PUBLICTAGSQUERY } from 'graphQL/useQueryPublicTags';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableGlobalController } from 'stateManagement/tableController';
@@ -274,30 +273,31 @@ function SelectedField({
 	// Conditional rendering based on filterKey value
 	if (filterKey) {
 		return (
-			<FieldBulkAutoComplete
-				value={fieldKey || []} // Current selected value or empty array
-				placeholder={`Select ${field}`} // Placeholder text for the field
-				filterKey={filterKey} // Sets filter key based on field type
-				onChange={(e, fieldKey) => {
-					setFieldKey(fieldKey.value); // Sets the field key value based on selected value
+			<CustomAutoComplete
+				fieldAttributes={{
+					value: fieldKey ?? null,
+					query: GET_ES_FILTER_LIST,
+					variables: {
+						esIndex: 'contacts_flat',
+						filterKey: filterKey,
+						size: 50,
+					},
+					placeholder: `Select ${field}`,
+					getOptions: res => {
+						return res?.data?.getESFilterList?.hits?.map(hit => hit.key).filter(opt => opt) || [];
+					},
+				}}
+				fieldEvents={{
+					onChange: ({ value }) => setFieldKey(value),
+				}}
+				fieldConfig={{
+					size: 'medium',
 				}}
 			/>
 		);
 	}
 	return ''; // Default case returns an empty string
 }
-
-SelectedField.propTypes = {
-	field: PropTypes.string.isRequired,
-	setFieldKey: PropTypes.func.isRequired,
-	setCampaigns: PropTypes.func.isRequired,
-	setContactOwner: PropTypes.func.isRequired,
-	contactOwner: PropTypes.string,
-	fieldKey: PropTypes.string,
-	campaigns: PropTypes.arrayOf(PropTypes.object).isRequired, // Adjust if campaigns have a specific structure
-	classes: PropTypes.object, // Adjust based on the structure of classes if necessary
-	publicTags: PropTypes.array, // Adjust if publicTags have a specific structure
-};
 
 export default function AssignOwnerToContactDrawer({
 	onClose,
@@ -567,7 +567,7 @@ export default function AssignOwnerToContactDrawer({
 			addRelatedContacts({
 				variables: {
 					relationshipType: fieldKey?.relationshipType,
-					descriptorObject: fieldKey?.descriptorObject?.value,
+					descriptorObject: fieldKey?.descriptorObject._id,
 					relatedObject: contactIds,
 					userId: getUser?._id,
 				},
@@ -941,6 +941,17 @@ export default function AssignOwnerToContactDrawer({
 		</RightDialog>
 	);
 }
+
+SelectedField.propTypes = {
+	field: PropTypes.string.isRequired,
+	setFieldKey: PropTypes.func.isRequired,
+	setCampaigns: PropTypes.func,
+	setContactOwner: PropTypes.func,
+	contactOwner: PropTypes.any,
+	fieldKey: PropTypes.any,
+	classes: PropTypes.object.isRequired,
+	publicTags: PropTypes.object,
+};
 
 AssignOwnerToContactDrawer.propTypes = {
 	onClose: PropTypes.func.isRequired,
