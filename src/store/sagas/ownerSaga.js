@@ -10,6 +10,8 @@ import { OWNERS_BY_WELL_IDS } from 'graphQL/useQueryOwnersByWellIds';
 import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
 import { SHAPEOWNERSCOUNT, SHAPEOWNERSINTERESTCOUNT } from 'graphQL/useQueryShapeOwnersCount';
 
+import { jobController } from 'stateManagement/jobStateController';
+
 import {
 	getShapeOwnersAndCountAction,
 	getShapeOwnersAndWellsAction,
@@ -29,7 +31,6 @@ import { LOD_YEAR } from 'utils/consts';
 
 import { showErrorMessage } from 'actions';
 import Api from 'api';
-import { jobController } from 'stateManagement/jobStateController';
 
 function* getShapeOwnersAndCount(action) {
 	try {
@@ -54,7 +55,7 @@ function* getShapeOwnersAndCount(action) {
 				shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount', 0),
 			})
 		);
-	} catch (error) {
+	} catch {
 		yield put(getShapeOwnersAndCountAction.REJECTED());
 	}
 }
@@ -66,7 +67,7 @@ function* getShapeOwnersAndWells(action) {
 		const shapeWellCount = yield client.query({
 			query: GET_DB_DATA_TOTAL,
 			variables: {
-				index: 'platformData:wells',
+				index: 'platform_wells',
 				filters: [{ type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 				pagination: {
 					first: 0,
@@ -105,7 +106,7 @@ function* getShapeOwnersAndWells(action) {
 				wellsCount: get(shapeWellCount, 'data.getDbDataTotal.data', 0),
 			})
 		);
-	} catch (error) {
+	} catch {
 		yield put(getShapeOwnersAndWellsAction.REJECTED());
 	}
 }
@@ -114,7 +115,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
 	try {
 		const { currentFeature, filters, search } = action.payload;
 		const wellsCount = yield call(Api.query, GET_DB_DATA_TOTAL, {
-			index: 'platformData:wells',
+			index: 'platform_wells',
 			search,
 			filters: [...(filters || []), { type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 			pagination: {
@@ -124,7 +125,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
 		});
 
 		const wells = yield call(Api.query, GET_DB_DATA, {
-			index: 'platformData:wells',
+			index: 'platform_wells',
 			search,
 			filters: [...(filters || []), { type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 			pagination: {
@@ -153,7 +154,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
 				shapeCount: get(taxOwners, 'data.ownersByWellIds.edges.length', 0),
 			})
 		);
-	} catch (error) {
+	} catch {
 		yield put(getMapFilterShapeOwnersAndCountAction.REJECTED());
 	}
 }
@@ -173,7 +174,7 @@ function* getMapFilterShapeOwnersAndWells(action) {
 		const shapeWellCount = yield client.query({
 			query: GET_DB_DATA_TOTAL,
 			variables: {
-				index: 'platformData:wells',
+				index: 'platform_wells',
 				search,
 				filters: [...(filters || []), { type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 				pagination: {
@@ -217,15 +218,14 @@ function* getMapFilterShapeOwnersAndWells(action) {
 				wellsCount: get(shapeWellCount, 'data.getDbDataTotal.data', 0),
 			})
 		);
-	} catch (error) {
+	} catch {
 		yield put(getMapFilterShapeOwnersAndWellsAction.REJECTED());
 	}
 }
 
 function* execAsyncExportJob(action) {
 	try {
-		const { client, currentFeature, userId, exportWells, exportOwners, exportOwnersInterest, setStateApp } =
-			action.payload;
+		const { client, currentFeature, userId, exportWells, exportOwners, exportOwnersInterest } = action.payload;
 		const ownerState = yield select(state => state.owner);
 
 		const jobInitialization = yield client.mutate({
@@ -263,7 +263,7 @@ function* execAsyncExportJob(action) {
 		jobController.toggleBulkUpload();
 
 		yield put(execAsyncExportJobAction.FULLFILLED({}));
-	} catch (error) {
+	} catch {
 		yield put(execAsyncExportJobAction.REJECTED());
 	}
 }

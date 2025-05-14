@@ -22,7 +22,7 @@ import { wellParams } from './helpers';
 import { addMyWellStyles as useStyles } from './styles';
 
 function CurrencyFormatCustom(props) {
-	const { inputRef, onChange, name, ...other } = props;
+	const { inputRef, onChange, ...other } = props;
 
 	return (
 		<NumberFormat
@@ -82,7 +82,6 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 				handleWellDetail({ Id: globalWellId });
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [myWellData]);
 
 	// Function to check if saving is allowed based on the 'wellName' value
@@ -125,7 +124,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 							}}
 							disabled={!!upsertWellLoading}
 							value={platformWell}
-							getOptionLabel={(option, value) => option.WellName}
+							getOptionLabel={option => option.WellName}
 							filterOptions={x => x}
 							renderOption={option => {
 								const parts = parse(option.WellName, []);
@@ -172,7 +171,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 								<TextField
 									margin="dense"
 									{...params}
-									required
+									requireds
 									variant="outlined"
 									data-testid={'well-search-field'}
 									label="Search for a well by name or API"
@@ -180,7 +179,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 									onChange={event => {
 										getDbData({
 											variables: {
-												index: 'platformData:wells',
+												index: 'platform_wells',
 												pagination: {
 													first: 50,
 													after: null,
@@ -242,7 +241,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 										const value = event.target.value.replace(/^\s+/, ''); // Remove only the leading whitespace
 										params.onChange(value);
 									}}
-									onBlur={event => {
+									onBlur={() => {
 										const values = getValues();
 										handleSave(values);
 									}}

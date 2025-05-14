@@ -224,8 +224,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		} else if (layerType === 'parcel' || layerType === 'unit') {
 			esIndex = 'shapes_flat';
 			filters = [{ field: 'layer.keyword', value: layerType }];
-		} else if (layerType === 'platformdata:wells') {
-			esIndex = 'platformData:wells';
+		} else if (layerType === 'platform_wells') {
+			esIndex = 'platform_wells';
 		} else {
 			esIndex = 'shapefile_flat';
 			const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));

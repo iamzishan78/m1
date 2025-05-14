@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+ 
 import React from 'react';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
@@ -9,7 +9,7 @@ import { tableController } from 'stateManagement/tableController';
 
 import FlyToMap from '../Common/TableCells/coordinates_fly_map';
 
-const esIndex = 'platformData:wells';
+const esIndex = 'platform_wells';
 
 const WellsMeta = {
 	esIndex,

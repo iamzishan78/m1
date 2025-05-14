@@ -27,10 +27,6 @@ import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 
-import { baseTenantsMaps } from 'utils/data';
-import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
-
-import { layerRefs } from 'stateManagement';
 import { drawController } from 'stateManagement/drawStateController';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { layerFiltersController } from 'stateManagement/layerFiltersController';
@@ -39,6 +35,11 @@ import { mapControlsController } from 'stateManagement/mapControlsController';
 import { mapStateController } from 'stateManagement/mapStateController';
 import { navController } from 'stateManagement/navStateController';
 import { popupController } from 'stateManagement/popupStateController';
+
+import { baseTenantsMaps } from 'utils/data';
+import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
+
+import { layerRefs } from 'stateManagement';
 
 import HugeRequest from './components/HugeRequest';
 import DeckGL from './DeckGL';
@@ -337,7 +338,7 @@ function Map({
 		const { data: well } = await client.query({
 			query: GET_DB_DATA,
 			variables: {
-				index: 'platformData:wells',
+				index: 'platform_wells',
 				pagination: {
 					first: 1,
 					keep_alive: '1micros',

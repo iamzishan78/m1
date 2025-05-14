@@ -29,6 +29,7 @@ import parse from 'autosuggest-highlight/parse';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import { CurrencyFormatCustom, NumberFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
 import { ADDWELLINTEREST } from 'graphQL/useMutationAddWellInterest';
 import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
@@ -42,7 +43,6 @@ import { tableGlobalController } from 'stateManagement/tableController';
 import { INTEREST_TO_FIXED } from 'utils/consts';
 
 import { AppContext } from 'AppContext';
-import { CurrencyFormatCustom, NumberFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
 const useStyles = makeStyles(() => ({
 	dialogFooter: {
@@ -108,6 +108,32 @@ function AddWellInterestDialog(props) {
 		// must be network-only to trigger state change for field updates
 		fetchPolicy: 'network-only',
 	});
+
+	const handleClose = () => {
+		setFoundWells([]);
+		setSelectedWell(null);
+		setFormLeaseName('');
+		setFormLeaseAcres(null);
+		setFormOwnerName('');
+		setFormInterestOwnerType('');
+		setFormInterestType('');
+		setFormInterestAmount(null);
+		setFormRoyaltyAcres(null);
+		setFormTaxValue(null);
+		setStateApp(stateApp => ({
+			...stateApp,
+			wellInterestDialog: false,
+			activeWellInterest: null,
+		}));
+		setInitializing(false);
+		setValid({});
+		props.onClose();
+	};
+
+	const refetchTable = () => {
+		tableGlobalController.refetch();
+	};
+
 	const [addWellInterest] = useMutation(ADDWELLINTEREST, {
 		onCompleted: () => {
 			setLoading(false);
@@ -135,10 +161,6 @@ function AddWellInterestDialog(props) {
 			}
 		},
 	});
-
-	const refetchTable = () => {
-		tableGlobalController.refetch();
-	};
 
 	useEffect(() => {
 		getInterestOwnerTypes();
@@ -197,27 +219,6 @@ function AddWellInterestDialog(props) {
 		// if launched from grid row set initializing based on selectedWell state
 		setInitializing(false);
 	}, [selectedWell]);
-
-	const handleClose = () => {
-		setFoundWells([]);
-		setSelectedWell(null);
-		setFormLeaseName('');
-		setFormLeaseAcres(null);
-		setFormOwnerName('');
-		setFormInterestOwnerType('');
-		setFormInterestType('');
-		setFormInterestAmount(null);
-		setFormRoyaltyAcres(null);
-		setFormTaxValue(null);
-		setStateApp(stateApp => ({
-			...stateApp,
-			wellInterestDialog: false,
-			activeWellInterest: null,
-		}));
-		setInitializing(false);
-		setValid({});
-		props.onClose();
-	};
 
 	const formatRoyaltyAcres = royaltyAcres => {
 		const decimals = royaltyAcres.toString().split('.');
@@ -292,6 +293,8 @@ function AddWellInterestDialog(props) {
 
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
+	const handleMenuClose = () => setAnchorEl(null);
+
 	const openConfirmationDialog = () => {
 		setDeleteDialogOpen(true);
 		handleMenuClose();
@@ -319,8 +322,6 @@ function AddWellInterestDialog(props) {
 	};
 
 	const handleMenuClick = event => setAnchorEl(event.currentTarget);
-
-	const handleMenuClose = () => setAnchorEl(null);
 
 	return (
 		<>
@@ -461,7 +462,7 @@ function AddWellInterestDialog(props) {
 										onChange={event => {
 											getDbData({
 												variables: {
-													index: 'platformData:wells',
+													index: 'platform_wells',
 													pagination: {
 														first: 50,
 														after: null,

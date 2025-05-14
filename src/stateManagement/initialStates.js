@@ -189,7 +189,7 @@ export const layerFilterInitialState = {
 	Wells: {
 		layerName: 'Wells',
 		variables: {
-			index: 'platformData:wells',
+			index: 'platform_wells',
 			pagination: {
 				first: 10000,
 				after: null,

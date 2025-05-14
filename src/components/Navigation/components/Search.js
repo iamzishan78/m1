@@ -180,7 +180,7 @@ const useStyles = makeStyles(theme => ({
 
 const esCallData = {
 	'platform wells': {
-		esIndex: 'platformData:wells',
+		esIndex: 'platform_wells',
 		search: request => `${request.input}`,
 		searchFields: SHAPE_TYPE['wells'].SEARCH_FIELDS,
 		formatOptions: data => {
@@ -341,31 +341,6 @@ const esCallData = {
 	},
 };
 
-const SearchMemo = React.memo(Search);
-
-export default function SearchContainer(props) {
-	const [stateApp, setStateApp] = useContext(AppContext);
-	const setStateAppCallback = useCallback(setStateApp, [setStateApp]);
-	const stateAppMemo = useMemo(
-		() => ({
-			mapboxglAccessToken: stateApp.mapboxglAccessToken,
-			user: stateApp.user,
-			toggleLayersActivity: stateApp.toggleLayersActivity,
-		}),
-		[stateApp.mapboxglAccessToken, stateApp.user, stateApp.toggleLayersActivity]
-	);
-
-	let location = useLocation();
-
-	return (
-		<SearchMemo
-			stateApp={stateAppMemo}
-			setStateApp={setStateAppCallback}
-			isDocument={location.pathname === '/documents'}
-		/>
-	);
-}
-
 function Search({ stateApp, setStateApp, isDocument }) {
 	const {
 		stateValues: { searchValue },
@@ -524,7 +499,7 @@ function Search({ stateApp, setStateApp, isDocument }) {
 				}
 
 				setLoading(false);
-				return undefined;
+				return;
 			}
 			if (searchOption === 'location' || searchOption === 'places') {
 				callMapboxSearch({ input: searchValue }, searchTop, results => {
@@ -561,8 +536,6 @@ function Search({ stateApp, setStateApp, isDocument }) {
 				});
 			}
 		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [searchTop, searchValue, callESSearch, callMapboxSearch, searchOption]);
 	//// getting wells data from owners ////
 
@@ -676,10 +649,10 @@ function Search({ stateApp, setStateApp, isDocument }) {
 								fitBounds: true,
 								searchLoader: false,
 								landGridListFromSearch: [
-									...dataLandGridGeom?.getDbData?.hits?.map(hit => ({
+									...(dataLandGridGeom?.getDbData?.hits?.map(hit => ({
 										...hit,
 										shape: JSON.stringify({ geometry: hit?.geoJSON, properties: {} }),
-									})),
+									})) || []),
 								],
 							}
 						: stateApp
@@ -961,7 +934,7 @@ function Search({ stateApp, setStateApp, isDocument }) {
 			/>
 			<Autocomplete
 				id="cognitive-search-autocomplete"
-				getOptionLabel={(option, value) => {
+				getOptionLabel={option => {
 					// On Places search we need to show address in bar
 					if (option?.Source === 'places') {
 						return option?.Secondary || option?.Primary || searchValue;
@@ -1169,15 +1142,16 @@ function Search({ stateApp, setStateApp, isDocument }) {
 													{searchHistoryList && searchHistoryList.length > 0 ? (
 														searchHistoryList.map((search, i) => {
 															let option = search.searchData;
-															if (!option) return;
+															if (!option) {
+																return null;
+															}
 															const parts = parse(option?.Primary, []);
 
 															/// THIS IS THEI LIST FOR THE SEARCH HISTORY
 															return (
-																<div>
+																<div key={i}>
 																	<Box
 																		p={1}
-																		key={i}
 																		className={classes.historyRow}
 																		onClick={() => {
 																			setSearchTop(5);
@@ -1377,5 +1351,30 @@ function Search({ stateApp, setStateApp, isDocument }) {
 				}}
 			/>
 		</div>
+	);
+}
+
+const SearchMemo = React.memo(Search);
+
+export default function SearchContainer() {
+	const [stateApp, setStateApp] = useContext(AppContext);
+	const setStateAppCallback = useCallback(setStateApp, [setStateApp]);
+	const stateAppMemo = useMemo(
+		() => ({
+			mapboxglAccessToken: stateApp.mapboxglAccessToken,
+			user: stateApp.user,
+			toggleLayersActivity: stateApp.toggleLayersActivity,
+		}),
+		[stateApp.mapboxglAccessToken, stateApp.user, stateApp.toggleLayersActivity]
+	);
+
+	let location = useLocation();
+
+	return (
+		<SearchMemo
+			stateApp={stateAppMemo}
+			setStateApp={setStateAppCallback}
+			isDocument={location.pathname === '/documents'}
+		/>
 	);
 }
