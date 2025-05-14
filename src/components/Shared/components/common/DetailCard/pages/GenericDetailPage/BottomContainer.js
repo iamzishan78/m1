@@ -1,9 +1,13 @@
 import React, { useMemo, memo, useCallback } from 'react';
 
+import { useQuery } from '@apollo/client';
+
 import AssetAssociationToolbar from 'components/MRTTable/TablesOverride/AssetCustomEntities/Toolbars/AssetAssoication';
 import DetailCardBottom from 'components/Shared/components/common/DetailCard/DetailCardBottom';
 import ContactInformationIcon from 'components/Shared/svgIcons/ContactPhone';
 import UnitIcon from 'components/Shared/svgIcons/unit';
+
+import { ALL_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 
 import { detailCardController } from 'stateManagement/detailCardController';
 import { globalStateController } from 'stateManagement/globalStateController';
@@ -18,6 +22,10 @@ const BottomContainer = () => {
 	const {
 		stateValues: { currentAssetRecord },
 	} = detailCardController.useState(['currentAssetRecord']);
+
+	const { data: associatedAssetsData } = useQuery(ALL_CUSTOM_ASSET_INFO, {
+		variables: { ids: currentAsset?.associatedModels?.map(model => model._id) },
+	});
 
 	const tableHeight = 'calc(70vh - 100px)';
 
@@ -69,7 +77,7 @@ const BottomContainer = () => {
 	);
 
 	const assetAssociatedData = useMemo(() => {
-		const associatedModels = transformAssociatedModels(currentAsset?.associatedModels) || [];
+		const associatedModels = transformAssociatedModels(associatedAssetsData?.getAllCustomAssetInfo?.res) || [];
 		return [
 			{
 				index: 0,
@@ -81,7 +89,7 @@ const BottomContainer = () => {
 			},
 			...associatedModels,
 		];
-	}, [currentAsset, transformAssociatedModels]);
+	}, [currentAsset, associatedAssetsData, transformAssociatedModels]);
 
 	return <DetailCardBottom data={assetAssociatedData} />;
 };

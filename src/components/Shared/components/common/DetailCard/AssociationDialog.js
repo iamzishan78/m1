@@ -108,7 +108,7 @@ function AssociationDialog() {
 		if (isOpen) {
 			getDbData({
 				variables: {
-					index: currentAssociatedModel?.tableName,
+					modelName: currentAssociatedModel?.tableName,
 					pagination: {
 						first: 25,
 						after: null,
