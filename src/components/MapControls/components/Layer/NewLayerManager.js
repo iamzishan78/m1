@@ -52,6 +52,7 @@ function NewLayerManager() {
 		setLayerClickability,
 		strokeColor,
 		setStrokeColor,
+		handleLayerChange,
 	} = useLayerStyle(layer);
 
 	const [source, setSource] = useState();
@@ -83,7 +84,10 @@ function NewLayerManager() {
 					layerName: layerName,
 					layerGeometry: selectCategory.layerGeometry,
 					originalFile: source.originalFile,
-					defaultSettings: getDefaultSettings(selectCategory.layerGeometry, layerName, selectCategory.bbox),
+					defaultSettings: {
+						...handleLayerChange(),
+						bbox: selectCategory.bbox,
+					},
 					layerSchema: shapeFileSchema?.getShapeFileSchema || [],
 					layerPaintProps: undefined,
 					layerSettings: undefined,

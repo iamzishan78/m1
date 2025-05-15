@@ -668,14 +668,14 @@ export default function CommentComponent(props) {
 	};
 
 	useEffect(() => {
-		if (commentsArray?.length > 0 && scrollIntoView) {
+		if (commentsArray?.length > 0 && !showAllComments) {
 			commentContainerRef?.current?.scrollIntoView({
 				behavior: 'smooth',
-				block: 'start',
+				block: 'end',
 				inline: 'start',
 			});
 		}
-	}, [commentsArray, scrollIntoView]);
+	}, [commentsArray, scrollIntoView, showAllComments]);
 
 	const addNewComment = value => {
 		const userDetails = user;
@@ -701,7 +701,7 @@ export default function CommentComponent(props) {
 			state.push(newComment);
 			return state;
 		});
-		setScrollIntoView(true);
+		setScrollIntoView(state => !state);
 
 		const comment = {
 			comment: typeof value === 'object' ? newCommentCleaner(value.comment) : newCommentCleaner(value),
@@ -725,7 +725,7 @@ export default function CommentComponent(props) {
 			refetchQueries: ['getCommentsByObjectId', 'getCommentsCounter', 'getCommentsByObjectsIds', 'getContact'],
 			awaitRefetchQueries: true,
 		}).then(() => {
-			setScrollIntoView(false);
+			setScrollIntoView(state => !state);
 		});
 		setShowActions(false);
 		setComment('');
@@ -1074,11 +1074,17 @@ export default function CommentComponent(props) {
 										className={classes.border}
 										style={{ paddingBottom: '20px' }}
 										onClick={() => {
+											setTimeout(() => {
+												setScrollIntoView(state => !state);
+											}, 100);
 											if (!showActions) {
 												setShowActions(true);
 											}
 										}}
 										onBlur={() => {
+											setTimeout(() => {
+												setScrollIntoView(state => !state);
+											}, 100);
 											if (showActions && !comment) {
 												setShowActions(false);
 											}

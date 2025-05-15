@@ -3,10 +3,10 @@ import moment from 'moment';
 
 import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 
+import { globalStateController } from 'stateManagement/globalStateController';
+
 import { wellsKeys } from 'utils/data';
 import { UserSession } from 'utils/user';
-
-import { globalStateController } from 'stateManagement/globalStateController';
 
 import { TO_FIXED, WEEK_DAYS } from './consts';
 
@@ -530,6 +530,12 @@ export const handleCustomDateTypeChange = (
 	// }
 	// console.log(minDateValue);
 	const currentYear = Math.round(new Date().getFullYear());
+	const parsedMinDate =
+		typeof minDate === 'number'
+			? minDate
+			: /^\d+$/.test(minDate) // string that is all digits = timestamp
+				? Number(minDate)
+				: minDate; // ISO or date string
 	switch (date) {
 		case CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH:
 			setFromDate(`${currentYear}-01-01`);
@@ -571,7 +577,7 @@ export const handleCustomDateTypeChange = (
 				break;
 			}
 
-			setFromDate(minDate ? `${moment(minDate).startOf('month').format('yyyy-MM-DD')}` : null);
+			setFromDate(minDate ? `${moment(parsedMinDate).startOf('month').format('yyyy-MM-DD')}` : null);
 			setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
 			break;
 		case CUSTOM_DATES.THIS_WEEK:
