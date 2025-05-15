@@ -211,12 +211,8 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 
 	let columns = customAsset?.modelKeys || [];
 
-	let associatedModel = {};
 	if (fetchDynamicSchema.isAssociatedModel) {
-		associatedModel = customAsset.associatedModels.find(
-			model => model.tableName === fetchDynamicSchema.associatedModel
-		);
-		columns = associatedModel?.modelKeys || [];
+		columns = fetchDynamicSchema.associatedModel?.modelKeys || [];
 	}
 
 	// Create dynamic grid schema
@@ -226,7 +222,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 			let key, modelName;
 			if (fetchDynamicSchema.isAssociatedModel) {
 				key = `${fetchDynamicSchema?.associationKey || 'relatedObject'}.${item.mappingKey}`;
-				modelName = fetchDynamicSchema.associatedModel;
+				modelName = fetchDynamicSchema.associatedModel?.tableName;
 			} else {
 				key = item.mappingKey;
 				modelName = fetchDynamicSchema.tableName;

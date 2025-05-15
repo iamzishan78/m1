@@ -1,4 +1,4 @@
-import React, { useMemo, memo, useCallback } from 'react';
+import React, { useMemo, memo, useCallback, useState, useEffect } from 'react';
 
 import { useQuery } from '@apollo/client';
 
@@ -14,7 +14,11 @@ import { globalStateController } from 'stateManagement/globalStateController';
 
 import DetailInfo from './DetailInfoSection';
 
+const tableHeight = 'calc(70vh - 100px)';
+
 const BottomContainer = () => {
+	const [associatedModels, setAssoicatedModels] = useState([]);
+
 	const {
 		globalStateValues: { currentAsset },
 	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
@@ -27,7 +31,20 @@ const BottomContainer = () => {
 		variables: { ids: currentAsset?.associatedModels?.map(model => model._id) },
 	});
 
-	const tableHeight = 'calc(70vh - 100px)';
+	useEffect(() => {
+		if (associatedAssetsData) {
+			let associatedModels = associatedAssetsData?.getAllCustomAssetInfo?.res || [];
+			associatedModels = associatedModels.map(model => {
+				let matchedModel = currentAsset?.associatedModels?.find(associatedModel => associatedModel._id === model._id);
+				return {
+					...model,
+					useDescriptorKey: matchedModel?.useDescriptorKey,
+					associationModelName: matchedModel?.associationModelName,
+				};
+			});
+			setAssoicatedModels(associatedModels);
+		}
+	}, [associatedAssetsData]);
 
 	const transformAssociatedModels = useCallback(
 		models => {
@@ -45,18 +62,18 @@ const BottomContainer = () => {
 					tableKey: 'DynamicAssoicationTable',
 					props: {
 						overrideMeta: {
-							esIndex: model.associationflatModel,
+							modelName: model.associationModelName,
 							assetName: currentAsset?.name,
 							associatedAssetName: model.name,
 							maxTableHeight: tableHeight,
 							CustomToolBar: AssetAssociationToolbar,
-							defaultFilters: [{ field: `${associationKey}._id.keyword`, value: currentAssetRecord?._id }],
+							defaultFilters: [{ field: `${associationKey}._id`, value: currentAssetRecord?._id }],
 							fetchDynamicSchema: {
-								variables: { name: currentAsset?.name },
+								variables: { tableName: currentAsset?.tableName },
 								name: currentAsset?.name,
 								tableName: currentAsset?.tableName,
 								isAssociatedModel: true,
-								associatedModel: model.tableName,
+								associatedModel: model,
 								associationKey: mrtDataMappingKey,
 							},
 							deletedKeys: {
@@ -77,7 +94,7 @@ const BottomContainer = () => {
 	);
 
 	const assetAssociatedData = useMemo(() => {
-		const associatedModels = transformAssociatedModels(associatedAssetsData?.getAllCustomAssetInfo?.res) || [];
+		const associatedModelsConfig = transformAssociatedModels(associatedModels) || [];
 		return [
 			{
 				index: 0,
@@ -87,9 +104,9 @@ const BottomContainer = () => {
 				showCounts: false,
 				component: <DetailInfo />,
 			},
-			...associatedModels,
+			...associatedModelsConfig,
 		];
-	}, [currentAsset, associatedAssetsData, transformAssociatedModels]);
+	}, [currentAsset, associatedModels, transformAssociatedModels]);
 
 	return <DetailCardBottom data={assetAssociatedData} />;
 };
