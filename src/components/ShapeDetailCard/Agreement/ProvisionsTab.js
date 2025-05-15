@@ -38,16 +38,17 @@ import PropTypes from 'prop-types';
 
 import Loader from 'components/Loaders';
 import CommentsWithIcon from 'components/Shared/CommentsWithIcon';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
 
 import { CREATE_AGREEMENT_PROVISION } from 'graphQL/useMutationCreateAgreementProvision';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GET_PROVISION_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetProvisionAutoCompleteList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 import { detailCardController } from 'stateManagement/detailCardController';
 
-import ResponsibleParty from './ResponsibleParty';
 import { AppContext } from '../../../AppContext';
 
 const styles = makeStyles(() => ({
@@ -503,19 +504,30 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 										/>
 									</Grid>
 									<Grid item md={2} id={`responsibleParty-${index}`}>
-										<Controller
+										<CustomAutoComplete
 											control={control}
-											name={`provisions[${index}].responsibleParty`}
-											defaultValue={item?.responsibleParty?.name}
-											render={({ field }) => (
-												<ResponsibleParty
-													value={field.value}
-													handleChange={value => {
-														handleChange(item, index);
-														field.onChange(value?.name || null);
-													}}
-												/>
-											)}
+											watch={watch}
+											fieldConfig={{
+												variant: 'outlined',
+												size: 'medium',
+												allowNewOptions: true,
+											}}
+											fieldAttributes={{
+												label: 'Responsible Party',
+												name: `provisions[${index}].responsibleParty`,
+												defaultValue: item?.responsibleParty?.name,
+												query: GET_ES_FILTER_LIST,
+												variables: {
+													search: '*',
+													filterKey: 'operator.name.keyword',
+													esIndex: 'properties_flat',
+													size: 50,
+												},
+												getOptions: hits => hits?.data?.getESFilterList?.hits?.map(opt => opt.key),
+											}}
+											fieldEvents={{
+												onChange: () => handleChange(item, index),
+											}}
 										/>
 									</Grid>
 									<Grid item md={2} id={`provisions-${index}`}>
