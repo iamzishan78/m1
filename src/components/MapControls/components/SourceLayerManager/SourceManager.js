@@ -296,10 +296,10 @@ function SourceManager(props) {
 		if (M1Layers.length) {
 			for (let index = 0; index < M1Layers.length; index++) {
 				if (M1Layers[index].type === 'group') {
-					if (M1Layers[index].layers.find(layer => layer.layerSettings.showable === false)) {
+					if (M1Layers[index].layers.find(layer => layer.layerSettings?.showable === false)) {
 						check = false;
 					}
-				} else if (M1Layers[index].layerSettings.showable === false) {
+				} else if (M1Layers[index].layerSettings?.showable === false) {
 					check = false;
 				}
 			}
@@ -359,14 +359,14 @@ function SourceManager(props) {
 
 		layers.forEach(layer => {
 			if (layer.type === 'group') {
-				const value = isReplace ? changeValue : !layer.layers.find(l => l.layerSettings.showable);
+				const value = isReplace ? changeValue : !layer.layers.find(l => l.layerSettings?.showable);
 				layer.layers.forEach(l => {
 					const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
 					updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
 					layerController.handleDeckLayer({ ...l, layerSettings: { ...l.layerSettings, showable: value } });
 				});
 			} else {
-				const value = isReplace ? changeValue : !layer.layerSettings.showable;
+				const value = isReplace ? changeValue : !layer.layerSettings?.showable;
 				const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === layer.identifier);
 				updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
 				layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, showable: value } });
@@ -643,7 +643,7 @@ function SourceManager(props) {
 												return (
 													<StyledListItem key={layer._id} ContainerComponent="li">
 														<Checkbox
-															checked={layer.layerSettings.showable}
+															checked={layer.layerSettings?.showable}
 															color="dark gray"
 															onChange={() => handleLayerSettingChange([layer])}
 															inputProps={{ 'aria-label': 'primary checkbox' }}
