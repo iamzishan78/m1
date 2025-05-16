@@ -1,7 +1,8 @@
+/* eslint-disable no-use-before-define */
 import { NotificationManager } from 'react-notifications';
 
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
-import { debounce } from 'lodash';
+import { debounce, get } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import getBoundsQuery from 'api/getBoundsQuery';
@@ -80,6 +81,7 @@ const generateDataFunc = () => {
 		while (true) {
 			if (pausePromise) {
 				// Pause until the external promise is resolved
+				// eslint-disable-next-line no-await-in-loop
 				await pausePromise;
 			}
 			if (data) {
@@ -97,6 +99,7 @@ const generateDataFunc = () => {
 						resolve();
 					};
 				});
+				// eslint-disable-next-line no-await-in-loop
 				await pausePromise;
 			}
 		}
@@ -211,6 +214,29 @@ const LayerMeta = {
 		},
 	},
 	Pls: {
+		defaultZoom: 14,
+		props: {},
+		layer: {
+			id: 'geojson',
+			type: 'GeoJsonLayer',
+			getProps: layerId => {
+				return {
+					data: deckLayers[layerId].getData([]),
+					getFillColor: [0, 0, 0, 0],
+					getLineColor: [0, 0, 0, 0],
+					lineWidthMinPixels: 1.5,
+					lineWidthMaxPixels: 8,
+					highlightColor: [136, 136, 136, 77],
+					autoHighlight: true,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
+				};
+			},
+		},
+	},
+	PlatformParcels: {
+		geoField: 'geometry',
 		defaultZoom: 14,
 		props: {},
 		layer: {
@@ -402,10 +428,12 @@ const layerStateControllerHandler = state => {
 		const landGridLayer = layers.find(layer => layer.identifier === 'Land Grid');
 		const abstractLayerObject = { ...landGridLayer, identifier: 'AbstractGeo' };
 		const plsLayerObject = { ...landGridLayer, identifier: 'Pls' };
+		const platformParcelsObject = { ...landGridLayer, identifier: 'PlatformParcels' };
 		const formattedDbLayers = [
 			...layers.filter(layer => layer.identifier !== 'Land Grid'),
 			abstractLayerObject,
 			plsLayerObject,
+			platformParcelsObject,
 		];
 
 		return formattedDbLayers.filter(dbLayer => {
@@ -578,6 +606,7 @@ const layerStateControllerHandler = state => {
 				beforeLayerId,
 			};
 			const metaLayer = meta.layer;
+			// eslint-disable-next-line no-new
 			new DeckGlLayer({
 				layerId: layerId,
 				type: metaLayer.type,
@@ -602,11 +631,13 @@ const layerStateControllerHandler = state => {
 		}
 
 		if (ifMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
-			return handleMapBoxLayer(dbLayer);
+			handleMapBoxLayer(dbLayer);
+			return;
 		}
 
 		if (ifStaticMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
-			return handleStaticMapBoxLayer(dbLayer);
+			handleStaticMapBoxLayer(dbLayer);
+			return;
 		}
 
 		const meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
@@ -684,19 +715,21 @@ const layerStateControllerHandler = state => {
 			};
 		}
 		if (!boundingState.show?.current) {
-			return updateLayer(dbLayer, {
+			updateLayer(dbLayer, {
 				pickable,
 				...updatedProps,
 				visible: boundingState.show?.current,
 			});
+			return;
 		}
 
 		if (!boundingState.callApi) {
-			return updateLayer(dbLayer, {
+			updateLayer(dbLayer, {
 				pickable,
 				...updatedProps,
 				visible: boundingState.show?.current,
 			});
+			return;
 		}
 
 		updateLayer(dbLayer, updatedProps);
@@ -719,7 +752,9 @@ const layerStateControllerHandler = state => {
 				let geoJson = { features: [] };
 				if (data?.length > 0) {
 					if (filters?.allowedTypes?.length > 0) {
-						data = data.filter(f => filters.allowedTypes.includes(f?.shapeJson?.geometry?.type));
+						data = data.filter(f =>
+							filters.allowedTypes.includes(f?.shapeJson?.geometry?.type || get(f, meta.geoField)?.type)
+						);
 					}
 					const layerData = data;
 					if (!Array.isArray(layerData)) {

@@ -316,6 +316,25 @@ export const layerFilterInitialState = {
 	Basins: {
 		layerName: 'Basins',
 	},
+	PlatformParcels: {
+		layerName: 'PlatformParcels',
+		allowedTypes: ['Polygon', 'MultiPolygon'],
+		variables: {
+			index: 'platform_parcels',
+			sort: {
+				field: '_ts',
+				order: 'desc',
+			},
+			pagination: {
+				getAllData: true,
+			},
+			filters: [],
+			search: {
+				query: null,
+				fields: [],
+			},
+		},
+	},
 };
 
 export const layerFilters = hookstate(copy(layerFilterInitialState));

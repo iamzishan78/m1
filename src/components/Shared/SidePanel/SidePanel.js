@@ -6,12 +6,13 @@ import { useMutation } from '@apollo/client';
 
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 
-import { copy } from 'utils/helper';
-
-import { AppContext } from 'AppContext';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { layerController } from 'stateManagement/layerStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
+
+import { copy } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
 
 import Panel from './compoennts/Panel';
 
@@ -129,7 +130,7 @@ export default function SidePanel() {
 						globalStateController.updateState({ layers: mappedLayers });
 						stateApp.layers = [...mappedLayers];
 						// Handle DeckGL layers
-						['AbstractGeo', 'Pls'].forEach(identifier =>
+						['AbstractGeo', 'Pls', 'PlatformParcels'].forEach(identifier =>
 							layerController.handleDeckLayer({
 								...layer,
 								layerSettings: { ...layer.layerSettings, visiable: !visible, showable: !visible },

@@ -32,6 +32,11 @@ const queries = {
 		getterKey: 'data.plssSecondDivisionGeo',
 		isLandGridQuery: true,
 	},
+	PlatformParcels: {
+		queryString: GET_DB_DATA,
+		getterKey: 'data.getDbData',
+		isPlatformLandGridQuery: true,
+	},
 };
 
 const queryHandlers = {};
@@ -41,7 +46,7 @@ const handleQuery = (queryHandler, onData) => {
 
 	const client = layerController.getValue('client');
 	if (!client) {
-		return;
+		return null;
 	}
 
 	return new Promise(resolve => {
@@ -87,7 +92,8 @@ const getBoundsQuery = async ({
 	polygonFilter,
 	polygonsFilter,
 }) => {
-	const { isWellsQuery, isOneTimeQuery, isLandGridQuery } = queries[identifier] || queries['search'];
+	const { isWellsQuery, isOneTimeQuery, isLandGridQuery, isPlatformLandGridQuery } =
+		queries[identifier] || queries['search'];
 
 	if (isOneTimeQuery) {
 		const queryHandler = {
@@ -166,6 +172,20 @@ const getBoundsQuery = async ({
 			if (polygonString) {
 				variables.polygon = polygonString;
 			}
+		} else if (isPlatformLandGridQuery) {
+			variables.filters.push({
+				type: 'geo_intersects',
+				field: geoField,
+				value: polygonsFilter.length === 0 ? geoPolygon.geometry : polygonsFilter,
+			});
+
+			if (lastBounds?.geometry) {
+				variables.filters.push({
+					type: 'geo_notintersects',
+					field: geoField,
+					value: lastBounds?.geometry,
+				});
+			}
 		} else {
 			variables.filters.push({
 				type: 'geo_intersects',
@@ -204,6 +224,11 @@ const getBoundsQuery = async ({
 				wellName: 1,
 				wellType: 1,
 				wellStatus: 1,
+			});
+		} else if (isPlatformLandGridQuery) {
+			Object.assign(variables.project, {
+				type: 1,
+				properties: 1,
 			});
 		} else {
 			Object.assign(variables.project, {
