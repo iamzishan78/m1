@@ -65,7 +65,9 @@ function CustomAutoComplete({
 	const watchValue = watch ? watch(name) : '';
 
 	useEffect(() => {
-		if (Array.isArray(optionArray) && optionArray.length > 0) {setOptions(optionArray);}
+		if (Array.isArray(optionArray) && optionArray.length > 0) {
+			setOptions(optionArray);
+		}
 	}, [optionArray]);
 
 	useEffect(() => {
@@ -118,7 +120,7 @@ function CustomAutoComplete({
 		if (getCustomOptionLabel) {
 			return getCustomOptionLabel(option);
 		} else {
-			return option.label || option.value || option.name || '';
+			return option?.label || option?.value || option?.name || '';
 		}
 	};
 
@@ -157,15 +159,8 @@ function CustomAutoComplete({
 		}
 
 		const fallbackValue = value ?? defaultValue ?? null;
-
-		if (typeof fieldValue === 'string') {
-			return (
-				options?.find(opt => opt.value === fieldValue || opt._id === fieldValue || opt === fieldValue) ||
-				(fieldValue ?? fallbackValue)
-			);
-		}
-
-		return options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue)) || (fieldValue ?? fallbackValue);
+		const matchedOpt = options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue));
+		return matchedOpt || (fieldValue ?? fallbackValue);
 	};
 
 	const getOptionsArray = value => {
@@ -180,9 +175,7 @@ function CustomAutoComplete({
 		let filtered = filter(options, params);
 		const inputValue = params.inputValue || '';
 
-		const isExisting =
-			Array.isArray(filtered) &&
-			filtered.some(option => (option.value ? option.value === inputValue : option === inputValue));
+		const isExisting = Array.isArray(filtered) && filtered.some(option => getOptionLabel(option) === inputValue);
 
 		if (inputValue !== '' && !isExisting && allowNewOptions) {
 			filtered = [...filtered, { id: 'newEntity', value: inputValue }];
@@ -211,7 +204,7 @@ function CustomAutoComplete({
 		}
 
 		return (
-			<Grid container spacing={0} {...props} key={option._id || option}>
+			<Grid container spacing={0} {...props} key={option?._id || option}>
 				<Grid container item xs={12} alignItems="center">
 					<Grid item xs>
 						<Typography variant="body2">{getOptionLabel(option)}</Typography>

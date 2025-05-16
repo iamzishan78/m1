@@ -46,7 +46,6 @@ import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoCo
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import AutoCompleteParcelOwners from 'components/Shared/Forms/Fields/AutoCompleteParcelOwners';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
-import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { addTrailingZeros } from 'components/Shared/functions';
 import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
@@ -650,6 +649,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 					tractValue={tractValue}
 					setSelectedShapeLayer={setSelectedShapeLayer}
 					control={control}
+					watch={watch}
 					prefix={'tract.'}
 				/>
 
@@ -1226,25 +1226,21 @@ function AddAgreementOwnerAndTractDialog(props) {
 					)}
 				/>
 			</Grid>
-
 			<Grid container direction="row" spacing={2}>
 				<Grid item xs={6}>
-					<Controller
+					<CustomAutoComplete
 						control={control}
-						name={'tractStatus'}
-						render={({ field: { onChange, value } }) => (
-							<AutoCompleteWithNewOption
-								margin="dense"
-								label="Tract Status"
-								InputLabelProps={{ shrink: true }}
-								variant="outlined"
-								options={autoCompleteList}
-								value={value}
-								onChange={(_, value) => {
-									value && onChange(value.name);
-								}}
-							/>
-						)}
+						watch={watch}
+						fieldAttributes={{
+							name: 'tractStatus',
+							label: 'Tract Status',
+							optionArray: autoCompleteList,
+						}}
+						fieldConfig={{
+							margin: 'dense',
+							variant: 'outlined',
+							allowNewOptions: true,
+						}}
 					/>
 				</Grid>
 				<Grid item xs={6}>
