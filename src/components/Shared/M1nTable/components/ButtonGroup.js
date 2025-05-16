@@ -64,19 +64,21 @@ const ButtonDropDown = ({
 						{options[selectedIndex].text}
 					</Button>
 				</Tooltip>
-				<Button
-					color="primary"
-					size="small"
-					{...rest}
-					aria-controls={open ? 'split-button-menu' : undefined}
-					aria-expanded={open ? 'true' : undefined}
-					aria-label="select merge strategy"
-					aria-haspopup="menu"
-					onClick={handleToggle}
-					style={sideButtonStyles}
-				>
-					<ArrowDropDownIcon id="addButtonArrowIcon" />
-				</Button>
+				{options?.length > 1 && (
+					<Button
+						color="primary"
+						size="small"
+						{...rest}
+						aria-controls={open ? 'split-button-menu' : undefined}
+						aria-expanded={open ? 'true' : undefined}
+						aria-label="select merge strategy"
+						aria-haspopup="menu"
+						onClick={handleToggle}
+						style={sideButtonStyles}
+					>
+						<ArrowDropDownIcon id="addButtonArrowIcon" />
+					</Button>
+				)}
 			</ButtonGroup>
 
 			<Popper id="popper-1" open={open} anchorEl={anchorRef.current} role={undefined} transition>
