@@ -236,7 +236,7 @@ function CustomAutoComplete({
 				filterOptions={filterOptions}
 				getOptionLabel={getOptionLabel}
 				getOptionSelected={getOptionSelected}
-				value={getValue(fieldValue)}
+				value={getValue(fieldValue ?? field?.value)}
 				options={getOptionsArray(field?.value)}
 				noOptionsText={isLoading ? <CircularProgress size={20} /> : 'No options'}
 				onBlur={event => {
