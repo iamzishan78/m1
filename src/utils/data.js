@@ -673,6 +673,7 @@ export const bypassTenants = [
 	'wildbasin',
 	'covenant',
 	'sansaba',
+	'thunderbird',
 	'farmers',
 	'Quality',
 	'SantaFe',
