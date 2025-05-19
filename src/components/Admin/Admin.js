@@ -18,6 +18,7 @@ import { UserSession } from 'utils/user';
 
 import { AppContext } from 'AppContext';
 
+import Automations from './components/Automations';
 import BulkDataEditingDetail from './components/BulkDataEditingDetail';
 import Map from './components/Map';
 
@@ -29,6 +30,7 @@ const Components = {
 	BulkDataEditingDetail,
 	Integrations,
 	AssetManagement,
+	Automations,
 };
 
 function isM1neralAddress(email) {
@@ -128,6 +130,8 @@ export default function Admin() {
 				activeModule={activeModule}
 				actions={sidePanelOptions}
 			>
+				{console.log('Allowed Paths', { allowedPaths })}
+				{console.log('Side Panel Options', { sidePanelOptions })}
 				{Object.values(allowedPaths).map(option => (
 					<Switch key={option.title}>
 						<Route exact path={option.link} component={Components[option.component]} />

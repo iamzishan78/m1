@@ -680,6 +680,13 @@ export const AdminManagementRoutes = {
 		noCheck: true,
 		showSettingString: false,
 	},
+	AUTOMATIONS: {
+		title: 'Automations',
+		link: '/admin/automations',
+		component: 'Automations',
+		featureFlag: 'AlWAYSSHOW',
+		noCheck: true,
+	},
 };
 
 export const dataManagementRoutes = Object.keys(SCHEMA).map(tableName => ({
