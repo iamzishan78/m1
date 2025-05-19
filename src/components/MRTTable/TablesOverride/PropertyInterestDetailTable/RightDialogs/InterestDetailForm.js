@@ -2,16 +2,18 @@ import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 
+
 import { Typography, Grid, TextField, MenuItem, Select, Button, IconButton } from '@material-ui/core';
 import { Clear } from '@material-ui/icons';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
 
 import { useMutation } from '@apollo/client';
-import loadashFilter from 'lodash/filter';
 import moment from 'moment';
+import PropTypes from 'prop-types';
+
 
 import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { getDateWithoutTime } from 'components/Shared/functions';
 import ArrowForwardIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
@@ -83,7 +85,7 @@ const InterestDetailForm = ({ selectedInterest, propertyOwnerContact, onClose })
 	const classes = useStyles();
 	let history = useHistory();
 
-	const { control, getValues, reset } = useForm();
+	const { control, getValues, reset, watch } = useForm();
 
 	const [addPropertyInterest, { loading: addLoading }] = useMutation(ADD_PROPERTY_INTEREST, {
 		onCompleted: () => {
@@ -190,22 +192,17 @@ const InterestDetailForm = ({ selectedInterest, propertyOwnerContact, onClose })
 				</Grid>
 				<Grid item xs={12} className={classes.fieldset}>
 					<label>Interest Type</label>
-					<Controller
+					<CustomAutoComplete
 						control={control}
-						name="interestType"
-						defaultValue={''}
-						render={({ field }) => (
-							<InterestType
-								options={interestTypeOptions.map(option => ({
-									_id: option,
-									name: option,
-								}))}
-								value={field.value}
-								onChange={value => {
-									field.onChange(value);
-								}}
-							/>
-						)}
+						watch={watch}
+						fieldConfig={{
+							margin: 'dense',
+							allowNewOptions: true,
+						}}
+						fieldAttributes={{
+							name: 'interestType',
+							optionArray: interestTypeOptions,
+						}}
 					/>
 				</Grid>
 				<Grid item xs={12} className={classes.fieldset}>
@@ -223,7 +220,9 @@ const InterestDetailForm = ({ selectedInterest, propertyOwnerContact, onClose })
 								}}
 							>
 								{productTypeOptions.map(option => (
-									<MenuItem value={option}>{option}</MenuItem>
+									<MenuItem key={option} value={option}>
+										{option}
+									</MenuItem>
 								))}
 							</Select>
 						)}
@@ -321,7 +320,9 @@ const InterestDetailForm = ({ selectedInterest, propertyOwnerContact, onClose })
 								}}
 							>
 								{statusOptions.map(option => (
-									<MenuItem value={option}>{option}</MenuItem>
+									<MenuItem key={option} value={option}>
+										{option}
+									</MenuItem>
 								))}
 							</Select>
 						)}
@@ -342,7 +343,9 @@ const InterestDetailForm = ({ selectedInterest, propertyOwnerContact, onClose })
 								}}
 							>
 								{costFreeOptions.map(option => (
-									<MenuItem value={option}>{option}</MenuItem>
+									<MenuItem key={option} value={option}>
+										{option}
+									</MenuItem>
 								))}
 							</Select>
 						)}
@@ -375,109 +378,10 @@ const InterestDetailForm = ({ selectedInterest, propertyOwnerContact, onClose })
 	);
 };
 
-export default InterestDetailForm;
-
-const InterestType = ({ onChange, value, options, ...other }) => {
-	const filter = createFilterOptions();
-	const useStyles = makeStyles({
-		inputRoot: {
-			backgroundColor: '#ffffff',
-		},
-		listbox: {
-			boxSizing: 'border-box',
-			'& ul': {
-				padding: 0,
-				margin: 0,
-			},
-		},
-	});
-
-	const classes = useStyles();
-
-	const onInputChange = (event, value) => {
-		onChange(value);
-	};
-
-	return (
-		<Autocomplete
-			defaultValue={value}
-			value={value}
-			disableListWrap
-			classes={classes}
-			options={options}
-			getOptionLabel={option => {
-				if (typeof option === 'string') {
-					return option;
-				}
-				if (option.inputValue) {
-					return option.name;
-				}
-
-				if (option?.name) {
-					return option.name;
-				} else {
-					return '';
-				}
-			}}
-			getOptionSelected={(option, value) => {
-				return option?._id === value?._id;
-			}}
-			renderOption={option => {
-				if (option._id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
-				}
-
-				return (
-					<Grid container spacing={0}>
-						<Grid container item xs={12} alignItems="center">
-							<Grid item xs>
-								<span style={{ fontWeight: 400 }}>{option.name}</span>
-							</Grid>
-						</Grid>
-					</Grid>
-				);
-			}}
-			onInputChange={onInputChange}
-			filterOptions={(options, params) => {
-				let inputValue = JSON.parse(JSON.stringify(value));
-				if (inputValue.name) {
-					inputValue = inputValue.name;
-				}
-				const filtered = filter(options, { ...params, inputValue });
-				const isExist = loadashFilter(filtered, filter => {
-					return filter._id === inputValue;
-				});
-				// Suggest the creation of a new value
-				if (inputValue !== '' && (!isExist || isExist.length === 0)) {
-					filtered.unshift({
-						name: inputValue,
-						_id: 'newEntity',
-					});
-				}
-				return filtered;
-			}}
-			onChange={(event, newValue) => {
-				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') {
-						onChange(newValue);
-					} else {
-						onChange({ _id: 'newEntity', name: newValue.name });
-					}
-				} else {
-					onChange('');
-				}
-			}}
-			renderInput={params => (
-				<TextField
-					margin="dense"
-					{...params}
-					InputProps={{
-						...params.InputProps,
-					}}
-					size="small"
-				/>
-			)}
-			{...other}
-		/>
-	);
+InterestDetailForm.propTypes = {
+	selectedInterest: PropTypes.object,
+	propertyOwnerContact: PropTypes.object,
+	onClose: PropTypes.func.isRequired,
 };
+
+export default InterestDetailForm;

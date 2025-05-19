@@ -134,20 +134,22 @@ function CustomAutoComplete({
 
 	const autoCompleteChnage = ({ event, reason, newValue, oldValue, fieldOnChange }) => {
 		const value = newValue ? (newValue.value ?? newValue) : null;
-		onChange?.({ value, oldValue, reason, event });
-		fieldOnChange ? fieldOnChange(value) : setFieldValue(value);
+		const valueObj = newValue;
+		onChange?.({ value, oldValue, valueObj, reason, event });
+		fieldOnChange?.(value);
+		setFieldValue(value);
 	};
 
-	const textFieldChange = event => {
+	const textFieldChange = debounce(event => {
 		if (multiple) {
 			return;
 		}
 
 		const value = event.target.value;
 		setFieldValue(value);
-		isESSearch && fetchOptions(value);
 		onTextFieldChange?.(value);
-	};
+		isESSearch && fetchOptions(value);
+	}, 500);
 
 	const getValue = fieldValue => {
 		if (multiple) {
@@ -159,8 +161,17 @@ function CustomAutoComplete({
 		}
 
 		const fallbackValue = value ?? defaultValue ?? null;
-		const matchedOpt = options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue));
-		return matchedOpt || (fieldValue ?? fallbackValue);
+
+		if (typeof fieldValue === 'string') {
+			return (
+				options?.find(
+					opt => opt === fieldValue || opt._id === fieldValue || opt.value === fieldValue || opt.name === fieldValue
+				) ||
+				(fieldValue ?? fallbackValue)
+			);
+		}
+
+		return options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue)) || (fieldValue ?? fallbackValue);
 	};
 
 	const getOptionsArray = value => {
@@ -225,7 +236,7 @@ function CustomAutoComplete({
 				filterOptions={filterOptions}
 				getOptionLabel={getOptionLabel}
 				getOptionSelected={getOptionSelected}
-				value={getValue(field?.value ?? fieldValue)}
+				value={getValue(fieldValue)}
 				options={getOptionsArray(field?.value)}
 				noOptionsText={isLoading ? <CircularProgress size={20} /> : 'No options'}
 				onBlur={event => {
