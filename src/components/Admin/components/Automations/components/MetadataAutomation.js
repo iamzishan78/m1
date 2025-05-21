@@ -6,11 +6,15 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import PropTypes from 'prop-types';
 
-const AutomationsList = ({ filteredAutomations, handleDeleteAutomation }) => {
+const MetadataAutomation = ({ automations, onAutomationChange }) => {
+	const handleAutomationChange = automationId => {
+		onAutomationChange(automationId);
+	};
+
 	return (
 		<Grid container spacing={3}>
-			{filteredAutomations?.length ? (
-				filteredAutomations.map(automation => (
+			{automations?.length ? (
+				automations.map(automation => (
 					<Grid item xs={12} md={6} key={automation._id}>
 						<Card>
 							<CardContent>
@@ -35,7 +39,7 @@ const AutomationsList = ({ filteredAutomations, handleDeleteAutomation }) => {
 											size="small"
 										/>
 									</Box>
-									<IconButton onClick={() => handleDeleteAutomation(automation._id)} size="small">
+									<IconButton onClick={() => handleAutomationChange(automation._id)} size="small">
 										<DeleteIcon />
 									</IconButton>
 								</Box>
@@ -52,9 +56,9 @@ const AutomationsList = ({ filteredAutomations, handleDeleteAutomation }) => {
 	);
 };
 
-AutomationsList.propTypes = {
-	filteredAutomations: PropTypes.array.isRequired,
-	handleDeleteAutomation: PropTypes.func.isRequired,
+MetadataAutomation.propTypes = {
+	automations: PropTypes.array.isRequired,
+	onAutomationChange: PropTypes.func.isRequired,
 };
 
-export default AutomationsList;
+export default MetadataAutomation;

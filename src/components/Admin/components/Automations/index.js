@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 
 import { Box, CircularProgress } from '@material-ui/core';
 
-
 import { useLazyQuery } from '@apollo/client';
 
 import { GET_AUTOMATIONS } from 'graphQL/useQueryGetAutomations';
@@ -10,8 +9,8 @@ import { GET_AUTOMATIONS } from 'graphQL/useQueryGetAutomations';
 import { globalStateController } from 'stateManagement/globalStateController';
 
 import AutomationHeader from './components/AutomationHeader';
-import AutomationsList from './components/AutomationsList';
 import CreateAutomationDialog from './components/CreateAutomationDialog';
+import MetadataAutomation from './components/MetadataAutomation';
 
 const Automations = () => {
 	const [getAutomations, { data, loading }] = useLazyQuery(GET_AUTOMATIONS);
@@ -43,8 +42,9 @@ const Automations = () => {
 		if (automations) {
 			const modulesArr = [];
 			automations.forEach(automation => {
-				if (automation.config?.module && !modulesArr.includes(automation.config?.module))
-					{modulesArr.push(automation.config?.module);}
+				if (automation.config?.module && !modulesArr.includes(automation.config?.module)) {
+					modulesArr.push(automation.config?.module);
+				}
 			});
 			setAutomations(automations);
 			setFilteredAutomations(automations);
@@ -78,8 +78,8 @@ const Automations = () => {
 		});
 	};
 
-	const handleDeleteAutomation = id => {
-		setAutomations(automations.filter(automation => automation.id !== id));
+	const onAutomationChange = _id => {
+		setAutomations(automations.filter(automation => automation.id !== _id));
 	};
 
 	if (loading) {
@@ -89,6 +89,15 @@ const Automations = () => {
 			</Box>
 		);
 	}
+
+	const renderAutomationComponent = automationType => {
+		switch (automationType) {
+			case 'metadataUpdate':
+				return <MetadataAutomation automations={filteredAutomations} onAutomationChange={onAutomationChange} />;
+			default:
+				return null;
+		}
+	};
 
 	return (
 		<Box py={10} px={3}>
@@ -102,7 +111,7 @@ const Automations = () => {
 				appliedFiltersCount={Object.values(filters)?.filter(value => value)?.length}
 			/>
 
-			<AutomationsList filteredAutomations={filteredAutomations} handleDeleteAutomation={handleDeleteAutomation} />
+			{renderAutomationComponent(selectedType?.value)}
 
 			<CreateAutomationDialog
 				isOpen={isCreateDialogOpen}
