@@ -130,8 +130,6 @@ export default function Admin() {
 				activeModule={activeModule}
 				actions={sidePanelOptions}
 			>
-				{console.log('Allowed Paths', { allowedPaths })}
-				{console.log('Side Panel Options', { sidePanelOptions })}
 				{Object.values(allowedPaths).map(option => (
 					<Switch key={option.title}>
 						<Route exact path={option.link} component={Components[option.component]} />

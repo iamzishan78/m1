@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
 	Box,
@@ -8,19 +8,25 @@ import {
 	DialogTitle,
 	DialogContent,
 	DialogActions,
-	Select,
-	MenuItem,
 	FormControl,
-	InputLabel,
 	Grid,
 	Card,
 	CardContent,
 	IconButton,
 	Chip,
+	CircularProgress,
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
+
+import { useLazyQuery } from '@apollo/client';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+
+import { GET_AUTOMATIONS } from 'graphQL/useQueryGetAutomations';
+
+import { globalStateController } from 'stateManagement/globalStateController';
 
 const moduleOptions = ['Contacts', 'Companies', 'Deals'];
 const fieldOptions = {
@@ -30,14 +36,40 @@ const fieldOptions = {
 };
 
 const Automations = () => {
+	const [getAutomations, { data, loading }] = useLazyQuery(GET_AUTOMATIONS);
+
 	const [automations, setAutomations] = useState([]);
 	const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
 	const [newAutomation, setNewAutomation] = useState({
-		sourceModule: '',
-		sourceField: '',
+		triggerField: '',
+		triggerValue: '',
 		targetModule: '',
-		targetField: '',
+		targetKey: '',
 	});
+
+	useEffect(() => {
+		getAutomations({
+			variables: {
+				userId: globalStateController.getValue('user').mongoId,
+				type: 'metadataUpdate',
+			},
+		});
+	}, []);
+
+	useEffect(() => {
+		console.log({ data });
+		if (data?.getAutomations?.automations) {
+			setAutomations(data.getAutomations.automations);
+		}
+	}, [data]);
+
+	if (loading) {
+		return (
+			<Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+				<CircularProgress color="secondary" size={40} />
+			</Box>
+		);
+	}
 
 	const handleCreateAutomation = () => {
 		const automation = {
@@ -49,10 +81,10 @@ const Automations = () => {
 		setAutomations([...automations, automation]);
 		setCreateDialogOpen(false);
 		setNewAutomation({
-			sourceModule: '',
-			sourceField: '',
+			triggerField: '',
+			triggerValue: '',
 			targetModule: '',
-			targetField: '',
+			targetKey: '',
 		});
 	};
 
@@ -62,47 +94,52 @@ const Automations = () => {
 
 	return (
 		<Box py={10} px={3}>
-			<Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-				<Typography variant="h4">Automations</Typography>
+			<Box display="flex" justifyContent="flex-end" alignItems="center" mb={4}>
 				<Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => setCreateDialogOpen(true)}>
 					Create Automation
 				</Button>
 			</Box>
 
 			<Grid container spacing={3}>
-				{automations.map(automation => (
-					<Grid item xs={12} md={6} key={automation.id}>
-						<Card>
-							<CardContent>
-								<Box display="flex" alignItems="center" justifyContent="space-between">
-									<Box flex={1}>
-										<Box display="flex" alignItems="center" mb={2}>
+				{automations?.length ? (
+					automations.map(automation => (
+						<Grid item xs={12} md={6} key={automation._id}>
+							<Card>
+								<CardContent>
+									<Box display="flex" alignItems="center" justifyContent="space-between">
+										<Box flex={1}>
+											<Box display="flex" alignItems="center" mb={2}>
+												<Chip
+													label={`${automation?.config?.triggerField} ==> ${automation?.config?.triggerValue}`}
+													color="primary"
+													variant="outlined"
+												/>
+												<ArrowRightAltIcon style={{ margin: '0 16px' }} />
+												<Chip
+													label={`${automation?.config?.targetField} ==> ${automation?.config?.targetValue}`}
+													color="secondary"
+													variant="outlined"
+												/>
+											</Box>
 											<Chip
-												label={`${automation.sourceModule} - ${automation.sourceField}`}
-												color="primary"
-												variant="outlined"
-											/>
-											<ArrowRightAltIcon style={{ margin: '0 16px' }} />
-											<Chip
-												label={`${automation.targetModule} - ${automation.targetField}`}
-												color="secondary"
-												variant="outlined"
+												label={automation.isActive ? 'Active' : 'Inactive'}
+												color={automation.isActive ? 'primary' : 'default'}
+												size="small"
 											/>
 										</Box>
-										<Chip
-											label={automation.active ? 'Active' : 'Inactive'}
-											color={automation.active ? 'primary' : 'default'}
-											size="small"
-										/>
+										<IconButton onClick={() => handleDeleteAutomation(automation._id)} size="small">
+											<DeleteIcon />
+										</IconButton>
 									</Box>
-									<IconButton onClick={() => handleDeleteAutomation(automation.id)} size="small">
-										<DeleteIcon />
-									</IconButton>
-								</Box>
-							</CardContent>
-						</Card>
-					</Grid>
-				))}
+								</CardContent>
+							</Card>
+						</Grid>
+					))
+				) : (
+					<Box>
+						<Typography style={{ color: '#888' }}>You haven’t defined any automation yet.</Typography>
+					</Box>
+				)}
 			</Grid>
 
 			{/* Create Automation Dialog remains the same */}
@@ -112,90 +149,104 @@ const Automations = () => {
 					<Grid container spacing={3}>
 						<Grid item xs={12}>
 							<FormControl fullWidth>
-								<InputLabel>Source Module</InputLabel>
-								<Select
-									value={newAutomation.sourceModule}
-									onChange={e =>
-										setNewAutomation({
-											...newAutomation,
-											sourceModule: e.target.value,
-											sourceField: '',
-										})
-									}
-								>
-									{moduleOptions.map(module => (
-										<MenuItem key={module} value={module}>
-											{module}
-										</MenuItem>
-									))}
-								</Select>
+								<CustomAutoComplete
+									fieldAttributes={{
+										label: 'Source Module',
+										optionArray: moduleOptions,
+										value: newAutomation.triggerField,
+									}}
+									fieldEvents={{
+										onChange: ({ value }) => {
+											setNewAutomation({
+												...newAutomation,
+												triggerField: value,
+												triggerValue: '',
+											});
+										},
+									}}
+									fieldConfig={{
+										variant: 'outlined',
+										size: 'small',
+									}}
+								/>
 							</FormControl>
 						</Grid>
 
-						{newAutomation.sourceModule && (
+						{newAutomation.triggerField && (
 							<Grid item xs={12}>
 								<FormControl fullWidth>
-									<InputLabel>Source Field</InputLabel>
-									<Select
-										value={newAutomation.sourceField}
-										onChange={e =>
-											setNewAutomation({
-												...newAutomation,
-												sourceField: e.target.value,
-											})
-										}
-									>
-										{fieldOptions[newAutomation.sourceModule]?.map(field => (
-											<MenuItem key={field} value={field}>
-												{field}
-											</MenuItem>
-										))}
-									</Select>
+									<CustomAutoComplete
+										fieldAttributes={{
+											label: 'Source Field',
+											optionArray: fieldOptions[newAutomation.triggerField] || [],
+											value: newAutomation.triggerValue,
+										}}
+										fieldEvents={{
+											onChange: ({ value }) => {
+												setNewAutomation({
+													...newAutomation,
+													triggerValue: value,
+												});
+											},
+										}}
+										fieldConfig={{
+											variant: 'outlined',
+											size: 'small',
+											disabled: !newAutomation.triggerField,
+										}}
+									/>
 								</FormControl>
 							</Grid>
 						)}
 
 						<Grid item xs={12}>
 							<FormControl fullWidth>
-								<InputLabel>Target Module</InputLabel>
-								<Select
-									value={newAutomation.targetModule}
-									onChange={e =>
-										setNewAutomation({
-											...newAutomation,
-											targetModule: e.target.value,
-											targetField: '',
-										})
-									}
-								>
-									{moduleOptions.map(module => (
-										<MenuItem key={module} value={module}>
-											{module}
-										</MenuItem>
-									))}
-								</Select>
+								<CustomAutoComplete
+									fieldAttributes={{
+										label: 'Target Module',
+										optionArray: moduleOptions,
+										value: newAutomation.targetModule,
+									}}
+									fieldEvents={{
+										onChange: ({ value }) => {
+											setNewAutomation({
+												...newAutomation,
+												targetModule: value,
+												targetKey: '',
+											});
+										},
+									}}
+									fieldConfig={{
+										variant: 'outlined',
+										size: 'small',
+									}}
+								/>
 							</FormControl>
 						</Grid>
 
 						{newAutomation.targetModule && (
 							<Grid item xs={12}>
 								<FormControl fullWidth>
-									<InputLabel>Target Field</InputLabel>
-									<Select
-										value={newAutomation.targetField}
-										onChange={e =>
-											setNewAutomation({
-												...newAutomation,
-												targetField: e.target.value,
-											})
-										}
-									>
-										{fieldOptions[newAutomation.targetModule]?.map(field => (
-											<MenuItem key={field} value={field}>
-												{field}
-											</MenuItem>
-										))}
-									</Select>
+									<CustomAutoComplete
+										fieldAttributes={{
+											label: 'Target Field',
+											optionArray: fieldOptions[newAutomation.targetModule] || [],
+											value: newAutomation.targetKey,
+										}}
+										fieldEvents={{
+											onChange: ({ value }) => {
+												setNewAutomation({
+													...newAutomation,
+													targetKey: value,
+												});
+											},
+										}}
+										fieldConfig={{
+											variant: 'outlined',
+											size: 'small',
+											disabled: !newAutomation.targetModule,
+										}}
+									/>
 								</FormControl>
 							</Grid>
 						)}
@@ -210,10 +261,10 @@ const Automations = () => {
 						color="primary"
 						variant="contained"
 						disabled={
-							!newAutomation.sourceModule ||
-							!newAutomation.sourceField ||
+							!newAutomation.triggerField ||
+							!newAutomation.triggerValue ||
 							!newAutomation.targetModule ||
-							!newAutomation.targetField
+							!newAutomation.targetKey
 						}
 					>
 						Create
