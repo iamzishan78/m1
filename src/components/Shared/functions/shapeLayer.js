@@ -131,7 +131,7 @@ export const deckGlDataLayerIdentifiers = [
 	'Area of Interest',
 	'My Wells',
 ];
-export const deckGlLandGridIdentifiers = ['AbstractGeo', 'Pls', 'Land Grid', 'PlatformParcels'];
+export const deckGlLandGridIdentifiers = ['AbstractGeo', 'Pls', 'Land Grid'];
 export const deckGlLayerIdentifiers = [...deckGlDataLayerIdentifiers, 'Wells'];
 export const isCustomLayerCopy = identifier =>
 	deckGlLayerIdentifiers.some(layer => identifier.toLowerCase().includes(layer.toLowerCase()));

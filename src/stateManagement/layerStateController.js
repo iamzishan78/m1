@@ -428,12 +428,10 @@ const layerStateControllerHandler = state => {
 		const landGridLayer = layers.find(layer => layer.identifier === 'Land Grid');
 		const abstractLayerObject = { ...landGridLayer, identifier: 'AbstractGeo' };
 		const plsLayerObject = { ...landGridLayer, identifier: 'Pls' };
-		const platformParcelsObject = { ...landGridLayer, identifier: 'PlatformParcels' };
 		const formattedDbLayers = [
 			...layers.filter(layer => layer.identifier !== 'Land Grid'),
 			abstractLayerObject,
 			plsLayerObject,
-			platformParcelsObject,
 		];
 
 		return formattedDbLayers.filter(dbLayer => {

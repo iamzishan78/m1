@@ -130,7 +130,7 @@ export default function SidePanel() {
 						globalStateController.updateState({ layers: mappedLayers });
 						stateApp.layers = [...mappedLayers];
 						// Handle DeckGL layers
-						['AbstractGeo', 'Pls', 'PlatformParcels'].forEach(identifier =>
+						['AbstractGeo', 'Pls'].forEach(identifier =>
 							layerController.handleDeckLayer({
 								...layer,
 								layerSettings: { ...layer.layerSettings, visiable: !visible, showable: !visible },
