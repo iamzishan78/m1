@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
-import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
+import { ifPlatformLandGridIdentifiers, layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
@@ -888,10 +888,10 @@ function Map({
 								return;
 							}
 
-							const getLandGrid =
-								window.event.ctrlKey || window.event.metaKey || drawController.getValue('multiSelectLandGrids');
+							const getLandGrid = window.event.ctrlKey || window.event.metaKey;
+							const getMultiLandGrid = drawController.getValue('multiSelectLandGrids');
 
-							const { clickedFeature, layer } = getClickedFeature({ x, y, getLandGrid });
+							const { clickedFeature, layer } = getClickedFeature({ x, y, getLandGrid, getMultiLandGrid });
 							const previousClickedFeature = layerController.getValue('clickedFeature');
 							const clickOnSameFeature =
 								previousClickedFeature && previousClickedFeature?.object?.id === clickedFeature?.object?.id;
@@ -907,7 +907,7 @@ function Map({
 								}
 								return;
 							}
-							if (!getLandGrid) {
+							if (!getLandGrid && !getMultiLandGrid && !ifPlatformLandGridIdentifiers(clickedFeature.layer.id)) {
 								drawBoundary(clickedFeature.object);
 							}
 

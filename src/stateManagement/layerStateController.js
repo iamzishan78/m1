@@ -245,8 +245,8 @@ const LayerMeta = {
 			getProps: layerId => {
 				return {
 					data: deckLayers[layerId].getData([]),
-					getFillColor: [0, 0, 0, 0],
-					getLineColor: [0, 0, 0, 0],
+					getFillColor: [0, 123, 255, 60],
+					getLineColor: [0, 123, 255, 200],
 					lineWidthMinPixels: 1.5,
 					lineWidthMaxPixels: 8,
 					highlightColor: [136, 136, 136, 77],

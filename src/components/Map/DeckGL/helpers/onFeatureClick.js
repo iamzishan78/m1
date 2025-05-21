@@ -12,17 +12,18 @@ import {
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { colorBasedAttributes } from 'components/MapControls/components/Layer/LayerAttributes/ColorBasedAttributes';
 import {
-	deckGlLandGridIdentifiers,
 	ifDeckGlDataLayerIdentifiers,
+	ifDeckGlLandGridIdentifiers,
 	ifDeckGlLayerIdentifiers,
+	ifPlatformLandGridIdentifiers,
 } from 'components/Shared/functions/shapeLayer';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
-
-import { copy } from 'utils/helper';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 import { getLayerKey } from 'stateManagement/helpers';
 import { popupController } from 'stateManagement/popupStateController';
+
+import { copy } from 'utils/helper';
 
 import landgridLayerClickHandler from './landgridLayerClickHandler';
 import pointClickHandler from './pointClickHandler';
@@ -30,7 +31,7 @@ import udLayerClickHandler from './udLayerClickHandler';
 
 const onWellClick = (object, layerId) => {
 	if (!object) {
-		return;
+		return null;
 	}
 
 	const feature = copy(object);
@@ -72,7 +73,7 @@ const onWellClick = (object, layerId) => {
 
 const onDataLayerClick = (object, layerId, layer) => {
 	if (!object || !layer) {
-		return;
+		return null;
 	}
 
 	const feature = copy(object);
@@ -88,7 +89,7 @@ const onDataLayerClick = (object, layerId, layer) => {
 
 const onPointClick = (object, layerId, layer) => {
 	if (!object || !layer) {
-		return;
+		return null;
 	}
 
 	const feature = copy(object);
@@ -108,7 +109,7 @@ const onPointClick = (object, layerId, layer) => {
 
 const onFileLayerClick = (object, layerId, layer) => {
 	if (!object || !layer) {
-		return;
+		return null;
 	}
 
 	const feature = copy(object);
@@ -138,9 +139,11 @@ const onFileLayerClick = (object, layerId, layer) => {
 			break;
 
 		case 'LineString':
-			let polygonObj = lineString(feature.geometry.coordinates);
-			if (booleanWithin(polygonObj, bboxPolygon)) {
-				isGeometryWithinBbox = true;
+			{
+				let polygonObj = lineString(feature.geometry.coordinates);
+				if (booleanWithin(polygonObj, bboxPolygon)) {
+					isGeometryWithinBbox = true;
+				}
 			}
 			break;
 
@@ -166,7 +169,7 @@ const onFileLayerClick = (object, layerId, layer) => {
 
 const onLandGridClick = (object, layerId, layer) => {
 	if (!object || !layer) {
-		return;
+		return null;
 	}
 
 	const feature = copy(object);
@@ -189,7 +192,7 @@ const onFeatureClick = (feature, layer) => {
 		});
 	}
 
-	if (deckGlLandGridIdentifiers.some(prefix => feature.layer.id.startsWith(prefix))) {
+	if (ifDeckGlLandGridIdentifiers(feature.layer.id) || ifPlatformLandGridIdentifiers(feature.layer.id)) {
 		onLandGridClick(feature.object, feature.layer.id, layer);
 		return;
 	}
