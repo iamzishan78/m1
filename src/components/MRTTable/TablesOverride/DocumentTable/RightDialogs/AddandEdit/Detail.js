@@ -28,11 +28,12 @@ import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
+import { globalStateController } from 'stateManagement/globalStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
+
 import { CREATED_STATUS, ONE_MB } from 'utils/consts';
 
 import { showErrorMessage } from 'actions';
-import { globalStateController } from 'stateManagement/globalStateController';
-import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { createViewStateController, initialState } from './AddAndEditController';
 import UploadZone from './UploadZone';
@@ -281,36 +282,6 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						}
 					})
 					.catch(err => console.log(err));
-
-				delete formStateValues.tableKey;
-				const document = {
-					...formStateValues,
-					fileId: file_id,
-				};
-
-				Loader.createToast('DocumentUpdating', 'Document Updating in Progress');
-				updateDocument({
-					variables: {
-						document,
-					},
-					refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
-					awaitRefetchQueries: true,
-				}).then(res => {
-					if (res?.data?.updateDocumentFile) {
-						const { success, message } = res.data.updateDocumentFile;
-						if (success) {
-							Loader.successToast('DocumentUpdating', message);
-						} else {
-							Loader.errorToast('DocumentUpdating', message);
-						}
-					} else {
-						Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
-					}
-
-					tableGlobalController.refetch();
-				});
-
-				handleClose();
 			}
 		}
 	}, [addFileData]);
@@ -328,8 +299,6 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	}, []);
 
 	const uploadFile = () => {
-		Loader.createToast('FileUploading', 'File Uploading in Progress');
-
 		setInputFile(fileUpload?.fileInformation);
 		addFile({
 			variables: {
@@ -354,6 +323,12 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 			}
 		});
 	};
+
+	useEffect(() => {
+		if (fileUpload && fileUpload.upload) {
+			uploadFile();
+		}
+	}, [fileUpload]);
 
 	const replaceFile = fileIdToDelete => {
 		Loader.createToast('ReplaceFile', 'File Deletion in Progress');
@@ -615,7 +590,37 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						disabled={!fileUpload?.upload}
 						onClick={() => {
 							if (fileUpload?.upload) {
-								uploadFile();
+								Loader.createToast('FileUploading', 'File Uploading in Progress');
+
+								delete formStateValues.tableKey;
+								const document = {
+									...formStateValues,
+									fileId: addFileData.addFileDescriptor.file.id,
+								};
+
+								Loader.createToast('DocumentUpdating', 'Document Updating in Progress');
+								updateDocument({
+									variables: {
+										document,
+									},
+									refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
+									awaitRefetchQueries: true,
+								}).then(res => {
+									if (res?.data?.updateDocumentFile) {
+										const { success, message } = res.data.updateDocumentFile;
+										if (success) {
+											Loader.successToast('DocumentUpdating', message);
+										} else {
+											Loader.errorToast('DocumentUpdating', message);
+										}
+									} else {
+										Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
+									}
+
+									tableGlobalController.refetch();
+								});
+
+								handleClose();
 							}
 						}}
 						className={classes.footerButton}
