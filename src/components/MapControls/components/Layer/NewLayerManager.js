@@ -68,7 +68,10 @@ function NewLayerManager() {
 		const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
 		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
 		const layerShapeName = source.name === 'M1 Platform' ? null : selectCategory.name;
-		const identifier = source.name === 'M1 Platform' ? selectCategory.label + uuid() : layerName + uuid();
+		let identifier = source.name === 'M1 Platform' ? selectCategory.label + uuid() : layerName + uuid();
+		if (source.name === 'M1 Platform') {
+			identifier = selectCategory.label === 'Tracts' ? 'Parcels' + uuid() : selectCategory.label + uuid();
+		}
 
 		addLayer({
 			variables: {
