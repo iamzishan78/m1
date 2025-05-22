@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-import { Box, CircularProgress } from '@material-ui/core';
+import { Grid, Box, Typography, CircularProgress } from '@material-ui/core';
 
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 
+import { UPSERT_AUTOMATION } from 'graphQL/useMutationUpsertAutomation';
 import { GET_AUTOMATIONS } from 'graphQL/useQueryGetAutomations';
 
 import { globalStateController } from 'stateManagement/globalStateController';
@@ -14,6 +15,10 @@ import MetadataAutomation from './components/MetadataAutomation';
 
 const Automations = () => {
 	const [getAutomations, { data, loading }] = useLazyQuery(GET_AUTOMATIONS);
+	const [upsertAutomation] = useMutation(UPSERT_AUTOMATION, {
+		refetchQueries: ['getAutomations'],
+		awaitRefetchQueries: true,
+	});
 
 	const [automations, setAutomations] = useState([]);
 	const [uniqueModules, setUniqueModules] = useState([]);
@@ -78,8 +83,21 @@ const Automations = () => {
 		});
 	};
 
-	const onAutomationChange = _id => {
-		setAutomations(automations.filter(automation => automation.id !== _id));
+	const onAutomationChange = data => {
+		upsertAutomation({
+			variables: {
+				automation: data,
+			},
+		});
+	};
+
+	const renderAutomationComponent = automation => {
+		switch (automation?.type) {
+			case 'metadataUpdate':
+				return <MetadataAutomation automation={automation} onAutomationChange={onAutomationChange} />;
+			default:
+				return null;
+		}
 	};
 
 	if (loading) {
@@ -90,17 +108,8 @@ const Automations = () => {
 		);
 	}
 
-	const renderAutomationComponent = automationType => {
-		switch (automationType) {
-			case 'metadataUpdate':
-				return <MetadataAutomation automations={filteredAutomations} onAutomationChange={onAutomationChange} />;
-			default:
-				return null;
-		}
-	};
-
 	return (
-		<Box py={10} px={3}>
+		<Box py={10} px={3} style={{ height: '100vh', overflow: 'hidden' }}>
 			<AutomationHeader
 				filters={filters}
 				setFilters={setFilters}
@@ -111,7 +120,17 @@ const Automations = () => {
 				appliedFiltersCount={Object.values(filters)?.filter(value => value)?.length}
 			/>
 
-			{renderAutomationComponent(selectedType?.value)}
+			<Grid container spacing={3} style={{ height: '88vh', overflow: 'scroll' }}>
+				{filteredAutomations.length ? (
+					filteredAutomations.map(automation => renderAutomationComponent(automation))
+				) : (
+					<Box p={3} textAlign="center" width="100%">
+						<Typography variant="body1" color="textSecondary">
+							Nothing to show. Try creating a new automation
+						</Typography>
+					</Box>
+				)}
+			</Grid>
 
 			<CreateAutomationDialog
 				isOpen={isCreateDialogOpen}

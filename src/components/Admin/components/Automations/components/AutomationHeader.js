@@ -52,11 +52,16 @@ const AutomationHeader = ({
 				>
 					Create Automation
 				</Button>
-				<IconButton size="small" style={{ backgroundColor: '#E3F2FD' }} onClick={() => setFilterDialogOpen(true)}>
-					<Badge badgeContent={appliedFiltersCount} color="primary">
+
+				<Badge badgeContent={appliedFiltersCount} color="primary">
+					<IconButton
+						size="small"
+						style={{ padding: '0', backgroundColor: '#E3F2FD', height: '36px', width: '36px' }}
+						onClick={() => setFilterDialogOpen(true)}
+					>
 						<FilterListIcon />
-					</Badge>
-				</IconButton>
+					</IconButton>
+				</Badge>
 			</Box>
 			<FilterAutomationDialog
 				isOpen={isFilterDialogOpen}
