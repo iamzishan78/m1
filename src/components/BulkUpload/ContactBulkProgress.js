@@ -11,11 +11,11 @@ import useRefetchHelper from 'components/Shared/Hooks/useRefetchHelper';
 import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
 import { GET_JOBS_STATUS } from 'graphQL/useQueryGetJobStatus';
 
-import { setReduxKey } from 'store/actions/commonActions';
-
 import { globalStateController } from 'stateManagement/globalStateController';
 import { jobController } from 'stateManagement/jobStateController';
 import { tableGlobalController } from 'stateManagement/tableController';
+
+import { setReduxKey } from 'store/actions/commonActions';
 
 const ContactBulkProgress = () => {
 	const bulkUpload = useSelector(state => state.common.bulkUpload);
@@ -232,9 +232,9 @@ const ContactBulkProgress = () => {
 					}
 					// Refetch when its the status is completed for the last job iteration
 					if (i === dataJobs.getJobsStatus.jobs.length - 1) {
-						const { progress: jobProgress, totalProgress } = dataJobs.getJobsStatus.jobs[i];
+						const { progress: jobProgress, totalProgress, type } = dataJobs.getJobsStatus.jobs[i];
 						// Check if the current progress is equal to the total progress
-						if (jobProgress === totalProgress) {
+						if (jobProgress === totalProgress && ['SHAPEOWNER', 'PARCELINTERESTS'].includes(type)) {
 							tableGlobalController.refetch();
 							tableGlobalController.setSelectedTab(0);
 						}
