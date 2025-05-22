@@ -128,7 +128,7 @@ function CustomAutoComplete({
 		if (option?._id && value._id) {
 			return option._id === value._id;
 		} else {
-			return option.value === value.value || option.name === value.name;
+			return option === value || option.value === value.value || option.name === value.name;
 		}
 	};
 
