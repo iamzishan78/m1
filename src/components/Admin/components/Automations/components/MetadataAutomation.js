@@ -1,12 +1,70 @@
 import React from 'react';
 
-import { Grid, Card, CardContent, Box, Typography, IconButton, Chip } from '@material-ui/core';
-import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
+
+import { Grid, Card, CardContent, Box, Typography, IconButton, Switch, makeStyles } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
+import TargetIcon from '@material-ui/icons/Flag';
+import TriggerIcon from '@material-ui/icons/PlayArrow';
+import AutomationIcon from '@material-ui/icons/Settings';
 
 import PropTypes from 'prop-types';
 
+const useStyles = makeStyles(theme => ({
+	card: {
+		height: '100%',
+		'&:hover': {
+			boxShadow: theme.shadows[4],
+		},
+	},
+	cardContent: {
+		height: '100%',
+		padding: theme.spacing(2),
+	},
+	header: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		marginBottom: theme.spacing(2),
+	},
+	icon: {
+		marginRight: theme.spacing(3),
+		color: theme.palette.primary.main,
+	},
+	title: {
+		fontWeight: 500,
+	},
+	section: {
+		marginBottom: theme.spacing(2),
+		padding: theme.spacing(1.5),
+		backgroundColor: theme.palette.background.default,
+		borderRadius: theme.shape.borderRadius,
+	},
+	sectionTitle: {
+		display: 'flex',
+		alignItems: 'center',
+		marginBottom: theme.spacing(1),
+		color: theme.palette.text.secondary,
+		fontSize: '0.875rem',
+	},
+	sectionIcon: {
+		fontSize: '1rem',
+		marginRight: theme.spacing(1),
+	},
+	value: {
+		fontWeight: 500,
+		color: theme.palette.text.primary,
+	},
+	footer: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		marginTop: theme.spacing(2),
+	},
+}));
+
 const MetadataAutomation = ({ automations, onAutomationChange }) => {
+	const classes = useStyles();
+
 	const handleAutomationChange = automationId => {
 		onAutomationChange(automationId);
 	};
@@ -16,40 +74,73 @@ const MetadataAutomation = ({ automations, onAutomationChange }) => {
 			{automations?.length ? (
 				automations.map(automation => (
 					<Grid item xs={12} md={6} key={automation._id}>
-						<Card>
-							<CardContent>
-								<Box display="flex" alignItems="center" justifyContent="space-between">
-									<Box flex={1}>
-										<Box display="flex" alignItems="center" mb={2}>
-											<Chip
-												label={`${automation?.config?.triggerField} ==> ${automation?.config?.triggerValue}`}
-												color="primary"
-												variant="outlined"
-											/>
-											<ArrowRightAltIcon style={{ margin: '0 16px' }} />
-											<Chip
-												label={`${automation?.config?.targetField} ==> ${automation?.config?.targetValue}`}
-												color="secondary"
-												variant="outlined"
-											/>
-										</Box>
-										<Chip
-											label={automation.isActive ? 'Active' : 'Inactive'}
-											color={automation.isActive ? 'primary' : 'default'}
-											size="small"
-										/>
+						<Card className={classes.card}>
+							<CardContent className={classes.cardContent}>
+								{/* Header */}
+								<Box className={classes.header}>
+									<Box display="flex" justifyContent="center" alignItems="center">
+										<AutomationIcon className={classes.icon} />
+										<Typography variant="h6" className={classes.title}>
+											{`Module: ${automation?.config?.module}`}
+										</Typography>
+										<Typography
+											variant="h6"
+											className={classes.title}
+											style={{ marginRight: '12px', marginLeft: '12px' }}
+										>
+											{'|'}
+										</Typography>
+										<Typography className={classes.title}>{'Metadata Update'}</Typography>
 									</Box>
+
 									<IconButton onClick={() => handleAutomationChange(automation._id)} size="small">
 										<DeleteIcon />
 									</IconButton>
+								</Box>
+
+								{/* Trigger Section */}
+								<Box className={classes.section}>
+									<Typography className={classes.sectionTitle}>
+										<TriggerIcon className={classes.sectionIcon} />
+										Trigger Condition
+									</Typography>
+									<Typography className={classes.value}>
+										{automation?.config?.triggerField}: {automation?.config?.triggerValue}
+									</Typography>
+								</Box>
+
+								{/* Target Section */}
+								<Box className={classes.section}>
+									<Typography className={classes.sectionTitle}>
+										<TargetIcon className={classes.sectionIcon} />
+										Target Action
+									</Typography>
+									<Typography className={classes.value}>
+										{automation?.config?.targetField}: {automation?.config?.targetValue}
+									</Typography>
+								</Box>
+
+								{/* Footer */}
+								<Box className={classes.footer}>
+									<div>
+										<Typography variant="span" color="textSecondary">
+											{'Status: '}
+										</Typography>
+										<Typography variant="p" style={{ fontSize: '1.25em', fontWeight: '500' }}>
+											{automation.isActive ? 'Active' : 'Disabled'}
+										</Typography>
+									</div>
+									<Switch checked={automation.isActive} color="primary" size="small" />
 								</Box>
 							</CardContent>
 						</Card>
 					</Grid>
 				))
 			) : (
-				<Box>
-					<Typography style={{ color: '#888' }}>Nothing to show. Try creating a new automation</Typography>
+				<Box p={3} textAlign="center" width="100%">
+					<Typography variant="body1" color="textSecondary">
+						Nothing to show. Try creating a new automation
+					</Typography>
 				</Box>
 			)}
 		</Grid>
