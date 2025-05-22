@@ -14,7 +14,7 @@ import { GET_ALL_MODELS } from 'graphQL/useQueryModels';
 
 import { tableGlobalController } from 'stateManagement/tableController';
 
-import { showInfoMessage } from 'actions';
+import { showErrorMessage } from 'actions';
 
 import { useStyles } from './styles';
 import DynamicForm from '../Forms/DynamicForm';
@@ -100,9 +100,29 @@ function AssetAssociationDialog() {
 		});
 	};
 
+	// Function to check for duplicate mapping keys
+	const getDuplicateMappingKeys = () => {
+		const mappingKeys = fields.map(field => field?.mappingKey?.toLowerCase()).filter(key => key); // Filter out empty keys
+
+		const duplicates = mappingKeys.filter((key, index) => mappingKeys.indexOf(key) !== index);
+
+		return [...new Set(duplicates)]; // Return unique duplicates
+	};
+
+	// Find duplicate keys
+	const duplicateKeys = getDuplicateMappingKeys();
+	const hasDuplicateKeys = duplicateKeys.length > 0;
+
 	const onSubmit = data => {
+		if (hasDuplicateKeys) {
+			dispatch(
+				showErrorMessage(`Duplicate mapping keys found: ${hasDuplicateKeys.join(', ')}. Please fix before submitting.`)
+			);
+			return;
+		}
+
 		if (!hasControlColumnSelected) {
-			dispatch(showInfoMessage('Control column selection is required'));
+			dispatch(showErrorMessage('Control column selection is required'));
 			return;
 		}
 

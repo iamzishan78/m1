@@ -28,7 +28,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 	});
 
 	// Use watch to observe the isControlColumn values for all fields
-	const isControlColumns = useWatch({
+	const watchedFields = useWatch({
 		control,
 		name: 'fields', // Watch the entire fields array
 	});
@@ -39,7 +39,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 	const isCreateAssetMode = type === 'addCustomAsset';
 
 	// Check if any field has isControlColumn set to true
-	const hasControlColumnSelected = isControlColumns.some(field => field.isControlColumn === true);
+	const hasControlColumnSelected = watchedFields.some(field => field.isControlColumn === true);
 
 	return (
 		<>
@@ -259,7 +259,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 													checked={!!field.value}
 													onChange={e => field.onChange(e.target.checked)}
 													color="primary"
-													disabled={isControlColumns[index]?.isControlColumn || isAssociationDialog} // Disable when Control Column is selected
+													disabled={watchedFields[index]?.isControlColumn || isAssociationDialog} // Disable when Control Column is selected
 												/>
 											}
 											label="Required"
