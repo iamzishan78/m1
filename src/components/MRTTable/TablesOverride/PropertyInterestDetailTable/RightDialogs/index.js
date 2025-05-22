@@ -2,9 +2,9 @@ import React, { memo } from 'react';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 
-import { ConvertOwnerToContactContainer } from 'store/containers/entity';
-
 import { tableGlobalController } from 'stateManagement/tableController';
+
+import { ConvertOwnerToContactContainer } from 'store/containers/entity';
 
 import InterestDetailForm from './InterestDetailForm';
 
@@ -18,6 +18,14 @@ function PropertyInterestDetaillDialog() {
 		});
 	};
 
+	const handleClickDialogClose = () => {
+		tableGlobalController.updateState({
+			propertyInterestDetaillDialog: {
+				type: 'addInterestDetail',
+			},
+		});
+	};
+
 	return (
 		<>
 			{type === 'addInterestDetail' && (
@@ -27,7 +35,7 @@ function PropertyInterestDetaillDialog() {
 			)}
 
 			{type === 'convertOwnerToContact' && (
-				<ConvertOwnerToContactContainer propertyDetails={rest?.propertyDetails} onClose={handleCloseDialog} />
+				<ConvertOwnerToContactContainer propertyDetails={rest?.propertyDetails} onClose={handleClickDialogClose} />
 			)}
 		</>
 	);
