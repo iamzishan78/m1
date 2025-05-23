@@ -520,7 +520,9 @@ const tableESStateControllerHandler = state => ({
 				visibility['mrt-row-select'] = false;
 			}
 
+			const filteredGrouping = state.grouping.get({ noproxy: true }).filter(key => visibility[key] !== false);
 			state.columnVisibility?.set(visibility);
+			state.grouping?.set(filteredGrouping);
 		}
 	},
 

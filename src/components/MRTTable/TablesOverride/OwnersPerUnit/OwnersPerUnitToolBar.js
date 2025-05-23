@@ -230,11 +230,11 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 				<BulkUpdate isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 			)}
 
-			{isSomethingSelected && <ExportData classes={classes} {...exportPropsPass} />}
-
 			{isSomethingSelected && (
 				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 			)}
+
+			{isSomethingSelected && <ExportData classes={classes} {...exportPropsPass} />}
 
 			<OwnerPerUnitTableDialogs />
 			{globalStateValues.showFieldModal && (

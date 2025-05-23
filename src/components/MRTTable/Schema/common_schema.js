@@ -178,7 +178,7 @@ export const CommonSchema = {
 		aggregationFn,
 		AggregatedCell: ({ cell, table }) => (
 			<>
-				{name} by {table.getColumn(cell.row.groupingColumnId ?? '').columnDef.header}:
+				{name ? `${name} by ${table.getColumn(cell.row.groupingColumnId ?? '').columnDef.header}:` : ''}
 				<Box
 					sx={{
 						color: 'info.main',

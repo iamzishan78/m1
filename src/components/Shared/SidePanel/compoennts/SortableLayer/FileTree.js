@@ -54,6 +54,7 @@ const FileTree = ({ layerMap, panelItems }) => {
 						updateFn[index] = {
 							showable: { $set: current.showable },
 							visiable: { $set: current.visiable },
+							name: { $set: current.name },
 						};
 					}
 					checkforUpdate(updateFn[index], item, current, 'name');
@@ -154,7 +155,6 @@ const FileTree = ({ layerMap, panelItems }) => {
 					manySettings: layersToUpdate.map(layer => ({ _id: layer._id, layerSettings: layer.layerSettings })),
 				},
 			});
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		},
 		[items]
 	);
@@ -243,7 +243,6 @@ const FileTree = ({ layerMap, panelItems }) => {
 			updateManyUserLayerSettings({
 				variables: { manySettings: layersToUpdate },
 			});
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		},
 		[items]
 	);
@@ -268,7 +267,6 @@ const FileTree = ({ layerMap, panelItems }) => {
 					},
 				},
 			});
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		},
 		[items, panelItems]
 	);
