@@ -198,120 +198,109 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 
 // Funtion for fetching dynamic grids schema
 async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) {
+	const {
+		isAssociatedModel,
+		associatedModel,
+		tableName,
+		variables,
+		associationKey = 'relatedObject',
+	} = fetchDynamicSchema;
+
 	// Fetch dynamic grid schema
 	const result = await client.query({
-		variables: fetchDynamicSchema.variables,
+		variables,
 		query: GET_CUSTOM_ASSET_INFO,
 	});
 
-	// Fetch dynamic grid columns
 	const customAsset = result?.data?.getCustomAssetInfo?.asset;
-	globalStateController.updateState({
-		currentAsset: customAsset,
-	});
+	globalStateController.updateState({ currentAsset: customAsset });
 
-	let columns = customAsset?.modelKeys || [];
+	const columns = isAssociatedModel ? associatedModel?.modelKeys || [] : customAsset?.modelKeys || [];
 
-	if (fetchDynamicSchema.isAssociatedModel) {
-		columns = fetchDynamicSchema.associatedModel?.modelKeys || [];
-	}
+	const modelName = isAssociatedModel ? associatedModel?.tableName : tableName;
 
-	// Create dynamic grid schema
-	const dynamicTableSchema = columns
+	// Utility to build full key
+	const getColumnKey = mappingKey => (isAssociatedModel ? `${associationKey}.${mappingKey}` : mappingKey);
+
+	// Build dynamic columns
+	const dynamicColumns = columns
 		.filter(column => !!column?.isGridDisplayed)
-		.map(item => {
-			let key, modelName;
-			if (fetchDynamicSchema.isAssociatedModel) {
-				key = `${fetchDynamicSchema?.associationKey || 'relatedObject'}.${item.mappingKey}`;
-				modelName = fetchDynamicSchema.associatedModel?.tableName;
-			} else {
-				key = item.mappingKey;
-				modelName = fetchDynamicSchema.tableName;
+		.map(column => {
+			let key = getColumnKey(column.mappingKey);
+			if (column.keyType === 'user') {
+				key += '.name';
 			}
 
-			if (item.keyType === 'user') {
-				key = `${key}.name`;
-			}
-
-			const commonProperties = {
+			const commonProps = {
 				name: key,
 				accessorKey: key,
 				id: key,
-				header: item?.label,
-				type: item?.keyType,
+				header: column.label,
+				type: column.keyType,
 				size: 350,
-				isPinned: !!item?.isControlColumn,
-				isSearchField: ['date', 'user'].includes(item?.keyType) ? false : true,
+				isPinned: !!column.isControlColumn,
+				isSearchField: !['date', 'user'].includes(column.keyType),
 			};
 
-			switch (item.keyType) {
-				case 'boolean':
-					return {
-						...CommonSchema.BOOLEAN_COLUMN,
-						...commonProperties,
-					};
+			// Column rendering logic
+			const renderCell = ({ renderedCellValue, row }) => {
+				if (column.isControlColumn) {
+					const id = isAssociatedModel ? row?.original?.[associationKey]?._id : row.getValue('_id');
 
+					return (
+						<ColumnWithLink
+							value={renderedCellValue}
+							link={`/land/customAsset/${modelName}/details/${id}`}
+							onClick={e => {
+								e.stopPropagation();
+								detailCardController.setBottomSelectedTab(0);
+							}}
+						/>
+					);
+				}
+
+				const value = column.keyType === 'date' ? formatDate(row.original[key]) : renderedCellValue;
+
+				return <>{value}</>;
+			};
+
+			switch (column.keyType) {
+				case 'boolean':
+					return { ...CommonSchema.BOOLEAN_COLUMN, ...commonProps };
 				default:
 					return {
 						...CommonSchema.STRING_COLUMN,
-						...commonProperties,
-						Cell: ({ renderedCellValue, row }) => {
-							if (item?.isControlColumn) {
-								const id = fetchDynamicSchema.isAssociatedModel
-									? row?.original?.[fetchDynamicSchema?.associationKey]?._id
-									: row.getValue('_id');
-								return (
-									<ColumnWithLink
-										value={renderedCellValue}
-										link={`/land/customAsset/${modelName}/details/${id}`}
-										onClick={e => {
-											e.stopPropagation();
-											detailCardController.setBottomSelectedTab(0);
-										}}
-									/>
-								);
-							} else {
-								let value = item.keyType === 'date' ? formatDate(row.original[key]) : renderedCellValue;
-								return <>{value}</>;
-							}
-						},
+						...commonProps,
+						Cell: renderCell,
 					};
 			}
 		});
 
-	// Filter dummy columns
-	const originalTableSchema = TableSchema.filter(column => !column.isDummy);
+	// Clean original schema
+	const baseSchema = TableSchema.filter(column => !column.isDummy);
 
-	let _Schema = [...originalTableSchema, ...dynamicTableSchema];
-
-	let auditColumns = [
+	// Build audit columns
+	const auditColumns = [
 		CommonSchema.OWNER,
 		CommonSchema.CREATED_BY,
 		CommonSchema.CREATED_DATE,
 		CommonSchema.LAST_UPDATED_BY,
 		CommonSchema.LAST_UPDATED_DATE,
-	];
-
-	auditColumns = auditColumns.map(item => {
-		let key = item.accessorKey || item.id;
-		if (fetchDynamicSchema.isAssociatedModel) {
-			key = `${fetchDynamicSchema?.associationKey || 'relatedObject'}.${key}`;
-		}
-
+	].map(column => {
+		const key = getColumnKey(column.accessorKey || column.id);
 		return {
-			...item,
+			...column,
 			name: key,
 			accessorKey: key,
 			id: key,
 			Cell: ({ row }) => {
-				const value = item.type === 'date' ? formatDate(row.getValue(key)) : row.getValue(key);
+				const value = column.type === 'date' ? formatDate(row.getValue(key)) : row.getValue(key);
 				return <>{value}</>;
 			},
 		};
 	});
 
-	_Schema = [..._Schema, ...auditColumns];
-	return _Schema;
+	return [...baseSchema, ...dynamicColumns, ...auditColumns];
 }
 
 async function fetchGridViews(client, module) {
