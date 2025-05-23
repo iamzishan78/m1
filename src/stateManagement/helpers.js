@@ -381,7 +381,7 @@ export const handleMRTSchema = ({
 	handleColumnMenuClick();
 
 	const colsWithGrouping = _TableSchema
-		.filter(column => column.isGrouped)
+		.filter(column => !column.hidden && column.isGrouped)
 		.map(column => column.accessorKey || column.id);
 
 	const groupedField = colsWithGrouping.length ? colsWithGrouping : null;
