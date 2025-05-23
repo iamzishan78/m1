@@ -1531,7 +1531,7 @@ function AddDealDialog(props) {
 															onChange={e => {
 																setInternalId(e.target.value);
 															}}
-															onBlur={() => addUpdateDeal()}
+															// onBlur={() => addUpdateDeal()}
 															InputLabelProps={{
 																shrink: true,
 															}}
