@@ -7,6 +7,7 @@ import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
+import OwnerTypeCell from 'components/MRTTable/Common/TableCells/OwnerTypeCell';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
@@ -283,17 +284,33 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 
 	let _Schema = [...originalTableSchema, ...dynamicTableSchema];
 
-	if (!fetchDynamicSchema.isAssociatedModel) {
-		_Schema = [
-			..._Schema,
-			CommonSchema.OWNER,
-			CommonSchema.CREATED_BY,
-			CommonSchema.CREATED_DATE,
-			CommonSchema.LAST_UPDATED_BY,
-			CommonSchema.LAST_UPDATED_DATE,
-		];
-	}
+	let auditColumns = [
+		CommonSchema.OWNER,
+		CommonSchema.CREATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.LAST_UPDATED_DATE,
+	];
 
+	auditColumns = auditColumns.map(item => {
+		let key = item.accessorKey || item.id;
+		if (fetchDynamicSchema.isAssociatedModel) {
+			key = `${fetchDynamicSchema?.associationKey || 'relatedObject'}.${key}`;
+		}
+
+		return {
+			...item,
+			name: key,
+			accessorKey: key,
+			id: key,
+			Cell: ({ row }) => {
+				const value = item.type === 'date' ? formatDate(row.getValue(key)) : row.getValue(key);
+				return <>{value}</>;
+			},
+		};
+	});
+
+	_Schema = [..._Schema, ...auditColumns];
 	return _Schema;
 }
 

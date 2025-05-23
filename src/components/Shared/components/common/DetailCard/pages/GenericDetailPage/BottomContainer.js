@@ -67,7 +67,9 @@ const BottomContainer = () => {
 							associatedAssetName: model.name,
 							maxTableHeight: tableHeight,
 							CustomToolBar: AssetAssociationToolbar,
-							defaultFilters: [{ field: `${associationKey}._id`, value: currentAssetRecord?._id }],
+							defaultFilters: [
+								{ field: associationKey, value: currentAssetRecord?._id, useDescriptorKey: model?.useDescriptorKey },
+							],
 							fetchDynamicSchema: {
 								variables: { tableName: currentAsset?.tableName },
 								name: currentAsset?.name,
