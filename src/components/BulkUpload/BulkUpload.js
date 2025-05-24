@@ -61,7 +61,7 @@ export default function BulkUpload(props) {
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
-	const { jobStateValues } = jobController.useState(['transferData'], 'jobStateValues');
+	const { jobStateValues } = jobController.useState(['transferData', 'jobSubType'], 'jobStateValues');
 
 	if (!isEmpty(history.location.state)) {
 		previousRoute[0].match = { url: history.location.state.previousRoute };
@@ -132,6 +132,9 @@ export default function BulkUpload(props) {
 
 	const reset_state = useCallback(() => {
 		let m1neralHeaders = M1neral_headers[selectedJob.type] || [];
+		if (selectedJob.type === 'CHECKDETAILS' && jobStateValues.jobSubType === 'CHECKDETAILSENERGY') {
+			m1neralHeaders = M1neral_headers[jobStateValues.jobSubType];
+		}
 
 		const customFieldHeaders = getCustomFieldHeaders(selectedJob.type, metaDataRes?.getMetaData?.metaData);
 
@@ -142,12 +145,12 @@ export default function BulkUpload(props) {
 			activeStepNumber: selectedJob.initialActiveStepNumber || 0,
 			csvDataList: [],
 			mappedHeadersFromCSV: selectedJob.mappedHeadersFromCSV || [],
-			m1neralHeaders: selectedJob.m1neralHeaders || m1neralHeaders,
+			m1neralHeaders: m1neralHeaders?.length ? m1neralHeaders : selectedJob.m1neralHeaders,
 			options: M1neral_headers[`${selectedJob.type}_OPTIONS`],
 			jobType: selectedJob.type,
 			job: selectedJob,
 		});
-	}, [metaDataRes?.getMetaData?.metaData, selectedJob]);
+	}, [metaDataRes?.getMetaData?.metaData, selectedJob, jobStateValues.jobSubType]);
 
 	useEffect(() => {
 		reset_state();

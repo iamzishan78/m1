@@ -213,6 +213,12 @@ const RevenueStatementHeadCells = [
 		options: { sort: true, filter: true },
 	},
 	{
+		name: 'propertyDeducts',
+		label: 'Gross Deduct',
+		esKey: 'propertyDeducts',
+		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { currency: true }) },
+	},
+	{
 		name: 'netOwnerValue',
 		label: 'Owner Net Rev',
 		esKey: 'netOwnerValue',

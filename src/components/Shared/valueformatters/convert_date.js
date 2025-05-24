@@ -1,22 +1,22 @@
 // this function is intended to convert a date to a presentable format
-import moment from "moment";
+import moment from 'moment';
 
 export default function convert_date(value) {
-  if (!value) return null;
+	if (!value) return null;
 
-  const convertDate = (unixStamp) => {
-    const date = moment.utc(new Date(unixStamp)).format("MM/DD/YYYY");
+	const convertDate = unixStamp => {
+		const date = moment(unixStamp).format('MM/DD/YYYY');
 
-    if (unixStamp === "null") {
-      return "--";
-    } else if (unixStamp === null) {
-      return "--";
-    } else if (unixStamp === undefined) {
-      return "--";
-    } else {
-      return date;
-    }
-  };
+		if (unixStamp === 'null') {
+			return '--';
+		} else if (unixStamp === null) {
+			return '--';
+		} else if (unixStamp === undefined) {
+			return '--';
+		} else {
+			return date;
+		}
+	};
 
-  return convertDate(value);
+	return convertDate(value);
 }
