@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Grid, Box, Typography, CircularProgress } from '@material-ui/core';
+import { Grid, Box, Typography, CircularProgress, Dialog, DialogTitle, DialogContent } from '@material-ui/core';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 
@@ -10,27 +10,22 @@ import { GET_AUTOMATIONS } from 'graphQL/useQueryGetAutomations';
 import { globalStateController } from 'stateManagement/globalStateController';
 
 import AutomationHeader from './components/AutomationHeader';
-import CreateAutomationDialog from './components/CreateAutomationDialog';
+import CreateMetadataAutomation from './components/CreateAutomationDialog';
 import MetadataAutomation from './components/MetadataAutomation';
 
 const Automations = () => {
-	const [getAutomations, { data, loading }] = useLazyQuery(GET_AUTOMATIONS);
-	const [upsertAutomation] = useMutation(UPSERT_AUTOMATION, {
-		refetchQueries: ['getAutomations'],
-		awaitRefetchQueries: true,
-	});
-
 	const [automations, setAutomations] = useState([]);
 	const [uniqueModules, setUniqueModules] = useState([]);
 	const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
 	const [selectedType, setSelectedType] = useState({ label: 'Metadata Update', value: 'metadataUpdate' });
 	const [filters, setFilters] = useState({ status: '', module: '' });
 	const [filteredAutomations, setFilteredAutomations] = useState([]);
-	const [newAutomation, setNewAutomation] = useState({
-		triggerField: '',
-		triggerValue: '',
-		targetModule: '',
-		targetKey: '',
+	const [formLoading, setFormLoading] = useState(false);
+
+	const [getAutomations, { data: automationList, loading }] = useLazyQuery(GET_AUTOMATIONS);
+	const [upsertAutomation] = useMutation(UPSERT_AUTOMATION, {
+		refetchQueries: ['getAutomations'],
+		awaitRefetchQueries: true,
 	});
 
 	useEffect(() => {
@@ -40,10 +35,10 @@ const Automations = () => {
 				type: selectedType?.value ?? 'metadataUpdate',
 			},
 		});
-	}, []);
+	}, [selectedType?.value]);
 
 	useEffect(() => {
-		const automations = data?.getAutomations?.automations || null;
+		const automations = automationList?.getAutomations?.automations || null;
 		if (automations) {
 			const modulesArr = [];
 			automations.forEach(automation => {
@@ -55,7 +50,7 @@ const Automations = () => {
 			setFilteredAutomations(automations);
 			setUniqueModules(modulesArr);
 		}
-	}, [data]);
+	}, [automationList]);
 
 	useEffect(() => {
 		const filtered = automations.filter(automation => {
@@ -66,35 +61,34 @@ const Automations = () => {
 		setFilteredAutomations(filtered);
 	}, [filters, automations]);
 
-	const handleCreateAutomation = () => {
-		const automation = {
-			id: Date.now(),
-			...newAutomation,
-			active: true,
-		};
-
-		setAutomations([...automations, automation]);
-		setCreateDialogOpen(false);
-		setNewAutomation({
-			triggerField: '',
-			triggerValue: '',
-			targetModule: '',
-			targetKey: '',
-		});
-	};
-
 	const onAutomationChange = data => {
-		upsertAutomation({
-			variables: {
-				automation: data,
-			},
-		});
+		console.log({ data });
+		// upsertAutomation({
+		// 	variables: {
+		// 		automation: data,
+		// 	},
+		// });
 	};
 
-	const renderAutomationComponent = automation => {
+	const renderAutomationCard = automation => {
 		switch (automation?.type) {
 			case 'metadataUpdate':
 				return <MetadataAutomation automation={automation} onAutomationChange={onAutomationChange} />;
+			default:
+				return null;
+		}
+	};
+
+	const renderCreateAutomationForm = type => {
+		switch (type) {
+			case 'metadataUpdate':
+				return (
+					<CreateMetadataAutomation
+						onClose={() => setCreateDialogOpen(false)}
+						setFormLoading={setFormLoading}
+						handleCreateAutomation={onAutomationChange}
+					/>
+				);
 			default:
 				return null;
 		}
@@ -110,6 +104,7 @@ const Automations = () => {
 
 	return (
 		<Box py={10} px={3} style={{ height: '100vh', overflow: 'hidden' }}>
+			{/* HEADER SECTION*/}
 			<AutomationHeader
 				filters={filters}
 				setFilters={setFilters}
@@ -120,9 +115,10 @@ const Automations = () => {
 				appliedFiltersCount={Object.values(filters)?.filter(value => value)?.length}
 			/>
 
+			{/* CARD SECTION */}
 			<Grid container spacing={3} style={{ height: '88vh', overflow: 'scroll' }}>
 				{filteredAutomations.length ? (
-					filteredAutomations.map(automation => renderAutomationComponent(automation))
+					filteredAutomations.map(automation => renderAutomationCard(automation))
 				) : (
 					<Box p={3} textAlign="center" width="100%">
 						<Typography variant="body1" color="textSecondary">
@@ -132,13 +128,22 @@ const Automations = () => {
 				)}
 			</Grid>
 
-			<CreateAutomationDialog
-				isOpen={isCreateDialogOpen}
-				onClose={() => setCreateDialogOpen(false)}
-				newAutomation={newAutomation}
-				setNewAutomation={setNewAutomation}
-				handleCreateAutomation={handleCreateAutomation}
-			/>
+			{/* CREATION DIALOG */}
+			<Dialog open={isCreateDialogOpen} onClose={() => setCreateDialogOpen(false)} fullWidth>
+				<DialogTitle>
+					<Box display="flex" justifyContent="space-between" alignItems="center">
+						<Box>
+							<Typography variant="h6" style={{ fontSize: '1.25em', fontWeight: '800', marginRight: '12px' }}>
+								{'Create New Automation'}
+							</Typography>
+							<Typography style={{ fontSize: '0.75em' }}>{`(Type: ${selectedType.label})`}</Typography>
+						</Box>
+
+						{formLoading && <CircularProgress color="secondary" size={40} />}
+					</Box>
+				</DialogTitle>
+				{renderCreateAutomationForm(selectedType.value)}
+			</Dialog>
 		</Box>
 	);
 };

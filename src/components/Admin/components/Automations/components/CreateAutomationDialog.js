@@ -1,22 +1,32 @@
-import React from 'react';
-
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Grid, FormControl } from '@material-ui/core';
-
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useLazyQuery } from '@apollo/client';
+import { Box, DialogContent, DialogActions, Button, Grid, FormControl, CircularProgress } from '@material-ui/core';
 
 import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+import { GET_METADATA_MODULES } from 'graphQL/useQueryGetMetadataModules';
 
-const moduleOptions = ['Contacts', 'Companies', 'Deals'];
-const fieldOptions = {
-	Contacts: ['name', 'email', 'phone'],
-	Companies: ['name', 'industry', 'size'],
-	Deals: ['title', 'value', 'stage'],
-};
+const CreateAutomationDialog = ({ onClose, setFormLoading, handleCreateAutomation }) => {
+	const [moduleOptions, setModuleOptions] = useState([]);
 
-const CreateAutomationDialog = ({ isOpen, onClose, newAutomation, setNewAutomation, handleCreateAutomation }) => {
+	const [getMetadataModules, { data: metadataModules, loading: fetchingModules }] = useLazyQuery(GET_METADATA_MODULES);
+
+	useEffect(() => {
+		getMetadataModules();
+	}, []);
+
+	useEffect(() => {
+		const modules = metadataModules?.getMetadataModules?.modules.filter(Boolean) || [];
+		console.log(modules);
+		setModuleOptions(modules);
+	}, [metadataModules]);
+
+	useEffect(() => {
+		setFormLoading(fetchingModules);
+	}, [fetchingModules]);
+
 	return (
-		<Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
-			<DialogTitle>Create New Automation</DialogTitle>
+		<>
 			<DialogContent>
 				<Grid container spacing={3}>
 					<Grid item xs={12}>
@@ -25,15 +35,11 @@ const CreateAutomationDialog = ({ isOpen, onClose, newAutomation, setNewAutomati
 								fieldAttributes={{
 									label: 'Source Module',
 									optionArray: moduleOptions,
-									value: newAutomation.triggerField,
+									// value: newAutomation.triggerField,
 								}}
 								fieldEvents={{
 									onChange: ({ value }) => {
-										setNewAutomation({
-											...newAutomation,
-											triggerField: value,
-											triggerValue: '',
-										});
+										//Do something here
 									},
 								}}
 								fieldConfig={{
@@ -44,27 +50,24 @@ const CreateAutomationDialog = ({ isOpen, onClose, newAutomation, setNewAutomati
 						</FormControl>
 					</Grid>
 
-					{newAutomation.triggerField && (
+					{true && (
 						<Grid item xs={12}>
 							<FormControl fullWidth>
 								<CustomAutoComplete
 									fieldAttributes={{
 										label: 'Source Field',
-										optionArray: fieldOptions[newAutomation.triggerField] || [],
-										value: newAutomation.triggerValue,
+										// optionArray: fieldOptions[newAutomation.triggerField] || [],
+										// value: newAutomation.triggerValue,
 									}}
 									fieldEvents={{
 										onChange: ({ value }) => {
-											setNewAutomation({
-												...newAutomation,
-												triggerValue: value,
-											});
+											//Do something here
 										},
 									}}
 									fieldConfig={{
 										variant: 'outlined',
 										size: 'small',
-										disabled: !newAutomation.triggerField,
+										// disabled: !newAutomation.triggerField,
 									}}
 								/>
 							</FormControl>
@@ -77,15 +80,11 @@ const CreateAutomationDialog = ({ isOpen, onClose, newAutomation, setNewAutomati
 								fieldAttributes={{
 									label: 'Target Module',
 									optionArray: moduleOptions,
-									value: newAutomation.targetModule,
+									// value: newAutomation.targetModule,
 								}}
 								fieldEvents={{
 									onChange: ({ value }) => {
-										setNewAutomation({
-											...newAutomation,
-											targetModule: value,
-											targetKey: '',
-										});
+										//Do something here
 									},
 								}}
 								fieldConfig={{
@@ -96,27 +95,24 @@ const CreateAutomationDialog = ({ isOpen, onClose, newAutomation, setNewAutomati
 						</FormControl>
 					</Grid>
 
-					{newAutomation.targetModule && (
+					{true && (
 						<Grid item xs={12}>
 							<FormControl fullWidth>
 								<CustomAutoComplete
 									fieldAttributes={{
 										label: 'Target Field',
-										optionArray: fieldOptions[newAutomation.targetModule] || [],
-										value: newAutomation.targetKey,
+										// optionArray: fieldOptions[newAutomation.targetModule] || [],
+										// value: newAutomation.targetKey,
 									}}
 									fieldEvents={{
 										onChange: ({ value }) => {
-											setNewAutomation({
-												...newAutomation,
-												targetKey: value,
-											});
+											//Do something here
 										},
 									}}
 									fieldConfig={{
 										variant: 'outlined',
 										size: 'small',
-										disabled: !newAutomation.targetModule,
+										// disabled: !newAutomation.targetModule,
 									}}
 								/>
 							</FormControl>
@@ -129,20 +125,18 @@ const CreateAutomationDialog = ({ isOpen, onClose, newAutomation, setNewAutomati
 					Cancel
 				</Button>
 				<Button
-					onClick={handleCreateAutomation}
 					color="primary"
 					variant="contained"
-					disabled={
-						!newAutomation.triggerField ||
-						!newAutomation.triggerValue ||
-						!newAutomation.targetModule ||
-						!newAutomation.targetKey
-					}
+					disabled={false}
+					onClick={() => {
+						handleCreateAutomation();
+						onClose();
+					}}
 				>
 					Create
 				</Button>
 			</DialogActions>
-		</Dialog>
+		</>
 	);
 };
 
