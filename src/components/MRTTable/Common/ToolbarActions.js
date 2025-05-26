@@ -35,6 +35,15 @@ function ToolbarActions({ table, tableKey, children }) {
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 
+	const filteredColumns = _.pickBy(tableStateValues.columnVisibility, _.identity);
+	let filteredTableSchema = tableStateValues?.TableSchema.filter(obj => {
+		const accessorKey = obj?.accessorKey || obj?.id;
+		return (
+			(filteredColumns[accessorKey] === true && !Object.prototype.hasOwnProperty.call(obj, 'enableColumnFilter')) ||
+			obj?.isHiddenFieldExport
+		);
+	});
+
 	if (
 		tableStateValues?.isSelectAllAllowed &&
 		isAllRowsSelected &&
@@ -63,14 +72,12 @@ function ToolbarActions({ table, tableKey, children }) {
 			// Get rows based on selection state
 			const rows = isSomeRowsSelected ? table.getSelectedRowModel().rows : table.getPrePaginationRowModel().rows;
 
-			// Transform and validate data
+			// Transform and validate data, only including visible column data
 			const data = rows?.map(row => {
-				const original = row.original;
-				// Ensure all values are serializable
-				return Object.keys(original).reduce((acc, key) => {
-					const value = original[key];
-					// Convert non-primitive values to string representation
-					acc[key] = value !== null && typeof value === 'object' ? JSON.stringify(value) : value;
+				return filteredTableSchema.reduce((acc, column) => {
+					const value = row.getValue(column.id);
+					// Use column header as key and handle non-primitive values
+					acc[column.header || column.id] = value !== null && typeof value === 'object' ? JSON.stringify(value) : value;
 					return acc;
 				}, {});
 			});
