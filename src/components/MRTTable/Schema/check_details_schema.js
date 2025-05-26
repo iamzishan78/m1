@@ -7,7 +7,6 @@ import { get, set, merge } from 'lodash';
 import { createRow } from 'material-react-table';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import { CommonSchema, editFieldProps, validateRequiredString } from 'components/MRTTable/Schema/common_schema';
 import { copy, formatDate } from 'components/Shared/functions';
 import vf_number from 'components/Shared/valueformatters/vf_number';
@@ -315,7 +314,7 @@ const CheckDetailsMeta = {
 			...CommonSchema.STRING_COLUMN,
 			name: 'interestType.keyword',
 			id: 'interestType',
-			header: 'Type',
+			header: 'Interest Type',
 
 			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
@@ -441,7 +440,7 @@ const CheckDetailsMeta = {
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'ownerDeducts',
 			id: 'ownerDeducts',
-			header: 'Deduct Amt',
+			header: 'Deduct Amount',
 
 			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
@@ -455,7 +454,7 @@ const CheckDetailsMeta = {
 			...CommonSchema.STRING_COLUMN,
 			name: 'deductType.keyword',
 			id: 'deductType',
-			header: 'Deduct Cd',
+			header: 'Deduct Type',
 
 			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
@@ -475,19 +474,6 @@ const CheckDetailsMeta = {
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'number',
-				validate: validateRequiredString,
-			}),
-		},
-		{
-			...CommonSchema.STRING_COLUMN,
-			name: 'detailLineNotation',
-			id: 'detailLineNotation',
-			header: 'Detail Line Notation',
-
-			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps({
-				tableKey: 'CheckDetailsTable',
-				type: 'text',
 				validate: validateRequiredString,
 				onKeyDown: async (e, table, value, key, _, id) => {
 					window.table = table;
@@ -534,23 +520,6 @@ const CheckDetailsMeta = {
 					}
 				},
 			}),
-		},
-		{
-			...CommonSchema.HIDDEN,
-			name: 'propertyId',
-			id: 'propertyId',
-			enableEditing: false,
-		},
-		// Comment button
-		{
-			...CommonSchema.COMMENTS,
-			// Cell rendering for Comments column
-			Cell: ({ row }) => {
-				const id = row?.original?.property?._id;
-				const targetLabel = 'Property';
-				return <CommentCell id={id} value={''} targetLabel={targetLabel} />;
-			},
-			enableEditing: false,
 		},
 	],
 };
