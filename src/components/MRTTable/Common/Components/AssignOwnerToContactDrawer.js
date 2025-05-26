@@ -21,14 +21,15 @@ import EntityType from 'components/ContactDetailCard/components/FieldContent/Ent
 import { timeZoneOptions } from 'components/ContactDetailCard/components/FieldContent/timeZoneList';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loader from 'components/Loaders';
+import BulkAddActivityForm from 'components/MRTTable/Common/Dialog/BulkUpdate/BulkAddActivityForm';
 import RelatedContact from 'components/MRTTable/Common/Dialog/BulkUpdate/RelatedContact';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import FieldBulkAutoComplete from 'components/Shared/FieldBulkAutoComplete';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
 import { copy } from 'components/Shared/functions';
-import BulkAddActivityForm from 'components/MRTTable/Common/Dialog/BulkUpdate/BulkAddActivityForm';
 
 import { ASSIGN_OWNER_TO_CONTACT } from 'graphQL/useMutationAssignOwnerToContact';
+import { BULK_ADD_ACTIVITIES } from 'graphQL/useMutationBulkAddActivities';
 import { BULKUPSERTTAG } from 'graphQL/useMutationBulkUpsertTagOnContacts';
 import { UPSERT_ENTITY_CAMPAIGNS } from 'graphQL/useMutationCampaign';
 import { ADD_RELATED_CONTACTS } from 'graphQL/useMutationRelatedContact';
@@ -37,7 +38,6 @@ import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
 import { PUBLICTAGSQUERY } from 'graphQL/useQueryPublicTags';
-import { BULK_ADD_ACTIVITIES } from 'graphQL/useMutationBulkAddActivities';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableGlobalController } from 'stateManagement/tableController';
@@ -566,7 +566,7 @@ export default function AssignOwnerToContactDrawer({
 				}
 			);
 		} else if (field === 'Add New Activity') {
-			const isOwnerTable = ['TractPerUnitTable', 'OwnersPerUnitTable'].includes(rest.header);
+			const isOwnerTable = ['TractInterestOwnerTable', 'UnitInterestOwnerTable'].includes(rest.header);
 
 			bulkAddActivities({
 				variables: {
