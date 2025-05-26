@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { IconButton, Tooltip, ToggleButton } from '@mui/material';
 
+import { mkConfig, generateCsv, download } from 'export-to-csv/output';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -14,12 +16,16 @@ import TabHeader from 'components/MRTTable/Common/TabHeader';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
+import { showErrorMessage } from 'actions';
+
 import { excludeFilters } from './CommonToolBarActions';
 import TableHeader from './TableHeader';
 
 function ToolbarActions({ table, tableKey, children }) {
+	const dispatch = useDispatch();
 	const tableState = tableController(tableKey).useCompleteState();
 	const tableStateValues = tableState?.get({ noproxy: true });
+	const { isClientSide } = tableStateValues;
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 
@@ -41,7 +47,47 @@ function ToolbarActions({ table, tableKey, children }) {
 		tableController(tableKey).setMrtTableRef(table);
 	}, []);
 
+	const handleClientSideExport = () => {
+		try {
+			// Generate filename based on current date and table key
+			const timestamp = new Date().toISOString();
+			const filename = `exportGrid_${timestamp}`;
+
+			const csvConfig = mkConfig({
+				fieldSeparator: ',',
+				decimalSeparator: '.',
+				useKeysAsHeaders: true,
+				filename,
+			});
+
+			// Get rows based on selection state
+			const rows = isSomeRowsSelected ? table.getSelectedRowModel().rows : table.getPrePaginationRowModel().rows;
+
+			// Transform and validate data
+			const data = rows?.map(row => {
+				const original = row.original;
+				// Ensure all values are serializable
+				return Object.keys(original).reduce((acc, key) => {
+					const value = original[key];
+					// Convert non-primitive values to string representation
+					acc[key] = value !== null && typeof value === 'object' ? JSON.stringify(value) : value;
+					return acc;
+				}, {});
+			});
+
+			const csv = generateCsv(csvConfig)(data);
+			download(csvConfig)(csv);
+		} catch (error) {
+			dispatch(showErrorMessage(error?.message || 'Error exporting grid'));
+		}
+	};
+
 	const handleExport = () => {
+		if (isClientSide) {
+			handleClientSideExport();
+			return;
+		}
+
 		tableGlobalController.updateState({
 			dialog: {
 				type: 'exportCompleteGrid',
@@ -187,7 +233,7 @@ function ToolbarActions({ table, tableKey, children }) {
 					</small>
 				</ToggleButton>
 
-				{!tableStateValues.isGeneric && tableStateValues.data?.total > 0 && !tableStateValues.isExportDisabled && (
+				{tableStateValues.data?.total > 0 && !tableStateValues.isExportDisabled && (
 					<IconButton onClick={handleExport} data-testid="download-csv">
 						<Tooltip title="Download CSV" aria-label="add">
 							<CloudDownloadIcon />

@@ -112,12 +112,13 @@ const PropertiesRevenueMeta = {
 	getDataFromRes: res => res?.data?.getPropertiesRevenue || [],
 	getIdsFromRows: rows => rows?.map(row => row.node?.propertyId) || [],
 	isClientSide: true,
-	disableRowSelection: true,
 	isDeleteDisabled: true,
-	isExportDisabled: true,
 	enableFacetedValues: true,
 	isInFiniteScroll: true,
 	isGeneric: true,
+	defaultHeader: {
+		label: 'Revenue by Month',
+	},
 	TableSchema: baseTableSchema,
 	generateSchema: (keys, rows) => {
 		const baseKeys = ['propertyId', 'propertyName', 'purchaserNumber'];

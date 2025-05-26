@@ -977,7 +977,7 @@ export default function CommentComponent(props) {
 														{eachComment?.isActivity === true && (
 															<>
 																<div className={`${classes.whiteSpace}`}>
-																	{eachComment?.activityData.type.replace(/_/g, ' ').toUpperCase()} -{' '}
+																	{eachComment?.activityData.type?.replace(/_/g, ' ').toUpperCase()} -{' '}
 																	{eachComment?.activityData.name}
 																</div>
 																<div className={`${classes.whiteSpace}`}>

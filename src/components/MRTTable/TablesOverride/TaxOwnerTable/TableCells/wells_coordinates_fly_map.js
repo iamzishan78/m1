@@ -6,6 +6,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import RoomIcon from '@material-ui/icons/Room';
 
 import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 
@@ -55,7 +56,14 @@ const formatIt = mdata => {
 };
 
 export const useTaxOwnerWellFlyto = () => {
-	const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
+	const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS, {
+		onCompleted: () => {
+			globalStateController.updateState({ universalLoader: false });
+		},
+		onError: () => {
+			globalStateController.updateState({ universalLoader: false });
+		},
+	});
 
 	const handleFlyto = async ownerId => {
 		globalStateController.updateState({ universalLoader: true });
@@ -110,6 +118,11 @@ const WellFlyToMap = ({ id, disabled = false }) => {
 			</IconButton>
 		</Tooltip>
 	);
+};
+
+WellFlyToMap.propTypes = {
+	id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+	disabled: PropTypes.bool,
 };
 
 export default WellFlyToMap;

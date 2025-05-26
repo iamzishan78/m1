@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import { NotificationManager } from 'react-notifications';
 
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
@@ -80,6 +81,7 @@ const generateDataFunc = () => {
 		while (true) {
 			if (pausePromise) {
 				// Pause until the external promise is resolved
+				// eslint-disable-next-line no-await-in-loop
 				await pausePromise;
 			}
 			if (data) {
@@ -97,6 +99,7 @@ const generateDataFunc = () => {
 						resolve();
 					};
 				});
+				// eslint-disable-next-line no-await-in-loop
 				await pausePromise;
 			}
 		}
@@ -568,7 +571,38 @@ const layerStateControllerHandler = state => {
 	const toggleLayersActivity = (identifier, value) => {
 		let layers = globalStateController.getValue('layers');
 		const layer = layers.find(layer => layer.identifier.startsWith(identifier));
-		layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } });
+
+		handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } });
+
+		const updatedLayer = {
+			...layer,
+			layerSettings: {
+				...layer.layerSettings,
+				visiable: value,
+			},
+		};
+
+		updateLayer(updatedLayer, { visiable: value });
+
+		const { updateLayerSettings } = layerController.getAllValues();
+
+		updateLayerSettings({
+			variables: {
+				settings: {
+					_id: updatedLayer._id,
+					layerSettings: updatedLayer.layerSettings,
+				},
+			},
+		});
+
+		globalStateController.updateState({
+			layers: layers.map(l => {
+				if (l._id === layer._id) {
+					return updatedLayer;
+				}
+				return l;
+			}),
+		});
 	};
 
 	const reinitializeLayer = ({ meta, layerId, beforeLayerId, labelProps, pickable, visible }) => {
@@ -578,6 +612,7 @@ const layerStateControllerHandler = state => {
 				beforeLayerId,
 			};
 			const metaLayer = meta.layer;
+			// eslint-disable-next-line no-new
 			new DeckGlLayer({
 				layerId: layerId,
 				type: metaLayer.type,
@@ -602,11 +637,13 @@ const layerStateControllerHandler = state => {
 		}
 
 		if (ifMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
-			return handleMapBoxLayer(dbLayer);
+			handleMapBoxLayer(dbLayer);
+			return;
 		}
 
 		if (ifStaticMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
-			return handleStaticMapBoxLayer(dbLayer);
+			handleStaticMapBoxLayer(dbLayer);
+			return;
 		}
 
 		const meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
@@ -684,19 +721,21 @@ const layerStateControllerHandler = state => {
 			};
 		}
 		if (!boundingState.show?.current) {
-			return updateLayer(dbLayer, {
+			updateLayer(dbLayer, {
 				pickable,
 				...updatedProps,
 				visible: boundingState.show?.current,
 			});
+			return;
 		}
 
 		if (!boundingState.callApi) {
-			return updateLayer(dbLayer, {
+			updateLayer(dbLayer, {
 				pickable,
 				...updatedProps,
 				visible: boundingState.show?.current,
 			});
+			return;
 		}
 
 		updateLayer(dbLayer, updatedProps);
@@ -735,8 +774,8 @@ const layerStateControllerHandler = state => {
 	};
 
 	return {
-		init: (client, history) => {
-			layerController.updateState({ client, history });
+		init: (client, history, updateLayerSettings) => {
+			layerController.updateState({ client, history, updateLayerSettings });
 		},
 		resetBounds: identifier => {
 			if (typeof identifier !== 'string') {

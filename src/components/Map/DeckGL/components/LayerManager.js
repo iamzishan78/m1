@@ -1,11 +1,13 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { useApolloClient } from '@apollo/client';
+import { useApolloClient, useMutation } from '@apollo/client';
 import { debounce } from 'lodash';
 
 import { deepEqual } from 'components/Shared/functions';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
+
+import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 import { layerFiltersController } from 'stateManagement/layerFiltersController';
@@ -40,6 +42,8 @@ function LayerManager() {
 	const moveRef = useRef({});
 	const [isReady, setIsReady] = useState(false);
 
+	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
+
 	const { bbox, recalculate } = layerController.useState(['bbox', 'recalculate']);
 	const { layers, deckLayer, globalStateValues } = globalStateController.useState(
 		['layers', 'deckLayer'],
@@ -49,7 +53,7 @@ function LayerManager() {
 
 	useEffect(() => {
 		if (!window.mapRef) {
-			return;
+			return null;
 		}
 		move(moveRef);
 		window.mapRef?.on?.('move', () => move(moveRef));
@@ -59,28 +63,25 @@ function LayerManager() {
 	}, []);
 
 	useEffect(() => {
-		layerController.init(client, history);
-	}, [client, history]);
+		layerController.init(client, history, updateLayerSettings);
+	}, [client, history, updateLayerSettings]);
 
 	useEffect(() => {
 		if (globalStateValues?.layers?.length > 0 && !isReady) {
 			setIsReady(true);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layers]);
 
 	useEffect(() => {
 		if (globalStateValues?.deckLayer && globalStateValues?.layers?.length === 0) {
 			layerController.handleDeckLayer(globalStateValues?.deckLayer);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [deckLayer]);
 
 	useEffect(() => {
 		if (isReady) {
 			layerController.handleChange();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [bbox, recalculate, isReady, polygonFilter, polygonsFilter, layers]);
 
 	return null;
