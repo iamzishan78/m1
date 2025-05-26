@@ -11,6 +11,8 @@ import { DELETE_AGREEMENT_FROM_FILE_DESCRIPTOR } from 'graphQL/useMutationDelete
 
 import { globalStateController } from 'stateManagement/globalStateController';
 
+import { UserSession } from 'utils/user';
+
 import DocumentAssociation from './DocumentAssociation';
 
 export default function AssociatedAgreements({ selectedDocument }) {
@@ -84,7 +86,9 @@ export default function AssociatedAgreements({ selectedDocument }) {
 
 	// sending to Agreements page
 	const goToAgreement = shape => {
-		history.push(`/land/agreement/details/${shape?._id.toLowerCase()}`);
+		history.push(
+			`/land/agreement/details/${shape?._id.toLowerCase()}/?tenant=${UserSession.getStorageItem('tenantName')}`
+		);
 		window.setStateApp(stateApp => ({ ...stateApp, DocumentDrawer: false, selectedDocument: {} }));
 	};
 
