@@ -74,6 +74,7 @@ export const tableGlobalState = hookstate({
 export const layerStateInitialState = {
 	client: null,
 	history: null,
+	updateLayerSettings: null,
 	boundingStates: null,
 	bbox: null,
 	zoom: 0,
