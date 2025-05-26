@@ -22,6 +22,8 @@ import PropTypes from 'prop-types';
 
 import DBSearchField from 'components/Shared/Forms/Fields/DBSearchField';
 
+import GlobalStyles from 'GlobalStyles';
+
 const useStyles = makeStyles(theme => ({
 	rootPadding: {
 		padding: '6px 15px',
@@ -89,12 +91,12 @@ const useStyles = makeStyles(theme => ({
 		},
 	},
 	Link: {
+		color: `${GlobalStyles.colors.lightBlue}`,
 		textDecoration: 'none',
 		cursor: 'pointer',
 		fontSize: '16px',
 		margin: 0,
 		variant: 'subtitle1',
-		color: 'primary !important',
 		'&:hover': {
 			fontWeight: '700',
 		},
@@ -231,7 +233,6 @@ export default function DocumentAssociation({
 							<div style={{ padding: '0px 0px 0px', overflow: 'hidden' }} key={index}>
 								<ListItem>
 									<a
-										style={{ color: 'inherit' }}
 										className={classes.Link}
 										href={`${href ? href.replace('{ID}', shape._id.toLowerCase()).replace('{TENANT}', tenantName) : '_blank'}`}
 										onClick={e => {
