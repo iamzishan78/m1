@@ -241,7 +241,7 @@ export default function DocumentAssociation({
 										target="_blank"
 										rel="noreferrer"
 									>
-										{shape?.name || shape?.entityDetail?.name || shape?.checkNumber || ''}
+										{shape?.shapeJson?.name || shape?.entityDetail?.name || shape?.checkNumber || ''}
 									</a>
 
 									{deleteFileLoading && deletedRow === shape._id ? (
