@@ -89,7 +89,6 @@ const BulkAddActivityForm = ({ fieldKey, setFieldKey }) => {
 		}
 
 		const updatedValue = transformActivity(values);
-		console.log('🚀 ~ useEffect ~ updatedValue:', updatedValue);
 
 		if (!isEqual(fieldKey, updatedValue)) {
 			setFieldKey(updatedValue);
