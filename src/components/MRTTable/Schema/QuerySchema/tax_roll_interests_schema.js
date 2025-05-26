@@ -21,9 +21,7 @@ const TaxRollInterestsMeta = {
 	getIdsFromRows: rows => rows?.map(row => row?.globalWell) || [],
 	CustomToolBar: contactTaxRollInterestToolbar,
 	isClientSide: true,
-	isSelectAllAllowed: true,
 	isDeleteDisabled: true,
-	isExportDisabled: true,
 	enableFacetedValues: true,
 	isInFiniteScroll: true,
 	TableSchema: [
