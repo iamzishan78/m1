@@ -143,6 +143,13 @@ export default function DocumentAssociation({
 	const [addSelection, setAddSelection] = useState(false);
 	const [deletedRow, setDeletedRow] = useState('');
 
+	const getName = shape => {
+		if (Object.prototype.hasOwnProperty.call(shape, 'checkNumber')) {
+			return [shape?.checkNumber, shape?.payor?.name].filter(Boolean).join(' - ');
+		}
+		return shape?.shapeJson?.name || shape?.entityDetail?.name || shape?.name || '';
+	};
+
 	return (
 		<div style={{ marginRight: '14px' }}>
 			<Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
@@ -244,7 +251,7 @@ export default function DocumentAssociation({
 										target="_blank"
 										rel="noreferrer"
 									>
-										{shape?.shapeJson?.name || shape?.entityDetail?.name || shape?.checkNumber || ''}
+										{getName(shape)}
 									</a>
 
 									{deleteFileLoading && deletedRow === shape._id ? (
