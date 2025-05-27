@@ -88,15 +88,24 @@ const paymentForm = ({ setValue, getValues, isUpdate }) => {
 			},
 		},
 		{
-			renderField: 'startEndDate',
-			required: true,
+			label: 'Start Date',
+			name: 'startDate',
 			disabled: isUpdate,
-			onStartDateChange: value => {
+			type: 'date',
+			required: true,
+			onChange: value => {
 				setValue('startDate', value);
 				const { endDate, frequency } = getValues();
 				setValue('nextPayment', getNextPaymentDate(frequency, value, endDate));
 			},
-			onEndDateChange: value => {
+		},
+		{
+			label: 'End Date',
+			name: 'endDate',
+			disabled: isUpdate,
+			type: 'date',
+			required: true,
+			onChange: value => {
 				setValue('endDate', value);
 				const { startDate, frequency } = getValues();
 				setValue('nextPayment', getNextPaymentDate(frequency, startDate, value));
@@ -120,7 +129,12 @@ const paymentForm = ({ setValue, getValues, isUpdate }) => {
 				{ label: 'Weekly', value: 'Weekly' },
 			],
 		},
-
+		{
+			label: 'Next Payment',
+			name: 'nextPayment',
+			disabled: true,
+			type: 'date',
+		},
 		{
 			label: 'Amount',
 			name: 'amount',
@@ -133,12 +147,6 @@ const paymentForm = ({ setValue, getValues, isUpdate }) => {
 			InputProps: {
 				endAdornment: <InputAdornment position="end">$</InputAdornment>,
 			},
-		},
-		{
-			label: 'Next Payment',
-			name: 'nextPayment',
-			disabled: true,
-			renderField: 'datePicker',
 		},
 		{
 			label: 'Company Share',
