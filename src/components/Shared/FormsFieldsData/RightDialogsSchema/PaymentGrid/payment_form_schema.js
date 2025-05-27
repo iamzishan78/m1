@@ -14,6 +14,12 @@ const getNextPaymentDate = (value, startDate, endDate) => {
 
 	const start = new Date(startDate);
 	const end = new Date(endDate);
+	const current = new Date();
+
+	// Check if startDate is greater than current date
+	if (start > current) {
+		return startDate; // Return startDate if it's in the future
+	}
 
 	if (end <= start) {
 		return startDate; // Return startDate if endDate is less than or equal to startDate
@@ -111,6 +117,20 @@ const paymentForm = ({ setValue, getValues, isUpdate }) => {
 				setValue('endDate', value);
 				const { startDate, frequency } = getValues();
 				setValue('nextPayment', getNextPaymentDate(frequency, startDate, value));
+			},
+			onBlur: value => {
+				const { startDate, frequency } = getValues();
+				const start = new Date(startDate);
+				const end = new Date(value);
+				if (end < start) {
+					setValue('endDate', startDate);
+					setValue('nextPayment', getNextPaymentDate(frequency, startDate, startDate));
+					return startDate;
+				} else {
+					setValue('endDate', value);
+					setValue('nextPayment', getNextPaymentDate(frequency, startDate, value));
+					return value;
+				}
 			},
 		},
 		{
