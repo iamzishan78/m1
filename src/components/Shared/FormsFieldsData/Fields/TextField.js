@@ -3,9 +3,14 @@ import { Controller } from 'react-hook-form';
 
 import { Grid, TextField } from '@mui/material';
 
+import moment from 'moment';
+
 const classes = {
 	maxWidth: {
 		width: '100%',
+		'& input[type="date"]:not(:disabled)': {
+			marginLeft: '10px',
+		},
 	},
 	baseValueChanged: {
 		width: '100%',
@@ -53,10 +58,18 @@ function TextFieldComponent({ control, item, watch, error }) {
 				name={name}
 				render={props => (
 					<TextField
-						type={type}
+						type={type === 'date' && disabled ? 'text' : type}
 						size={size}
 						data-testid={`${name}-field`}
-						value={props.value}
+						value={
+							type === 'date' && disabled
+								? props.value
+									? moment(props.value).isValid()
+										? moment(props.value).format('DD/MM/YYYY')
+										: ''
+									: ''
+								: props.value
+						}
 						inputRef={props.ref}
 						onWheel={e => e.target.blur()}
 						onChange={e => {
