@@ -12,9 +12,10 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 import { AGREEMENT_PAYMENT_SUMMARY } from 'graphQL/useQueryAgreementPaymentSummary';
 
-import { AppContext } from 'AppContext';
 import { mapControlsController } from 'stateManagement/mapControlsController';
 import { tableController } from 'stateManagement/tableController';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -35,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	dockMenu: {
 		width: '100%',
-		height: '50vh',
+		height: '40vh',
 	},
 	tapsRoot: {
 		// flexGrow: 1,
