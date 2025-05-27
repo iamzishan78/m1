@@ -602,7 +602,7 @@ export function DetailComponents(props) {
 								className={classes.metaButton}
 								onClick={handleMetaToggle}
 							>
-								Meta Data
+								Metadata
 							</Button>
 							<IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
 								<MoreHorizIcon id="moreHorizIcon" size="medium" />
