@@ -336,7 +336,12 @@ export default function ObligationForm({ setSelectedActivityId }) {
 
 				<SimpleTextField disabled title="Frequecy" value={frequency.get()} setValue={() => {}} />
 				{activityType.get() !== 'Payment' && (
-					<SimpleTextField disabled title="Applicable" value={applicable.get()} setValue={() => {}} />
+					<SimpleTextField
+						disabled
+						title="Applicable"
+						value={applicable.get() ? (applicable.get() === true ? 'Yes' : 'No') : null}
+						setValue={() => {}}
+					/>
 				)}
 				<SimpleTextField disabled title="Value" value={obligationValue.get()} setValue={() => {}} />
 				<SimpleTextField disabled title="Responsible Party" value={responsibleParty.get()} setValue={() => {}} />
