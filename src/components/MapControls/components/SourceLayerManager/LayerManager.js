@@ -292,10 +292,12 @@ export default function AddLayer(props) {
 				layer.layers.forEach(l => {
 					const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
 					updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
+					layerController.handleDeckLayer({ ...l, layerSettings: { ...l.layerSettings, showable: value } });
 				});
 			} else {
 				const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === layer.identifier);
 				updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
+				layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, showable: value } });
 			}
 			return updatefn;
 		});
