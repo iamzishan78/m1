@@ -446,7 +446,6 @@ function RelatedWellsDialog(props) {
 		</div>
 	);
 
-	console.log('wellInterest', props.wellInterest);
 	return (
 		<>
 			{deleteDialogOpen && (
