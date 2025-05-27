@@ -205,8 +205,17 @@ export const CommonSchema = {
 
 			const mongoKey = `sum_${field}`.replace(/\./g, '_');
 			const value = get(footerProps, `${mongoKey}[0].${mongoKey}`);
-
-			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(INTEREST_TO_FIXED)) : 0}</div>;
+			return (
+				<div
+					style={{
+						fontWeight: 'bolder',
+						fontSize: '0.875rem',
+						color: 'rgba(0, 0, 0, 0.87)',
+					}}
+				>
+					{value ? addTrailingZeros(parseFloat(value).toFixed(INTEREST_TO_FIXED)) : 0}
+				</div>
+			);
 		},
 	}),
 	INTEREST_COLUMN: {
