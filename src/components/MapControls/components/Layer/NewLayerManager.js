@@ -121,17 +121,19 @@ function NewLayerManager() {
 	}, [globalStateValues.datasets]);
 	const layerCategories = useMemo(() => {
 		const dataset = globalStateValues.datasets.find(dataset => dataset.name === source?.name);
+		let filteredCategories = dataset?.categories;
 		if (source?.name === 'M1 Platform') {
-			dataset.categories = dataset?.categories.filter(category => category.value !== 'agreement');
-			dataset.categories = [
-				...dataset.categories,
+			filteredCategories = filteredCategories.filter(category => category.value !== 'agreement');
+			// filteredCategories = dataset.categories.filter(c => !['Deeds', 'Leases', 'Contracts', 'Surfaces'].includes(c.value));
+			filteredCategories = [
+				...filteredCategories,
 				{ value: 'Deeds', label: 'Deeds' },
 				{ value: 'Leases', label: 'Leases' },
 				{ value: 'Contracts', label: 'Contracts' },
 				{ value: 'Surfaces', label: 'Surfaces' },
 			];
 		}
-		return dataset?.categories || [];
+		return filteredCategories || [];
 	}, [source, globalStateValues.datasets]);
 
 	return (
