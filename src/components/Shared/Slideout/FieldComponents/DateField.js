@@ -1,9 +1,10 @@
 import React from 'react';
+import moment from 'moment';
 
 import { Grid, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	gridStyle: {
 		display: 'flex',
 		flexDirection: 'row',
@@ -56,9 +57,9 @@ function DateField({ title, date, setDate, time, setTime, disabled = false, isTi
 				<TextField
 					margin="dense"
 					title={title}
-					type="date"
+					type={disabled ? 'text' : 'date'}
 					variant="outlined"
-					value={date}
+					value={disabled ? moment(date).format('DD/MM/YYYY') : date}
 					autoFocus
 					placeholder=""
 					fullWidth
