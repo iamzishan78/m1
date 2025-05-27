@@ -2,6 +2,8 @@ import { InputAdornment } from '@material-ui/core';
 
 import moment from 'moment';
 
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
+
 import { GET_PAYMENT_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetPaymentAutoCompleteList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
@@ -143,9 +145,14 @@ const paymentForm = ({ setValue, getValues, isUpdate }) => {
 			onChange: value => {
 				setValue('amount', value);
 			},
-			type: 'number',
 			InputProps: {
-				endAdornment: <InputAdornment position="end">$</InputAdornment>,
+				inputComponent: CurrencyFormatCustom,
+			},
+			onBlur: value => {
+				const cleanedValue = value.replace(/[$,]/g, '');
+				const numericValue = parseFloat(cleanedValue);
+				const formattedValue = numericValue.toFixed(2);
+				return formattedValue;
 			},
 		},
 		{
@@ -154,9 +161,14 @@ const paymentForm = ({ setValue, getValues, isUpdate }) => {
 			onChange: value => {
 				setValue('companyShare', value);
 			},
-			type: 'number',
 			InputProps: {
-				endAdornment: <InputAdornment position="end">$</InputAdornment>,
+				inputComponent: CurrencyFormatCustom,
+			},
+			onBlur: value => {
+				const cleanedValue = value.replace(/[$,]/g, '');
+				const numericValue = parseFloat(cleanedValue);
+				const formattedValue = numericValue.toFixed(2);
+				return formattedValue;
 			},
 		},
 		{

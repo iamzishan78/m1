@@ -99,10 +99,9 @@ const RelatedPaymentsMeta = {
 			},
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'amount.keyword',
 			id: 'amount',
-			type: 'number',
 			header: 'Amount',
 		},
 		{
