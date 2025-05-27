@@ -14,6 +14,7 @@ export const initialState = {
 	instrument: '',
 	custom_data: null,
 	fileId: null,
+	fileUpload: { upload: false, fileExtension: null, fileInformation: '' },
 };
 
 export const createViewFormState = hookstate({});

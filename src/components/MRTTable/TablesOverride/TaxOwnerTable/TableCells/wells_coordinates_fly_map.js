@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,6 +16,8 @@ import { OWNERSLATSLONS } from 'graphQL/useQueryOwnerLatsLonsArray';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { layerController } from 'stateManagement/layerStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
+
+import { showInfoMessage } from 'actions';
 
 const useStyles = makeStyles(() => ({
 	icons: {
@@ -56,6 +59,8 @@ const formatIt = mdata => {
 };
 
 export const useTaxOwnerWellFlyto = () => {
+	const dispatch = useDispatch();
+
 	const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS, {
 		onCompleted: () => {
 			globalStateController.updateState({ universalLoader: false });
@@ -75,7 +80,7 @@ export const useTaxOwnerWellFlyto = () => {
 	};
 
 	useEffect(() => {
-		if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray?.length) {
+		if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
 			if (dataOwnerWells.ownerLatsLonsArray.length > 0) {
 				findBoundsMap(formatIt(dataOwnerWells.ownerLatsLonsArray)?.features, window.mapRef, {
 					top: 50,
@@ -88,6 +93,8 @@ export const useTaxOwnerWellFlyto = () => {
 					layerController.updateState({ wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray] });
 					layerController.toggleLayersActivity('Search', true);
 				}, 0);
+			} else {
+				dispatch(showInfoMessage('No wells found for the selected owner'));
 			}
 		}
 		globalStateController.updateState({ universalLoader: false });

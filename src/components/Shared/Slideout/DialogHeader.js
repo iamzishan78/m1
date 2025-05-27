@@ -124,7 +124,7 @@ const DialogHeader = ({ handleClickDialogClose, openConfirmationDialog }) => {
 
 	return (
 		<div>
-			<Grid container style={{ padding: '10px' }}>
+			<Grid container style={{ padding: '10px', maxHeight: '115px' }}>
 				<Grid item container xs={9} alignItems="center">
 					<FormControl
 						variant="outlined"
