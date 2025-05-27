@@ -143,10 +143,6 @@ const useStyles = makeStyles(() => ({
 	},
 	fieldWidth: {
 		width: '100%',
-<<<<<<< HEAD
-=======
-		// maxWidth: 400,
->>>>>>> 06d0945ba75a25af42ea8e3e89961efe0741d7d0
 	},
 	inputField: {
 		height: 41,
