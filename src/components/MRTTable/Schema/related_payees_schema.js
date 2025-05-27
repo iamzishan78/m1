@@ -19,7 +19,7 @@ const RelatedPaymentsMeta = {
 		pageIndex: 0,
 		pageSize: 50,
 	},
-	maxTableHeight: 'calc(100vh - 550px)',
+	maxTableHeight: '30vh',
 	CustomToolBar: RelatedPayeesToolbar,
 	isInFiniteScroll: true,
 	TableSchema: [
