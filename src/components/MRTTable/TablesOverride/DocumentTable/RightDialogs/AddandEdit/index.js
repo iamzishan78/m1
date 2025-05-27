@@ -7,6 +7,7 @@ import InfoOutlined from '@material-ui/icons/InfoOutlined';
 import CheckIcon from '@material-ui/icons/LocalAtm';
 import ContactIcon from '@material-ui/icons/PermIdentity';
 
+import { pick } from 'lodash';
 import PropTypes from 'prop-types';
 
 import { DocumentContext } from 'components/Document/DocumentContext';
@@ -22,6 +23,7 @@ import { globalStateController } from 'stateManagement/globalStateController';
 import { slidoutStateController } from 'stateManagement/slidoutStateController';
 import { tableGlobalController } from 'stateManagement/tableController';
 
+import { createViewStateController, initialState } from './AddAndEditController';
 import AssociatedWells from './AssociatedWells';
 import DetailsPanel from './Detail';
 import Information from './Information';
@@ -30,6 +32,20 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	const slideOutState = slidoutStateController.useState(['views', 'view', 'activeTabs']);
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
+
+	const formController = createViewStateController(tableKey);
+
+	useEffect(() => {
+		let fieldsValue = {};
+		if (selectedDocument) {
+			fieldsValue = pick(selectedDocument, Object.keys(initialState));
+		}
+		formController?.initialize(tableKey, fieldsValue);
+
+		return () => {
+			formController?.reset();
+		};
+	}, []);
 
 	const {
 		getWellsFromDocument,
@@ -102,7 +118,12 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 					</Badge>
 				),
 				Component: () => (
-					<DetailsPanel selectedDocument={selectedDocument} handleClose={handleClose} tableKey={tableKey} />
+					<DetailsPanel
+						selectedDocument={selectedDocument}
+						handleClose={handleClose}
+						tableKey={tableKey}
+						formController={formController}
+					/>
 				),
 				props: {},
 				onClick: () => {},

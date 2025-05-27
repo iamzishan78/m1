@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState, Fragment, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { IconButton, TextField, withStyles, Typography, Grid } from '@material-ui/core';
@@ -35,7 +35,6 @@ import { CREATED_STATUS, ONE_MB } from 'utils/consts';
 
 import { showErrorMessage } from 'actions';
 
-import { createViewStateController, initialState } from './AddAndEditController';
 import UploadZone from './UploadZone';
 
 const filter = createFilterOptions();
@@ -191,7 +190,7 @@ const LightTooltip = withStyles(theme => ({
 	},
 }))(Tooltip);
 
-export default function DocumentDetails({ selectedDocument, handleClose, tableKey }) {
+export default function DocumentDetails({ selectedDocument, handleClose, tableKey, formController }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 
@@ -213,7 +212,6 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 
 	const [updateDocument] = useMutation(UPDATE_DOCUMENT);
 
-	const formController = createViewStateController(tableKey);
 	const formState = formController.useCompleteState();
 	const formStateValues = formState?.get({ noproxy: true });
 
@@ -225,9 +223,12 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		return filteredColumns[accessorKey] === true && obj?.isCustom;
 	});
 
-	const [fileUpload, setFileUpload] = useState({ upload: false, fileExtension: null, fileInformation: '' });
 	const [inputFile, setInputFile] = useState(null);
 	const [fileDownload, setFileDownload] = useState(false);
+
+	const setFileUpload = useCallback(fileUpload => {
+		formController.updateState({ fileUpload });
+	}, []);
 
 	useEffect(() => {
 		if (selectedDocument?._id || fileDownload) {
@@ -265,6 +266,20 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 			const MBS = 4;
 
 			if (file_id) {
+				const documentDialog = tableGlobalController.getValue('documentDialog');
+
+				if (!documentDialog.selectedRow?._id) {
+					tableGlobalController.updateState({
+						documentDialog: {
+							...documentDialog,
+							selectedRow: {
+								...documentDialog.selectedRow,
+								_id: file_id,
+							},
+						},
+					});
+				}
+
 				const blockBlobClient = new BlockBlobClient(uri);
 				blockBlobClient
 					.uploadBrowserData(inputFile, {
@@ -286,23 +301,11 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		}
 	}, [addFileData]);
 
-	useEffect(() => {
-		let fieldsValue = {};
-		if (selectedDocument) {
-			fieldsValue = _.pick(selectedDocument, Object.keys(initialState));
-		}
-		formController?.initialize(tableKey, fieldsValue);
-
-		return () => {
-			formController?.reset();
-		};
-	}, []);
-
 	const uploadFile = () => {
-		setInputFile(fileUpload?.fileInformation);
+		setInputFile(formStateValues.fileUpload?.fileInformation);
 		addFile({
 			variables: {
-				fileName: fileUpload?.fileInformation?.name,
+				fileName: formStateValues.fileUpload?.fileInformation?.name,
 				userId: getUser?._id,
 				// relatedObjectId: null,
 				// relatedObjectType: null,
@@ -325,10 +328,10 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	};
 
 	useEffect(() => {
-		if (fileUpload && fileUpload.upload) {
+		if (formStateValues.fileUpload && formStateValues.fileUpload.upload) {
 			uploadFile();
 		}
-	}, [fileUpload]);
+	}, [formStateValues.fileUpload]);
 
 	const replaceFile = fileIdToDelete => {
 		Loader.createToast('ReplaceFile', 'File Deletion in Progress');
@@ -546,20 +549,23 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 					}
 					interactive
 				>
-					{new RegExp(['jpg', 'jpeg', 'png', 'bmp'].join('|')).test(fileUpload?.fileExtension) ? (
+					{new RegExp(['jpg', 'jpeg', 'png', 'bmp'].join('|')).test(formStateValues.fileUpload?.fileExtension) ? (
 						<img
-							src={fileUpload?.fileInformation?.uri}
-							alt={fileUpload?.fileInformation?.name}
+							src={formStateValues.fileUpload?.fileInformation?.uri}
+							alt={formStateValues.fileUpload?.fileInformation?.name}
 							className={classes.forImage}
 						></img>
 					) : (
-						<div className={fileUpload?.fileExtension ? classes.forImageContainer : ''} onClick={() => {}}>
-							{get_file_icon(fileUpload?.fileExtension)}
+						<div
+							className={formStateValues.fileUpload?.fileExtension ? classes.forImageContainer : ''}
+							onClick={() => {}}
+						>
+							{get_file_icon(formStateValues.fileUpload?.fileExtension)}
 						</div>
 					)}
 				</LightTooltip>
 
-				{!fileUpload?.fileExtension ? (
+				{!formStateValues.fileUpload?.fileExtension ? (
 					<div className={classes.Uploadcomp}>
 						<UploadZone userId={getUser?._id} fileId={selectedDocument?._id} setFileUpload={setFileUpload} />
 					</div>
@@ -587,16 +593,17 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						color="secondary"
 						size="medium"
 						disableElevation
-						disabled={!fileUpload?.upload}
+						disabled={!formStateValues.fileUpload?.upload}
 						onClick={() => {
-							if (fileUpload?.upload) {
+							if (formStateValues.fileUpload?.upload) {
 								Loader.createToast('FileUploading', 'File Uploading in Progress');
 
-								delete formStateValues.tableKey;
 								const document = {
 									...formStateValues,
-									fileId: addFileData.addFileDescriptor.file.id,
+									fileId: addFileData?.addFileDescriptor?.file?.id || selectedDocument?._id,
 								};
+								delete document.tableKey;
+								delete document.fileUpload;
 
 								Loader.createToast('DocumentUpdating', 'Document Updating in Progress');
 								updateDocument({
@@ -748,6 +755,7 @@ DocumentDetails.propTypes = {
 	selectedDocument: PropTypes.object,
 	handleClose: PropTypes.func.isRequired,
 	tableKey: PropTypes.string.isRequired,
+	formController: PropTypes.object,
 };
 
 DocumentType.propTypes = {
