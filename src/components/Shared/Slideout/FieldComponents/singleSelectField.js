@@ -13,7 +13,6 @@ const useStyles = makeStyles(theme => ({
 	},
 	fieldWidth: {
 		width: '100%',
-		// maxWidth: 400,
 	},
 }));
 

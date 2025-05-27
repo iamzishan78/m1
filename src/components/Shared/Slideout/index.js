@@ -92,8 +92,10 @@ function Slideout({ isTransactPage, show }) {
 					noBorder
 					hideBackdrop={true}
 				>
-					<DialogHeader handleClickDialogClose={handleClose} openConfirmationDialog={openConfirmationDialog} />
-					<Dialog />
+					<div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+						<DialogHeader handleClickDialogClose={handleClose} openConfirmationDialog={openConfirmationDialog} />
+						<Dialog />
+					</div>
 				</RightDialog>
 			</div>
 		</>
