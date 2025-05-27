@@ -572,6 +572,10 @@ const layerStateControllerHandler = state => {
 		let layers = globalStateController.getValue('layers');
 		const layer = layers.find(layer => layer.identifier.startsWith(identifier));
 
+		if (!layer) {
+			return;
+		}
+
 		handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } });
 
 		const updatedLayer = {

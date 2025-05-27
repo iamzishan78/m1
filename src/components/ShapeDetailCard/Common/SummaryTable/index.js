@@ -611,7 +611,6 @@ export default function SummaryTableInfo({
 										)}
 										{data.type === 'custom' && (
 											<>
-												{console.log('data 2', data)}
 												{['qualifier', 'reviewer'].includes(data.key) && (
 													<UserList
 														id={data.key + 'Input'}

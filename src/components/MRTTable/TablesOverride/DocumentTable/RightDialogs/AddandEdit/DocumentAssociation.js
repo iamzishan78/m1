@@ -22,6 +22,8 @@ import PropTypes from 'prop-types';
 
 import DBSearchField from 'components/Shared/Forms/Fields/DBSearchField';
 
+import { UserSession } from 'utils/user';
+
 import GlobalStyles from 'GlobalStyles';
 
 const useStyles = makeStyles(theme => ({
@@ -135,11 +137,18 @@ export default function DocumentAssociation({
 }) {
 	// Initials
 	const classes = useStyles();
-	const tenantName = window.sessionStorage.getItem('tenantName');
+	const tenantName = UserSession.getStorageItem('tenantName');
 
 	// States
 	const [addSelection, setAddSelection] = useState(false);
 	const [deletedRow, setDeletedRow] = useState('');
+
+	const getName = shape => {
+		if (Object.prototype.hasOwnProperty.call(shape, 'checkNumber')) {
+			return [shape?.checkNumber, shape?.payor?.name].filter(Boolean).join(' - ');
+		}
+		return shape?.shapeJson?.name || shape?.entityDetail?.name || shape?.name || '';
+	};
 
 	return (
 		<div style={{ marginRight: '14px' }}>
@@ -242,7 +251,7 @@ export default function DocumentAssociation({
 										target="_blank"
 										rel="noreferrer"
 									>
-										{shape?.shapeJson?.name || shape?.entityDetail?.name || shape?.checkNumber || ''}
+										{getName(shape)}
 									</a>
 
 									{deleteFileLoading && deletedRow === shape._id ? (

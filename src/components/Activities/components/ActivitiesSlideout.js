@@ -66,62 +66,6 @@ export default function ActivitiesSlideout({ activityId, setSelectedActivityId, 
 				props: {},
 				onClick: () => {},
 			},
-			{
-				name: 'Contacts',
-				type: 'contact',
-				Icon: props => (
-					<Badge
-						anchorOrigin={{
-							vertical: 'top',
-							horizontal: 'right',
-						}}
-						color="primary"
-						badgeContent={stateApp?.activityContacts?.contacts?.length}
-					>
-						<IdentityIcon {...props} />
-					</Badge>
-				),
-				props: {
-					consts: {
-						loading: false,
-						stateAppKey: 'activityContacts',
-					},
-					functions: {
-						gotoContact: () => {},
-						getRemoveDescriptorResponse: async descriptorId => {
-							slidoutState.loader.set(true);
-							let result = await removeCommonDescriptor({
-								variables: { id: descriptorId, relatedObjectType: 'Contact' },
-								refetchQueries: ['getContactsForActivity'],
-								awaitRefetchQueries: true,
-							});
-
-							let response = await result.data.removeCommonDescriptor.success;
-
-							return response;
-						},
-
-						addSelectedContact: contact => {
-							slidoutState.loader.set(true);
-							upsertCommonDescriptor({
-								variables: {
-									descriptorId: activityId,
-									relatedObject: contact._id,
-									relatedObjectType: 'Contact',
-									descriptorType: 'Activity',
-									userId: stateApp.user.mongoId,
-								},
-								refetchQueries: ['getContactsForActivity'],
-								awaitRefetchQueries: true,
-							}).then(result => {});
-						},
-						refetchData: () => {
-							getContactsForActivity({ activityId });
-						},
-					},
-				},
-				onClick: () => {},
-			},
 		],
 		[selectedActivity, activityId, stateApp.user.mongoId, stateApp?.activityContacts?.contacts?.length]
 	);
