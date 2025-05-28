@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useHistory, Link } from 'react-router-dom';
 
 import {
 	Typography,
@@ -34,7 +34,6 @@ import RelatedParties from 'components/Land/components/Agreements/detailComponen
 import RelatedWells from 'components/Land/components/Agreements/detailComponents/relatedWells';
 import Summary from 'components/Land/components/Agreements/detailComponents/summary';
 import NavHeader from 'components/Land/components/Common/NavHeader';
-import MapProvider from 'components/Map/MapProvider';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 import DocViewer from 'components/Shared/DocViewer';
@@ -156,12 +155,6 @@ const useStyles = makeStyles(() => ({
 			backgroundColor: drawer ? '#eceded' : '#fff',
 		},
 	}),
-	mapButton: ({ mapCollapse }) => ({
-		backgroundColor: !mapCollapse ? '#eceded' : '#fff',
-		'&:hover': {
-			backgroundColor: !mapCollapse ? '#eceded' : '#fff',
-		},
-	}),
 	validationButton: ({ validationCollapse }) => ({
 		backgroundColor: !validationCollapse ? '#eceded' : '#fff',
 		'&:hover': {
@@ -258,16 +251,13 @@ export function DetailComponents(props) {
 	const [tab, setTab] = useState(0);
 	const sectionsRef = useRef([]); // References for all tab sections
 	const observer = useRef(null); // Intersection Observer reference
-	const selectedTabRef = useRef(null);
 	// const [isNewAgmt, setNewAgmtState] = useState(false);
-	const [isButtonScroll, setButtonScroll] = useState(false);
-	const [mapCollapse, setMapCollapse] = useState(true);
 	const [validationCollapse] = useState(true);
 	const [flowlineCollapse] = useState(true);
 	const [anchorEl, setAnchorEl] = useState();
 	const [uniObj, setUniObj] = useState();
 	const [openDialog, setOpenDialog] = useState(false);
-	const classes = useStyles({ ...props, drawer, validationCollapse, flowlineCollapse, mapCollapse });
+	const classes = useStyles({ ...props, drawer, validationCollapse, flowlineCollapse });
 	// queries
 
 	const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
@@ -296,16 +286,6 @@ export function DetailComponents(props) {
 	useEffect(() => {
 		getStandardProvisions();
 	}, [getStandardProvisions]);
-
-	useEffect(() => {
-		if (selectedTabRef?.current && isButtonScroll) {
-			selectedTabRef.current.scrollIntoView({
-				behavior: 'smooth',
-				block: 'start',
-				inline: 'start',
-			});
-		}
-	}, [tab, isButtonScroll]);
 
 	useEffect(() => {
 		if (agreementId) {
@@ -364,15 +344,8 @@ export function DetailComponents(props) {
 	}, [activeAgreement, getShapeSummaryDetails]);
 
 	useEffect(() => {
-		const escapeFunc = e => {
-			if (e.key === 'Escape') {
-				setMapCollapse(true);
-			}
-		};
-		document.addEventListener('keyup', escapeFunc);
 		return () => {
 			setStateApp({ ...stateApp, viewDoc: null });
-			document.removeEventListener('keyup', escapeFunc);
 			tableGlobalController.updateState({
 				paymentMultiGrid: { showMultiGrid: false },
 			});
@@ -585,17 +558,14 @@ export function DetailComponents(props) {
               <Button startIcon={<FlowIcon />} className={classes.flowlineButton} onClick={() => setFlowlineCollapse(!flowlineCollapse)}>
                 Flowline
               </Button> */}
-							<Button
-								startIcon={<MapImgViewIcon />}
-								className={classes.mapButton}
-								onClick={() => {
-									setButtonScroll(true);
-									setTab(0);
-									setMapCollapse(o => !o);
-								}}
+
+							<Link
+								to={`/map/${activeAgreement?.layer}s/${activeAgreement?._id}?tenant=${UserSession.getStorageItem('tenantName')}`}
+								onClick={e => !activeAgreement && e.preventDefault()}
 							>
-								Map View
-							</Button>
+								<Button startIcon={<MapImgViewIcon />}>View on Map</Button>
+							</Link>
+
 							<Button
 								id="metaDataButton"
 								startIcon={<InfoOutlinedIcon />}
@@ -620,43 +590,22 @@ export function DetailComponents(props) {
 
 					<div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? 'none' : '' }}>
 						<div id="parent-div" className={classes.tabsSectionDetails}>
-							{mapCollapse ? (
-								<div
-									id="summary-div"
-									className={classes.tabDetailSection}
-									ref={el => sectionsRef.current.push(el)}
-									style={{ backgroundColor: '#fff' }}
-								>
-									<Summary
-										flexDirection={drawer ? 'column' : 'row'}
-										agreementDetails={agreementDetails}
-										activeAgreement={activeAgreement}
-										agreementProvisions={get(agreementProvisions, 'getAgreementProvisions', [])}
-										standardProvisions={get(standardProvisions, 'getStandardProvisions', [])}
-										updateAgreement={updateAgreement}
-										shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails}
-									/>
-								</div>
-							) : (
-								<div
-									id="summary-div"
-									ref={el => sectionsRef.current.push(el)}
-									className={`${classes.mapProvider}  summary-div-small-map`}
-								>
-									<MapProvider
-										match={{
-											params: {
-												expandedPanel: false,
-												openSpeedDial: false,
-												mapControls: false,
-												hideShape: true,
-												paramId: agreementId,
-												layerPadding: { padding: { top: 50, bottom: 50, left: !drawer ? 300 : 700, right: 20 } },
-											},
-										}}
-									></MapProvider>
-								</div>
-							)}
+							<div
+								id="summary-div"
+								className={classes.tabDetailSection}
+								ref={el => sectionsRef.current.push(el)}
+								style={{ backgroundColor: '#fff' }}
+							>
+								<Summary
+									flexDirection={drawer ? 'column' : 'row'}
+									agreementDetails={agreementDetails}
+									activeAgreement={activeAgreement}
+									agreementProvisions={get(agreementProvisions, 'getAgreementProvisions', [])}
+									standardProvisions={get(standardProvisions, 'getStandardProvisions', [])}
+									updateAgreement={updateAgreement}
+									shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails}
+								/>
+							</div>
 							<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
 							<div
 								id="related-parties-div"
