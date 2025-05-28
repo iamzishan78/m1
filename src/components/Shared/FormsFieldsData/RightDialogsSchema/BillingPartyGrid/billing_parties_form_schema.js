@@ -1,5 +1,6 @@
 import { InputAdornment } from '@material-ui/core';
 
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 import { calculatePercentage } from 'components/Shared/valueformatters/vf_currency';
 
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
@@ -59,16 +60,21 @@ const billingPartiesForm = ({ setValue }) => {
 			},
 			type: 'number',
 			InputProps: {
-				endAdornment: <InputAdornment position="end">%</InputAdornment>,
+				startAdornment: <InputAdornment position="start">%</InputAdornment>,
 			},
 		},
 		{
 			label: 'Billing Party Amount',
 			name: 'amount',
 			disabled: true,
-			type: 'number',
 			InputProps: {
-				endAdornment: <InputAdornment position="end">$</InputAdornment>,
+				inputComponent: CurrencyFormatCustom,
+			},
+			onBlur: value => {
+				const cleanedValue = value.replace(/[$,]/g, '');
+				const numericValue = parseFloat(cleanedValue);
+				const formattedValue = numericValue.toFixed(2);
+				return formattedValue;
 			},
 		},
 
