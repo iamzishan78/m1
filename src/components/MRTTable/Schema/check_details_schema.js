@@ -179,11 +179,41 @@ const CheckDetailsMeta = {
 			id: '_id',
 			enableEditing: false,
 		},
+
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'property.purchaserNumber.keyword',
+			id: 'property.purchaserNumber',
+			header: 'Payor Prop #',
+			Edit: editAutoCompleteField({
+				tableKey: 'CheckDetailsTable',
+				validate: validateRequiredString,
+				placeholder: 'Payor Prop #',
+				index: 'properties_flat',
+				id: 'number',
+				type: 'withOriginal',
+				onChange: (value, row, originals) => {
+					const matchedOriginal = originals?.find(original => original?.number === value);
+					set(row._valuesCache, 'property.purchaserNumber', value);
+					set(row.original, 'property.purchaserNumber', value);
+
+					set(row._valuesCache, 'property.name', matchedOriginal.name);
+					set(row.original, 'property.name', matchedOriginal.name);
+
+					set(row._valuesCache, 'property.number', matchedOriginal.number);
+					set(row.original, 'property.number', matchedOriginal.number);
+
+					set(row._valuesCache, 'property.state', matchedOriginal.state);
+
+					set(row._valuesCache, 'property.county', matchedOriginal.county);
+				},
+			}),
+		},
 		// Pinned column
 		{
 			...CommonSchema.INITAIL_PINNED,
-			name: 'property.name.keyword',
-			id: 'property.name',
+			name: 'property._id.keyword',
+			id: 'property._id',
 			header: 'Property',
 			Cell: ({ row }) => {
 				const value = `${row?.original?.property?.purchaserNumber || ''} - ${row?.original?.property?.name || row?.original?.property?.number || ''}`;
@@ -210,48 +240,19 @@ const CheckDetailsMeta = {
 		// Common columns
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'property.purchaserNumber.keyword',
-			id: 'property.purchaserNumber',
-			header: 'Payor Prop #',
-			enableEditing: false,
-		},
-
-		{
-			...CommonSchema.STRING_COLUMN,
 			name: 'property.name.keyword',
 			id: 'property.name',
 			header: 'Property Name',
 			enableEditing: false,
 		},
-
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.HIDDEN,
 			name: 'property.number.keyword',
 			id: 'property.number',
 			header: 'Operator Prop #',
-
-			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps({
-				tableKey: 'CheckDetailsTable',
-				type: 'text',
-				validate: validateRequiredString,
-				isSelect: true,
-				label: 'Operator Property #',
-				onChange: (value, id, rowData, rowId) => {
-					const TableSchema = tableController('CheckDetailsTable').getValue('TableSchema');
-
-					const column = TableSchema.find(c => c.id === id);
-
-					const { originals } = column;
-
-					const property = originals?.find?.(property => property.number === value);
-
-					set(rowData, 'property', property);
-
-					tableController('CheckDetailsTable').setEditedData(rowId, rowData);
-				},
-			}),
+			enableEditing: false,
 		},
+
 		{
 			...CommonSchema.STRING_COLUMN,
 			name: 'property.state.keyword',
