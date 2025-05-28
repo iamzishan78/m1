@@ -95,18 +95,12 @@ export default function LineItem({ checkId }) {
 		variables: getFilterVariables('interestType'),
 		fetchPolicy: 'no-cache',
 	});
-	const { data: propertiesData } = useQuery(GET_DB_FILTERS, {
-		variables: getFilterVariables('number', 'properties_flat', 'withOriginal'),
-		fetchPolicy: 'no-cache',
-	});
 
 	useEffect(() => {
 		const products = productsData?.getDbFilters?.hits?.map(hit => hit.key);
 		const interestTypes = interestTypesData?.getDbFilters?.hits?.map(hit => hit.key);
-		const properties = propertiesData?.getDbFilters?.hits?.map(hit => hit.key);
-		const propertyOriginals = propertiesData?.getDbFilters?.hits?.map(hit => hit.original?.[0]);
 
-		if (!products || !interestTypes || !properties) {
+		if (!products || !interestTypes) {
 			return;
 		}
 
@@ -120,15 +114,11 @@ export default function LineItem({ checkId }) {
 				if (column.id === 'interestType') {
 					column.editSelectOptions = interestTypes;
 				}
-				if (column.id === 'property.number') {
-					column.editSelectOptions = properties;
-					column.originals = propertyOriginals;
-				}
 
 				return column;
 			}),
 		});
-	}, [productsData, interestTypesData, propertiesData]);
+	}, [productsData, interestTypesData]);
 
 	return (
 		<div className={classes.root}>

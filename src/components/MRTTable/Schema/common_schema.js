@@ -425,11 +425,11 @@ const getFilterVariables = (field, index, type) => ({
 });
 
 export const editAutoCompleteField =
-	({ tableKey, validate, placeholder = '', required = true, id, index }) =>
+	({ tableKey, validate, placeholder = '', required = true, id, index, type, onChange }) =>
 	// eslint-disable-next-line react/display-name
 	({ cell, row, column }) => {
 		const { data: optionsData } = useQuery(GET_DB_FILTERS, {
-			variables: getFilterVariables(id, index),
+			variables: getFilterVariables(id, index, type),
 			fetchPolicy: 'no-cache',
 		});
 
@@ -438,6 +438,8 @@ export const editAutoCompleteField =
 		const filter = createFilterOptions();
 		const initialValue = cell.getValue() || '';
 		const [inputValue, setInputValue] = useState(initialValue);
+		const validationErrors = Controller.getValue('validationErrors');
+		const errorText = validationErrors?.[row.id]?.[column.id];
 
 		const handleInputChange = (e, newVal) => {
 			setInputValue(newVal);
@@ -457,6 +459,10 @@ export const editAutoCompleteField =
 			}
 
 			setInputValue(finalValue);
+
+			const originals = optionsData?.getDbFilters?.hits?.map(hit => hit.original?.[0]);
+
+			onChange?.(finalValue, row, originals);
 		};
 
 		const handleBlur = () => {
@@ -485,6 +491,16 @@ export const editAutoCompleteField =
 				value={inputValue}
 				onChange={handleChange}
 				onInputChange={handleInputChange}
+				onFocus={e => {
+					document.querySelectorAll('td.hovered').forEach(td => {
+						td.classList.remove('hovered');
+					});
+					e.target.closest?.('td')?.classList?.add('hovered');
+				}}
+				onBlur={e => {
+					e.target.closest?.('td')?.classList?.remove('hovered');
+					e.nativeEvent?.target?.closest?.('td')?.classList?.remove('hovered');
+				}}
 				filterOptions={(opts, params) => {
 					const filtered = filter(opts, params);
 					const inputVal = params.inputValue;
@@ -504,6 +520,8 @@ export const editAutoCompleteField =
 						required={required}
 						size="small"
 						onBlur={handleBlur}
+						error={!!errorText}
+						helperText={errorText}
 						placeholder={placeholder}
 						variant="standard"
 						InputProps={{
