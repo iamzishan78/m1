@@ -39,6 +39,7 @@ const ResponsibleParty = ({ value, handleChange, ...rest }) => {
 	}, [getOperatorList, searchOperator]);
 	return (
 		<AutoCompleteWithAddNew
+			allowNew={false}
 			value={value || searchOperator}
 			variant="outlined"
 			label="Responsible Party"

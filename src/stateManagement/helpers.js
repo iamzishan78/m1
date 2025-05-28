@@ -376,6 +376,9 @@ export const handleMRTSchema = ({
 		'& td:hover': {
 			border: '3px solid rgb(23, 170, 221)', // Add blue border on hover
 		},
+		'& td.hovered': {
+			border: '3px solid rgb(23, 170, 221)', // Add blue border on hover
+		},
 	};
 	handleVisiblityMenuClick();
 	handleColumnMenuClick();
