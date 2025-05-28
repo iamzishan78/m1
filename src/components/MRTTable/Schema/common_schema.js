@@ -388,7 +388,15 @@ export const editFieldProps =
 					onBlur(e);
 				}
 			},
+			onFocus: e => {
+				document.querySelectorAll('td.hovered').forEach(td => {
+					td.classList.remove('hovered');
+				});
+				e.target.closest?.('td')?.classList?.add('hovered');
+			},
 			onBlur: e => {
+				e.target.closest?.('td')?.classList?.remove('hovered');
+				e.nativeEvent?.target?.closest?.('td')?.classList?.remove('hovered');
 				onBlur(e);
 			},
 			...(onKeyDown && {
