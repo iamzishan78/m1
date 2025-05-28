@@ -194,6 +194,7 @@ const CheckDetailsMeta = {
 				id: 'purchaserNumber',
 				type: 'withOriginal',
 				onChange: (value, row, originals) => {
+					// TO Immediately update the value of other related fields (name, state and county) when the user selects a value from the dropdown (payor prop)
 					const matchedOriginal = originals?.find(original => original?.purchaserNumber === value);
 
 					unset(row._valuesCache, 'property');
@@ -213,6 +214,7 @@ const CheckDetailsMeta = {
 			id: 'property._id',
 			header: 'Property',
 			Cell: ({ row }) => {
+				// Get values from valuesCache manually becuase values are set in valuesCache when the user selects a value from the dropdown (payor prop)
 				const name = get(row?._valuesCache, 'property.name') || get(row?.original, 'property.name');
 				const purchaserNumber =
 					get(row?._valuesCache, 'property.purchaserNumber') || get(row?.original, 'property.purchaserNumber');

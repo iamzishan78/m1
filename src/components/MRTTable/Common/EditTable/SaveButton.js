@@ -42,7 +42,7 @@ const SaveButton = ({ tableKey }) => {
 					.filter(([, value]) => !!value)
 					.map(([key, value]) => {
 						const currentRow = data.rows.find(r => r._id === key);
-
+						// mergeWith is used to override the old value of property with only the value from editedData
 						function customMerge(obj, src) {
 							// eslint-disable-next-line consistent-return
 							return mergeWith({}, obj, src, (objValue, srcValue) => {
