@@ -13,10 +13,10 @@ import Comments from 'components/Shared/Comments';
 
 import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
 
-import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
-
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableController, tableGlobalController } from 'stateManagement/tableController';
+
+import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
 import DeleteConfirmationDialog from './ConfirmationDialog/DeleteConfirmationDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmationDialog';
@@ -92,12 +92,6 @@ function AllDialogs(props) {
 				tableGlobalController.refetch();
 			}
 		);
-
-		if ((hasMultiGrids && dataToDelete?.mainRecord?.includes(paymentMultiGrid?.paymentId)) || rest?.isSelectAll) {
-			tableGlobalController.updateState({
-				paymentMultiGrid: { showMultiGrid: false },
-			});
-		}
 	};
 
 	if (rest?.tableKey && rest?.tableKey !== props?.tableKey) {
