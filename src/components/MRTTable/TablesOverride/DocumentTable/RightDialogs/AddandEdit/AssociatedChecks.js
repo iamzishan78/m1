@@ -11,6 +11,8 @@ import { DELETE_CHECK_FROM_FILE_DESCRIPTOR } from 'graphQL/useMutationDeleteChec
 
 import { globalStateController } from 'stateManagement/globalStateController';
 
+import { UserSession } from 'utils/user';
+
 import DocumentAssociation from './DocumentAssociation';
 
 export default function AssociatedChecks({ selectedDocument }) {
@@ -79,7 +81,7 @@ export default function AssociatedChecks({ selectedDocument }) {
 
 	// sending to check page
 	const goToCheck = check => {
-		const tenantName = window.sessionStorage.getItem('tenantName');
+		const tenantName = UserSession.getStorageItem('tenantName');
 		history.push(`/revenue/statement/details/${check?._id.toLowerCase()}?tenant=${tenantName}`);
 		window.setStateApp(stateApp => ({ ...stateApp, DocumentDrawer: false, selectedDocument: {} }));
 	};
