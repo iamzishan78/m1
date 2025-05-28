@@ -11,6 +11,8 @@ import { DELETE_CONTACT_FROM_FILE_DESCRIPTOR } from 'graphQL/useMutationDeleteCo
 
 import { globalStateController } from 'stateManagement/globalStateController';
 
+import { UserSession } from 'utils/user';
+
 import DocumentAssociation from './DocumentAssociation';
 
 export default function AssociatedContacts({ selectedDocument }) {
@@ -82,7 +84,7 @@ export default function AssociatedContacts({ selectedDocument }) {
 
 	// sending to Contacts page
 	const goToContact = contact => {
-		const tenantName = window.sessionStorage.getItem('tenantName');
+		const tenantName = UserSession.getStorageItem('tenantName');
 		history.push(`/contact/details/${contact?._id.toLowerCase()}?tenant=${tenantName}`);
 		window.setStateApp(stateApp => ({ ...stateApp, DocumentDrawer: false, selectedDocument: {} }));
 	};

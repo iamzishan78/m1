@@ -22,11 +22,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { CommonCommentText } from 'components/Shared/CommentComponent';
 import CommentType from 'components/Shared/components/Comment/CommentType';
-
-// import value formatters
 import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
 
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
@@ -357,7 +356,7 @@ export default function Comments(props) {
 					objectType: props.targetLabel,
 					commentType: selectedCommentType,
 					pin: false,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 			refetchQueries: [
@@ -395,10 +394,10 @@ export default function Comments(props) {
 
 	/// ////////////////// DELETING A COMMENT ///////////////////////////////////////////////
 
-	const handleDeleteClick = async comment => {
+	const handleDeleteClick = comment => {
 		setLoading(true);
 		if (!props.multipleIds) {
-			await removeComment({
+			removeComment({
 				variables: {
 					commentId: comment._id,
 				},
@@ -413,7 +412,7 @@ export default function Comments(props) {
 			});
 		} else {
 			for (let i = 0; i < comment.ids.length; i++) {
-				await removeComment({
+				removeComment({
 					variables: {
 						commentId: comment.ids[i],
 					},
@@ -579,14 +578,14 @@ export default function Comments(props) {
 				{loading && <CircularProgress />}
 				{!loadingComments ? (
 					<List className={classes.list}>
-						{commentsArray.map((comment, index) =>
+						{commentsArray.map(comment =>
 							props.detailCard
 								? ((publicComment && comment.public) ||
 										(!publicComment && !comment.public && stateApp?.user?.email === comment?.user?.email)) &&
 									(commentsDisplayedCount += 1) &&
 									(props.top && props.top < commentsDisplayedCount ? null : (
 										/// / ListItem ////
-										<div key={index}>
+										<div key={comment._id}>
 											{commentsDisplayedCount !== 1 && (
 												<Divider
 													style={{
@@ -610,6 +609,7 @@ export default function Comments(props) {
 											<div style={{ marginTop: '7px', marginBottom: '7px' }}>
 												{comment.comment.split('\n').map((line, i) => (
 													<p
+														// eslint-disable-next-line react/no-array-index-key
 														key={i}
 														style={{
 															color: '#757575',
@@ -630,7 +630,7 @@ export default function Comments(props) {
 								: /// / ListItem  End ////
 									((publicComment && comment.public) ||
 										(!publicComment && stateApp.user.email === comment?.user?.email && !comment.public)) && (
-										<ListItem key={index} className={classes.listItem} alignItems="flex-start">
+										<ListItem key={comment._id} className={classes.listItem} alignItems="flex-start">
 											<ListItemAvatar className={classes.avatar}>
 												<Avatar
 													name={comment?.user?.name || comment?.user?.email}
@@ -680,6 +680,20 @@ export default function Comments(props) {
 		</Card>
 	);
 }
+
+Comments.propTypes = {
+	targetSourceId: PropTypes.string,
+	multipleIds: PropTypes.arrayOf(PropTypes.string),
+	targetLabel: PropTypes.string,
+	refetchQueries: PropTypes.arrayOf(PropTypes.string),
+	refetch: PropTypes.func,
+	detailCard: PropTypes.bool,
+	handleRightDialogClose: PropTypes.func,
+	viewAll: PropTypes.func,
+	hideSharedCommentCheck: PropTypes.bool,
+	top: PropTypes.number,
+	focus: PropTypes.bool,
+};
 
 Comments.defaultProps = {
 	refetchQueries: [],
