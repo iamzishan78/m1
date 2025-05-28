@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 
 import { useApolloClient } from '@apollo/client';
-import { merge } from 'lodash';
+import { isObject, mergeWith } from 'lodash';
 import PropTypes from 'prop-types';
 
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
@@ -43,7 +43,16 @@ const SaveButton = ({ tableKey }) => {
 					.map(([key, value]) => {
 						const currentRow = data.rows.find(r => r._id === key);
 
-						return merge(currentRow, value);
+						function customMerge(obj, src) {
+							// eslint-disable-next-line consistent-return
+							return mergeWith({}, obj, src, (objValue, srcValue) => {
+								if (isObject(objValue) && isObject(srcValue)) {
+									return srcValue;
+								}
+							});
+						}
+
+						return customMerge(currentRow, value);
 					});
 
 				Controller.clearEditing();
