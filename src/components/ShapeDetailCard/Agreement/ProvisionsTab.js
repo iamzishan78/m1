@@ -512,7 +512,6 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 											fieldConfig={{
 												variant: 'outlined',
 												size: 'medium',
-												allowNewOptions: true,
 											}}
 											fieldAttributes={{
 												label: 'Responsible Party',

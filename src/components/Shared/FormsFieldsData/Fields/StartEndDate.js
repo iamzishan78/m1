@@ -17,6 +17,7 @@ function StartEndDate({ control, item, watch, error }) {
 					fieldAttributes={{
 						name: 'startDate',
 						label: 'Start Date',
+						format: 'MM/DD/YYYY',
 					}}
 					fieldConfig={{
 						variant: 'standard',
@@ -35,6 +36,7 @@ function StartEndDate({ control, item, watch, error }) {
 					fieldAttributes={{
 						name: 'endDate',
 						label: 'End Date',
+						format: 'MM/DD/YYYY',
 					}}
 					fieldConfig={{
 						variant: 'standard',

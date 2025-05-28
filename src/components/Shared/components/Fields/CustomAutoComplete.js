@@ -165,7 +165,7 @@ function CustomAutoComplete({
 		if (typeof fieldValue === 'string') {
 			return (
 				options?.find(
-					opt => opt === fieldValue || opt._id === fieldValue || opt.value === fieldValue || opt.name === fieldValue
+					opt => opt === fieldValue || opt?._id === fieldValue || opt?.value === fieldValue || opt?.name === fieldValue
 				) ||
 				(fieldValue ?? fallbackValue)
 			);
@@ -200,7 +200,7 @@ function CustomAutoComplete({
 			return (
 				<Typography
 					{...props}
-					key={option._id || option}
+					key={getOptionLabel(option)}
 					style={{ color: 'midnightblue', paddingLeft: '12px' }}
 				>{`Add '${option.value || option}'`}</Typography>
 			);
@@ -208,14 +208,14 @@ function CustomAutoComplete({
 
 		if (renderOptionComp) {
 			return (
-				<Grid container spacing={0} {...props} key={option._id || option}>
+				<Grid container spacing={0} {...props} key={getOptionLabel(option)}>
 					{renderOptionComp({ props, option })}
 				</Grid>
 			);
 		}
 
 		return (
-			<Grid container spacing={0} {...props} key={option?._id || option}>
+			<Grid container spacing={0} {...props} key={getOptionLabel(option)}>
 				<Grid container item xs={12} alignItems="center">
 					<Grid item xs>
 						<Typography variant="body2">{getOptionLabel(option)}</Typography>
@@ -229,7 +229,7 @@ function CustomAutoComplete({
 		return (
 			<Autocomplete
 				loading={isLoading}
-				disabled={disabled}
+				disabled={query && isLoading ? true : disabled}
 				defaultValue={defaultValue}
 				renderOption={renderOption}
 				multiple={multiple ?? false}
@@ -255,7 +255,7 @@ function CustomAutoComplete({
 				renderTags={(value, getTagProps) => {
 					return value?.map((option, index) => (
 						<Chip
-							key={option}
+							key={getOptionLabel(option)}
 							style={chipStyles}
 							{...getTagProps({ index })}
 							label={getOptionLabel(option)}

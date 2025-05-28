@@ -77,7 +77,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 									getOptions: item.getOptions,
 									query: item.query,
 									variables: item.variables,
-									isESSearch: item.query ? true : false,
+									isESSearch: item.isESSearch ?? false,
 								}}
 							/>
 						);
