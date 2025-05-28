@@ -12,6 +12,7 @@ import {
 	MenuItem,
 	ListItemIcon,
 	ListItemText,
+	Tooltip,
 } from '@material-ui/core';
 import {
 	DescriptionOutlined as DocumentIcon,
@@ -559,12 +560,22 @@ export function DetailComponents(props) {
                 Flowline
               </Button> */}
 
-							<Link
-								to={`/map/${activeAgreement?.layer}s/${activeAgreement?._id}?tenant=${UserSession.getStorageItem('tenantName')}`}
-								onClick={e => !activeAgreement && e.preventDefault()}
-							>
-								<Button startIcon={<MapImgViewIcon />}>View on Map</Button>
-							</Link>
+							{activeAgreement?.shapeJson?.geometry ? (
+								<Link
+									to={`/map/${activeAgreement?.layer}s/${activeAgreement?._id}?tenant=${UserSession.getStorageItem('tenantName')}`}
+									onClick={e => !activeAgreement && e.preventDefault()}
+								>
+									<Button startIcon={<MapImgViewIcon />}>View on Map</Button>
+								</Link>
+							) : (
+								<Tooltip title="There is no shape associated with this agreement">
+									<span>
+										<Button startIcon={<MapImgViewIcon />} disabled>
+											View on Map
+										</Button>
+									</span>
+								</Tooltip>
+							)}
 
 							<Button
 								id="metaDataButton"
