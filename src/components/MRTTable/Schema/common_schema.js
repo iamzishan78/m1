@@ -438,6 +438,8 @@ export const editAutoCompleteField =
 		const filter = createFilterOptions();
 		const initialValue = cell.getValue() || '';
 		const [inputValue, setInputValue] = useState(initialValue);
+		const validationErrors = Controller.getValue('validationErrors');
+		const errorText = validationErrors?.[row.id]?.[column.id];
 
 		const handleInputChange = (e, newVal) => {
 			setInputValue(newVal);
@@ -518,6 +520,8 @@ export const editAutoCompleteField =
 						required={required}
 						size="small"
 						onBlur={handleBlur}
+						error={!!errorText}
+						helperText={errorText}
 						placeholder={placeholder}
 						variant="standard"
 						InputProps={{

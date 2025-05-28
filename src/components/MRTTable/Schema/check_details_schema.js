@@ -185,6 +185,7 @@ const CheckDetailsMeta = {
 			name: 'property.purchaserNumber.keyword',
 			id: 'property.purchaserNumber',
 			header: 'Payor Prop #',
+			validate: validateRequiredString,
 			Edit: editAutoCompleteField({
 				tableKey: 'CheckDetailsTable',
 				validate: validateRequiredString,
@@ -293,11 +294,9 @@ const CheckDetailsMeta = {
 			id: 'product',
 			header: 'Product',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'text',
-				validate: validateRequiredString,
 				isSelect: true,
 			}),
 		},
@@ -308,11 +307,9 @@ const CheckDetailsMeta = {
 			id: 'disbursement',
 			header: 'Decimal Interest',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'number',
-				validate: validateRequiredString,
 			}),
 		},
 
@@ -322,11 +319,9 @@ const CheckDetailsMeta = {
 			id: 'interestType',
 			header: 'Interest Type',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'text',
-				validate: validateRequiredString,
 				isSelect: true,
 			}),
 		},
@@ -337,11 +332,9 @@ const CheckDetailsMeta = {
 			id: 'price',
 			header: 'Avg Price',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'number',
-				validate: validateRequiredString,
 			}),
 		},
 
@@ -357,11 +350,9 @@ const CheckDetailsMeta = {
 				return value ? <p>{vf_number(value, TO_FIXED)}</p> : <p style={{ color: '#898989b0' }}>--</p>;
 			},
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'number',
-				validate: validateRequiredString,
 			}),
 		},
 
@@ -371,11 +362,9 @@ const CheckDetailsMeta = {
 			id: 'grossPropertyValue',
 			header: 'Prop Gross Revenue',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'number',
-				validate: validateRequiredString,
 			}),
 		},
 
@@ -391,11 +380,9 @@ const CheckDetailsMeta = {
 				return value ? <p>{vf_number(value, TO_FIXED)}</p> : <p style={{ color: '#898989b0' }}>--</p>;
 			},
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'number',
-				validate: validateRequiredString,
 			}),
 		},
 
@@ -405,11 +392,9 @@ const CheckDetailsMeta = {
 			id: 'grossOwnerValue',
 			header: 'Owner Gross Revenue',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'number',
-				validate: validateRequiredString,
 			}),
 		},
 
@@ -419,11 +404,9 @@ const CheckDetailsMeta = {
 			id: 'ownerTax',
 			header: 'Owner Tax Amt',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'number',
-				validate: validateRequiredString,
 			}),
 		},
 
@@ -433,10 +416,8 @@ const CheckDetailsMeta = {
 			id: 'taxType',
 			header: 'Tax Type',
 
-			validate: validateRequiredString,
 			Edit: editAutoCompleteField({
 				tableKey: 'CheckDetailsTable',
-				validate: validateRequiredString,
 				placeholder: 'Tax Type',
 				index: 'checkdetails_flat',
 				id: 'taxType',
@@ -449,11 +430,9 @@ const CheckDetailsMeta = {
 			id: 'ownerDeducts',
 			header: 'Deduct Amount',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'number',
-				validate: validateRequiredString,
 			}),
 		},
 
@@ -463,10 +442,8 @@ const CheckDetailsMeta = {
 			id: 'deductType',
 			header: 'Deduct Type',
 
-			validate: validateRequiredString,
 			Edit: editAutoCompleteField({
 				tableKey: 'CheckDetailsTable',
-				validate: validateRequiredString,
 				placeholder: 'Deduct Type',
 				index: 'checkdetails_flat',
 				id: 'deductType',
