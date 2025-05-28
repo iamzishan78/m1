@@ -5,6 +5,7 @@ import moment from 'moment';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
 import { GET_PAYMENT_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetPaymentAutoCompleteList';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 const getNextPaymentDate = (value, startDate, endDate) => {
@@ -194,18 +195,21 @@ const paymentForm = ({ setValue, getValues, isUpdate }) => {
 		{
 			label: 'Responsible Party',
 			name: 'responsibleParty',
-			renderField: 'autoCompleteNewOption',
-			query: GET_PAYMENT_AUTOCOMPLETE_LIST,
+			renderField: 'autoComplete',
+			query: GET_ES_FILTER_LIST,
 			variables: {
-				key: 'responsibleParty',
+				esIndex: 'properties_flat',
+				filterKey: 'operator.name',
 			},
 			getOptions: apiRes => {
 				// Transform API response into options for autocomplete
-				const filterData = apiRes?.data?.paymentAutoCompleteList.map(option => ({
-					label: option,
-					value: option,
-				}));
-				return filterData;
+				const filterData = apiRes?.data?.getESFilterList?.hits
+					?.filter(option => option?.key)
+					?.map(option => ({
+						label: option.key,
+						value: option.key,
+					}));
+				return filterData ?? [];
 			},
 			onChange: selectedOption => {
 				setValue('responsibleParty', selectedOption);
