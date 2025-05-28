@@ -65,7 +65,7 @@ function TextFieldComponent({ control, item, watch, error }) {
 							type === 'date' && disabled
 								? props.value
 									? moment(props.value).isValid()
-										? moment(props.value).format('DD/MM/YYYY')
+										? moment(props.value).format('MM/DD/YYYY')
 										: ''
 									: ''
 								: props.value

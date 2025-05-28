@@ -1,14 +1,17 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 
-import { Box } from '@mui/material';
+import { Autocomplete, Box, createFilterOptions, TextField } from '@mui/material';
 
+import { useQuery } from '@apollo/client';
 import { get, set } from 'lodash';
 import moment from 'moment';
 
 import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
+
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { tableController } from 'stateManagement/tableController';
 
@@ -393,4 +396,130 @@ export const editFieldProps =
 			}),
 			...rest,
 		};
+	};
+
+const getFilterVariables = (field, index, type) => ({
+	index,
+	filters: [],
+	filterKey: field,
+	search: {
+		fields: [],
+		advanceSearch: [],
+	},
+	size: 1,
+	filterAggs: {
+		query: '',
+		field,
+		size: 10000,
+		fieldType: 'string',
+		type,
+	},
+});
+
+export const editAutoCompleteField =
+	({ tableKey, validate, placeholder = '', required = true, id, index }) =>
+	// eslint-disable-next-line react/display-name
+	({ cell, row, column }) => {
+		const { data: optionsData } = useQuery(GET_DB_FILTERS, {
+			variables: getFilterVariables(id, index),
+			fetchPolicy: 'no-cache',
+		});
+
+		const options = optionsData?.getDbFilters?.hits?.map(hit => hit.key) || [];
+		const Controller = tableController(tableKey);
+		const filter = createFilterOptions();
+		const initialValue = cell.getValue() || '';
+		const [inputValue, setInputValue] = useState(initialValue);
+
+		const handleInputChange = (e, newVal) => {
+			setInputValue(newVal);
+		};
+
+		const handleChange = (e, newValue) => {
+			let finalValue = '';
+
+			if (typeof newValue === 'string') {
+				finalValue = newValue;
+			} else if (newValue?.inputValue) {
+				finalValue = newValue.inputValue;
+			} else if (newValue) {
+				finalValue = newValue;
+			} else {
+				finalValue = '';
+			}
+
+			setInputValue(finalValue);
+		};
+
+		const handleBlur = () => {
+			const finalValue = inputValue || '';
+			const validationError = validate?.(finalValue);
+
+			const editedData = Controller.getValue('editedData');
+			const rowData = editedData?.[row.id] || {};
+
+			set(rowData, column.id, finalValue);
+
+			if (cell.setValue) {
+				cell.setValue(finalValue);
+			} else {
+				row._valuesCache[column.id] = finalValue;
+			}
+
+			Controller.setValidationErrors(row.id, column.id, validationError);
+			Controller.setEditedData(row.id, rowData);
+		};
+
+		return (
+			<Autocomplete
+				freeSolo
+				options={options}
+				value={inputValue}
+				onChange={handleChange}
+				onInputChange={handleInputChange}
+				filterOptions={(opts, params) => {
+					const filtered = filter(opts, params);
+					const inputVal = params.inputValue;
+					const isExisting = opts.some(option => option === inputVal);
+
+					if (inputVal !== '' && !isExisting) {
+						filtered.push({ inputValue: inputVal, label: `Add "${inputVal}"` });
+					}
+					return filtered;
+				}}
+				getOptionLabel={option => (typeof option === 'string' ? option : (option?.inputValue ?? option?.label ?? ''))}
+				renderOption={(props, option) => <li {...props}>{typeof option === 'string' ? option : option.label}</li>}
+				sx={{ width: '100%' }}
+				renderInput={params => (
+					<TextField
+						{...params}
+						required={required}
+						size="small"
+						onBlur={handleBlur}
+						placeholder={placeholder}
+						variant="standard"
+						InputProps={{
+							...params.InputProps,
+							disableUnderline: true,
+						}}
+						sx={{
+							'& .MuiInputBase-root': {
+								border: 'none !important',
+								boxShadow: 'none !important',
+								backgroundColor: 'transparent',
+								px: 0,
+							},
+							'& .MuiInputBase-input': {
+								px: 1,
+							},
+							'& fieldset': {
+								display: 'none',
+							},
+							width: '100%',
+							p: 0,
+						}}
+					/>
+				)}
+			/>
+		);
 	};
