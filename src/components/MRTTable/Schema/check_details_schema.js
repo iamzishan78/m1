@@ -155,10 +155,10 @@ const CheckDetailsMeta = {
 
 		await client.mutate({
 			variables: {
-				checkDetails: {
-					...rows,
+				checkDetails: rows.map(row => ({
+					...row,
 					check: customProps?.checkId,
-				},
+				})),
 			},
 			mutation: UPDATE_CHECK_DETAILS,
 		});
