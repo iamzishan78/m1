@@ -87,10 +87,6 @@ export default function LineItem({ checkId }) {
 		history.push(`/revenue/statement/details/${activeStatement?._id}`);
 	};
 
-	const { data: taxTypesData } = useQuery(GET_DB_FILTERS, {
-		variables: getFilterVariables('taxType'),
-		fetchPolicy: 'no-cache',
-	});
 	const { data: productsData } = useQuery(GET_DB_FILTERS, {
 		variables: getFilterVariables('product'),
 		fetchPolicy: 'no-cache',
@@ -105,13 +101,12 @@ export default function LineItem({ checkId }) {
 	});
 
 	useEffect(() => {
-		const taxTypes = taxTypesData?.getDbFilters?.hits?.map(hit => hit.key);
 		const products = productsData?.getDbFilters?.hits?.map(hit => hit.key);
 		const interestTypes = interestTypesData?.getDbFilters?.hits?.map(hit => hit.key);
 		const properties = propertiesData?.getDbFilters?.hits?.map(hit => hit.key);
 		const propertyOriginals = propertiesData?.getDbFilters?.hits?.map(hit => hit.original?.[0]);
 
-		if (!taxTypes || !products || !interestTypes || !properties) {
+		if (!products || !interestTypes || !properties) {
 			return;
 		}
 
@@ -119,9 +114,6 @@ export default function LineItem({ checkId }) {
 
 		tableController('CheckDetailsTable').updateState({
 			TableSchema: TableSchema.map(column => {
-				if (column.id === 'taxType') {
-					column.editSelectOptions = taxTypes;
-				}
 				if (column.id === 'product') {
 					column.editSelectOptions = products;
 				}
@@ -136,7 +128,7 @@ export default function LineItem({ checkId }) {
 				return column;
 			}),
 		});
-	}, [taxTypesData, productsData, interestTypesData, propertiesData]);
+	}, [productsData, interestTypesData, propertiesData]);
 
 	return (
 		<div className={classes.root}>

@@ -135,6 +135,7 @@ const DocumentMeta = {
 			name: 'name.keyword',
 			id: 'name',
 			header: 'File Name',
+			size: 400,
 			Cell: ({ row }) => {
 				return <FileName docInfo={row?.original} />;
 			},

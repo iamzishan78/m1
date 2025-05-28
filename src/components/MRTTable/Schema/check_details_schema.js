@@ -7,7 +7,12 @@ import { get, set, merge } from 'lodash';
 import { createRow } from 'material-react-table';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import { CommonSchema, editFieldProps, validateRequiredString } from 'components/MRTTable/Schema/common_schema';
+import {
+	CommonSchema,
+	editAutoCompleteField,
+	editFieldProps,
+	validateRequiredString,
+} from 'components/MRTTable/Schema/common_schema';
 import { copy, formatDate } from 'components/Shared/functions';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
@@ -428,11 +433,12 @@ const CheckDetailsMeta = {
 			header: 'Tax Type',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps({
+			Edit: editAutoCompleteField({
 				tableKey: 'CheckDetailsTable',
-				type: 'text',
 				validate: validateRequiredString,
-				isSelect: true,
+				placeholder: 'Tax Type',
+				index: 'checkdetails_flat',
+				id: 'taxType',
 			}),
 		},
 
@@ -457,10 +463,12 @@ const CheckDetailsMeta = {
 			header: 'Deduct Type',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps({
+			Edit: editAutoCompleteField({
 				tableKey: 'CheckDetailsTable',
-				type: 'text',
 				validate: validateRequiredString,
+				placeholder: 'Deduct Type',
+				index: 'checkdetails_flat',
+				id: 'deductType',
 			}),
 		},
 
