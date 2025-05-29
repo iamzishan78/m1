@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ import { useQuery } from '@apollo/client';
 import PropTypes from 'prop-types';
 
 import MRTTable from 'components/MRTTable';
+import CheckDetailsMeta from 'components/MRTTable/Schema/check_details_schema';
 import PdfViewer from 'components/Revenue/components/Statements/DetailComponents/LineItem/PdfViewer';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
@@ -120,6 +121,21 @@ export default function LineItem({ checkId }) {
 		});
 	}, [productsData, interestTypesData]);
 
+	const TableSchema = useMemo(() => {
+		const TableSchema = CheckDetailsMeta.TableSchema;
+
+		return TableSchema.map(column => {
+			if (column.id === 'property._id') {
+				column.isPinned = false;
+			}
+			if (column.id === 'property.purchaserNumber') {
+				column.isPinned = true;
+			}
+
+			return column;
+		});
+	}, []);
+
 	return (
 		<div className={classes.root}>
 			<Grid container display="flex" direction="row" alignItems="center" justify="space-between">
@@ -154,6 +170,7 @@ export default function LineItem({ checkId }) {
 						customProps: {
 							checkId,
 						},
+						TableSchema,
 					}}
 				/>
 			</div>

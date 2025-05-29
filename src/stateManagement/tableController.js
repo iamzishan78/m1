@@ -295,7 +295,6 @@ const tableESStateControllerHandler = state => ({
 			layerIdentifier,
 			isClientSide,
 			excludeFields,
-			enableEditing: rest.enableEditing,
 		});
 
 		const rowSelectId = isClientSide ? 'mrt-row-select' : 'over-ride-checkbox';
