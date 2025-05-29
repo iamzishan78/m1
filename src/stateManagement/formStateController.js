@@ -18,6 +18,7 @@ export const formInitialState = {
 	obligationValue: '',
 	responsibleParty: '',
 	assignedOwner: '',
+	fileUpload: { upload: false, fileExtension: null, fileInformation: '' },
 };
 
 class FormStateController extends StateController {

@@ -87,10 +87,6 @@ export default function LineItem({ checkId }) {
 		history.push(`/revenue/statement/details/${activeStatement?._id}`);
 	};
 
-	const { data: taxTypesData } = useQuery(GET_DB_FILTERS, {
-		variables: getFilterVariables('taxType'),
-		fetchPolicy: 'no-cache',
-	});
 	const { data: productsData } = useQuery(GET_DB_FILTERS, {
 		variables: getFilterVariables('product'),
 		fetchPolicy: 'no-cache',
@@ -99,19 +95,12 @@ export default function LineItem({ checkId }) {
 		variables: getFilterVariables('interestType'),
 		fetchPolicy: 'no-cache',
 	});
-	const { data: propertiesData } = useQuery(GET_DB_FILTERS, {
-		variables: getFilterVariables('number', 'properties_flat', 'withOriginal'),
-		fetchPolicy: 'no-cache',
-	});
 
 	useEffect(() => {
-		const taxTypes = taxTypesData?.getDbFilters?.hits?.map(hit => hit.key);
 		const products = productsData?.getDbFilters?.hits?.map(hit => hit.key);
 		const interestTypes = interestTypesData?.getDbFilters?.hits?.map(hit => hit.key);
-		const properties = propertiesData?.getDbFilters?.hits?.map(hit => hit.key);
-		const propertyOriginals = propertiesData?.getDbFilters?.hits?.map(hit => hit.original?.[0]);
 
-		if (!taxTypes || !products || !interestTypes || !properties) {
+		if (!products || !interestTypes) {
 			return;
 		}
 
@@ -119,24 +108,17 @@ export default function LineItem({ checkId }) {
 
 		tableController('CheckDetailsTable').updateState({
 			TableSchema: TableSchema.map(column => {
-				if (column.id === 'taxType') {
-					column.editSelectOptions = taxTypes;
-				}
 				if (column.id === 'product') {
 					column.editSelectOptions = products;
 				}
 				if (column.id === 'interestType') {
 					column.editSelectOptions = interestTypes;
 				}
-				if (column.id === 'property.number') {
-					column.editSelectOptions = properties;
-					column.originals = propertyOriginals;
-				}
 
 				return column;
 			}),
 		});
-	}, [taxTypesData, productsData, interestTypesData, propertiesData]);
+	}, [productsData, interestTypesData]);
 
 	return (
 		<div className={classes.root}>
@@ -169,6 +151,9 @@ export default function LineItem({ checkId }) {
 							},
 						],
 						isExportDisabled: true,
+						customProps: {
+							checkId,
+						},
 					}}
 				/>
 			</div>

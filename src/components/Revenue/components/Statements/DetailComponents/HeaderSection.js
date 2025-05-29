@@ -11,12 +11,12 @@ import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
 import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
+import { formatFieldDate } from 'components/Shared/functions';
 
 import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
 import { GET_DB_FILTERS, GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
@@ -263,20 +263,20 @@ function HeaderFunction(props) {
 							<Controller
 								control={control}
 								name="checkDate"
-								defaultValue={moment.utc(props?.value || '').format('MM/DD/YYYY')} // format date in utc format
+								defaultValue={null} // format date in utc format
 								render={({ field }) => (
 									<TextField
 										type="date"
 										variant="outlined"
 										margin="normal"
 										fullWidth
-										value={moment.utc(field?.value || '').format('yyyy-MM-DD')}
+										value={formatFieldDate(props?.value)}
 										onChange={e => {
 											field.onChange(e.target.value);
 										}}
 										onBlur={e => {
 											handleUpdateCheck({
-												checkDate: moment.utc(e.target.value).toDate(), // format date in utc format
+												checkDate: e.target.value,
 											});
 										}}
 										InputLabelProps={{
@@ -289,11 +289,11 @@ function HeaderFunction(props) {
 										InputProps={{
 											endAdornment: (
 												<IconButton
-													onClick={() =>
+													onClick={() => {
 														handleUpdateCheck({
 															checkDate: null,
-														})
-													}
+														});
+													}}
 												>
 													<Clear style={{ height: 22, width: 22 }} />
 												</IconButton>
@@ -396,13 +396,13 @@ function HeaderFunction(props) {
 										variant="outlined"
 										margin="normal"
 										fullWidth
-										value={moment(field?.value || '').format('YYYY-MM-DD')}
+										value={formatFieldDate(props?.value)}
 										onChange={e => {
 											field.onChange(e.target.value);
 										}}
 										onBlur={e => {
 											handleUpdateCheck({
-												depositDate: moment.utc(e.target.value).toISOString(),
+												depositDate: e.target.value,
 											});
 										}}
 										InputLabelProps={{

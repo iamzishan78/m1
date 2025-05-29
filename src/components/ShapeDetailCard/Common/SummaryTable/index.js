@@ -710,7 +710,7 @@ export default function SummaryTableInfo({
 														(get(properties, `${data.key}`, '')
 															? moment(get(properties, `${data.key}`, ''))
 																	.utc(true)
-																	.format('DD/MM/yyyy')
+																	.format('L')
 															: '-')}
 													{data.type === 'custom' && (
 														<>{['qualifier', 'reviewer'].includes(data.key) && (properties[data.key]?.name || '-')}</>

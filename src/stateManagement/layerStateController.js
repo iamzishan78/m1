@@ -55,6 +55,7 @@ const layerStateInitialState = {
 	deckLayer: null,
 	layerSettingsLoading: false,
 	projectedLayers: [],
+	updateLayerSettings: null,
 	client: null,
 	history: null,
 	boundingStates: null,
@@ -741,22 +742,22 @@ class LayerStateControllerHandler extends StateController {
 	handleDeckLayer(dbLayer, isUpdateTrigger) {
 		const client = this.getValue('client');
 		if (!client) {
-			return null;
+			return;
 		}
 
 		if (ifMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
 			this.handleMapBoxLayer(dbLayer);
-			return null;
+			return;
 		}
 
 		if (ifStaticMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
 			this.handleStaticMapBoxLayer(dbLayer);
-			return null;
+			return;
 		}
 
 		const meta = this.getLayerMeta(dbLayer);
 		if (!meta?.layer) {
-			return null;
+			return;
 		}
 
 		const layerId = `${dbLayer.identifier}_${dbLayer.layerId}`;
@@ -843,7 +844,7 @@ class LayerStateControllerHandler extends StateController {
 				...updatedProps,
 				visible: boundingState.show?.current,
 			});
-			return null;
+			return;
 		}
 
 		if (!boundingState.callApi) {
@@ -852,7 +853,7 @@ class LayerStateControllerHandler extends StateController {
 				...updatedProps,
 				visible: boundingState.show?.current,
 			});
-			return null;
+			return;
 		}
 
 		this.updateLayer(dbLayer, updatedProps);
@@ -883,7 +884,7 @@ class LayerStateControllerHandler extends StateController {
 			filters: getFilters(),
 			onData: data => {
 				if (!Array.isArray(data)) {
-					return null;
+					return;
 				}
 				let geoJson = { features: [] };
 				if (data?.length > 0) {
@@ -892,7 +893,7 @@ class LayerStateControllerHandler extends StateController {
 					}
 					const layerData = data;
 					if (!Array.isArray(layerData)) {
-						return null;
+						return;
 					}
 					geoJson = makeGeoJSON(layerData, labelProps);
 				}
@@ -902,17 +903,49 @@ class LayerStateControllerHandler extends StateController {
 						deckLayers[layerId].getData.feedData(geoJson.features);
 					}, timeout);
 				}
-				return null;
 			},
 		});
-		return null;
 	}
 
 	toggleLayersActivity(identifier, value) {
 		let layers = this.getValue('layers');
 		const layer = layers.find(layer => layer.identifier.startsWith(identifier));
 
+		if (!layer) {
+			return;
+		}
+
 		this.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } });
+
+		const updatedLayer = {
+			...layer,
+			layerSettings: {
+				...layer.layerSettings,
+				visiable: value,
+			},
+		};
+
+		this.updateLayer(updatedLayer, { visiable: value });
+
+		const { updateLayerSettings } = this.getAllValues();
+
+		updateLayerSettings({
+			variables: {
+				settings: {
+					_id: updatedLayer._id,
+					layerSettings: updatedLayer.layerSettings,
+				},
+			},
+		});
+
+		this.updateState({
+			layers: layers.map(l => {
+				if (l._id === layer._id) {
+					return updatedLayer;
+				}
+				return l;
+			}),
+		});
 	}
 
 	resetBounds(identifier, updateTriggers = false) {
@@ -1028,8 +1061,8 @@ class LayerStateControllerHandler extends StateController {
 		window.drawRef = null;
 	}
 
-	init(client, history) {
-		this.updateState({ client, history });
+	init(client, history, updateLayerSettings) {
+		this.updateState({ client, history, updateLayerSettings });
 	}
 
 	handleChange() {
@@ -1042,7 +1075,7 @@ class LayerStateControllerHandler extends StateController {
 
 	changeLayerPosition(currentLayer, beforeLayer) {
 		if (!currentLayer) {
-			return null;
+			return;
 		}
 
 		if (currentLayer && !beforeLayer) {
@@ -1053,7 +1086,6 @@ class LayerStateControllerHandler extends StateController {
 				`${beforeLayer?.identifier}_${beforeLayer.layerId}`
 			);
 		}
-		return null;
 	}
 
 	generateUpdateFn(layers, value, currentLayers, field) {

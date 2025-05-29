@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -6,6 +7,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import RoomIcon from '@material-ui/icons/Room';
 
 import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 
@@ -14,6 +16,8 @@ import { OWNERSLATSLONS } from 'graphQL/useQueryOwnerLatsLonsArray';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { layerController } from 'stateManagement/layerStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
+
+import { showInfoMessage } from 'actions';
 
 const useStyles = makeStyles(() => ({
 	icons: {
@@ -55,7 +59,16 @@ const formatIt = mdata => {
 };
 
 export const useTaxOwnerWellFlyto = () => {
-	const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
+	const dispatch = useDispatch();
+
+	const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS, {
+		onCompleted: () => {
+			globalStateController.updateState({ universalLoader: false });
+		},
+		onError: () => {
+			globalStateController.updateState({ universalLoader: false });
+		},
+	});
 
 	const handleFlyto = async ownerId => {
 		globalStateController.updateState({ universalLoader: true });
@@ -67,7 +80,7 @@ export const useTaxOwnerWellFlyto = () => {
 	};
 
 	useEffect(() => {
-		if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray?.length) {
+		if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
 			if (dataOwnerWells.ownerLatsLonsArray.length > 0) {
 				findBoundsMap(formatIt(dataOwnerWells.ownerLatsLonsArray)?.features, window.mapRef, {
 					top: 50,
@@ -80,6 +93,8 @@ export const useTaxOwnerWellFlyto = () => {
 					layerController.updateState({ wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray] });
 					layerController.toggleLayersActivity('Search', true);
 				}, 0);
+			} else {
+				dispatch(showInfoMessage('No wells found for the selected owner'));
 			}
 		}
 		globalStateController.updateState({ universalLoader: false });
@@ -110,6 +125,11 @@ const WellFlyToMap = ({ id, disabled = false }) => {
 			</IconButton>
 		</Tooltip>
 	);
+};
+
+WellFlyToMap.propTypes = {
+	id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+	disabled: PropTypes.bool,
 };
 
 export default WellFlyToMap;

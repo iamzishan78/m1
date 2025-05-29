@@ -41,7 +41,7 @@ function DialogContent(props) {
 					display: 'flex',
 					flexDirection: 'column',
 					justifyContent: 'space-between',
-					height: ' calc(100vh - 120px)',
+					height: '100%',
 				}}
 			>
 				<Component />

@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { Grid, TextField, Select, MenuItem } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { Controller } from 'react-hook-form';
 
-import _ from 'lodash';
-import { jobController } from 'stateManagement/jobStateController.js';
+import { Grid, TextField, Select, MenuItem } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { jobController } from 'stateManagement/jobStateController';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -43,10 +43,12 @@ const useStyles = makeStyles(() => ({
 
 const RevenueStatementInfoForm = ({ ...rest }) => {
 	const classes = useStyles();
-	const { control, reset, getValues, uploaderFormValues } = rest;
+	const { control, watch, reset, getValues, uploaderFormValues } = rest;
 
 	useEffect(() => {
-		if (uploaderFormValues) reset(uploaderFormValues);
+		if (uploaderFormValues) {
+			reset(uploaderFormValues);
+		}
 		return () => {
 			const values = getValues();
 			Object.keys(values).forEach(key => {
@@ -73,26 +75,6 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 			});
 		}
 	}, [watch('importType')]);
-
-	useEffect(() => {
-		getPayorList({
-			variables: {
-				search: searchOperator ? `${searchOperator}*` : '*',
-				filterKey: 'payor.name.keyword',
-				esIndex: 'checks_flat',
-				size: 50,
-			},
-		});
-	}, [getPayorList, searchOperator]);
-
-	useEffect(() => {
-		const sortList = _.orderBy(payorListData?.getESFilterList?.hits, 'key', 'asc');
-		if (sortList?.length > 0) {
-			setPayyorList(sortList);
-		} else {
-			setPayyorList([]);
-		}
-	}, [payorListData]);
 
 	return (
 		<div className={classes.root}>

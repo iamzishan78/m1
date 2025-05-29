@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { MenuItem, Select } from '@material-ui/core';
+import { MenuItem, Select, TextField } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -13,12 +13,17 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
+import { useQuery } from '@apollo/client';
 
 import { NavigationContext } from 'components/Navigation/NavigationContext';
+
+import { GET_MAPPINGS_BY_TYPE } from 'graphQL/useMappingConfiguration';
 
 import { jobController } from 'stateManagement/jobStateController';
 
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
+
+// Add this near the top with other imports
 
 const useStyles = makeStyles({
 	root: {
@@ -109,10 +114,30 @@ export default function M1neralHeaders() {
 	const classes = useStyles();
 	const [stateNav] = React.useContext(NavigationContext);
 
+	const [mappings, setMappings] = useState([]);
+	const { data: mappingsData } = useQuery(GET_MAPPINGS_BY_TYPE, {
+		variables: { type: 'CSV_MAPPING' },
+	});
+
+	useEffect(() => {
+		if (mappingsData?.getMappingsByType) {
+			setMappings(mappingsData.getMappingsByType);
+		}
+	}, [mappingsData]);
 	const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 
 	const { jobStateValues } = jobController.useState(
-		['mappedHeadersFromCSV', 'transferData', 'selectedShapeLayerOption', 'm1neralHeaders', 'csvDataList', 'jobType'],
+		[
+			'mappedHeadersFromCSV',
+			'transferData',
+			'selectedShapeLayerOption',
+			'm1neralHeaders',
+			'csvDataList',
+			'jobType',
+			'saveMappingChecked',
+			'mappingName',
+			'selectedMapping',
+		],
 		'jobStateValues'
 	);
 
@@ -304,8 +329,47 @@ export default function M1neralHeaders() {
 		<div style={main_div}>
 			<div style={{ ...big_text, ...padding_div_top }}>Match your headers to M1neral headers</div>
 			<div style={{ ...text_grey, ...padding_div_top }}>
-				Select the M1neral header that best represents the headers from your file
+				{jobStateValues.jobType === 'SHAPE_TO_M1_LAYER'
+					? 'Select the M1neral header that best represents the headers from your file or select a saved mapping to populate header mappings'
+					: 'Select the M1neral header that best represents the headers from your file'}
 			</div>
+			{jobStateValues.jobType === 'SHAPE_TO_M1_LAYER' && (
+				<div>
+					<Select
+						variant="outlined"
+						style={{
+							width: '400px',
+							marginTop: '10px',
+							marginBottom: '10px',
+							height: 40,
+						}}
+						labelId="saved-mapping-label"
+						id="saved-mapping-select"
+						value={jobStateValues.selectedMapping || ''}
+						dense
+						placeholder="Select saved mapping from the list"
+						fullWidth
+						onChange={e => {
+							const selectedMapping = mappings.find(m => m.name === e.target.value);
+							if (selectedMapping) {
+								jobController.updateState({
+									selectedMapping: e.target.value,
+									mappedHeadersFromCSV: selectedMapping.mappings,
+								});
+							}
+						}}
+					>
+						<MenuItem value="" disabled>
+							Select saved mapping
+						</MenuItem>
+						{mappings.map(mapping => (
+							<MenuItem key={mapping.name} value={mapping.name}>
+								{mapping.name}
+							</MenuItem>
+						))}
+					</Select>
+				</div>
+			)}
 			<div style={padding_div_top}>
 				<Paper className={classes.root} style={style_papaer}>
 					<TableContainer className={classes.container}>
@@ -452,6 +516,50 @@ export default function M1neralHeaders() {
 							return null; // Default case
 					}
 				})()}
+				{jobStateValues.jobType === 'SHAPE_TO_M1_LAYER' && (
+					<div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+						<div style={{ display: 'flex', alignItems: 'center' }}>
+							<Checkbox
+								id="save-mapping-checkbox"
+								color="default"
+								disabled={mappings.some(m => m.name === jobStateValues.mappingName)}
+								onChange={e => {
+									jobController.updateState({
+										saveMappingChecked: e.target.checked,
+									});
+								}}
+							/>
+							<span style={{ color: '#a6a6a6', fontWeight: 'bold' }}>Save this mapping to be used in the future</span>
+						</div>
+						<div style={{ marginTop: '10px' }}>
+							<TextField
+								variant="outlined"
+								size="small"
+								placeholder="Enter mapping name"
+								error={
+									mappings.some(m => m.name === jobStateValues.mappingName) ||
+									(jobStateValues.saveMappingChecked &&
+										(!jobStateValues.mappingName || !jobStateValues.mappingName.trim()))
+								}
+								helperText={
+									mappings.some(m => m.name === jobStateValues.mappingName)
+										? 'Mapping name already exists'
+										: jobStateValues.saveMappingChecked &&
+											  (!jobStateValues.mappingName || !jobStateValues.mappingName.trim())
+											? 'Please enter a mapping name'
+											: ''
+								}
+								style={{ width: '400px' }}
+								onChange={e => {
+									jobController.updateState({
+										mappingName: e.target.value,
+										saveMappingChecked: false, // Reset checkbox when name changes
+									});
+								}}
+							/>
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

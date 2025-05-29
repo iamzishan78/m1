@@ -374,12 +374,15 @@ export const handleMRTSchema = ({
 		'& td:hover': {
 			border: '3px solid rgb(23, 170, 221)', // Add blue border on hover
 		},
+		'& td.hovered': {
+			border: '3px solid rgb(23, 170, 221)', // Add blue border on hover
+		},
 	};
 	handleVisiblityMenuClick();
 	handleColumnMenuClick();
 
 	const colsWithGrouping = _TableSchema
-		.filter(column => column.isGrouped)
+		.filter(column => !column.hidden && column.isGrouped)
 		.map(column => column.accessorKey || column.id);
 
 	const groupedField = colsWithGrouping.length ? colsWithGrouping : null;

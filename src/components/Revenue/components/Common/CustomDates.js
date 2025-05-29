@@ -71,11 +71,16 @@ export default function Portfolio({
 	setNull,
 	datesInputWidth = 1,
 	setAllDateToNull = true,
+	setSelectedFilter,
 }) {
 	const classes = useStyles();
 	const [value, setValue] = useState(defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES);
 
 	const handleDateTypeChange = date => {
+		if (setSelectedFilter) {
+			setSelectedFilter(date);
+		}
+
 		handleCustomDateTypeChange(
 			date,
 			onChange,
@@ -256,4 +261,5 @@ Portfolio.propTypes = {
 	setNull: PropTypes.func,
 	datesInputWidth: PropTypes.number,
 	setAllDateToNull: PropTypes.bool,
+	setSelectedFilter: PropTypes.func,
 };

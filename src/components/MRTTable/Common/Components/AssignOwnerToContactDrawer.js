@@ -592,7 +592,7 @@ export default function AssignOwnerToContactDrawer({
 				}
 			);
 		} else if (field === 'Add New Activity') {
-			const isOwnerTable = ['TractPerUnitTable', 'OwnersPerUnitTable'].includes(rest.header);
+			const isOwnerTable = ['TractInterestOwnerTable', 'UnitInterestOwnerTable'].includes(rest.header);
 
 			bulkAddActivities({
 				variables: {

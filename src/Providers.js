@@ -25,6 +25,9 @@ import GlobalApolloClientProvider from './GlobalApolloClientProvider';
 import { relayStylePagination } from './graphQL/apolloPaginationSchemes.js';
 import configureStore from './store';
 
+import moment from 'moment';
+moment.locale('en'); // set globally
+
 // user management
 const store = configureStore(/ provide initial state if any /);
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore

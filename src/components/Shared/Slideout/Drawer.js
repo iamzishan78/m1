@@ -5,9 +5,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import { slidoutStateController, useSlideoutState } from 'stateManagement/slidoutStateController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
-		height: '85vh',
+		height: '100%',
 		padding: '10px',
 		position: 'absolute',
 		right: 0,

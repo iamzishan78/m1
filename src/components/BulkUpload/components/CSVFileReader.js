@@ -276,7 +276,7 @@ export default function CSVFileReader(props) {
 	};
 
 	const normalizeFieldName = fieldName => {
-		return fieldName.replace(/_/g, ' ').toLowerCase().trim();
+		return fieldName?.replace(/_/g, ' ').toLowerCase().trim();
 	};
 
 	const mapped_headers_from_CSV = data => {
