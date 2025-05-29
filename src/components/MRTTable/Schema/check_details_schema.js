@@ -13,6 +13,9 @@ import {
 	editFieldProps,
 	validateRequiredString,
 } from 'components/MRTTable/Schema/common_schema';
+import { NumberFormatPrecision } from 'components/Shared/Forms/Formatting/DecimalFormat';
+import { NumberFormatComma } from 'components/Shared/Forms/Formatting/NumberFormatComma';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 import { copy, formatDate } from 'components/Shared/functions';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
@@ -312,7 +315,11 @@ const CheckDetailsMeta = {
 
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
+				type: 'text',
+				InputProps: {
+					inputComponent: NumberFormatPrecision,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -337,7 +344,11 @@ const CheckDetailsMeta = {
 
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
+				type: 'text',
+				InputProps: {
+					inputComponent: CurrencyFormatCustom,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -355,7 +366,11 @@ const CheckDetailsMeta = {
 
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
+				type: 'text',
+				InputProps: {
+					inputComponent: NumberFormatComma,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -367,7 +382,11 @@ const CheckDetailsMeta = {
 
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
+				type: 'text',
+				InputProps: {
+					inputComponent: CurrencyFormatCustom,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -385,7 +404,11 @@ const CheckDetailsMeta = {
 
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
+				type: 'text',
+				InputProps: {
+					inputComponent: NumberFormatComma,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -397,7 +420,11 @@ const CheckDetailsMeta = {
 
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
+				type: 'text',
+				InputProps: {
+					inputComponent: CurrencyFormatCustom,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -409,7 +436,11 @@ const CheckDetailsMeta = {
 
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
+				type: 'text',
+				InputProps: {
+					inputComponent: CurrencyFormatCustom,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -435,7 +466,11 @@ const CheckDetailsMeta = {
 
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
+				type: 'text',
+				InputProps: {
+					inputComponent: CurrencyFormatCustom,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -462,8 +497,12 @@ const CheckDetailsMeta = {
 			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
+				type: 'text',
 				validate: validateRequiredString,
+				InputProps: {
+					inputComponent: CurrencyFormatCustom,
+				},
+				isNumber: true,
 				onKeyDown: async (e, table, value, key, _, id) => {
 					window.table = table;
 					if (e.key === 'Enter') {
