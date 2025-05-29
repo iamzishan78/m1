@@ -335,11 +335,30 @@ export const CommonSchema = {
 	},
 };
 
-export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);
+export const validateRequiredString = value => {
+	if (typeof value === 'number') {
+		return isNaN(value) ? 'Required' : undefined;
+	}
+
+	return !value?.length ? 'Required' : undefined;
+};
 
 export const editFieldProps =
-	({ tableKey, type, validate, isSelect = false, required = true, onChange, onKeyDown, ...rest }) =>
+	({
+		tableKey,
+		type,
+		validate,
+		isSelect = false,
+		required = true,
+		onChange,
+		InputProps,
+		isNumber,
+		onKeyDown,
+		...rest
+	}) =>
 	({ cell, row, table }) => {
+		const targetType = isSelect || !!InputProps?.inputComponent;
+
 		const Controller = tableController(tableKey);
 
 		const {
@@ -351,18 +370,20 @@ export const editFieldProps =
 		const [value, setValue] = useState(cell.getValue());
 
 		const onBlur = event => {
-			const target = isSelect ? event.target : event.currentTarget;
+			const target = targetType ? event.target : event.currentTarget;
+			const cleanedValue = target.value?.replace?.(/[$,]/g, '');
+			let finalValue = isNumber ? (cleanedValue ? Number(cleanedValue) : '') : target.value;
 
-			const validationError = validate?.(target.value);
+			const validationError = validate?.(finalValue);
 
 			const rowData = editedData[row.id] || {};
 
-			set(rowData, cell.column.id, target.value);
+			set(rowData, cell.column.id, finalValue);
 
 			Controller.setValidationErrors(row.id, cell.column.id, validationError);
 
 			if (onChange) {
-				onChange(target.value, cell.column.id, rowData, row.id);
+				onChange(finalValue, cell.column.id, rowData, row.id);
 			} else {
 				Controller.setEditedData(row.id, rowData);
 			}
@@ -380,9 +401,11 @@ export const editFieldProps =
 			helperText: errorText,
 			//store edited user in state to be saved later
 			onChange: e => {
-				const target = isSelect ? e.target : e.currentTarget;
+				const target = targetType ? e.target : e.currentTarget;
+				const cleanedValue = target.value?.replace?.(/[$,]/g, '');
+				let newValue = isNumber ? (cleanedValue ? Number(cleanedValue) : '') : target.value;
 
-				setValue(target.value);
+				setValue(newValue);
 
 				if (type === 'date' || isSelect) {
 					onBlur(e);
@@ -402,6 +425,7 @@ export const editFieldProps =
 			...(onKeyDown && {
 				onKeyDown: e => onKeyDown(e, table, value, cell.column.id, editedData[row.id], row.id),
 			}),
+			InputProps,
 			...rest,
 		};
 	};
@@ -425,11 +449,11 @@ const getFilterVariables = (field, index, type) => ({
 });
 
 export const editAutoCompleteField =
-	({ tableKey, validate, placeholder = '', required = true, id, index }) =>
+	({ tableKey, validate, placeholder = '', required = true, id, index, type, onChange }) =>
 	// eslint-disable-next-line react/display-name
 	({ cell, row, column }) => {
 		const { data: optionsData } = useQuery(GET_DB_FILTERS, {
-			variables: getFilterVariables(id, index),
+			variables: getFilterVariables(id, index, type),
 			fetchPolicy: 'no-cache',
 		});
 
@@ -438,6 +462,8 @@ export const editAutoCompleteField =
 		const filter = createFilterOptions();
 		const initialValue = cell.getValue() || '';
 		const [inputValue, setInputValue] = useState(initialValue);
+		const validationErrors = Controller.getValue('validationErrors');
+		const errorText = validationErrors?.[row.id]?.[column.id];
 
 		const handleInputChange = (e, newVal) => {
 			setInputValue(newVal);
@@ -457,6 +483,10 @@ export const editAutoCompleteField =
 			}
 
 			setInputValue(finalValue);
+
+			const originals = optionsData?.getDbFilters?.hits?.map(hit => hit.original?.[0]);
+
+			onChange?.(finalValue, row, originals);
 		};
 
 		const handleBlur = () => {
@@ -485,6 +515,16 @@ export const editAutoCompleteField =
 				value={inputValue}
 				onChange={handleChange}
 				onInputChange={handleInputChange}
+				onFocus={e => {
+					document.querySelectorAll('td.hovered').forEach(td => {
+						td.classList.remove('hovered');
+					});
+					e.target.closest?.('td')?.classList?.add('hovered');
+				}}
+				onBlur={e => {
+					e.target.closest?.('td')?.classList?.remove('hovered');
+					e.nativeEvent?.target?.closest?.('td')?.classList?.remove('hovered');
+				}}
 				filterOptions={(opts, params) => {
 					const filtered = filter(opts, params);
 					const inputVal = params.inputValue;
@@ -504,6 +544,8 @@ export const editAutoCompleteField =
 						required={required}
 						size="small"
 						onBlur={handleBlur}
+						error={!!errorText}
+						helperText={errorText}
 						placeholder={placeholder}
 						variant="standard"
 						InputProps={{

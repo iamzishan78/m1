@@ -3,7 +3,7 @@ import React from 'react';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { get, set, merge } from 'lodash';
+import { get, set, merge, unset } from 'lodash';
 import { createRow } from 'material-react-table';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
@@ -13,6 +13,9 @@ import {
 	editFieldProps,
 	validateRequiredString,
 } from 'components/MRTTable/Schema/common_schema';
+import { NumberFormatPrecision } from 'components/Shared/Forms/Formatting/DecimalFormat';
+import { NumberFormatComma } from 'components/Shared/Forms/Formatting/NumberFormatComma';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 import { copy, formatDate } from 'components/Shared/functions';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
@@ -155,10 +158,10 @@ const CheckDetailsMeta = {
 
 		await client.mutate({
 			variables: {
-				checkDetails: {
-					...rows,
+				checkDetails: rows.map(row => ({
+					...row,
 					check: customProps?.checkId,
-				},
+				})),
 			},
 			mutation: UPDATE_CHECK_DETAILS,
 		});
@@ -179,14 +182,48 @@ const CheckDetailsMeta = {
 			id: '_id',
 			enableEditing: false,
 		},
+
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'property.purchaserNumber.keyword',
+			id: 'property.purchaserNumber',
+			header: 'Payor Prop #',
+			validate: validateRequiredString,
+			Edit: editAutoCompleteField({
+				tableKey: 'CheckDetailsTable',
+				validate: validateRequiredString,
+				placeholder: 'Payor Prop #',
+				index: 'properties_flat',
+				id: 'purchaserNumber',
+				type: 'withOriginal',
+				onChange: (value, row, originals) => {
+					// TO Immediately update the value of other related fields (name, state and county) when the user selects a value from the dropdown (payor prop)
+					const matchedOriginal = originals?.find(original => original?.purchaserNumber === value);
+
+					unset(row._valuesCache, 'property');
+					unset(row._valuesCache, 'property._id');
+
+					set(row._valuesCache, 'property.purchaserNumber', matchedOriginal.purchaserNumber);
+					set(row._valuesCache, 'property.name', matchedOriginal.name);
+					set(row._valuesCache, 'property.state', matchedOriginal.state);
+					set(row._valuesCache, 'property.county', matchedOriginal.county);
+				},
+			}),
+		},
 		// Pinned column
 		{
 			...CommonSchema.INITAIL_PINNED,
-			name: 'property.name.keyword',
-			id: 'property.name',
+			name: 'property._id.keyword',
+			id: 'property._id',
 			header: 'Property',
 			Cell: ({ row }) => {
-				const value = `${row?.original?.property?.purchaserNumber || ''} - ${row?.original?.property?.name || row?.original?.property?.number || ''}`;
+				// Get values from valuesCache manually becuase values are set in valuesCache when the user selects a value from the dropdown (payor prop)
+				const name = get(row?._valuesCache, 'property.name') || get(row?.original, 'property.name');
+				const purchaserNumber =
+					get(row?._valuesCache, 'property.purchaserNumber') || get(row?.original, 'property.purchaserNumber');
+				const number = get(row?._valuesCache, 'property.number') || get(row?.original, 'property.number');
+
+				const value = `${purchaserNumber || ''} - ${name || number || ''}`;
 
 				return row?.original?.property?.IsDeleted ? (
 					<p style={{ display: 'flex', alignItems: 'center' }}>
@@ -210,48 +247,19 @@ const CheckDetailsMeta = {
 		// Common columns
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'property.purchaserNumber.keyword',
-			id: 'property.purchaserNumber',
-			header: 'Payor Prop #',
-			enableEditing: false,
-		},
-
-		{
-			...CommonSchema.STRING_COLUMN,
 			name: 'property.name.keyword',
 			id: 'property.name',
 			header: 'Property Name',
 			enableEditing: false,
 		},
-
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.HIDDEN,
 			name: 'property.number.keyword',
 			id: 'property.number',
 			header: 'Operator Prop #',
-
-			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps({
-				tableKey: 'CheckDetailsTable',
-				type: 'text',
-				validate: validateRequiredString,
-				isSelect: true,
-				label: 'Operator Property #',
-				onChange: (value, id, rowData, rowId) => {
-					const TableSchema = tableController('CheckDetailsTable').getValue('TableSchema');
-
-					const column = TableSchema.find(c => c.id === id);
-
-					const { originals } = column;
-
-					const property = originals?.find?.(property => property.number === value);
-
-					set(rowData, 'property', property);
-
-					tableController('CheckDetailsTable').setEditedData(rowId, rowData);
-				},
-			}),
+			enableEditing: false,
 		},
+
 		{
 			...CommonSchema.STRING_COLUMN,
 			name: 'property.state.keyword',
@@ -292,11 +300,9 @@ const CheckDetailsMeta = {
 			id: 'product',
 			header: 'Product',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'text',
-				validate: validateRequiredString,
 				isSelect: true,
 			}),
 		},
@@ -307,11 +313,13 @@ const CheckDetailsMeta = {
 			id: 'disbursement',
 			header: 'Decimal Interest',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
-				validate: validateRequiredString,
+				type: 'text',
+				InputProps: {
+					inputComponent: NumberFormatPrecision,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -321,11 +329,9 @@ const CheckDetailsMeta = {
 			id: 'interestType',
 			header: 'Interest Type',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
 				type: 'text',
-				validate: validateRequiredString,
 				isSelect: true,
 			}),
 		},
@@ -336,11 +342,13 @@ const CheckDetailsMeta = {
 			id: 'price',
 			header: 'Avg Price',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
-				validate: validateRequiredString,
+				type: 'text',
+				InputProps: {
+					inputComponent: CurrencyFormatCustom,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -356,11 +364,13 @@ const CheckDetailsMeta = {
 				return value ? <p>{vf_number(value, TO_FIXED)}</p> : <p style={{ color: '#898989b0' }}>--</p>;
 			},
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
-				validate: validateRequiredString,
+				type: 'text',
+				InputProps: {
+					inputComponent: NumberFormatComma,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -370,11 +380,13 @@ const CheckDetailsMeta = {
 			id: 'grossPropertyValue',
 			header: 'Prop Gross Revenue',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
-				validate: validateRequiredString,
+				type: 'text',
+				InputProps: {
+					inputComponent: CurrencyFormatCustom,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -390,11 +402,13 @@ const CheckDetailsMeta = {
 				return value ? <p>{vf_number(value, TO_FIXED)}</p> : <p style={{ color: '#898989b0' }}>--</p>;
 			},
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
-				validate: validateRequiredString,
+				type: 'text',
+				InputProps: {
+					inputComponent: NumberFormatComma,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -404,11 +418,13 @@ const CheckDetailsMeta = {
 			id: 'grossOwnerValue',
 			header: 'Owner Gross Revenue',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
-				validate: validateRequiredString,
+				type: 'text',
+				InputProps: {
+					inputComponent: CurrencyFormatCustom,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -418,11 +434,13 @@ const CheckDetailsMeta = {
 			id: 'ownerTax',
 			header: 'Owner Tax Amt',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
-				validate: validateRequiredString,
+				type: 'text',
+				InputProps: {
+					inputComponent: CurrencyFormatCustom,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -432,10 +450,8 @@ const CheckDetailsMeta = {
 			id: 'taxType',
 			header: 'Tax Type',
 
-			validate: validateRequiredString,
 			Edit: editAutoCompleteField({
 				tableKey: 'CheckDetailsTable',
-				validate: validateRequiredString,
 				placeholder: 'Tax Type',
 				index: 'checkdetails_flat',
 				id: 'taxType',
@@ -448,11 +464,13 @@ const CheckDetailsMeta = {
 			id: 'ownerDeducts',
 			header: 'Deduct Amount',
 
-			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
-				validate: validateRequiredString,
+				type: 'text',
+				InputProps: {
+					inputComponent: CurrencyFormatCustom,
+				},
+				isNumber: true,
 			}),
 		},
 
@@ -462,10 +480,8 @@ const CheckDetailsMeta = {
 			id: 'deductType',
 			header: 'Deduct Type',
 
-			validate: validateRequiredString,
 			Edit: editAutoCompleteField({
 				tableKey: 'CheckDetailsTable',
-				validate: validateRequiredString,
 				placeholder: 'Deduct Type',
 				index: 'checkdetails_flat',
 				id: 'deductType',
@@ -481,8 +497,12 @@ const CheckDetailsMeta = {
 			validate: validateRequiredString,
 			muiEditTextFieldProps: editFieldProps({
 				tableKey: 'CheckDetailsTable',
-				type: 'number',
+				type: 'text',
 				validate: validateRequiredString,
+				InputProps: {
+					inputComponent: CurrencyFormatCustom,
+				},
+				isNumber: true,
 				onKeyDown: async (e, table, value, key, _, id) => {
 					window.table = table;
 					if (e.key === 'Enter') {

@@ -5,7 +5,7 @@ import moment from 'moment';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
 import { GET_PAYMENT_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetPaymentAutoCompleteList';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { GET_COMBINED_FILTER_LIST } from 'graphQL/useQueryGetCombinedFilterList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 const getNextPaymentDate = (value, startDate, endDate) => {
@@ -195,20 +195,28 @@ const paymentForm = ({ setValue, getValues, isUpdate }) => {
 		{
 			label: 'Responsible Party',
 			name: 'responsibleParty',
-			renderField: 'autoComplete',
-			query: GET_ES_FILTER_LIST,
+			renderField: 'autoCompleteNewOption',
+			query: GET_COMBINED_FILTER_LIST,
 			variables: {
-				esIndex: 'properties_flat',
-				filterKey: 'operator.name',
+				size: 50,
+				searchFields: [
+					{
+						modelName: 'AgreementProvision',
+						filterKey: 'responsibleParty',
+					},
+					{
+						index: 'payment_flat',
+						filterKey: 'responsibleParty',
+					},
+				],
 			},
 			getOptions: apiRes => {
 				// Transform API response into options for autocomplete
-				const filterData = apiRes?.data?.getESFilterList?.hits
-					?.filter(option => option?.key)
-					?.map(option => ({
-						label: option.key,
-						value: option.key,
-					}));
+				const filterData =
+					apiRes?.data?.getCombinedFilterList?.map(option => ({
+						value: option,
+						label: option,
+					})) ?? [];
 				return filterData ?? [];
 			},
 			onChange: selectedOption => {

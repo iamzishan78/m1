@@ -23,7 +23,7 @@ const useStyles = makeStyles({
 	},
 });
 
-const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, type, allowNew = true, ...rest }) => {
+const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, type, ...rest }) => {
 	const classes = useStyles();
 
 	const onInputChange = (event, value) => {
@@ -83,7 +83,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, t
 					return filter._id === params.inputValue?.trim() || filter.name === params.inputValue?.trim();
 				});
 				// Suggest the creation of a new value
-				if (allowNew && params.inputValue !== '' && (!isExist || isExist.length === 0)) {
+				if (params.inputValue !== '' && (!isExist || isExist.length === 0)) {
 					filtered.unshift({
 						name: params.inputValue,
 						_id: 'newEntity',

@@ -227,7 +227,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 				Loader.createToast('addRemoveProvision', 'Provision updation in Progress');
 				upsertAgreementProvision({
 					variables: { provision: { ...addProvision, isDeleted: false } },
-					refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList'],
+					refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList', 'getCombinedFilterList'],
 				}).then(
 					res => {
 						Loader.successToast('addRemoveProvision', 'Provision updation Success');
@@ -246,7 +246,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 			Loader.createToast('addRemoveProvision', 'Provision updation in Progress');
 			upsertAgreementProvision({
 				variables: { provision: { agreement: id, type: provision.type, isDeleted: true } },
-				refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList'],
+				refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList', 'getCombinedFilterList'],
 			}).then(
 				res => {
 					Loader.successToast('addRemoveProvision', 'Provision updation Success');
@@ -280,7 +280,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 							isDeleted: false,
 						},
 					},
-					refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList'],
+					refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList', 'getCombinedFilterList'],
 				});
 			}
 		}
