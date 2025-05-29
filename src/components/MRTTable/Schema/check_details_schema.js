@@ -3,7 +3,7 @@ import React from 'react';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { get, set, merge } from 'lodash';
+import { get, set, merge, unset } from 'lodash';
 import { createRow } from 'material-react-table';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
@@ -155,10 +155,10 @@ const CheckDetailsMeta = {
 
 		await client.mutate({
 			variables: {
-				checkDetails: {
-					...rows,
+				checkDetails: rows.map(row => ({
+					...row,
 					check: customProps?.checkId,
-				},
+				})),
 			},
 			mutation: UPDATE_CHECK_DETAILS,
 		});
@@ -191,21 +191,18 @@ const CheckDetailsMeta = {
 				validate: validateRequiredString,
 				placeholder: 'Payor Prop #',
 				index: 'properties_flat',
-				id: 'number',
+				id: 'purchaserNumber',
 				type: 'withOriginal',
 				onChange: (value, row, originals) => {
-					const matchedOriginal = originals?.find(original => original?.number === value);
-					set(row._valuesCache, 'property.purchaserNumber', value);
-					set(row.original, 'property.purchaserNumber', value);
+					// TO Immediately update the value of other related fields (name, state and county) when the user selects a value from the dropdown (payor prop)
+					const matchedOriginal = originals?.find(original => original?.purchaserNumber === value);
 
+					unset(row._valuesCache, 'property');
+					unset(row._valuesCache, 'property._id');
+
+					set(row._valuesCache, 'property.purchaserNumber', matchedOriginal.purchaserNumber);
 					set(row._valuesCache, 'property.name', matchedOriginal.name);
-					set(row.original, 'property.name', matchedOriginal.name);
-
-					set(row._valuesCache, 'property.number', matchedOriginal.number);
-					set(row.original, 'property.number', matchedOriginal.number);
-
 					set(row._valuesCache, 'property.state', matchedOriginal.state);
-
 					set(row._valuesCache, 'property.county', matchedOriginal.county);
 				},
 			}),
@@ -217,7 +214,13 @@ const CheckDetailsMeta = {
 			id: 'property._id',
 			header: 'Property',
 			Cell: ({ row }) => {
-				const value = `${row?.original?.property?.purchaserNumber || ''} - ${row?.original?.property?.name || row?.original?.property?.number || ''}`;
+				// Get values from valuesCache manually becuase values are set in valuesCache when the user selects a value from the dropdown (payor prop)
+				const name = get(row?._valuesCache, 'property.name') || get(row?.original, 'property.name');
+				const purchaserNumber =
+					get(row?._valuesCache, 'property.purchaserNumber') || get(row?.original, 'property.purchaserNumber');
+				const number = get(row?._valuesCache, 'property.number') || get(row?.original, 'property.number');
+
+				const value = `${purchaserNumber || ''} - ${name || number || ''}`;
 
 				return row?.original?.property?.IsDeleted ? (
 					<p style={{ display: 'flex', alignItems: 'center' }}>

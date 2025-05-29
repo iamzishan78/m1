@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { Controller } from 'react-hook-form';
+
 import { Grid, TextField, Select, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Controller } from 'react-hook-form';
-import { useLazyQuery } from '@apollo/client';
 
-import _ from 'lodash';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import { jobController } from 'stateManagement/jobStateController.js';
+import { jobController } from 'stateManagement/jobStateController';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -47,12 +45,10 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 	const classes = useStyles();
 	const { control, watch, reset, getValues, uploaderFormValues } = rest;
 
-	const [payorList, setPayyorList] = useState([]);
-	const [getPayorList, { data: payorListData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
-	const [searchOperator, setSearchOperator] = useState('');
-
 	useEffect(() => {
-		if (uploaderFormValues) reset(uploaderFormValues);
+		if (uploaderFormValues) {
+			reset(uploaderFormValues);
+		}
 		return () => {
 			const values = getValues();
 			Object.keys(values).forEach(key => {
@@ -79,26 +75,6 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 			});
 		}
 	}, [watch('importType')]);
-
-	useEffect(() => {
-		getPayorList({
-			variables: {
-				search: searchOperator ? `${searchOperator}*` : '*',
-				filterKey: 'payor.name.keyword',
-				esIndex: 'checks_flat',
-				size: 50,
-			},
-		});
-	}, [getPayorList, searchOperator]);
-
-	useEffect(() => {
-		const sortList = _.orderBy(payorListData?.getESFilterList?.hits, 'key', 'asc');
-		if (sortList?.length > 0) {
-			setPayyorList(sortList);
-		} else {
-			setPayyorList([]);
-		}
-	}, [payorListData]);
 
 	return (
 		<div className={classes.root}>
