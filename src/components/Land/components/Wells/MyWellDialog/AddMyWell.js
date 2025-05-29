@@ -203,6 +203,10 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 											},
 										});
 									}}
+									onBlur={event => {
+										const values = getValues();
+										handleSave(values);
+									}}
 								/>
 							)}
 						/>

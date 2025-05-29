@@ -241,7 +241,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 			let fileInformation = viewFilesResult?.viewFiles[0];
 			const splittedStrings = fileInformation?.name?.split('.');
 			let docExtention = splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
-			setFileUpload({ upload: true, fileExtension: docExtention, fileInformation });
+			setFileUpload({ upload: false, fileExtension: docExtention, fileInformation });
 		}
 
 		if (fileDownload) {
@@ -328,6 +328,8 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	};
 
 	useEffect(() => {
+		console.log(formStateValues.fileUpload);
+
 		if (formStateValues.fileUpload && formStateValues.fileUpload.upload) {
 			uploadFile();
 		}

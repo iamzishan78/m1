@@ -24,6 +24,7 @@ export const platformDataWellsInitialData = [
 
 export const platformDataInitialData = [
 	platformDataWellsInitialData[0],
+	platformDataWellsInitialData[1],
 	platformDataWellsInitialData[2],
 	{
 		index: 2,
