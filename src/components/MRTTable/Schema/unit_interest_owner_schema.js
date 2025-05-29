@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
@@ -142,7 +141,7 @@ const UnitInterestOwnerMeta = {
 			isExport: 'name',
 			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
-				const isPurchased = [true, 'true', 'True'].includes(row?.original?.contact?.isPurchased);
+				const isPurchased = [true, 'true', 'True'].includes(row?.original?.isPurchased);
 				return (
 					<div
 						style={{
@@ -484,15 +483,17 @@ const UnitInterestOwnerMeta = {
 
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'contact.isPurchased',
+			name: 'isPurchased',
+			accessorFn: row => row?.isPurchased,
 			header: 'Purchased Data Exists',
-			id: 'contact.isPurchased',
+			id: 'isPurchased',
 			filterSelectOptions: [
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
+			type: 'boolean',
 			Cell: ({ row }) => {
-				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
 			},
 			isSearchField: false,

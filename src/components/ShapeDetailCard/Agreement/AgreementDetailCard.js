@@ -27,11 +27,12 @@ import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
 import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
 
-import { showSuccessMessage, showErrorMessage, showInfoMessage } from 'actions';
 import { jobController } from 'stateManagement/jobStateController';
 import { layerController } from 'stateManagement/layerStateController';
 import { popupController } from 'stateManagement/popupStateController';
 import { tableController, tableGlobalController } from 'stateManagement/tableController';
+
+import { showSuccessMessage, showErrorMessage, showInfoMessage } from 'actions';
 
 import { detailCardStyles } from '../style';
 import AgreementSummary from './AgreementSummary';
@@ -70,7 +71,6 @@ export default function AgreementDetailCard(props) {
 				history.goBack();
 			}
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [history, uniObj]);
 
 	useEffect(() => {
@@ -78,14 +78,12 @@ export default function AgreementDetailCard(props) {
 			getStandardProvisions();
 			getAgreementProvisions({ variables: { agreementId: props.id } });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.id]);
 
 	useEffect(() => {
 		if (selectedTab === 0 || selectedTab === 1) {
 			getAgreementProvisions({ variables: { agreementId: props.id } });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedTab]);
 
 	useEffect(() => {
@@ -113,7 +111,6 @@ export default function AgreementDetailCard(props) {
 			}
 			setProperties(shape.properties);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataCustomLayer?.customLayer]);
 
 	useEffect(() => {
@@ -135,7 +132,6 @@ export default function AgreementDetailCard(props) {
 				dispatch(showErrorMessage('Failed to update unit'));
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [updatedUnit]);
 
 	const updateProperties = (e, field, value) => {
@@ -236,7 +232,7 @@ export default function AgreementDetailCard(props) {
 				customLayerId: uniObj._id,
 				customLayer,
 			},
-			refetchQueries: ['getMetaData', 'getAllLayerSettingsByUser'],
+			refetchQueries: ['getMetaData'],
 			awaitRefetchQueries: true,
 		}).then(res => {
 			jobController.toggleBulkUpload();
@@ -279,12 +275,13 @@ export default function AgreementDetailCard(props) {
 		});
 	};
 
+	const maxTableHeight = 'calc(100vh - 400px)';
 	// Table overridden meta
 	const RelatedUnitsOverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
 			CustomToolBar: AgreementRelatedUnitsToolbar,
-			maxTableHeight: 'calc(60vh - 200px)',
+			maxTableHeight,
 			customProps: { customLayer: uniObj },
 		}),
 		[uniObj]
@@ -292,7 +289,7 @@ export default function AgreementDetailCard(props) {
 
 	const RelatedDocumentsOverrideMeta = useMemo(
 		() => ({
-			maxTableHeight: 'calc(50vh - 100px)',
+			maxTableHeight,
 			gridViewSettings: null,
 			fetchMetaData: null,
 			defaultFilters: [{ field: 'shapeObj._id', value: uniObj?._id }],
@@ -302,7 +299,6 @@ export default function AgreementDetailCard(props) {
 			},
 			customValue: { parentRecord: uniObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 
@@ -318,13 +314,12 @@ export default function AgreementDetailCard(props) {
 			},
 			customValue: { parentRecord: uniObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 
 	const RelatedWellsOverrideMeta = useMemo(
 		() => ({
-			maxTableHeight: 'calc(50vh - 100px)',
+			maxTableHeight,
 			tabLabels: ['Agreement Wells', 'Potential Wells'],
 			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
 			customProps: { customLayer: uniObj, shapeType: 'Agreement' },
@@ -334,7 +329,6 @@ export default function AgreementDetailCard(props) {
 			},
 			customValue: { parentRecord: uniObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 
@@ -357,7 +351,6 @@ export default function AgreementDetailCard(props) {
 			isDeleteDisabled: true,
 			isExportDisabled: true,
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 
@@ -438,7 +431,7 @@ export default function AgreementDetailCard(props) {
 								<TabPanels
 									value={selectedTableTab}
 									panels={[
-										<div className={showSummary ? classes.subContent : classes.subContent2}>
+										<div>
 											<RelatedWellsTable
 												id="relatedWellsTable"
 												overrideMeta={RelatedWellsOverrideMeta}
@@ -446,10 +439,11 @@ export default function AgreementDetailCard(props) {
 												customLayer={uniObj}
 											/>
 										</div>,
-										<div className={showSummary ? classes.subContent : classes.subContent2}>
+										<div>
 											<MRTTable
 												name="PotentialWellsTable"
 												overrideMeta={{
+													maxTableHeight,
 													tabLabels: ['Agreement Wells', 'Potential Wells'],
 													customProps: {
 														customLayer: uniObj,
@@ -461,7 +455,7 @@ export default function AgreementDetailCard(props) {
 									]}
 								/>
 							</div>,
-							<div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
+							<div>
 								<RelatedDocumentsTable
 									id="relatedDocumentsTable"
 									moduleId={uniObj?._id}

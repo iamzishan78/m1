@@ -8,26 +8,31 @@ import { Close as ClearButton } from '@material-ui/icons';
 import { useLazyQuery } from '@apollo/client';
 import _ from 'lodash';
 import moment from 'moment';
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'; // Import PropTypes for prop validation
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } from 'components/MRTTable/utils/data';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { globalStateController } from 'stateManagement/globalStateController';
-import { tableESState } from 'stateManagement/initialStates';
 import { layerFiltersController } from 'stateManagement/layerFiltersController';
-import { tableController } from 'stateManagement/tableController';
+import { layerController } from 'stateManagement/layerStateController';
+import { tableController, tableESState } from 'stateManagement/tableController';
 
 import { customLayersFieldAccessors } from './consts';
-import CustomAutocomplete from './CustomAutocomplete';
+import RenderCustomFields from './RenderCustomFields';
+
+const TWO = 2;
+const FIVE_HUNDRED = 500;
+const FIFTEEN_HUNDRED = 1500;
 
 // Define custom styles using Material-UI's makeStyles hook
 const useStyles = makeStyles(theme => ({
 	container: {
 		backgroundColor: '#182B4D', // Dark blue background for the container
-		padding: theme.spacing(2),
+		padding: theme.spacing(TWO),
 		width: '100%',
 		borderRadius: theme.shape.borderRadius,
 		borderLeft: '5px solid #0E638D', // Left border with a blue accent
@@ -38,12 +43,12 @@ const useStyles = makeStyles(theme => ({
 	autoComplete: {
 		marginBottom: '25px', // Margin for spacing between autocomplete fields
 		// White styles for input and label elements to match dark background
-		'& .MuiInputBase-input': { color: 'white' },
+		'& .MuiInputBase-input': { color: 'white !important' },
 		'& .MuiInput-underline:before': { borderBottom: '1px solid white' },
 		'& .MuiInput-underline:hover:before': { borderBottom: '2px solid white' },
 		'& .MuiInput-underline:after': { borderBottom: '2px solid white' },
-		'& .MuiFormLabel-root': { color: 'white' },
-		'& .MuiFormLabel-root.Mui-focused': { color: 'white' },
+		'& .MuiFormLabel-root': { color: 'white !important' },
+		'& .MuiFormLabel-root.Mui-focused': { color: 'white !important' },
 		'& .MuiSvgIcon-root': { color: 'white' },
 	},
 	iconButton: {
@@ -129,17 +134,18 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 	const { control, setValue, watch } = useFormContext(); // Get form control methods
 
 	const [searchText, setSearchText] = useState('');
+	const [fieldNameObj, setFieldNameObj] = useState({});
 	const [immediateSearchText, setImmediateSearchText] = useState('');
 	const debouncedSetSearchText = useMemo(() => {
 		return _.debounce(value => {
 			setSearchText(value);
 			// Perform your search or API call here
-		}, 500); // Adjust delay as needed
+		}, FIVE_HUNDRED); // Adjust delay as needed
 	}, []);
 
-	const handleChange = e => {
-		setImmediateSearchText(e?.target?.value || '');
-		debouncedSetSearchText(e?.target?.value || '');
+	const handleChange = value => {
+		setImmediateSearchText(value || '');
+		debouncedSetSearchText(value || '');
 	};
 	// Lazy query to fetch filter list from the GraphQL API when required
 	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
@@ -153,7 +159,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 	const mapViews = watch('mapViews');
 
-	const layers = globalStateController.getValue('layers');
+	const layers = layerController.getValue('layers');
 
 	const [debouncedFilterValues, setDebouncedFilterValues] = useState(filterValues); // New state for debounced filter values
 
@@ -161,7 +167,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 	useEffect(() => {
 		const handler = setTimeout(() => {
 			setDebouncedFilterValues(filterValues);
-		}, 1500); // Delay of 1500ms
+		}, FIFTEEN_HUNDRED); // Delay of 1500ms
 
 		// Cleanup function to clear the timeout
 		return () => {
@@ -171,8 +177,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 	const getSelectedField = (fieldName, _dataSource) => {
 		const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
-		const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
-		const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
+		const layerIdentifier = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
+		const layer = layers.find(l => l.file === fileId && l.layerIdentifier === layerIdentifier);
 		return (
 			customLayersFieldAccessors[_dataSource || dataSourceName || mapView?.dataSourceName]?.keys || layer?.layerSchema
 		)?.find(key => key.value.replace('.keyword', '') === fieldName || key?.value === fieldName);
@@ -229,10 +235,10 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		} else {
 			esIndex = 'shapefile_flat';
 			const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
-			const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
-			const selectedLayer = globalStateController
+			const layerIdentifier = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
+			const selectedLayer = layerController
 				.getValue('layers')
-				?.find(layer => layer?.layerShapeName === layerShapeName && layer?.file === fileId);
+				?.find(layer => layer?.layerIdentifier === layerIdentifier && layer?.file === fileId);
 			filters = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.filters : [];
 			search = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.search : {};
 			search.fields = [];
@@ -253,7 +259,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			variables: {
 				search,
 				filterAggs: {
-					field: fieldName?.value,
+					field: fieldName?.value || fieldName,
 					query: searchText ? `*${searchText}*` : '',
 					size: 50,
 				},
@@ -269,7 +275,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 	// Effect to log filter values when they change
 	useEffect(() => {
 		if (dataSourceName) {
-			const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
+			const selectedMapView = viewStateController('MapView').getValue('selectedView');
 
 			const selectedField = getSelectedField(fieldName?.value || fieldName);
 
@@ -280,10 +286,11 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
 				const tableKey = Object.keys(tableESState).find(key => {
-					const tableState = tableESState[key].get({ noproxy: true });
-					return tableState?.layerIdentifier === dataSourceName;
+					const layerDataSourceName = tableESState[key].getValue('layerDataSourceName');
+					return layerDataSourceName === dataSourceName;
 				});
-				const tableState = tableESState[tableKey]?.get({ noproxy: true });
+
+				const tableStateFilters = tableESState[tableKey]?.getValue('filters');
 
 				const formattedFilter = getFormattedFilterBasedOnType(
 					selectedField?.type || filterType,
@@ -291,7 +298,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					filterValues
 				);
 
-				const isFilterApplied = tableState?.filters?.find(
+				const isFilterApplied = tableStateFilters?.find(
 					filter =>
 						formattedFilter?.field?.replace('.keyword', '') === filter?.field?.replace('.keyword', '') &&
 						(formattedFilter?.searchType === 'multiselect' || formattedFilter?.searchType === filter.searchType) &&
@@ -311,16 +318,12 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					}
 				}
 
-				if (!tableKey) {
-					globalStateController.updateState({
-						mapView: {
-							selectedMapView: {
-								...selectedMapView,
-								filters: mapViewFilters,
-							},
-						},
-					});
-				}
+				viewStateController('MapView').updateState({
+					selectedView: {
+						...selectedMapView,
+						filters: mapViewFilters,
+					},
+				});
 				layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
 			}
 		}
@@ -337,14 +340,14 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		});
 
 		// making datasets fields in the below code block
-		let datasets = globalStateController.getValue('datasets');
+		let datasets = layerController.getValue('datasets');
 		datasets = datasets?.filter(dataset => dataset.sourceName !== 'M1 Platform');
 
 		let datasetsShapeNames =
 			datasets?.flatMap(dataset =>
 				dataset.categories.map(category => ({
-					label: `[${dataset.name}] - ${category.layerShapeName}`,
-					value: `${dataset.file}_${category.layerShapeName}`,
+					label: `[${dataset.name}] - ${category.layerIdentifier}`,
+					value: `${dataset.file}_${category.layerIdentifier}`,
 				}))
 			) || [];
 
@@ -353,8 +356,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		const shapeFileOptions = filterTypeOptions.filter(option => ['singleselect', 'multiselect'].includes(option.value));
 
 		const wellsFilterOptions = filterTypeOptions.filter(option => ['multiselect'].includes(option.value));
-
-		const selectedField = getSelectedField(mapView?.fieldName) || fieldName;
 
 		// Making filter options based on selected dataset
 		let requiredFilterOptions = [];
@@ -367,15 +368,15 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		}
 
 		const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
-		const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
-		const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
+		const layerIdentifier = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
+		const layer = layers.find(l => l.file === fileId && l.layerIdentifier === layerIdentifier);
 
 		if (dataSourceName && !(customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema)) {
 			return [];
 		}
 		const tableKey = Object.keys(tableESState).find(key => {
-			const tableState = tableESState[key].get({ noproxy: true });
-			return tableState?.layerIdentifier === dataSourceName;
+			const layerDataSourceName = tableESState[key].getValue('layerDataSourceName');
+			return layerDataSourceName === dataSourceName;
 		});
 
 		const fields = [
@@ -386,10 +387,10 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				defaultValue: mapView?.dataSourceName
 					? [...m1LayersOptions, ...datasetsShapeNames]?.find(option => option.value === mapView?.dataSourceName)
 					: null, // Set default value if mapView is provided
-				onChange: (e, v, r, previousValue) => {
+				onChange: ({ previousValue }) => {
 					const tableKey = Object.keys(tableESState).find(key => {
-						const tableState = tableESState[key].get({ noproxy: true });
-						return tableState?.layerIdentifier === previousValue?.value;
+						const layerDataSourceName = tableESState[key].getValue('layerDataSourceName');
+						return layerDataSourceName === previousValue?.value;
 					});
 					tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 					tableController(tableKey).setFilterMode(
@@ -398,6 +399,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 						false
 					);
 					// layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
+					setFieldNameObj({});
 					setValue(`mapViews.${index}.fieldName`, null);
 					setValue(`mapViews.${index}.filterType`, null);
 					setValue(`mapViews.${index}.filterValues`, null);
@@ -409,10 +411,10 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Field Name',
 				options: customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema || [], // Dynamic based on data source
 				defaultValue: mapView?.dataSourceName ? getSelectedField(mapView?.fieldName) || mapView?.fieldName : null, // Set default value if mapView is provided
-				onChange: (e, v, r, previousValue) => {
+				onChange: ({ previousValue }) => {
 					setValue(
 						`mapViews.${index}.filterType`,
-						v?.type
+						fieldNameObj?.type
 							? null
 							: {
 									label: 'Multi Select',
@@ -438,8 +440,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			},
 		];
 
-		const isDate = selectedField?.type === 'date';
-		const isRange = selectedField?.type === 'range';
+		const isDate = (fieldNameObj?.type ?? '') === 'date';
+		const isRange = (fieldNameObj?.type ?? '') === 'range';
 
 		if (!isDate && !isRange) {
 			fields.push({
@@ -447,9 +449,9 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Filter Type',
 				options: requiredFilterOptions,
 				defaultValue: filterTypeOptions.find(filterTypeOption => filterTypeOption.value === mapView?.filterType), // Set default value if mapView is provided
-				onChange: (e, v, r, previousValue) => {
+				onChange: ({ value, previousValue }) => {
 					setValue(`mapViews.${index}.filterValues`, null);
-					if (!['empty', 'notEmpty'].includes(v?.value) && !['empty', 'notEmpty'].includes(previousValue?.value)) {
+					if (!['empty', 'notEmpty'].includes(value?.value) && !['empty', 'notEmpty'].includes(previousValue?.value)) {
 						Object.keys(tableESState).map(tableKey =>
 							tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false)
 						);
@@ -465,8 +467,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Filter Values',
 				options: filterValuesOptions || [], // Dynamic based on filter options
 				defaultValue: mapView?.filterValues, // Set default value if mapView is provided
-				type: selectedField?.type,
-				isSearch: true,
+				type: fieldNameObj?.type ?? '',
 			});
 		}
 		return fields;
@@ -474,14 +475,14 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 	// Function to clear the filter when the clear button is clicked
 	const clearFilter = () => {
-		const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
+		const selectedMapView = viewStateController('MapView').getValue('selectedView');
 		let mapViewFilters = getMapViewFilters();
 
 		mapViewFilters = mapViewFilters.filter((_, i) => i !== index);
 
 		const tableKey = Object.keys(tableESState).find(key => {
-			const tableState = tableESState[key].get({ noproxy: true });
-			return tableState?.layerIdentifier === dataSourceName;
+			const layerDataSourceName = tableESState[key].getValue('layerDataSourceName');
+			return layerDataSourceName === dataSourceName;
 		});
 		tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 		tableController(tableKey).setFilterMode(
@@ -494,12 +495,10 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			mapViews: mapViewFilters || [],
 		});
 
-		globalStateController.updateState({
-			mapView: {
-				selectedMapView: {
-					...selectedMapView,
-					filters: mapViewFilters,
-				},
+		viewStateController('MapView').updateState({
+			selectedView: {
+				...selectedMapView,
+				filters: mapViewFilters,
 			},
 		});
 		layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
@@ -518,23 +517,25 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 			{/* Render autocomplete fields */}
 			{autocompleteFields.map(field => (
-				<Box mb={2} key={field.name}>
-					<CustomAutocomplete
-						defaultValue={field.defaultValue} // Set default value if mapView is provided
-						onChange={field.onChange} // Triggered when the field value changes
-						name={field.name}
+				<Box mb={2} key={field?.name}>
+					<RenderCustomFields
+						watch={watch}
+						control={control}
 						type={field.type}
-						control={control} // Form control passed for managing input state
-						options={field.options}
+						name={field.name}
 						label={field.label}
-						className={classes.autoComplete} // Apply custom autocomplete styles
+						options={field.options}
+						isSearch={field.isSearch}
+						onChange={field.onChange}
+						handleChange={handleChange}
+						searchText={immediateSearchText}
+						className={classes.autoComplete}
+						defaultValue={field.defaultValue}
+						setFieldNameObj={setFieldNameObj}
+						multiple={field.label === 'Filter Values' && (filterType?.value || filterType) === 'multiselect'}
 						isTextFieldOnly={
 							searchFilterOptions.includes(filterType?.value || filterType) && field.label === 'Filter Values'
 						}
-						searchText={immediateSearchText}
-						handleChange={handleChange}
-						multiple={field.label === 'Filter Values' && (filterType?.value || filterType) === 'multiselect'}
-						isSearch={field.isSearch}
 					/>
 				</Box>
 			))}
@@ -543,34 +544,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 };
 
 UserMapFilter.propTypes = {
-	mapView: PropTypes.shape({
-		filterValues: PropTypes.oneOfType([
-			PropTypes.string,
-			PropTypes.arrayOf(PropTypes.string),
-			PropTypes.shape({
-				gte: PropTypes.string,
-				lte: PropTypes.string,
-			}),
-		]),
-		fieldName: PropTypes.oneOfType([
-			PropTypes.string,
-			PropTypes.shape({
-				value: PropTypes.string,
-			}),
-		]),
-		dataSourceName: PropTypes.oneOfType([
-			PropTypes.string,
-			PropTypes.shape({
-				value: PropTypes.string,
-			}),
-		]),
-		filterType: PropTypes.oneOfType([
-			PropTypes.string,
-			PropTypes.shape({
-				value: PropTypes.string,
-			}),
-		]),
-	}),
+	mapView: PropTypes.object.isRequired,
 	index: PropTypes.number.isRequired,
 	remove: PropTypes.func.isRequired,
 	resetForm: PropTypes.func.isRequired,

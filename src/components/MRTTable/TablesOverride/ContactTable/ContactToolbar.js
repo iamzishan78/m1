@@ -1,4 +1,5 @@
 import React, { memo, useContext, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
@@ -17,19 +18,20 @@ import {
 	openSideDialog,
 } from 'components/MRTTable/Common/CommonToolBarActions';
 import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
-
-import { tableController, tableGlobalController } from 'stateManagement/tableController';
-
-import ContactTableDialogs from './RightDialogs';
-import { AppContext } from 'AppContext';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import DialpadIcon from 'components/Shared/svgIcons/dialpad-icon';
-import { ALL_EXTERNAL_TOOLS } from 'graphQL/useQueryAllExternalTools';
+
 import { SYNC_DIALPAD } from 'graphQL/useMutationSyncDialpad';
+import { ALL_EXTERNAL_TOOLS } from 'graphQL/useQueryAllExternalTools';
 import { EXTERNAL_TOOL_EXISTS } from 'graphQL/useQueryExternalToolExists';
-import { useDispatch } from 'react-redux';
-import { showErrorMessage, showSuccessMessage } from 'actions';
+
 import { jobController } from 'stateManagement/jobStateController';
+import { tableController, tableGlobalController } from 'stateManagement/tableController';
+
+import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
+import ContactTableDialogs from './RightDialogs';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -112,7 +114,7 @@ function ContactToolbar({ table, tableKey }) {
 		let total = tableStateValues?.data.total;
 		const isSubSetSelect = Controller.getValue('isSubSetSelect');
 
-		if (selectedRows.length !== 0 && !!!tableStateValues?.isAllRowsSelected && !isSubSetSelect) {
+		if (selectedRows.length !== 0 && !tableStateValues?.isAllRowsSelected && !isSubSetSelect) {
 			isSelectAll = false;
 		} else if (!!tableStateValues?.isAllRowsSelected || isSubSetSelect) {
 			excludedIds = excludeFilters(tableKey, isSubSetSelect?.total);

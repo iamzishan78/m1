@@ -44,7 +44,6 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 
 	useEffect(() => {
 		onFilterChange('');
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dropdownOptions]);
 
 	const CustomMenuList = props => {

@@ -23,6 +23,7 @@ import TwitterIcon from '@material-ui/icons/Twitter';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { get } from 'lodash';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import { toggleRightColumn } from 'actions/ContactDetailCard';
 
@@ -42,8 +43,8 @@ import { INITIATE_DIALPAD_CALL } from 'graphQL/useMutationInitiateCall';
 import { SYNC_CONTACT_TO_DIALPAD } from 'graphQL/useMutationSyncContactToDialpad';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
-import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
 import { GET_DIALPAD_CONTACT } from 'graphQL/useQueryDailpad';
+import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 
@@ -399,6 +400,8 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
+const SLICE = 2;
+
 function ContactDetailCard(props) {
 	// contexts
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -420,6 +423,7 @@ function ContactDetailCard(props) {
 	const [purchaseData, setPurchaseData] = useState([]);
 	const [dialpadConnect, setDialpadConnect] = useState(false);
 	const [actionActivityData, setActionActivityData] = useState(null); // State for actions activity data
+
 	// Fetching global stateValues
 	const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
 
@@ -599,7 +603,7 @@ function ContactDetailCard(props) {
 				if (dialpadConnect && stateApp?.user?.dialpad) {
 					dispatch(showInfoMessage('Initiating call...'));
 					initiateDialpadCall({
-						variables: { phoneNumber: data.phoneNumber, dialpadUserId: stateApp?.user?.dialpad?.id },
+						variables: { phoneNumber: data.phoneNumber },
 					}).then(({ data }) => {
 						if (data?.initiateDialpadCall?.success) {
 							dispatch(showSuccessMessage('Call initiated successfully'));
@@ -668,7 +672,7 @@ function ContactDetailCard(props) {
 									`${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(' ')[0] : ''}`
 								)
 									.split(' ')
-									.splice(0, 2)
+									.splice(0, SLICE)
 									.join(' ')}
 								size="93"
 								round
@@ -1159,5 +1163,7 @@ function ContactDetailCard(props) {
 		</div>
 	);
 }
+
+ContactDetailCard.propTypes = { contactId: PropTypes.string, id: PropTypes.string };
 
 export default PipelinesFetchHoc(ContactDetailCard);

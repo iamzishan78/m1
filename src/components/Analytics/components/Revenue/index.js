@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Grid, Divider, Tab, Tabs, TextField, Box } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Grid, Divider, Tab, Tabs, Box } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
@@ -13,14 +12,18 @@ import DetailTabsSection from 'components/Analytics/components/Revenue/DetailTab
 import MRTTable from 'components/MRTTable';
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
 import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { copy, deepEqual } from 'components/Shared/functions';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 
 import { GET_CHECK_DETAILS_DATA } from 'graphQL/useQueryCheckDetailsData';
 import { GET_DB_MIN_VALUE, GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+import { GET_CHECK_MIN_DATE } from 'graphQL/useQueryGetCheckMinDate';
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from 'graphQL/useQueryGetPortfolioGrossRevenueSummary';
 
 import { tableController } from 'stateManagement/tableController';
+
+import { CUSTOM_DATES } from 'utils/data';
 
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
 import AnalyticsCards from './Analytics';
@@ -109,7 +112,7 @@ const StyledTab = withStyles(theme => ({
 	selected: {},
 }))(props => <Tab disableRipple {...props} />);
 
-const tabs = ['Income Statement', 'Check Details', 'Comparisons', 'Property Interests'];
+const tabs = ['Income Statement', 'Check Details', 'Revenue by Month', 'Comparisons', 'Property Interests'];
 
 export default function RevenueAnalytics(props) {
 	const classes = useStyles();
@@ -126,6 +129,8 @@ export default function RevenueAnalytics(props) {
 	const [checkNumbers, setCheckNumbers] = useState([]);
 	const [comparisonReport, setComparisonReport] = useState('Check Detail Comparison');
 	const [filters, setFilters] = useState([...(propertiesReportGroup || [])]);
+	const PropertiesRevenueController = tableController('PropertiesRevenueTable');
+	const [selectedFilter, setSelectedFilter] = useState('');
 
 	const comparisonTableState = tableController('ComparisonTable').useState(['filters', 'data']).stateValues; // get StateValues for ComparisonTable
 	const salesVolumeComparisonTableState = tableController('SalesVolumeComparisonTable').useState([
@@ -158,6 +163,15 @@ export default function RevenueAnalytics(props) {
 
 	const [getPropertyNumbers] = useLazyQuery(GET_DB_FILTERS, {
 		fetchPolicy: 'no-cache',
+	});
+
+	const [getCheckMinDate] = useLazyQuery(GET_CHECK_MIN_DATE, {
+		fetchPolicy: 'no-cache',
+		onCompleted: data => {
+			if (data?.getCheckMinDate) {
+				setLastCheckMinDate(data?.getCheckMinDate);
+			}
+		},
 	});
 
 	// Function to get the appropriate table state values based on the comparison report type
@@ -256,13 +270,19 @@ export default function RevenueAnalytics(props) {
 	}, [checkDetailData]);
 
 	useEffect(() => {
-		getDbMinValue({
-			variables: {
-				index: 'checks_flat',
-				field: 'checkDate',
-			},
-		});
-	}, [getDbMinValue]);
+		if (tabs[tab] === 'Revenue by Month') {
+			getCheckMinDate();
+			setFromDate(moment().subtract(1, 'year').startOf('year').format('YYYY-MM-DD'));
+			setToDate(moment().format('YYYY-MM-DD'));
+		} else {
+			getDbMinValue({
+				variables: {
+					index: 'checks_flat',
+					field: 'checkDate',
+				},
+			});
+		}
+	}, [tab, getDbMinValue]);
 
 	useEffect(() => {
 		setFromDate(moment().subtract(1, 'year').startOf('year').format('yyyy-MM-DD'));
@@ -285,6 +305,31 @@ export default function RevenueAnalytics(props) {
 			},
 		});
 	}, [filters, toDate, fromDate]);
+
+	useEffect(() => {
+		if (tabs[tab] === 'Revenue by Month') {
+			PropertiesRevenueController.updateState({
+				customProps: {
+					filters,
+					filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
+					...(selectedFilter === CUSTOM_DATES.ALL_DATES ? { allDates: true } : {}),
+				},
+			});
+			return;
+		}
+	}, [filters, toDate, fromDate, selectedFilter, tab]);
+
+	// override meta for Properties Revenue by Month tab
+	const propertiesRevenuOverrideMeta = useMemo(() => {
+		const startDate = moment().subtract(1, 'year').startOf('year').format('YYYY-MM-DD');
+		const endDate = moment().format('YYYY-MM-DD');
+		return {
+			customProps: {
+				filters,
+				filterDate: { toDate: endDate, fromDate: startDate },
+			},
+		};
+	}, []);
 
 	const onChangeDates = (fromDate, toDate) => {
 		const months = [];
@@ -370,25 +415,28 @@ export default function RevenueAnalytics(props) {
 				</StyledTabs>
 				{tabs[tab] === 'Comparisons' && (
 					<Grid item xs md={2} style={{ marginTop: '2px', minWidth: '395px' }}>
-						<Autocomplete
-							size="small"
-							value={comparisonReport} // Controlled value
-							onChange={(event, newValue) => setComparisonReport(newValue)}
-							options={['Check Detail Comparison', 'Sales Volume vs Reported Production']}
-							renderInput={params => (
-								<form autoComplete="off">
-									<TextField
-										{...params}
-										variant="outlined"
-										placeholder=""
-										style={{ backgroundColor: 'white' }}
-										fullWidth={true}
-									/>
-								</form>
-							)}
-							defaultValue={'Check Detail Comparison'}
-							disableListWrap
+						<CustomAutoComplete
+							fieldAttributes={{
+								name: 'comparisonReport',
+								label: 'Comparison Report',
+								value: comparisonReport,
+								defaultValue: 'Check Detail Comparison', // Added defaultValue here
+								optionArray: ['Check Detail Comparison', 'Sales Volume vs Reported Production'],
+							}}
+							fieldEvents={{
+								onChange: ({ value }) => {
+									setComparisonReport(value);
+								},
+							}}
+							fieldConfig={{
+								margin: 'dense',
+								variant: 'outlined',
+								textfieldRestProps: {
+									style: { backgroundColor: 'white' },
+								},
+							}}
 							id="custom-date-dropdown"
+							disableClearable
 						/>
 					</Grid>
 				)}
@@ -466,6 +514,55 @@ export default function RevenueAnalytics(props) {
 						}}
 					/>
 				</Box>
+			)}
+
+			{/* implementation for revenue by month tab */}
+			{tabs[tab] === 'Revenue by Month' && (
+				<div className={classes.actionBar}>
+					<Grid container direction="row" display="flex" spacing={4} style={{ padding: '0px 36px' }}>
+						<Grid item xs={8} md={6} style={{ marginTop: '4px' }}>
+							<Grid container display="flex" alignItems="center" spacing={3} justifyContent="space-between">
+								<CustomDates
+									onChangeDates={onChangeDates}
+									fromDate={fromDate}
+									setFromDate={setFromDate}
+									toDate={toDate}
+									setToDate={setToDate}
+									isProperties={true}
+									lastCheckMinDate={lastCheckMinDate}
+									datesInputWidth={4}
+									setAllDateToNull={false}
+									defaultRange={CUSTOM_DATES.LAST_YEAR_TO_DATE}
+									setSelectedFilter={setSelectedFilter}
+								/>
+							</Grid>
+						</Grid>
+						<Grid item xs={4} md={2}>
+							<Grid container display="flex" className={classes.actionsGrid}>
+								<ReportGroupHeader
+									type="Properties"
+									esFilters={filters}
+									setESFilters={setFilters}
+									setFilterToggle={() => {}}
+									isBackground={false}
+									noUpdate={true}
+									strechedWidth
+									isShrink
+									noPadding
+								/>
+							</Grid>
+						</Grid>
+						<Grid item xs={4} md={2}>
+							<PurchasersDropdown esFilters={filters} setESFilters={setFilters} />
+						</Grid>
+						<Grid item xs={4} md={2}>
+							<AcquisitionIdDropdown esFilters={filters} setESFilters={setFilters} />
+						</Grid>
+					</Grid>
+					<div style={{ margin: '2%' }}>
+						<MRTTable name={'PropertiesRevenueTable'} overrideMeta={propertiesRevenuOverrideMeta} />
+					</div>
+				</div>
 			)}
 
 			{tabs[tab] === 'Comparisons' && (

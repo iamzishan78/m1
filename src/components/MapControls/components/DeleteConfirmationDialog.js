@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
@@ -14,12 +14,10 @@ import { layerController } from 'stateManagement/layerStateController';
 
 import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
 
-import { AppContext } from '../../../AppContext';
 import { UPDATELAYER } from '../../../graphQL/useMutationUpdateLayer';
 
 export default function DeleteConfirmationDialog(props) {
 	const dispatch = useDispatch();
-	const [, setStateApp] = useContext(AppContext);
 	const [updateLayer, { data: layerDeleted }] = useMutation(UPDATELAYER);
 	const [updateManyLayer, { data: layersDeleted }] = useMutation(UPDATE_MANY_LAYER);
 
@@ -28,7 +26,7 @@ export default function DeleteConfirmationDialog(props) {
 			if (layerDeleted.updateLayer.success) {
 				dispatch(showSuccessMessage('The layer was successfully removed'));
 				dispatch(setMainMapState({ removeLayerFromMap: [props.layer] }));
-				setStateApp(state => ({
+				window.setStateApp(state => ({
 					...state,
 					universalCircularLoaderAct: false,
 				}));
@@ -36,14 +34,13 @@ export default function DeleteConfirmationDialog(props) {
 				const layer = layerController.getLayerFromMongoId(layerDeleted.updateLayer.layer._id);
 				layerController.removeLayer(layer);
 			} else {
-				setStateApp(state => ({
+				window.setStateApp(state => ({
 					...state,
 					universalCircularLoaderAct: false,
 				}));
 				dispatch(showErrorMessage('Error occurred'));
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layerDeleted]);
 
 	useEffect(() => {
@@ -51,7 +48,7 @@ export default function DeleteConfirmationDialog(props) {
 			if (layersDeleted.updateManyLayer.success) {
 				dispatch(showSuccessMessage('The Group was successfully removed'));
 				dispatch(setMainMapState({ removeLayerFromMap: props.layer.layers }));
-				setStateApp(state => ({
+				window.setStateApp(state => ({
 					...state,
 					universalCircularLoaderAct: false,
 				}));
@@ -61,39 +58,46 @@ export default function DeleteConfirmationDialog(props) {
 					layerController.removeLayer(layer);
 				});
 			} else {
-				setStateApp(state => ({
+				window.setStateApp(state => ({
 					...state,
 					universalCircularLoaderAct: false,
 				}));
 				dispatch(showErrorMessage('Error occurred'));
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layersDeleted]);
 
-	const handleAccept = () => {
-		setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
-
+	const handleAccept = async () => {
+		window.setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
+		// Determine the appropriate mutation to call
+		let layersToRemove = [];
 		if (props.layer.type === 'group') {
 			updateManyLayer({
 				variables: {
 					layers: props.layer.layers.map(layer => ({ _id: layer.layerId, IsDeleted: true })),
 					layerGroupId: props.layer.id,
 				},
-				refetchQueries: ['getAllLayerSettingsByUser', 'getLayerGroups'],
 			});
+			layersToRemove = props.layer.layers.map(layer => layer.layerId);
 		} else {
-			updateLayer({
+			await updateLayer({
 				variables: {
 					layer: {
 						_id: props.layer.layerId,
 						IsDeleted: true,
 					},
 				},
-				refetchQueries: ['getAllLayerSettingsByUser'],
-				// awaitRefetchQueries: true,
 			});
+			layersToRemove = [props.layer.layerId];
 		}
+
+		const { projectedLayers, layers } = layerController.getValues(['projectedLayers', 'layers']);
+		layerController.updateState({
+			projectedLayers: projectedLayers.filter(layer => !layersToRemove.includes(layer.layerId)),
+			layers: layers.filter(layer => !layersToRemove.includes(layer.layerId)),
+		});
+
+		window.setStateApp(state => ({ ...state, universalCircularLoaderAct: false }));
 	};
 
 	return (

@@ -11,12 +11,12 @@ import BuyContactsInfoDialogContent from 'components/MRTTable/Common/Components/
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
 import Comments from 'components/Shared/Comments';
 
-import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
-
-import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
+import { REMOVECOMMONGRIDFUNCTIONALITY } from 'graphQL/useMutationCommonGridRemove';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableController, tableGlobalController } from 'stateManagement/tableController';
+
+import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
 import DeleteConfirmationDialog from './ConfirmationDialog/DeleteConfirmationDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmationDialog';
@@ -31,7 +31,10 @@ function AllDialogs(props) {
 		stateValues: { refetchQueries = [], isClientSide },
 	} = tableController(props.tableKey).useState(['refetchQueries', 'isClientSide']);
 
-	const [gridGenericRemove] = useMutation(GRID_GENERIC_REMOVE);
+	const [gridGenericRemove] = useMutation(REMOVECOMMONGRIDFUNCTIONALITY, {
+		awaitRefetchQueries: true,
+		refetchQueries,
+	});
 
 	const handleCloseDialog = () => {
 		tableGlobalController.updateState({
@@ -93,7 +96,7 @@ function AllDialogs(props) {
 			}
 		);
 
-		if ((hasMultiGrids && dataToDelete?.mainRecord?.includes(paymentMultiGrid?.paymentId)) || rest?.isSelectAll) {
+		if (hasMultiGrids && dataToDelete?.mainRecord?.includes(paymentMultiGrid?.paymentId)) {
 			tableGlobalController.updateState({
 				paymentMultiGrid: { showMultiGrid: false },
 			});

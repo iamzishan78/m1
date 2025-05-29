@@ -4,21 +4,19 @@ import { toast, ToastContainer } from 'react-toastify';
 
 import { CircularProgress } from '@material-ui/core';
 import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
-import MomentUtils from '@date-io/moment';
 import { split } from 'apollo-link';
 import { BatchHttpLink } from 'apollo-link-batch-http';
 import { HttpLink } from 'apollo-link-http';
 import PropTypes from 'prop-types';
 
-import { UserSession } from 'utils/user';
-
 import { globalStateController } from 'stateManagement/globalStateController';
+
+import { UserSession } from 'utils/user';
 
 import { AppProvider, setApolloHeaders } from './AppContext';
 import ContactBulkProgress from './components/BulkUpload/ContactBulkProgress';
@@ -26,6 +24,9 @@ import Notifications from './components/Notifications/Notifications';
 import GlobalApolloClientProvider from './GlobalApolloClientProvider';
 import { relayStylePagination } from './graphQL/apolloPaginationSchemes.js';
 import configureStore from './store';
+
+import moment from 'moment';
+moment.locale('en'); // set globally
 
 // user management
 const store = configureStore(/ provide initial state if any /);
@@ -105,28 +106,24 @@ function Providers({ children }) {
 
 	const { stateValues } = globalStateController.useState(['apolloClientEndpoint', 'user', 'cypress']);
 
-	const updateApolloClient = (endpoint, token, idToken) => {
+	const updateApolloClient = (endpoint, idToken) => {
 		const session = UserSession.getSession();
 
-		if (globalStateController.getValue('bypassLogin') && session && !token) {
+		if (session && !idToken) {
 			idToken = session.accessToken;
-			token = session.accessToken;
 		}
 
 		let fetchOptions = { headers: [] };
-		if (token) {
-			fetchOptions.headers['X-ZUMO-AUTH'] = token;
-		}
 		if (idToken) {
-			fetchOptions.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
+			fetchOptions.headers['ID-TOKEN'] = idToken;
 		}
 		const cypress = globalStateController.getValue('cypress');
 		if (cypress) {
 			fetchOptions.headers['CYPRESS'] = 'true';
 			fetchOptions.headers['SPEC'] = cypress.spec || '';
 		}
-		if (apolloClient && token) {
-			fetchOptions = setApolloHeaders(apolloClient.link.options, token, idToken);
+		if (apolloClient && idToken) {
+			fetchOptions = setApolloHeaders(apolloClient.link.options, idToken);
 			fetchOptions.headers.batch = 'true';
 		}
 
@@ -179,9 +176,8 @@ function Providers({ children }) {
 
 	useEffect(() => {
 		if (stateValues.apolloClientEndpoint) {
-			const authToken = globalStateController.getValue('x_zumo_auth') || stateValues?.user?.authToken;
 			const accessToken = globalStateController.getValue('access_token') || stateValues?.user?.accessToken;
-			updateApolloClient(stateValues.apolloClientEndpoint, authToken, accessToken);
+			updateApolloClient(stateValues.apolloClientEndpoint, accessToken);
 		} else {
 			updateApolloClient();
 		}
@@ -198,12 +194,10 @@ function Providers({ children }) {
               <UsersnapProvider />
             </FeatureFlag> */}
 						<MuiThemeProvider theme={theme}>
-							<MuiPickersUtilsProvider utils={MomentUtils}>
-								<LocalizationProvider dateAdapter={AdapterDayjs}>
-									{!stateValues?.cypress?.disableContactBulkProgress && <ContactBulkProgress />}
-									{children}
-								</LocalizationProvider>
-							</MuiPickersUtilsProvider>
+							<LocalizationProvider dateAdapter={AdapterDayjs}>
+								{!stateValues?.cypress?.disableContactBulkProgress && <ContactBulkProgress />}
+								{children}
+							</LocalizationProvider>
 						</MuiThemeProvider>
 					</ApolloProvider>
 				) : (

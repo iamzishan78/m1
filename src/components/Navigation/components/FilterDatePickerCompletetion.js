@@ -86,7 +86,7 @@ export default function FilterDatePickerCompletetion({ labelDates }) {
 					control={control}
 					name="completetionDateFrom"
 					defaultValue=""
-					render={({ value, onChange }) => (
+					render={({ field: { value, onChange } }) => (
 						<TextField
 							type="date"
 							label={`${labelDates} From`}
@@ -125,7 +125,7 @@ export default function FilterDatePickerCompletetion({ labelDates }) {
 					control={control}
 					name="completetionDateTo"
 					defaultValue=""
-					render={({ value, onChange }) => (
+					render={({ field: { value, onChange } }) => (
 						<TextField
 							type="date"
 							label={`${labelDates} To`}

@@ -1,3 +1,7 @@
+import { camelCase, startCase } from 'lodash';
+
+import { SCHEMA } from 'components/MRTTable/Schema';
+
 import { UserSession } from './user';
 
 export const campaignVariables = {
@@ -668,85 +672,29 @@ export const AdminManagementRoutes = {
 		isDefault: true,
 		isExcluded: true,
 	},
+	ASSET_MANAGEMENT: {
+		featureFlag: 'AlWAYSSHOW',
+		title: 'Asset Management',
+		link: '/admin/assetmanagement',
+		component: 'AssetManagement',
+		noCheck: true,
+		showSettingString: false,
+	},
 };
 
-export const dataManagementRoutes = {
-	PlatformWells: {
-		featureFlag: 'DATA',
-		title: 'Platform Wells',
-		link: '/data/wells',
-		value: 'PlatformWells',
-		isDefault: true,
-		hideSearch: true,
-	},
-	Agreements: {
-		featureFlag: 'DATA',
-		title: 'Agreements',
-		link: '/data/agreements',
-		value: 'Agreements',
-		isDefault: true,
-		hideSearch: true,
-	},
-	Units: {
-		featureFlag: 'DATA',
-		title: 'Units',
-		link: '/data/units',
-		value: 'Units',
-		isDefault: true,
-		hideSearch: true,
-	},
-	Tracts: {
-		featureFlag: 'DATA',
-		title: 'Tracts',
-		link: '/data/tracts',
-		value: 'Tracts',
-		isDefault: true,
-		hideSearch: true,
-	},
-	MyWells: {
-		featureFlag: 'DATA',
-		title: 'My Wells',
-		link: '/data/mywells',
-		value: 'MyWells',
-		isDefault: true,
-		hideSearch: true,
-	},
-	ShapeFile: {
-		featureFlag: 'DATA',
-		title: 'Shape File',
-		link: '/data/shapefiles',
-		value: 'ShapeFile',
-		isDefault: true,
-		hideSearch: true,
-	},
-};
+export const dataManagementRoutes = Object.keys(SCHEMA).map(tableName => ({
+	featureFlag: 'DATA',
+	title: startCase(tableName.replace('Table', '')),
+	link: `/data/${camelCase(tableName)}`,
+	value: tableName,
+	isDefault: true,
+	hideSearch: true,
+}));
 
 export const paymentGridsInitialData = [
 	{ index: 0, value: 'payees', label: 'Payees', showCounts: true },
 	{ index: 0, value: 'billingParties', label: 'Billing Parties', showCounts: true },
 	{ index: 0, value: 'costAllocations', label: 'Cost Allocation', showCounts: true },
-];
-
-export const bypassTenants = [
-	'localhost',
-	'm1dev',
-	'm1cypress',
-	'm1staging',
-	'wildbasin',
-	'covenant',
-	'sansaba',
-	'farmers',
-	'Quality',
-	'SantaFe',
-	'SITL',
-	'Jetstream',
-	'Elberta',
-	'Frontier',
-	'm1demo',
-	'Vector',
-	'TableRock',
-	'Providence',
-	'Pheasant',
 ];
 
 export const simpleAuthBypass = false;

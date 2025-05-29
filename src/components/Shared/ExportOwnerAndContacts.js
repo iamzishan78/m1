@@ -18,7 +18,7 @@ import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 
 import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		width: '557px',
 		padding: '10px 30px',
@@ -127,12 +127,12 @@ const ExportOwnerAndContacts = ({ isSelectAll, filters, esIndex, onClose, search
 								control={control}
 								name="exportInterestOwners"
 								defaultValue={false}
-								render={props => (
+								render={({ field }) => (
 									<Checkbox
-										{...props}
+										{...field}
 										disabled={rows.length === 0}
 										onChange={e => {
-											props.onChange(e.target.checked);
+											field.onChange(e.target.checked);
 										}}
 									/>
 								)}
@@ -150,12 +150,12 @@ const ExportOwnerAndContacts = ({ isSelectAll, filters, esIndex, onClose, search
 								control={control}
 								name="exportContacts"
 								defaultValue={false}
-								render={props => (
+								render={({ field }) => (
 									<Checkbox
-										{...props}
+										{...field}
 										disabled={rows.length === 0}
 										onChange={e => {
-											props.onChange(e.target.checked);
+											field.onChange(e.target.checked);
 										}}
 									/>
 								)}

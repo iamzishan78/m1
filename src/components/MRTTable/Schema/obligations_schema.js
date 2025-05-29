@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import CheckIcon from '@material-ui/icons/Check';
@@ -6,7 +5,6 @@ import CheckIcon from '@material-ui/icons/Check';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
 
-import { slidoutState } from 'stateManagement/initialStates';
 import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import { getTruncateText } from '../utils/helper';
@@ -20,8 +18,10 @@ const onClickedRow = selectedRow => {
 		...selectedRow,
 	};
 	slidoutStateController.showSlideout();
-	slidoutState.selectedActivityId.set(selectedRow._id);
-	slidoutState.selectedActivity.set(formattedActivity);
+	slidoutStateController.updateState({
+		selectedActivityId: selectedRow._id,
+		selectedActivity: formattedActivity,
+	});
 
 	if (window.location.pathname.startsWith('/calendar/obligations')) {
 		window.history.pushState('', '', `/calendar/obligations/${selectedRow._id}`);

@@ -1,4 +1,3 @@
- 
 import React from 'react';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';

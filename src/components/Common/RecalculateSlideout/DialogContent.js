@@ -12,8 +12,6 @@ import { RESET_OWNERS_CALCULATED_VALUES } from 'graphQL/useMutationResetOwnersCa
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableGlobalController } from 'stateManagement/tableController';
 
-import { hookStateApp } from 'stateManagement';
-
 const useStyles = makeStyles(theme => ({
 	root: {
 		display: 'flex',

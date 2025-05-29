@@ -2,140 +2,247 @@ import React from 'react';
 import { Controller } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid';
+
 import PropTypes from 'prop-types';
-import UserField from './Fields/UserField';
-import DateTimeField from './Fields/DateTimeField';
 
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
-import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
-import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
 
 import { sideDialogController } from 'stateManagement/sideDialogController';
 
-import AutoCompleteNewOption from './Fields/AutoCompleteNewOption';
-import DatePicker from './Fields/DatePicker';
+import DateTimeField from './Fields/DateTimeField';
 import StartEndDate from './Fields/StartEndDate';
+import UserField from './Fields/UserField';
+import CustomDatePicker from '../components/Fields/CustomDatePicker';
 
-function CommonForm({ formSchema, control, watch, dialogKey, error }) {
+function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
+	const getTextFieldProps = ({ item, watch, error, key }) => {
+		const fieldProps = {
+			key,
+			control,
+			watch,
+			error,
+			fieldConfig: {
+				type: item?.type,
+				size: item?.size,
+				fullWidth: item?.fullWidth,
+				multiline: item?.multiline,
+				variant: item?.variant,
+				disabled: item?.disabled,
+				required: item?.required,
+			},
+			fieldAttributes: {
+				name: item?.name,
+				title: item?.label,
+				defaultValue: item?.defaultValue,
+				InputProps: item?.InputProps,
+				isValueOverridden: item?.isValueOverridden,
+			},
+			fieldEvents: {
+				onBlur: item?.onBlur,
+				onChange: ({ value }) => item?.onChange?.(value),
+			},
+		};
+
+		return fieldProps;
+	};
+
 	return (
 		<>
-			{formSchema.map((item, index) => (
-				<React.Fragment key={item.name}>
-					{item.renderField === 'autoComplete' ? (
-						<AutoCompleteComponent item={item} control={control} watch={watch} error={error} />
-					) : item.renderField === 'owner' ? (
-						<Grid item xs={12}>
-							<h3>{item.label}</h3>
-
-							<UserField dialogKey={dialogKey} item={item} />
-						</Grid>
-					) : item.renderField === 'dateTime' ? (
-						<Grid item xs={12}>
-							<h3>{item.label}</h3>
-
-							<DateTimeField dialogKey={dialogKey} item={item} />
-						</Grid>
-					) : item.renderField === 'campaignName' ? (
-						<Grid item xs={12}>
-							<h3>{item.label}</h3>
-
-							<Controller
+			{formSchema.map((item, index) => {
+				let renderedField;
+				switch (item.renderField) {
+					case 'autoComplete':
+					case 'autoCompleteNewOption':
+						renderedField = (
+							<CustomAutoComplete
+								key={item.name}
 								control={control}
-								name={item.name}
-								render={props => (
-									<CampaignField
-										{...props}
-										value={props?.value}
-										onChange={values => {
-											sideDialogController(dialogKey).updateState({ [item.name]: values });
-											props.onChange(values);
-										}}
-										fullWidth
-										targetLabel="Contact"
-										simpleChips
-									/>
-								)}
+								watch={watch}
+								error={error || errors?.[item.name]}
+								fieldConfig={{
+									margin: 'dense',
+									size: 'medium',
+									allowNewOptions: item.renderField === 'autoCompleteNewOption',
+									required: item.required,
+								}}
+								fieldEvents={{ onChange: item.onChange }}
+								fieldAttributes={{
+									name: item.name,
+									title: item.label,
+									optionArray: item.defaultOptions,
+									getOptions: item.getOptions,
+									query: item.query,
+									variables: item.variables,
+									isESSearch: item.isESSearch ?? false,
+								}}
 							/>
-						</Grid>
-					) : item.renderField === 'associatedDeals' ? (
-						<Grid item xs={12}>
-							<h3>{item.label}</h3>
+						);
+						break;
 
-							<Controller
+					case 'campaigns':
+						renderedField = (
+							<Grid item xs={12}>
+								<h3>{item.label}</h3>
+								<Controller
+									control={control}
+									name={item.name}
+									render={({ field }) => (
+										<CampaignField
+											{...field}
+											size="medium"
+											margin="dense"
+											value={field?.value}
+											onChange={values => {
+												sideDialogController(dialogKey).updateState({ [item.name]: values });
+												field.onChange(values);
+											}}
+											fullWidth
+											targetLabel="Contact"
+											simpleChips
+										/>
+									)}
+								/>
+							</Grid>
+						);
+						break;
+
+					case 'associatedDeals':
+						renderedField = (
+							<Grid item xs={12}>
+								<h3>{item.label}</h3>
+								<Controller
+									control={control}
+									name={item.name}
+									render={({ field }) => (
+										<AssociatedDealField
+											{...field}
+											onChange={values => {
+												sideDialogController(dialogKey).updateState({ [item.name]: values });
+												field.onChange(values);
+											}}
+											value={field.value}
+											fullWidth
+											targetLabel="Contact"
+											simpleChips
+										/>
+									)}
+								/>
+							</Grid>
+						);
+						break;
+
+					case 'radioButton':
+					case 'boolean':
+						renderedField = (
+							<RadioGroup key={JSON.stringify(item)} item={item} control={control} dialogKey={dialogKey} />
+						);
+						break;
+
+					case 'datePicker':
+						renderedField = (
+							<CustomDatePicker
 								control={control}
-								name={item.name}
-								render={props => (
-									<AssociatedDealField
-										{...props}
-										onChange={(values, id) => {
-											sideDialogController(dialogKey).updateState({ [item.name]: values });
-											props.onChange(values);
-										}}
-										value={props.value}
-										fullWidth
-										targetLabel="Contact"
-										simpleChips
-									/>
-								)}
+								fieldAttributes={{
+									name: item?.name,
+									value: item?.value,
+									title: item?.label,
+								}}
+								fieldEvents={{
+									onChange: item?.onChange,
+								}}
+								fieldConfig={{
+									disabled: item?.disabled,
+									variant: 'standard',
+								}}
 							/>
-						</Grid>
-					) : item.renderField === 'radioButton' ? (
-						<RadioGroup key={index} item={item} control={control} dialogKey={dialogKey} />
-					) : item.renderField === 'autoCompleteNewOption' ? (
-						<AutoCompleteNewOption item={item} control={control} />
-					) : item.renderField === 'datePicker' ? (
-						<DatePicker item={item} control={control} />
-					) : item.renderField === 'startEndDate' ? (
-						<StartEndDate item={item} control={control} watch={watch} error={error} />
-					) : (
-						<TextFieldComponent key={index} item={item} control={control} watch={watch} error={error} />
-					)}
-				</React.Fragment>
-			))}
+						);
+
+						break;
+
+					case 'startEndDate':
+						renderedField = (
+							<StartEndDate item={item} control={control} watch={watch} error={error || errors?.[item.name]} />
+						);
+						break;
+
+					case 'owner':
+						renderedField = (
+							<Grid item xs={12}>
+								<h3>{item.label}</h3>
+
+								<UserField dialogKey={dialogKey} item={item} />
+							</Grid>
+						);
+						break;
+
+					case 'dateTime':
+						renderedField = (
+							<Grid item xs={12}>
+								<h3>{item.label}</h3>
+
+								<DateTimeField dialogKey={dialogKey} item={item} />
+							</Grid>
+						);
+						break;
+
+					default: {
+						const formattedFieldProps = getTextFieldProps({
+							item,
+							watch,
+							error: error || errors?.[item.name],
+							key: index,
+						});
+						renderedField = <CustomTextField {...formattedFieldProps} />;
+						break;
+					}
+				}
+
+				return <React.Fragment key={item.name}>{renderedField}</React.Fragment>;
+			})}
 		</>
 	);
 }
 
 CommonForm.propTypes = {
+	control: PropTypes.object.isRequired,
+	watch: PropTypes.func.isRequired,
+	dialogKey: PropTypes.string.isRequired,
+	value: PropTypes.any,
+	onChange: PropTypes.func,
 	formSchema: PropTypes.arrayOf(
 		PropTypes.shape({
 			name: PropTypes.string.isRequired,
+			renderField: PropTypes.string.isRequired,
 			label: PropTypes.string,
-			renderField: PropTypes.oneOf([
-				'autoComplete',
-				'owner',
-				'dateTime',
-				'campaignName',
-				'associatedDeals',
-				'radioButton',
-				'autoCompleteNewOption',
-				'datePicker',
-				'startEndDate',
-			]).isRequired,
-			defaultOptions: PropTypes.array,
-			variables: PropTypes.object,
-			query: PropTypes.func,
-			getOptions: PropTypes.func,
-			options: PropTypes.array,
-			size: PropTypes.string,
+			autoFocus: PropTypes.bool,
 			type: PropTypes.string,
-			InputProps: PropTypes.object,
+			size: PropTypes.string,
 			fullWidth: PropTypes.bool,
-			defaultValue: PropTypes.any,
 			multiline: PropTypes.bool,
-			variant: PropTypes.oneOf(['standard', 'outlined', 'filled']),
-			isValueOverridden: PropTypes.bool,
-			onBlur: PropTypes.func,
-			onChange: PropTypes.func,
+			variant: PropTypes.string,
 			disabled: PropTypes.bool,
+			required: PropTypes.bool,
+			margin: PropTypes.string,
+			value: PropTypes.any,
+			valueType: PropTypes.string,
+			inputRef: PropTypes.object,
+			placeholder: PropTypes.string,
+			InputProps: PropTypes.object,
+			InputLabelProps: PropTypes.object,
+			isValueOverridden: PropTypes.bool,
+			allowEdit: PropTypes.bool,
+			onBlur: PropTypes.func,
+			onKeyUp: PropTypes.func,
+			onChange: PropTypes.func,
+			onKeyDown: PropTypes.func,
 		})
 	).isRequired,
-	control: PropTypes.object.isRequired, // From react-hook-form
-	watch: PropTypes.func.isRequired, // Function to watch form values
-	dialogKey: PropTypes.string.isRequired, // Key for side dialog state updates
-	error: PropTypes.bool,
+	error: PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.bool]),
+	errors: PropTypes.object,
 };
 
 export default CommonForm;

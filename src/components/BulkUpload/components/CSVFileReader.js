@@ -313,11 +313,13 @@ export default function CSVFileReader(props) {
 
 	let handleOnError = (err, file, inputElem, reason) => {
 		if (!unmounted.current) {
+			//
 		}
 	};
 
 	let handleOnRemoveFile = data => {
 		if (!unmounted.current) {
+			//
 		}
 	};
 
@@ -352,7 +354,7 @@ export default function CSVFileReader(props) {
 			)}
 			<div style={{ ...big_text, ...padding_div_top }}>Select a File to Import (Max 10,000 rows)</div>
 			<div style={{ ...text_grey, ...padding_div }}>
-				Don't forget to upload CSV with first row containing the column headers
+				Don&apos;t forget to upload CSV with first row containing the column headers
 			</div>
 			<Grid container spacing={1}>
 				<Grid item xs={12}>

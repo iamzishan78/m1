@@ -10,9 +10,9 @@ import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/Co
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-import { calculateStandardNraForUnit } from 'utils/calculatedNraHelper';
-
 import { sideDialogController } from 'stateManagement/sideDialogController';
+
+import { calculateStandardNraForUnit } from 'utils/calculatedNraHelper';
 
 const calculateOfferPrice = (nra, uUnitPricing = 0) => {
 	if (!uUnitPricing) {
@@ -31,7 +31,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 		contactFields.splice(-2);
 		contactFields.push(...contactArray);
 	} else {
-		unitInterestFields.push(contactForm({ getValues, setValue })[3]);
+		unitInterestFields.push(contactForm({ getValues, setValue })[3], contactForm({ getValues, setValue })[14]);
 	}
 	const formFields = [
 		{
@@ -520,7 +520,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 		{
 			label: 'Campaigns',
 			name: 'campaigns',
-			renderField: 'campaignName',
+			renderField: 'campaigns',
 		},
 		{
 			label: 'Campaign Priority',

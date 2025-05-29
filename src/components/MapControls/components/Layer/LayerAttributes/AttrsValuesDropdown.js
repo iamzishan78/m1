@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { TextField } from '@mui/material';
 
 import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { generateRandomColor } from 'components/MapControls/commonHelper';
@@ -21,6 +22,7 @@ import { colorBasedAttributes } from './ColorBasedAttributes';
 const useStyles = makeStyles(() => ({
 	dropdownContainer: {
 		width: '485px',
+		position: 'relative',
 		fontFamily: 'Arial, sans-serif',
 	},
 	dropdown: {
@@ -60,6 +62,7 @@ const useStyles = makeStyles(() => ({
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		cursor: 'pointer',
+		backgroundColor: '#fff',
 	},
 	colorBox: {
 		width: '60px',
@@ -77,6 +80,9 @@ const useStyles = makeStyles(() => ({
 		border: '1px solid #ccc',
 		marginRight: '8px',
 	},
+	highlighted: {
+		backgroundColor: '#e0e0e0', // Highlight color
+	},
 }));
 
 const AttrsValuesDropdown = ({
@@ -88,6 +94,7 @@ const AttrsValuesDropdown = ({
 	setAttributeBasedColors,
 }) => {
 	const classes = useStyles();
+	const [displayDropdown, setDisplayDropdown] = useState(true);
 	const [displayColorPicker, setDisplayColorPicker] = useState(false);
 
 	// State for managing the clicked value and its color
@@ -153,39 +160,38 @@ const AttrsValuesDropdown = ({
 			};
 		});
 
-		setAttributeBasedColors(prevColors => ({
-			...prevColors,
+		setAttributeBasedColors({
+			...attributeBasedColors,
 			[selectedValue.label]: options.reduce((acc, { label, color }) => {
 				acc[label] = color;
 				return acc;
 			}, {}),
-		}));
+		});
 
 		return options;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [filtersData, fillColor]);
 
 	return (
 		<>
 			{selectedValue ? (
 				<div className={classes.dropdownContainer}>
-					<div id="color-dropdown" className={classes.dropdown}>
+					<div id="color-dropdown" className={classes.dropdown} onClick={() => setDisplayDropdown(prev => !prev)}>
 						<span>{selectedValue ? selectedValue['label'] : ''}</span>
-						<span className={classes.arrowIcon} style={{ transform: 'rotate(180deg)' }}></span>
+						<span
+							className={classes.arrowIcon}
+							style={{ transform: displayDropdown ? 'rotate(180deg)' : 'rotate(0deg)' }}
+						></span>
 					</div>
-					{attroptions?.length > 0 && (
+					{displayDropdown && attroptions?.length > 0 && (
 						<ul className={classes.dropdownList}>
-							{attroptions.map((option, index) => (
+							{attroptions.map(option => (
 								<li
-									key={index}
-									className={classes.listItem}
+									key={option?.label}
+									className={`${classes.listItem} ${selectedOption?.label === option.label ? classes.highlighted : ''}`}
 									onClick={() => {
 										setSelectedOption(option);
 										setFillColor(option['color']);
 										setDisplayColorPicker(!displayColorPicker);
-									}}
-									style={{
-										backgroundColor: '#fff',
 									}}
 								>
 									<span>{option['label'] === '' ? '(Blank)' : option['label']}</span>
@@ -224,3 +230,26 @@ const AttrsValuesDropdown = ({
 };
 
 export default AttrsValuesDropdown;
+
+// Define prop types
+AttrsValuesDropdown.propTypes = {
+	selectedValue: PropTypes.shape({
+		value: PropTypes.string,
+		label: PropTypes.string,
+	}),
+	selectedLayer: PropTypes.shape({
+		layerType: PropTypes.string,
+		identifier: PropTypes.string,
+	}),
+	setFillColor: PropTypes.func.isRequired,
+	fillColor: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.shape({
+			css: PropTypes.shape({
+				backgroundColor: PropTypes.string,
+			}),
+		}),
+	]).isRequired,
+	attributeBasedColors: PropTypes.object.isRequired,
+	setAttributeBasedColors: PropTypes.func.isRequired,
+};

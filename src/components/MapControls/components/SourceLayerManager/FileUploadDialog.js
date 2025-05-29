@@ -43,9 +43,18 @@ const FileUploadDialog = () => {
 
 	const [createDatasetLayers] = useMutation(CREATE_DATASET_LAYERS);
 
+	const handleCancel = () => {
+		setIsOpen(false);
+		mapControlsController.updateState({
+			layerAddControl: null,
+			fileUploaded: null,
+		});
+	};
+
 	const handleCreateDataset = async () => {
 		if (!groupName || !fileUploaded) {
-			return setError(true);
+			setError(true);
+			return;
 		}
 
 		globalStateController.updateState({
@@ -60,22 +69,21 @@ const FileUploadDialog = () => {
 		const user = globalStateController.getValue('user');
 		const fileName = groupName.trim().toLowerCase().replace(' ', '_') + `.${getFileExtension(fileUploaded.fileName)}`;
 
-		const originalFile = await client.mutate({
+		const fileRes = await client.mutate({
 			mutation: ADDFILE,
 			variables: {
 				fileName,
 				custom_data: {
-					originalFileName: fileUploaded.fileName,
 					groupName,
 				},
 				userId: user.mongoId,
 			},
 		});
 
-		const fileId = originalFile.data.addFile.file.id;
+		const fileId = fileRes.data.addFile.file.id;
 
 		if (fileId) {
-			await uploadFileData(originalFile.data.addFile.file, fileUploaded);
+			await uploadFileData(fileRes.data.addFile.file, fileUploaded);
 
 			await SimpleOrShapeFileImport({ user, client, fileId });
 		}
@@ -126,7 +134,8 @@ const FileUploadDialog = () => {
 
 	const handleCreateLayers = async () => {
 		if (!groupName || !layerNames.length) {
-			return setError(true);
+			setError(true);
+			return;
 		}
 
 		createDatasetLayers({
@@ -151,18 +160,11 @@ const FileUploadDialog = () => {
 
 	const handleApplyChanges = () => {
 		if (!dataset) {
-			return handleCreateDataset();
+			handleCreateDataset();
+			return;
 		}
 
 		handleCreateLayers();
-	};
-
-	const handleCancel = () => {
-		setIsOpen(false);
-		mapControlsController.updateState({
-			layerAddControl: null,
-			fileUploaded: null,
-		});
 	};
 
 	useEffect(() => {
@@ -208,8 +210,9 @@ const FileUploadDialog = () => {
 
 				{dataset && (
 					<>
-						{dataset.categories.map(({ name }, i) => (
+						{dataset.categories.map(({ name, layerIdentifier }, i) => (
 							<TextField
+								key={layerIdentifier}
 								focused
 								required
 								margin="dense"

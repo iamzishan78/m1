@@ -1,3 +1,5 @@
+import React from 'react';
+
 const mrtFilterOptions = [
 	{
 		option: 'fuzzy',
@@ -192,4 +194,72 @@ export const currencyKeys = [
 	'shape.shapeJson.properties.uUnitPricing.keyword',
 	'shape.shapeJson.properties.uUnitPricingNMA.keyword',
 	'shape.shapeJson.properties.uMaxUnitPricingNMA.keyword',
+];
+
+export const entityCreationOptions = [
+	{ label: 'Draw on Map', value: 'onMap' },
+	{ label: 'Add with RightDialog', value: 'RightDialog' },
+];
+
+export const entityShapeOptions = [
+	{ label: 'Polygon', value: 'Polygon' },
+	{ label: 'Point', value: 'Point' },
+	{ label: 'Line', value: 'LineString' },
+];
+
+export const entityKeyTypes = [
+	{ label: 'String', value: 'string' },
+	// { label: 'Json', value: 'json' },
+	{ label: 'Number', value: 'number' },
+	{ label: 'Date', value: 'date' },
+	// { label: 'ObjectId', value: 'objectId' },
+	{ label: 'Boolean', value: 'boolean' },
+	// { label: 'Array', value: 'array' },
+	{ label: 'User', value: 'user' },
+	// { label: 'Tags', value: 'tags' },
+	// { label: 'Comments', value: 'comments' },
+];
+
+// Dummy schema for dynamic schema loading
+export const dummySchema = [
+	{
+		isDummy: true,
+		name: 'Loading...',
+		accessorKey: 'loading_one',
+		header: 'Loading...',
+		id: 'loading_one',
+		size: 350,
+		type: 'string',
+		Cell: () => <div>Loading data...</div>,
+	},
+	{
+		isDummy: true,
+		name: 'Loading...',
+		accessorKey: 'loading_two',
+		header: 'Loading...',
+		id: 'loading_two',
+		size: 350,
+		type: 'string',
+		Cell: () => <div>Loading data...</div>,
+	},
+	{
+		isDummy: true,
+		name: 'Loading...',
+		accessorKey: 'loading_three',
+		header: 'Loading...',
+		id: 'loading_three',
+		size: 350,
+		type: 'string',
+		Cell: () => <div>Loading data...</div>,
+	},
+	{
+		isDummy: true,
+		name: 'Loading...',
+		accessorKey: 'loading_four',
+		header: 'Loading...',
+		id: 'loading_four',
+		size: 350,
+		type: 'string',
+		Cell: () => <div>Loading data...</div>,
+	},
 ];

@@ -10,7 +10,6 @@ import Typography from '@material-ui/core/Typography';
 import CloseSharp from '@material-ui/icons/CloseSharp';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import SearchIcon from '@material-ui/icons/Search';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useMutation, useQuery } from '@apollo/client';
 import set from 'lodash/set';
@@ -21,14 +20,14 @@ import EntityType from 'components/ContactDetailCard/components/FieldContent/Ent
 import { timeZoneOptions } from 'components/ContactDetailCard/components/FieldContent/timeZoneList';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loader from 'components/Loaders';
+import BulkAddActivityForm from 'components/MRTTable/Common/Dialog/BulkUpdate/BulkAddActivityForm';
 import RelatedContact from 'components/MRTTable/Common/Dialog/BulkUpdate/RelatedContact';
-import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
-import FieldBulkAutoComplete from 'components/Shared/FieldBulkAutoComplete';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
 import { copy } from 'components/Shared/functions';
-import BulkAddActivityForm from 'components/MRTTable/Common/Dialog/BulkUpdate/BulkAddActivityForm';
 
 import { ASSIGN_OWNER_TO_CONTACT } from 'graphQL/useMutationAssignOwnerToContact';
+import { BULK_ADD_ACTIVITIES } from 'graphQL/useMutationBulkAddActivities';
 import { BULKUPSERTTAG } from 'graphQL/useMutationBulkUpsertTagOnContacts';
 import { UPSERT_ENTITY_CAMPAIGNS } from 'graphQL/useMutationCampaign';
 import { ADD_RELATED_CONTACTS } from 'graphQL/useMutationRelatedContact';
@@ -36,15 +35,14 @@ import { UPDATEBULKCONTACT } from 'graphQL/useMutationUpdateBulkContact';
 import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { PUBLICTAGSQUERY } from 'graphQL/useQueryPublicTags';
-import { BULK_ADD_ACTIVITIES } from 'graphQL/useMutationBulkAddActivities';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableGlobalController } from 'stateManagement/tableController';
 
 import { Modals } from 'styles/Modal';
-
-import { resetESTableToggle } from 'stateManagement';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
@@ -130,12 +128,27 @@ function SelectedField({
 		case 'Contact Owner':
 			// Renders autocomplete field for selecting contact owner
 			return (
-				<ContactAutoComplete
-					value={contactOwner}
-					onChange={(e, user) => {
-						const value = user && user.value ? user.value : '';
-						setFieldKey(value); // Sets the field key value
-						setContactOwner(value); // Sets the contact owner value
+				<CustomAutoComplete
+					fieldAttributes={{
+						value: contactOwner,
+						placeholder: 'Select Contact Owner',
+						query: GETMONGOUSERS,
+						getOptions: hits =>
+							hits.data.allMongoUsers
+								.map(user => ({
+									_id: user._id,
+									name: user.displayName || user.name,
+								}))
+								.filter(user => user.name),
+					}}
+					fieldEvents={{
+						onChange: ({ value: user }) => {
+							setFieldKey(user._id); // Sets the field key user
+							setContactOwner(user._id); // Sets the contact owner value
+						},
+					}}
+					fieldConfig={{
+						size: 'medium',
 					}}
 				/>
 			);
@@ -177,30 +190,46 @@ function SelectedField({
 				/>
 			);
 		case 'Time Zone':
-			// Renders autocomplete field for selecting time zone
+			// Renders CustomAutoComplete field for selecting time zone
 			return (
-				<Autocomplete
-					id="combo-box-demo"
-					options={timeZoneOptions} // Provides time zone options for selection
-					onChange={(e, newValue) => {
-						setFieldKey(newValue); // Sets the field key value based on selected time zone
+				<CustomAutoComplete
+					fieldAttributes={{
+						optionArray: timeZoneOptions,
+						value: fieldKey,
+						placeholder: 'Select Timezone',
 					}}
-					value={fieldKey} // Current selected time zone value
-					renderInput={params => <TextField {...params} size="small" placeholder="Select Timezone" />} // Renders input field for selecting time zone
+					fieldEvents={{
+						onChange: ({ value }) => setFieldKey(value),
+					}}
+					fieldConfig={{
+						size: 'medium',
+						margin: 'dense',
+					}}
 				/>
 			);
 		case 'Tags':
-			// Renders autocomplete field for selecting multiple tags
+			// Renders CustomAutoComplete field for selecting multiple tags
 			return (
-				<Autocomplete
-					multiple // Allows selecting multiple tags
-					className={classes.chip} // Uses CSS class 'chip' for styling
-					id="update-contacts-tags"
-					options={publicTags?.publicTags || []} // Provides options for tags selection
-					getOptionLabel={option => option} // Retrieves label for each tag option
-					value={fieldKey || []} // Current selected tags array
-					onChange={(e, newTagsArr) => setFieldKey(newTagsArr)} // Sets the field key value based on selected tags array
-					renderInput={params => <TextField {...params} variant="outlined" className={classes.input} />} // Renders input field for selecting tags
+				<CustomAutoComplete
+					fieldAttributes={{
+						optionArray: publicTags?.publicTags || [],
+						value: fieldKey || [],
+						placeholder: 'Select Tags',
+					}}
+					fieldEvents={{
+						onChange: ({ value }) => setFieldKey(value),
+					}}
+					fieldConfig={{
+						multiple: true,
+						size: 'medium',
+						margin: 'dense',
+						chipStyles: {
+							backgroundColor: '#ECEDED',
+							color: '#606060',
+							borderRadius: '4px',
+						},
+						inputClassName: classes.input,
+					}}
 				/>
 			);
 		// Additional cases can be added as needed for different field types
@@ -244,30 +273,31 @@ function SelectedField({
 	// Conditional rendering based on filterKey value
 	if (filterKey) {
 		return (
-			<FieldBulkAutoComplete
-				value={fieldKey || []} // Current selected value or empty array
-				placeholder={`Select ${field}`} // Placeholder text for the field
-				filterKey={filterKey} // Sets filter key based on field type
-				onChange={(e, fieldKey) => {
-					setFieldKey(fieldKey.value); // Sets the field key value based on selected value
+			<CustomAutoComplete
+				fieldAttributes={{
+					value: fieldKey ?? null,
+					query: GET_ES_FILTER_LIST,
+					variables: {
+						esIndex: 'contacts_flat',
+						filterKey: filterKey,
+						size: 50,
+					},
+					placeholder: `Select ${field}`,
+					getOptions: res => {
+						return res?.data?.getESFilterList?.hits?.map(hit => hit.key).filter(opt => opt) || [];
+					},
+				}}
+				fieldEvents={{
+					onChange: ({ value }) => setFieldKey(value),
+				}}
+				fieldConfig={{
+					size: 'medium',
 				}}
 			/>
 		);
 	}
 	return ''; // Default case returns an empty string
 }
-
-SelectedField.propTypes = {
-	field: PropTypes.string.isRequired,
-	setFieldKey: PropTypes.func.isRequired,
-	setCampaigns: PropTypes.func.isRequired,
-	setContactOwner: PropTypes.func.isRequired,
-	contactOwner: PropTypes.string,
-	fieldKey: PropTypes.string,
-	campaigns: PropTypes.arrayOf(PropTypes.object).isRequired, // Adjust if campaigns have a specific structure
-	classes: PropTypes.object, // Adjust based on the structure of classes if necessary
-	publicTags: PropTypes.array, // Adjust if publicTags have a specific structure
-};
 
 export default function AssignOwnerToContactDrawer({
 	onClose,
@@ -279,7 +309,7 @@ export default function AssignOwnerToContactDrawer({
 	...rest
 }) {
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const classes = useStyles();
 	const modalClass = Modals();
@@ -434,7 +464,6 @@ export default function AssignOwnerToContactDrawer({
 		}).then(
 			res => {
 				// Toggle the reset state for the table to refresh its data
-				resetESTableToggle.set(!resetESTableToggle.get());
 
 				// Check if the response data is present and updateShapes was successful
 				if (res.data && res.data.updateShapes) {
@@ -481,7 +510,6 @@ export default function AssignOwnerToContactDrawer({
 				awaitRefetchQueries: true,
 			}).then(
 				res => {
-					resetESTableToggle.set(!resetESTableToggle.get());
 					if (res.data && res.data.assignOwnerToContact) {
 						const { success, message } = res.data.assignOwnerToContact;
 						if (success) {
@@ -516,7 +544,6 @@ export default function AssignOwnerToContactDrawer({
 				awaitRefetchQueries: true,
 			}).then(
 				res => {
-					resetESTableToggle.set(!resetESTableToggle.get());
 					if (res.data && res.data.bulkUpsertTagOnContacts) {
 						const { success, message } = res.data.bulkUpsertTagOnContacts;
 
@@ -540,13 +567,12 @@ export default function AssignOwnerToContactDrawer({
 			addRelatedContacts({
 				variables: {
 					relationshipType: fieldKey?.relationshipType,
-					descriptorObject: fieldKey?.descriptorObject?.value,
+					descriptorObject: fieldKey?.descriptorObject._id,
 					relatedObject: contactIds,
 					userId: getUser?._id,
 				},
 			}).then(
 				res => {
-					resetESTableToggle.set(!resetESTableToggle.get());
 					if (res.data && res.data.addRelatedContacts) {
 						const { success, message } = res.data.addRelatedContacts;
 
@@ -566,7 +592,7 @@ export default function AssignOwnerToContactDrawer({
 				}
 			);
 		} else if (field === 'Add New Activity') {
-			const isOwnerTable = ['TractPerUnitTable', 'OwnersPerUnitTable'].includes(rest.header);
+			const isOwnerTable = ['TractInterestOwnerTable', 'UnitInterestOwnerTable'].includes(rest.header);
 
 			bulkAddActivities({
 				variables: {
@@ -581,7 +607,6 @@ export default function AssignOwnerToContactDrawer({
 				awaitRefetchQueries: true,
 			}).then(
 				res => {
-					resetESTableToggle.set(!resetESTableToggle.get());
 					if (res.data && res.data.bulkAddActivities) {
 						const { success } = res.data.bulkAddActivities;
 						if (success) {
@@ -647,7 +672,6 @@ export default function AssignOwnerToContactDrawer({
 							}).then(
 								res => {
 									if (res.data && res.data.upsertEntityCampaigns) {
-										resetESTableToggle.set(!resetESTableToggle.get());
 										const success = res.data.upsertEntityCampaigns.success;
 										if (success) {
 											Loader.successToast('contact-creation', 'Updated');
@@ -689,7 +713,6 @@ export default function AssignOwnerToContactDrawer({
 								awaitRefetchQueries: true,
 							}).then(
 								res => {
-									resetESTableToggle.set(!resetESTableToggle.get());
 									if (res.data && res.data.updateParcelOwners) {
 										const success = res.data.updateParcelOwners.success;
 										if (success) {
@@ -734,7 +757,6 @@ export default function AssignOwnerToContactDrawer({
 								awaitRefetchQueries: true,
 							}).then(
 								res => {
-									resetESTableToggle.set(!resetESTableToggle.get());
 									if (res.data && res.data.updateShapeOwners) {
 										const success = res.data.updateShapeOwners.success;
 										if (success) {
@@ -773,7 +795,6 @@ export default function AssignOwnerToContactDrawer({
 						awaitRefetchQueries: true,
 					}).then(
 						res => {
-							resetESTableToggle.set(!resetESTableToggle.get());
 							if (res.data && res.data.updateBulkContact) {
 								const success = res.data.updateBulkContact.some(res => res.success);
 								if (success) {
@@ -852,32 +873,28 @@ export default function AssignOwnerToContactDrawer({
 									</Typography>
 								</Grid>
 								<Grid item>
-									<Autocomplete
-										freeSolo
-										id="free-solo-2-demo"
-										data-testid="select-field-autocomplete"
-										disableClearable
-										options={fieldsToUpdate.map(field => field.title)}
-										onChange={(e, field) => {
-											setFieldKey('');
-											onFieldToUpdateChange(field);
+									<CustomAutoComplete
+										fieldAttributes={{
+											optionArray: fieldsToUpdate.map(field => ({
+												value: field.title,
+												text: field.title,
+											})),
+											value: field,
+											placeholder: 'Select field to update',
 										}}
-										renderInput={params => (
-											<TextField
-												{...params}
-												placeholder="Select field to update"
-												variant="outlined"
-												InputProps={{
-													...params.InputProps,
-													type: 'search',
-													startAdornment: (
-														<InputAdornment position="start">
-															<SearchIcon htmlColor="#757575" />
-														</InputAdornment>
-													),
-												}}
-											/>
-										)}
+										fieldEvents={{
+											onChange: ({ value }) => {
+												setFieldKey('');
+												onFieldToUpdateChange(value);
+											},
+										}}
+										fieldConfig={{
+											size: 'medium',
+											margin: 'dense',
+											freeSolo: true,
+											disableClearable: true,
+											startAdornment: <SearchIcon htmlColor="#757575" />,
+										}}
 									/>
 								</Grid>
 								<Grid item>
@@ -924,6 +941,17 @@ export default function AssignOwnerToContactDrawer({
 		</RightDialog>
 	);
 }
+
+SelectedField.propTypes = {
+	field: PropTypes.string.isRequired,
+	setFieldKey: PropTypes.func.isRequired,
+	setCampaigns: PropTypes.func,
+	setContactOwner: PropTypes.func,
+	contactOwner: PropTypes.any,
+	fieldKey: PropTypes.any,
+	classes: PropTypes.object.isRequired,
+	publicTags: PropTypes.object,
+};
 
 AssignOwnerToContactDrawer.propTypes = {
 	onClose: PropTypes.func.isRequired,

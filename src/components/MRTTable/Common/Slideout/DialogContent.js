@@ -19,7 +19,7 @@ function DialogContent(props) {
 	const slideOutState = slidoutStateController.useState(['parentId', 'view']);
 	const slideOutStateValues = slideOutState.stateValues;
 
-	const { Component } = slideOutStateValues?.view;
+	const { Component } = slideOutStateValues.view;
 
 	return <Component />;
 }

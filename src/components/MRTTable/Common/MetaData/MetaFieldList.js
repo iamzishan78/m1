@@ -19,9 +19,8 @@ import EditIcon from '@material-ui/icons/Edit';
 
 import PropTypes from 'prop-types';
 
-import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController';
-
 import { globalStateController } from 'stateManagement/globalStateController';
+import { metaDataColumnStateController } from 'stateManagement/metaDataColumnsController';
 import { tableController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(() => ({

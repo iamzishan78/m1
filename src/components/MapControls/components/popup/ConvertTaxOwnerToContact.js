@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Controller, useForm } from 'react-hook-form';
 
 import { makeStyles } from '@material-ui/core';
@@ -15,16 +16,18 @@ import Switch from '@material-ui/core/Switch';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
-import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import Tags from 'components/Shared/Tagger';
-
-import { getMapFilters } from 'utils/helper';
 
 import { drawController } from 'stateManagement/drawStateController';
 import { globalStateController } from 'stateManagement/globalStateController';
 
-const useStyles = makeStyles(theme => ({
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import { getMapFilters } from 'utils/helper';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+
+const useStyles = makeStyles(() => ({
 	root: {
 		width: '557px',
 		padding: '10px 30px',
@@ -59,7 +62,6 @@ const ConvertTaxOwnerToContact = ({
 	convertTaxOwnerToContactAction,
 	getShapeOwnersAndCountAction,
 	getContactCampaignAction,
-	campaignList,
 	shapeCount,
 	fetching,
 	onClose,
@@ -172,7 +174,7 @@ const ConvertTaxOwnerToContact = ({
 						control={control}
 						name="contactStatus"
 						defaultValue={contactStatusOptions[0].value}
-						render={props => (
+						render={({ field }) => (
 							<Select
 								styles={{
 									menu: provided => ({ ...provided, zIndex: 9999 }),
@@ -180,7 +182,7 @@ const ConvertTaxOwnerToContact = ({
 								value={contactStatus}
 								menuPlacement="auto"
 								onChange={e => {
-									props.onChange(e.target.value);
+									field.onChange(e.target.value);
 								}}
 								className={classes.fullWidth}
 								isDisabled={globalStateValues.selectedMeta}
@@ -194,18 +196,25 @@ const ConvertTaxOwnerToContact = ({
 				</div>
 				<div className={classes.field}>
 					<label className={classes.bold}>Contact Owner</label>
-					<Controller
+					<CustomAutoComplete
 						control={control}
-						name="contactOwner"
-						render={props => (
-							<ContactAutoComplete
-								value={contactOwner}
-								contactValue="email"
-								onChange={(e, user) => {
-									props.onChange(user.value);
-								}}
-							/>
-						)}
+						watch={watch}
+						fieldAttributes={{
+							name: 'contactOwner',
+							value: contactOwner,
+							placeholder: 'Select Contact Owner',
+							query: GETMONGOUSERS,
+							getOptions: hits =>
+								hits.data.allMongoUsers
+									.map(user => ({
+										_id: user.email,
+										name: user.displayName || user.name,
+									}))
+									.filter(user => user.name),
+						}}
+						fieldConfig={{
+							size: 'medium',
+						}}
 					/>
 				</div>
 				<div className={classes.field}>
@@ -213,13 +222,13 @@ const ConvertTaxOwnerToContact = ({
 					<Controller
 						control={control}
 						name="campaigns"
-						render={params => (
+						render={({ field }) => (
 							<CampaignField
-								{...params}
-								value={params.value}
+								{...field}
+								value={field.value}
 								className={classes.maxWidth}
 								onChange={values => {
-									params.onChange(values);
+									field.onChange(values);
 									setCampaigns(values.map(val => ({ ...val, id: val._id })));
 								}}
 								fullWidth
@@ -260,6 +269,17 @@ const ConvertTaxOwnerToContact = ({
 			</div>
 		</Drawer>
 	);
+};
+
+ConvertTaxOwnerToContact.propTypes = {
+	getMapFilterShapeOwnersAndCountAction: PropTypes.func.isRequired,
+	convertTaxOwnerToContactAction: PropTypes.func.isRequired,
+	getShapeOwnersAndCountAction: PropTypes.func.isRequired,
+	getContactCampaignAction: PropTypes.func.isRequired,
+	shapeCount: PropTypes.number,
+	fetching: PropTypes.bool,
+	onClose: PropTypes.func.isRequired,
+	open: PropTypes.bool.isRequired,
 };
 
 export default ConvertTaxOwnerToContact;

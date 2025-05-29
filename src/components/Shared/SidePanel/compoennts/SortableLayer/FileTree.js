@@ -8,6 +8,7 @@ import { useMutation } from '@apollo/client';
 import update from 'immutability-helper';
 
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
+import { UPDATEUSERLAYERMETA } from 'graphQL/useMutationupdateLayersMeta';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 
@@ -17,9 +18,13 @@ import { layerController } from 'stateManagement/layerStateController';
 import { useStyles } from '../style';
 import LayerItem from './LayerItem';
 
+const lockedGroups = ['Agreements'];
 const FileTree = ({ layerMap, panelItems }) => {
 	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 	const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
+	const [updateUserLayersMeta] = useMutation(UPDATEUSERLAYERMETA);
+
+	const { globalState } = globalStateController.useState(['user'], 'globalState');
 	const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, {
 		refetchQueries: ['getLayerGroups'],
 		awaitRefetchQueries: true,
@@ -31,7 +36,7 @@ const FileTree = ({ layerMap, panelItems }) => {
 	const classes = useStyles();
 
 	const updateStateLayers = currentLayers => {
-		globalStateController.updateState({ layers: currentLayers, previousLayers: currentLayers });
+		layerController.updateState({ layers: currentLayers, previousLayers: currentLayers });
 	};
 	const checkforUpdate = (updateFn, previous, current, key) => {
 		if (previous[key] !== current[key]) {
@@ -54,9 +59,11 @@ const FileTree = ({ layerMap, panelItems }) => {
 						updateFn[index] = {
 							showable: { $set: current.showable },
 							visiable: { $set: current.visiable },
+							name: { $set: current.name },
 						};
 					}
 					checkforUpdate(updateFn[index], item, current, 'name');
+					checkforUpdate(updateFn[index], item, current, 'groupName');
 					checkforUpdate(updateFn[index], item, current, 'layerName');
 					checkforUpdate(updateFn[index], item, current, 'fileName');
 					checkforUpdate(updateFn[index], item, current, 'fileUrl');
@@ -70,6 +77,8 @@ const FileTree = ({ layerMap, panelItems }) => {
 							groupName: { $set: current.groupName },
 							layerName: { $set: current.layerName },
 							name: { $set: current.name },
+							position: { $set: current.position },
+							_id: { $set: current._id },
 						};
 					}
 				}
@@ -85,7 +94,7 @@ const FileTree = ({ layerMap, panelItems }) => {
 	}, [layerMap]);
 
 	const handleChange = useCallback(newItems => {
-		const index = newItems.findIndex(item => item.id === currentItem.current.id);
+		const index = newItems.findIndex(item => item.layerId === currentItem.current.layerId);
 		if (newItems[index].depth === 1) {
 			const parent = findParent(newItems, index);
 			if (parent.type !== 'group' || parent.collapsed) {
@@ -154,7 +163,6 @@ const FileTree = ({ layerMap, panelItems }) => {
 					manySettings: layersToUpdate.map(layer => ({ _id: layer._id, layerSettings: layer.layerSettings })),
 				},
 			});
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		},
 		[items]
 	);
@@ -171,8 +179,27 @@ const FileTree = ({ layerMap, panelItems }) => {
 		setItems(itemsRef.current);
 	};
 
+	async function updateLayersAndState({ layerIds, direction, targetId, groupName, groupId }) {
+		// Update layers meta
+		await updateUserLayersMeta({
+			variables: {
+				userId: globalState.user.mongoId,
+				layersMeta: {
+					layerId: layerIds,
+					direction,
+					targetId,
+					groupName,
+					groupId,
+				},
+			},
+		});
+
+		// Fetch and update projected layers
+		layerController.getProjectedLayers();
+	}
+
 	const handleDragEnd = useCallback(
-		(oldItem, newItem) => {
+		async (oldItem, newItem) => {
 			if (oldItem.depth === 0 && newItem.depth === 1 && newItem.type === 'group') {
 				return revert();
 			}
@@ -186,7 +213,6 @@ const FileTree = ({ layerMap, panelItems }) => {
 				visibleLayers[visibleIndex + 1]
 			);
 
-			const layersToUpdate = [];
 			const itemIndex = items.findIndex(item => item.id === newItem.id);
 			const descendants = findDescendants(items, itemIndex).filter(item => !item.emptyLayer);
 
@@ -195,8 +221,8 @@ const FileTree = ({ layerMap, panelItems }) => {
 				const parent = findParent(items, itemIndex);
 				if (
 					parent.type === 'group' &&
-					((oldItem.groupName === 'Agreements' && parent.name === 'Agreements') ||
-						(oldItem.groupName !== 'Agreements' && parent.name !== 'Agreements'))
+					((lockedGroups.includes(oldItem.groupName) && lockedGroups.includes(parent.name)) ||
+						(!lockedGroups.includes(oldItem.groupName) && !lockedGroups.includes(parent.name)))
 				) {
 					items[itemIndex].groupName = parent.name;
 					items[itemIndex].groupId = parent.id;
@@ -204,28 +230,13 @@ const FileTree = ({ layerMap, panelItems }) => {
 					return revert();
 				}
 			} else if (oldItem.depth === 1 && newItem.depth === 0) {
-				if (oldItem.groupName === 'Agreements') {
+				if (lockedGroups.includes(oldItem.groupName)) {
 					return revert();
 				} else {
 					items[itemIndex].groupName = null;
 					items[itemIndex].groupId = null;
 				}
 			}
-			const sortedLayers = globalStateController
-				.getValue('layers')
-				.sort((a, b) => (a.position > b.position ? 1 : b.position > a.position ? -1 : 0));
-			layersWithoutGroup.forEach((layer, i) => {
-				if (layer._id === newItem._id || sortedLayers[i]._id !== layer._id) {
-					layersToUpdate.push({
-						_id: layer._id,
-						position: i,
-						groupName: layer.groupName,
-						groupId: layer.groupId,
-					});
-				}
-				layer.position = i;
-			});
-
 			if (newItem.type === 'group' && descendants.length === 0) {
 				updateUserMapSettings({
 					variables: {
@@ -240,10 +251,89 @@ const FileTree = ({ layerMap, panelItems }) => {
 				updateStateLayers([...layersWithoutGroup]);
 			}
 
-			updateManyUserLayerSettings({
-				variables: { manySettings: layersToUpdate },
-			});
-			// eslint-disable-next-line react-hooks/exhaustive-deps
+			if (newItem.type === 'group') {
+				// Find all descendants of the group
+				const itemIndex = items.findIndex(item => item.id === newItem.id);
+				const descendants = findDescendants(items, itemIndex).filter(item => !item.emptyLayer);
+
+				if (descendants.length === 0) {
+					return revert(); // Groups without descendants cannot be moved
+				}
+
+				const firstDescendant = descendants[0];
+				const lastDescendant = descendants[descendants.length - 1];
+
+				// Find the layer above the first descendant and below the last descendant
+				const firstDescendantIndex = layersWithoutGroup.findIndex(layer => layer.id === firstDescendant.id);
+				const lastDescendantIndex = layersWithoutGroup.findIndex(layer => layer.id === lastDescendant.id);
+
+				const layerAbove = firstDescendantIndex > 0 ? layersWithoutGroup[firstDescendantIndex - 1] : null;
+				const layerBelow =
+					lastDescendantIndex < layersWithoutGroup.length - 1 ? layersWithoutGroup[lastDescendantIndex + 1] : null;
+
+				let direction = null;
+				let targetId = null;
+
+				// Determine movement direction and target layer
+				if (layerBelow && lastDescendant.position > layerBelow.position) {
+					direction = 'above';
+					targetId = layerBelow.id;
+				} else if (layerAbove && firstDescendant.position < layerAbove.position) {
+					direction = 'below';
+					targetId = layerAbove.id;
+				} else {
+					return revert(); // No valid move
+				}
+
+				// Pass all descendant IDs for meta update
+				const descendantIds = descendants.map(descendant => descendant.id);
+
+				updateLayersAndState({
+					layerIds: descendantIds, // Or [newItem.id] for non-groups
+					direction,
+					targetId,
+					groupName: newItem.groupName,
+					groupId: newItem.groupId,
+				});
+
+				return null;
+			}
+			if (newItem.type !== 'group') {
+				const newIndex = layersWithoutGroup.findIndex(layer => layer.id === newItem.id);
+				if (newIndex === -1) {
+					return revert();
+				}
+				// Determine movement direction and target layer
+				let direction = null;
+				let targetId = null;
+				if (newIndex > 0) {
+					const layerAbove = layersWithoutGroup[newIndex - 1];
+					if (newItem.position < layerAbove.position) {
+						// Moved down
+						direction = 'below';
+						targetId = layerAbove.id;
+					}
+				}
+				if (newIndex < layersWithoutGroup.length - 1) {
+					const layerBelow = layersWithoutGroup[newIndex + 1];
+					if (newItem.position > layerBelow.position) {
+						// Moved up
+						direction = 'above';
+						targetId = layerBelow.id;
+					}
+				}
+
+				updateLayersAndState({
+					layerIds: [newItem.id],
+					direction,
+					targetId,
+					groupName: newItem.groupName,
+					groupId: newItem.groupId,
+				});
+				return null;
+			}
+
+			return null;
 		},
 		[items]
 	);
@@ -252,7 +342,7 @@ const FileTree = ({ layerMap, panelItems }) => {
 		layer => {
 			const currentLayers = [...items];
 			// saving to stateApp
-			const index = panelItems.findIndex(item => item._id === layer._id);
+			const index = panelItems.findIndex(item => item.layerId === layer.layerId);
 			currentLayers[index] = layer;
 			updateItems(items, currentLayers);
 
@@ -264,11 +354,13 @@ const FileTree = ({ layerMap, panelItems }) => {
 				variables: {
 					settings: {
 						_id: layer._id,
+						user: globalState.user.mongoId,
+						layer: layer.layerId,
 						layerSettings: layer.layerSettings,
+						layerPaintProps: layer.layerPaintProps,
 					},
 				},
 			});
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		},
 		[items, panelItems]
 	);

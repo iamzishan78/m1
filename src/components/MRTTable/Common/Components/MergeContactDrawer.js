@@ -54,7 +54,7 @@ const useStyles = makeStyles(styles);
 
 export default function MergeContactDrawer({ onClose, rows, setRows }) {
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 	const dispatch = useDispatch();
 	const classes = useStyles();
 	const modalClass = Modals();

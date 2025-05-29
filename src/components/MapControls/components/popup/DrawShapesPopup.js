@@ -4,6 +4,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
+import Line from 'components/Shared/svgIcons/line';
+import Point from 'components/Shared/svgIcons/point';
+
 import { drawController } from 'stateManagement/drawStateController';
 import { layerController } from 'stateManagement/layerStateController';
 
@@ -41,7 +44,7 @@ const DrawShapesPopup = props => {
 			},
 			{
 				title: 'Circle',
-				mode: 'drag_circle',
+				mode: 'radius_circle',
 				icon: <RadioButtonUncheckedIcon id="mapCircle" fontSize="small" />,
 				disable: drawStateValues.multiSelectLandGrids,
 			},
@@ -50,6 +53,18 @@ const DrawShapesPopup = props => {
 				mode: 'draw_rectangle',
 				icon: <Rect />,
 				disable: drawStateValues.multiSelectLandGrids,
+			},
+			{
+				title: 'Point',
+				mode: 'draw_point',
+				icon: <Point />,
+				disable: drawStateValues.multiSelectLandGrids || drawController.isPolygon(),
+			},
+			{
+				title: 'Line',
+				mode: 'draw_line_string',
+				icon: <Line />,
+				disable: drawStateValues.multiSelectLandGrids || drawController.isPolygon(),
 			},
 		],
 		[zoom, drawState.multiSelectLandGrids]

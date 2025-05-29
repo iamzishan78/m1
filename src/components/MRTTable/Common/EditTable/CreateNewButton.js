@@ -7,7 +7,7 @@ import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
 import { tableController } from 'stateManagement/tableController';
 
-const CreateNewButton = ({ table, tableKey, label = 'Create New' }) => {
+const CreateNewButton = ({ table, tableKey, label = 'ADD NEW LINE ITEM' }) => {
 	const Controller = tableController(tableKey);
 
 	const { tableStateValues } = Controller.useState(['enableEditing', 'isCreateMode'], 'tableStateValues');

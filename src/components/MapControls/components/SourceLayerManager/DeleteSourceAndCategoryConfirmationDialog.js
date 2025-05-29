@@ -35,12 +35,14 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 
 	const isSource = !props.actionItem?.category;
 	const title = isSource ? 'Datasource' : 'Category';
-	const layers = stateApp?.layers?.filter(layer =>
-		isSource
-			? layer.file === props.actionItem.dataset?.file
-			: layer.file === props.actionItem.dataset?.file &&
-				layer.layerShapeName === props.actionItem.category.layerShapeName
-	);
+	const layers = layerController
+		.getValue('projectedLayers')
+		.filter(layer =>
+			isSource
+				? layer.file === props.actionItem.dataset?.file
+				: layer.file === props.actionItem.dataset?.file &&
+					layer.layerIdentifier === props.actionItem.category.layerIdentifier
+		);
 
 	useEffect(() => {
 		if (layersDeleted && layersDeleted.updateManyLayer) {
@@ -64,7 +66,6 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 				dispatch(showErrorMessage('Error occurred'));
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layersDeleted]);
 
 	const handleAccept = () => {
@@ -92,7 +93,13 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 				variables: {
 					layers: layers.map(layer => ({ _id: layer.layerId, IsDeleted: true })),
 				},
-				refetchQueries: ['getAllLayerSettingsByUser'],
+			});
+
+			layerController.updateState({
+				projectedLayers: layerController
+					.getValue('projectedLayers')
+					.filter(layer => !layers.some(l => l.layerId === layer.layerId)),
+				layers: layerController.getValue('layers').filter(layer => !layers.some(l => l.layerId === layer.layerId)),
 			});
 		} else {
 			setStateApp(state => ({

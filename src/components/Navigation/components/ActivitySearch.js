@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Grid, InputAdornment, TextField, Tooltip, IconButton } from '@material-ui/core';
+import { Grid, InputAdornment, Tooltip, IconButton } from '@material-ui/core';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -9,15 +9,17 @@ import ClearIcon from '@material-ui/icons/Clear';
 import EventIcon from '@material-ui/icons/Event';
 import List from '@material-ui/icons/List';
 import SearchIcon from '@material-ui/icons/Search';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery } from '@apollo/client';
-import debounce from 'lodash/debounce';
+import PropTypes from 'prop-types';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
 
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+
 import { AppContext } from 'AppContext';
-import { slidoutState } from 'stateManagement/initialStates';
 
 const useStyles = makeStyles(theme => ({
 	barTitle: {
@@ -96,7 +98,6 @@ const ActivitySearch = () => {
 
 	const [activities, setActivities] = useState([]);
 	const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
-	const [nameAutInputValue, setNameAutInputValue] = useState('');
 
 	const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
@@ -113,9 +114,11 @@ const ActivitySearch = () => {
 			}));
 		} else if (id) {
 			window.history.pushState('', '', `/calendar/activities/${id}`);
-			slidoutState.selectedActivityId.set(id);
-			slidoutState.show.set(true);
-			slidoutState.selectedActivity.set(activitiesData?.activities?.find(act => act._id === id));
+			slidoutStateController.updateState({
+				selectedActivityId: id,
+				show: true,
+				selectedActivity: activitiesData?.activities?.find(act => act._id === id),
+			});
 		}
 	};
 
@@ -153,14 +156,6 @@ const ActivitySearch = () => {
 		}));
 	};
 
-	const onInputChange = React.useMemo(
-		() =>
-			debounce((event, value, reason) => {
-				setNameAutInputValue(value);
-			}, 500),
-		[]
-	);
-
 	useEffect(() => {
 		if (childRef.current) {
 			// Access the parent element of the component referenced by childRef
@@ -178,7 +173,7 @@ const ActivitySearch = () => {
 			display="flex"
 			direction="row"
 			alignItems="center"
-			style={{ marginLeft: quickActionsPanelState ? '425px' : '0px', width: '55%', marginTop: '15px' }}
+			style={{ marginLeft: quickActionsPanelState ? '425px' : '0px', marginTop: '15px' }}
 			ref={childRef}
 		>
 			<Grid item className={classes.barTitle}>
@@ -186,106 +181,95 @@ const ActivitySearch = () => {
 				<Typography variant="h5">{activeModule.title}</Typography>
 			</Grid>
 			<Grid item>
-				<Autocomplete
+				<CustomAutoComplete
 					className={classes.search}
-					style={{
-						margin: 0,
-					}}
-					defaultValue={nameAutValue}
-					value={nameAutValue}
-					disableListWrap
-					options={activities}
-					noOptionsText={loading ? 'Loading' : 'No options'}
-					getOptionLabel={option => option?.name || ''}
-					getOptionSelected={(option, value) => {
-						return option === value;
-					}}
-					renderOption={option => {
-						return (
-							<Grid container spacing={0}>
-								<Grid container item xs={12} alignItems="center">
-									<Grid item xs>
-										<span style={{ fontWeight: 400 }}>{option?.name || ''}</span>
+					fieldConfig={{
+						margin: 'dense',
+						size: 'small',
+						variant: 'outlined',
+						inputClassName: classes.activitySearchField,
+						loading: loading,
+						renderOptionComp: ({ option }) => (
+							<Grid container item xs={12} alignItems="center">
+								<Grid item xs>
+									<span style={{ fontWeight: 400 }}>{option?.name || ''}</span>
 
-										<Typography variant="body2" color="textSecondary">
-											{option?.type || ''}
-										</Typography>
-									</Grid>
+									<Typography variant="body2" color="textSecondary">
+										{option?.type || ''}
+									</Typography>
 								</Grid>
 							</Grid>
-						);
-					}}
-					onInputChange={onInputChange}
-					onChange={(e, act) => {
-						handleSelectActivity(act?._id);
-						setNameAutValue(act);
-					}}
-					renderInput={params => (
-						<TextField
-							margin="dense"
-							{...params}
-							style={{
-								margin: 0,
-							}}
-							className={classes.activitySearchField}
-							placeholder={`Search for ${activeModule?.title?.toLowerCase()}`}
-							variant="outlined"
-							InputProps={{
-								...params.InputProps,
-								startAdornment: (
-									<InputAdornment>
-										<IconButton size="small">
-											<SearchIcon htmlColor="grey" />
+						),
+						textFieldInputProps: {
+							startAdornment: (
+								<InputAdornment>
+									<IconButton size="small">
+										<SearchIcon htmlColor="grey" />
+									</IconButton>
+								</InputAdornment>
+							),
+							endAdornment: (
+								<ButtonGroup variant="text">
+									<Tooltip title="Clear">
+										<IconButton
+											size="small"
+											htmlColor="#fff"
+											className={`${classes.toggleBtn} ${stateApp.activityDisplayType === 'table' && classes.activeBtn}`}
+											onClick={() => {
+												setNameAutValue({ name: '', _id: null });
+											}}
+										>
+											<ClearIcon />
 										</IconButton>
-									</InputAdornment>
-								),
-								endAdornment: (
-									<>
-										<ButtonGroup variant="text">
-											<Tooltip title="Clear">
-												<IconButton
-													size="small"
-													htmlColor="#fff"
-													className={`${classes.toggleBtn} ${stateApp.activityDisplayType === 'table' && classes.activeBtn}`}
-													onClick={() => {
-														setNameAutValue({ name: '', _id: null });
-													}}
-												>
-													<ClearIcon />
-												</IconButton>
-											</Tooltip>
-											<Tooltip title="List View">
-												<IconButton
-													id="listView"
-													size="small"
-													htmlColor="#fff"
-													className={`${classes.toggleBtn} ${stateApp.activityDisplayType === 'table' && classes.activeBtn}`}
-													onClick={() => setActivityDisplayType('table')}
-												>
-													<List />
-												</IconButton>
-											</Tooltip>
-											<Tooltip title="Calendar">
-												<IconButton
-													size="small"
-													htmlColor="#fff"
-													className={`${classes.toggleBtn} ${stateApp.activityDisplayType === 'calendar' && classes.activeBtn}`}
-													onClick={() => setActivityDisplayType('calendar')}
-												>
-													<EventIcon />
-												</IconButton>
-											</Tooltip>
-										</ButtonGroup>
-									</>
-								),
-							}}
-							size="small"
-						/>
-					)}
+									</Tooltip>
+									<Tooltip title="List View">
+										<IconButton
+											id="listView"
+											size="small"
+											htmlColor="#fff"
+											className={`${classes.toggleBtn} ${stateApp.activityDisplayType === 'table' && classes.activeBtn}`}
+											onClick={() => setActivityDisplayType('table')}
+										>
+											<List />
+										</IconButton>
+									</Tooltip>
+									<Tooltip title="Calendar">
+										<IconButton
+											size="small"
+											htmlColor="#fff"
+											className={`${classes.toggleBtn} ${stateApp.activityDisplayType === 'calendar' && classes.activeBtn}`}
+											onClick={() => setActivityDisplayType('calendar')}
+										>
+											<EventIcon />
+										</IconButton>
+									</Tooltip>
+								</ButtonGroup>
+							),
+						},
+					}}
+					fieldAttributes={{
+						value: nameAutValue,
+						defaultValue: nameAutValue,
+						optionArray: activities.filter(option => option?.name),
+						placeholder: `Search for ${activeModule?.title?.toLowerCase()}`,
+					}}
+					fieldEvents={{
+						onChange: ({ valueObj: activity }) => {
+							handleSelectActivity(activity?._id);
+							setNameAutValue(activity);
+						},
+					}}
 				/>
 			</Grid>
 		</Grid>
 	);
+};
+
+ActivitySearch.propTypes = {
+	activeModule: PropTypes.shape({
+		title: PropTypes.string,
+	}),
+	quickActionsPanelState: PropTypes.bool,
 };
 
 export default ActivitySearch;

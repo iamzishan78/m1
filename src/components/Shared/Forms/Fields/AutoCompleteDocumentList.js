@@ -3,12 +3,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery } from '@apollo/client';
 import debounce from 'lodash/debounce';
+import PropTypes from 'prop-types';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
@@ -67,77 +68,59 @@ const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
 		setSearch('');
 	};
 
-	const onChange = value => {
+	const onChange = ({ value }) => {
 		setValue(value);
 		onSelect(value);
 	};
 
+	const renderOptionComp = ({ option }) => {
+		return (
+			<Grid container item xs={12} alignItems="center">
+				<Grid item xs>
+					<span style={{ fontWeight: 400 }}>{option.name}</span>
+					<Typography variant="body2" color="textSecondary">
+						{option.documentNumber} {option.documentNumber && option.documentName ? ' - ' : ''} {option.documentName}
+					</Typography>
+				</Grid>
+			</Grid>
+		);
+	};
+
 	return (
-		<Autocomplete
-			id="searchDocumentList"
-			value={value}
+		<CustomAutoComplete
 			disableListWrap
 			classes={classes}
-			options={documents || []}
-			getOptionLabel={option => {
-				if (typeof option === 'string') {
-					return option;
-				}
-				if (option.inputValue) {
-					return option.name;
-				}
-				if (option?.name) {
-					return option.name;
-				} else {
-					return '';
-				}
-			}}
-			filterOptions={(options, value) => {
-				return options;
-			}}
-			getOptionSelected={(option, value) => {
-				return option?._id === value?._id;
-			}}
-			renderOption={option => {
-				return (
-					<Grid container spacing={0}>
-						<Grid container item xs={12} alignItems="center">
-							<Grid item xs>
-								<span style={{ fontWeight: 400 }}>{option.name}</span>
-								<Typography variant="body2" color="textSecondary">
-									{option.documentNumber} {option.documentNumber && option.documentName ? ' - ' : ''}{' '}
-									{option.documentName}
-								</Typography>
-							</Grid>
-						</Grid>
-					</Grid>
-				);
-			}}
+			id="searchDocumentList"
 			onInputChange={onInputChange}
-			onChange={(event, newValue) => {
-				onChange(newValue);
+			fieldConfig={{
+				margin: 'dense',
+				variant: 'outlined',
+				renderOptionComp,
+				textFiledInputProps: {
+					startAdornment: (
+						<InputAdornment position="start">
+							<SearchIcon />
+						</InputAdornment>
+					),
+				},
 			}}
-			onBlur={onBlur}
-			renderInput={params => (
-				<TextField
-					margin="dense"
-					variant="outlined"
-					{...params}
-					placeholder="Search documents"
-					InputProps={{
-						...params.InputProps,
-						startAdornment: (
-							<InputAdornment position="start">
-								<SearchIcon />
-							</InputAdornment>
-						),
-					}}
-					fullWidth
-					autoFocus
-					size="small"
-				/>
-			)}
+			fieldAttributes={{
+				value: value,
+				placeholder: 'Search documents',
+				optionArray: documents || [],
+			}}
+			fieldEvents={{
+				onBlur,
+				onChange,
+			}}
 		/>
 	);
 };
+
+AutoCompleteDocumentList.propTypes = {
+	onSelect: PropTypes.func.isRequired,
+	search: PropTypes.string.isRequired,
+	setSearch: PropTypes.func.isRequired,
+};
+
 export default AutoCompleteDocumentList;

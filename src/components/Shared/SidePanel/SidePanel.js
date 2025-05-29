@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import AddLayerIcon from '@material-ui/icons/Queue';
 
@@ -35,7 +35,11 @@ export default function SidePanel() {
 	const { mapControlsStateValues } = mapControlsController.useState(['selectedControl'], 'mapControlsStateValues');
 	const panelType = mapControlsStateValues.selectedControl;
 
-	const [stateApp, setStateApp] = useContext(AppContext);
+	const { baseMapLayers, checkedBaseLayers, heatLayers, checkedHeats, layerStateValues } = layerController.useState(
+		['baseMapLayers', 'checkedBaseLayers', 'heatLayers', 'checkedHeats'],
+		'layerStateValues'
+	);
+
 	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
 	const openManager = type => {
@@ -63,7 +67,7 @@ export default function SidePanel() {
 	//   for BaseMap Panel
 	useEffect(() => {
 		if (panelType === 'base') {
-			setPanelItems(stateApp.baseMapLayers);
+			setPanelItems(layerStateValues.baseMapLayers);
 			setPanelTitle('Base Map');
 			setPanelButton(null);
 			setHeaderFilters(null);
@@ -74,9 +78,9 @@ export default function SidePanel() {
 					return;
 				}
 
-				const items = reorder(stateApp.baseMapLayers, result.source.index, result.destination.index);
+				const items = reorder(layerStateValues.baseMapLayers, result.source.index, result.destination.index);
 
-				let checkedBaseLayers = stateApp.checkedBaseLayers.slice(0);
+				let checkedBaseLayers = layerStateValues.checkedBaseLayers.slice(0);
 				const sourceIndex = checkedBaseLayers.indexOf(result.source.index);
 
 				let direction = 0;
@@ -102,16 +106,13 @@ export default function SidePanel() {
 					checkedBaseLayers[sourceIndex] = result.destination.index;
 				}
 
-				setStateApp({
-					...stateApp,
-					baseMapLayers: items,
-					checkedBaseLayers: checkedBaseLayers,
-				});
+				layerController.memoizedStateUpdate('baseMapLayers', items);
+				layerController.memoizedStateUpdate('checkedBaseLayers', checkedBaseLayers);
 			});
 
 			setToggleFunction(() => ({ index }) => {
-				if (stateApp.baseMapLayers[index]?.name === 'Land Grid') {
-					const currentLayers = globalStateController.getValue('layers');
+				if (layerStateValues.baseMapLayers[index]?.name === 'Land Grid') {
+					const currentLayers = layerController.getValue('layers');
 					const layer = copy(currentLayers.find(layer => layer.identifier === 'Land Grid'));
 					if (layer) {
 						const visible = layer.layerSettings.visiable || layer.layerSettings.showable;
@@ -127,8 +128,8 @@ export default function SidePanel() {
 									}
 								: layer;
 						});
-						globalStateController.updateState({ layers: mappedLayers });
-						stateApp.layers = [...mappedLayers];
+						layerController.updateState({ layers: mappedLayers });
+
 						// Handle DeckGL layers
 						['AbstractGeo', 'Pls'].forEach(identifier =>
 							layerController.handleDeckLayer({
@@ -151,22 +152,19 @@ export default function SidePanel() {
 							},
 						});
 					}
-				} else {
-					const currentIndex = stateApp.checkedBaseLayers.indexOf(index);
-					let newChecked = [...stateApp.checkedBaseLayers];
-					if (currentIndex === -1) {
-						newChecked.push(index);
-					} else {
-						newChecked.splice(currentIndex, 1);
-					}
-					setStateApp(stateApp => ({
-						...stateApp,
-						checkedBaseLayers: newChecked,
-					}));
 				}
+
+				const currentIndex = layerStateValues.checkedBaseLayers.indexOf(index);
+				let newChecked = [...layerStateValues.checkedBaseLayers];
+				if (currentIndex === -1) {
+					newChecked.push(index);
+				} else {
+					newChecked.splice(currentIndex, 1);
+				}
+				layerController.memoizedStateUpdate('checkedBaseLayers', newChecked);
 			});
 		}
-	}, [panelType, stateApp.baseMapLayers, stateApp.checkedBaseLayers]);
+	}, [panelType, baseMapLayers, checkedBaseLayers]);
 
 	//   for Layer Panel
 	useEffect(() => {
@@ -192,9 +190,9 @@ export default function SidePanel() {
 					return;
 				}
 
-				const items = reorder(stateApp.heatLayers, result.source.index, result.destination.index);
+				const items = reorder(layerStateValues.heatLayers, result.source.index, result.destination.index);
 
-				let checkedHeats = stateApp.checkedHeats.slice(0);
+				let checkedHeats = layerStateValues.checkedHeats.slice(0);
 				const sourceIndex = checkedHeats.indexOf(result.source.index);
 
 				let direction = 0;
@@ -220,29 +218,26 @@ export default function SidePanel() {
 					checkedHeats[sourceIndex] = result.destination.index;
 				}
 
-				setStateApp({
-					...stateApp,
-					heatLayers: items,
-					checkedHeats: checkedHeats,
-				});
+				layerController.memoizedStateUpdate('heatLayers', items);
+				layerController.memoizedStateUpdate('checkedHeats', checkedHeats);
 			});
 			setToggleFunction(() => ({ index }) => {
-				const currentIndex = stateApp.checkedHeats.indexOf(index);
-				const newChecked = [...stateApp.checkedHeats];
+				const currentIndex = layerStateValues.checkedHeats.indexOf(index);
+				const newChecked = [...layerStateValues.checkedHeats];
 
 				if (currentIndex === -1) {
 					newChecked.push(index);
 				} else {
 					newChecked.splice(currentIndex, 1);
 				}
-				setStateApp(stateApp => ({ ...stateApp, checkedHeats: newChecked }));
+				layerController.memoizedStateUpdate('checkedHeats', newChecked);
 			});
-			setPanelItems(stateApp.heatLayers);
+			setPanelItems(layerStateValues.heatLayers);
 			setPanelTitle('Heatmaps');
 			setPanelButton(null);
 			setHeaderFilters(null);
 		}
-	}, [panelType, stateApp.heatLayers, stateApp.checkedHeats]);
+	}, [panelType, heatLayers, checkedHeats]);
 
 	//   for Marketplace Panel
 	useEffect(() => {

@@ -84,7 +84,6 @@ const RelatedDocumets = props => {
 			},
 			customValue: { parentRecord: uniObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 

@@ -18,11 +18,11 @@ import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
 import { drawController } from 'stateManagement/drawStateController';
 
-import { getMapFilters, jsonToCSV, wellsToCSV } from 'utils/helper';
+import { getMapFilters } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		width: '557px',
 		padding: '10px 30px',
@@ -60,14 +60,11 @@ const ExportWellsOwners = ({
 	getMapFilterShapeOwnersAndWellsAction,
 	getShapeOwnersAndWellsAction,
 	execAsyncExportJobAction,
-	shapeOwnersInterest,
 	shapeInterestCount,
-	shapeOwners,
 	shapeCount,
 	wellsCount,
 	fetching,
 	onClose,
-	wells,
 	open,
 }) => {
 	const classes = useStyles();
@@ -189,12 +186,12 @@ const ExportWellsOwners = ({
 								control={control}
 								name="exportWells"
 								defaultValue={false}
-								render={props => (
+								render={({ field }) => (
 									<Checkbox
-										{...props}
+										{...field}
 										disabled={wellsCount === 0}
 										onChange={e => {
-											props.onChange(e.target.checked);
+											field.onChange(e.target.checked);
 										}}
 									/>
 								)}
@@ -212,12 +209,12 @@ const ExportWellsOwners = ({
 								control={control}
 								name="exportOwners"
 								defaultValue={false}
-								render={props => (
+								render={({ field }) => (
 									<Checkbox
-										{...props}
+										{...field}
 										disabled={shapeCount === 0}
 										onChange={e => {
-											props.onChange(e.target.checked);
+											field.onChange(e.target.checked);
 										}}
 									/>
 								)}
@@ -234,12 +231,12 @@ const ExportWellsOwners = ({
 								control={control}
 								name="exportOwnersInterest"
 								defaultValue={false}
-								render={props => (
+								render={({ field }) => (
 									<Checkbox
-										{...props}
+										{...field}
 										disabled={shapeCount === 0}
 										onChange={e => {
-											props.onChange(e.target.checked);
+											field.onChange(e.target.checked);
 										}}
 									/>
 								)}

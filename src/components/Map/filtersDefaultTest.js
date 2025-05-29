@@ -106,11 +106,11 @@ export default function DefaultFiltersTest() {
 			}
 		};
 		// flag to run the function
-		if (stateApp.user.authToken) {
+		if (stateApp.user.accessToken) {
 			setFilters();
 		}
 		// Do not include setStateApp in the dependency array it will break
-	}, [stateApp.filtersAdd, stateApp.filtersMockDb, stateApp.user.authToken]);
+	}, [stateApp.filtersAdd, stateApp.filtersMockDb, stateApp.user.accessToken]);
 
 	return (
 		/// empty div rendered on the map so it triggers the useEffect above

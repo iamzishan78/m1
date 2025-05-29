@@ -2,12 +2,14 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useAuth0 } from '@auth0/auth0-react';
+import PropTypes from 'prop-types';
 import queryString from 'query-string';
 
-import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
-
-import { BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
+import { LOGIN_MUTATION } from 'graphQL/useMutationLogin';
 import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+import { mapStateController } from 'stateManagement/mapStateController';
 
 import { setUserAction } from 'store/actions/appActions';
 import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';
@@ -16,8 +18,9 @@ import { apolloClientEndpointDev, isDev } from 'utils/helper';
 import { UserSession } from 'utils/user';
 
 import { setApolloHeaders } from 'AppContext';
-import { globalStateController } from 'stateManagement/globalStateController';
-import { mapStateController } from 'stateManagement/mapStateController';
+
+import { tenantsCredentials } from './helpers';
+import { simpleAuthBypass } from '../../utils/data';
 
 const Auth0Login = props => {
 	const dispatch = useDispatch();
@@ -54,10 +57,8 @@ const Auth0Login = props => {
 			tenantId: sessionData.tenantId,
 			mongoId: mongoUser._id,
 			roles: mongoUser.roles,
-			isAuth0: true,
-			authToken: sessionData.auth0Token,
-			accessToken: sessionData.auth0Token,
-			authTokenExpires: sessionData.authenticationToken.expiresOn,
+			accessToken: simpleAuthBypass ? sessionData.token : sessionData.auth0Token,
+			authTokenExpires: simpleAuthBypass ? sessionData.token.expiresOn : null,
 		};
 		globalStateController.updateState({ user });
 		mapStateController.updateState({ mapVars, defaultMapVars });
@@ -68,33 +69,33 @@ const Auth0Login = props => {
 		window.setStateNav(stateNav => ({ ...stateNav, defaultOn: true }));
 	};
 
-	async function loginUser(email, authToken, idToken) {
+	async function loginUser(email, idToken) {
 		var options = {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				query: BYPASS_LOGIN_MUTATION.loc.source.body,
+				query: LOGIN_MUTATION.loc.source.body,
 				variables: { email },
 			}),
 		};
 		let endpoint = globalStateController.getValue('apolloClientEndpoint');
-		options = setApolloHeaders(options, authToken, idToken);
+		options = setApolloHeaders(options, idToken);
 		return await fetch(endpoint, options)
 			.then(response => response.json())
 			.then(response => {
-				return response?.data?.bypassLogin?.success
+				return response?.data?.login?.success
 					? {
-							user: response.data.bypassLogin.user,
-							sessionData: response.data.bypassLogin.sessionData,
+							user: response.data.login.user,
+							sessionData: response.data.login.sessionData,
 						}
 					: null;
 			})
 			.catch(error => console.log(error));
 	}
 
-	async function userSettings(userId, authToken, idToken, type) {
+	async function userSettings(userId, idToken, type) {
 		var options = {
 			method: 'POST',
 			headers: {
@@ -106,7 +107,7 @@ const Auth0Login = props => {
 			}),
 		};
 		let endpoint = globalStateController.getValue('apolloClientEndpoint');
-		options = setApolloHeaders(options, authToken, idToken);
+		options = setApolloHeaders(options, idToken);
 		return await fetch(endpoint, options)
 			.then(response => response.json())
 			.then(response => {
@@ -137,13 +138,11 @@ const Auth0Login = props => {
 		if (!apolloClientEndpoint) {
 			let tenant = tenantsCredentials(tenantName);
 			globalStateController.updateState({
-				myMSALObj: null,
 				apolloClientEndpoint:
 					isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant?.apolloClientEndpoint,
 			});
 			window.setStateApp(stateApp => ({
 				...stateApp,
-				myMSALObj: null,
 				apolloClientEndpoint: tenant?.apolloClientEndpoint,
 				graphqlScope: tenant?.graphqlScope,
 			}));
@@ -157,7 +156,7 @@ const Auth0Login = props => {
 					return;
 				}
 
-				const loginRes = await loginUser(id.email, id.__raw, id.__raw);
+				const loginRes = await loginUser(id.email, id.__raw);
 				if (!loginRes?.user) {
 					UserSession.deleteSession();
 					return;
@@ -169,8 +168,7 @@ const Auth0Login = props => {
 				UserSession.setStorageItem('tenantName', tenantName);
 
 				// Fetch user settings
-				const authToken = loginRes.sessionData.auth0Token || loginRes.sessionData.token;
-				const userMapSettings = await userSettings(loginRes.user._id, authToken, id.__raw, 'baseMap');
+				const userMapSettings = await userSettings(loginRes.user._id, id.__raw, 'baseMap');
 
 				handleLogin(loginRes, userMapSettings);
 			} catch (error) {
@@ -184,3 +182,7 @@ const Auth0Login = props => {
 };
 
 export default Auth0Login;
+
+Auth0Login.propTypes = {
+	location: PropTypes.object,
+};

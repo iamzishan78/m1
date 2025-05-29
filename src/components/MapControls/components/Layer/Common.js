@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { FormControl, Input, InputAdornment } from '@material-ui/core';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 
-import _, { set } from 'lodash';
+import _ from 'lodash';
 import { ColorBox } from 'material-ui-color';
+import PropTypes from 'prop-types';
 import { v4 as uuid } from 'uuid';
 
 import { copy } from 'components/Shared/functions';
@@ -13,19 +14,23 @@ function trim(str) {
 	return str.replace(/^\s+|\s+$/gm, '');
 }
 
+export const TWO = 2;
+export const ALPHA_INDEX = 3;
+export const HEX_LENGTH = 16;
+export const ROUND = 255;
 export function RGBAToHexA(rgba) {
 	var inParts = rgba.substring(rgba.indexOf('(')).split(','),
 		r = parseInt(trim(inParts[0].substring(1)), 10),
 		g = parseInt(trim(inParts[1]), 10),
-		b = parseInt(trim(inParts[2]), 10),
-		a = parseFloat(trim(inParts[3].substring(0, inParts[3].length - 1))).toFixed(2);
+		b = parseInt(trim(inParts[TWO]), 10),
+		a = parseFloat(trim(inParts[ALPHA_INDEX].substring(0, inParts[ALPHA_INDEX].length - 1))).toFixed(TWO);
 	var outParts = [
-		r.toString(16),
-		g.toString(16),
-		b.toString(16),
-		Math.round(a * 255)
-			.toString(16)
-			.substring(0, 2),
+		r.toString(HEX_LENGTH),
+		g.toString(HEX_LENGTH),
+		b.toString(HEX_LENGTH),
+		Math.round(a * ROUND)
+			.toString(HEX_LENGTH)
+			.substring(0, TWO),
 	];
 
 	// Pad single-digit output values
@@ -38,15 +43,16 @@ export function RGBAToHexA(rgba) {
 	return '#' + outParts.join('');
 }
 
+const FOUR = 4;
 export const ifRgbaConvt = color => {
-	if (color?.slice(0, 4) === 'rgba') {
+	if (color?.slice(0, FOUR) === 'rgba') {
 		return RGBAToHexA(color);
 	} else {
 		return color;
 	}
 };
 
-export const ColorPickerStyledBox = withStyles(theme => ({
+export const ColorPickerStyledBox = withStyles(() => ({
 	root: {
 		width: 'auto',
 		'& .MuiBox-root': {
@@ -62,7 +68,20 @@ export const ColorPickerStyledBox = withStyles(theme => ({
 	},
 }))(ColorBox);
 
-export const useStyles = makeStyles(theme => ({
+export const project = {
+	file: 1,
+	layerId: 1,
+	layerType: 1,
+	layerName: 1,
+	groupName: 1,
+	groupId: 1,
+	position: 1,
+	layerSettings: 1,
+	identifier: 1,
+	layerCategory: 1,
+};
+
+export const useStyles = makeStyles(() => ({
 	gridOnIcon: {
 		color: '#7f7f80',
 		borderRadius: '0px',
@@ -92,6 +111,15 @@ export const useStyles = makeStyles(theme => ({
 	},
 }));
 
+export const styleImageMap = {
+	dots: '/img/dots.png',
+	'hatch-1x': '/img/1x.png',
+	'hatch-2x': '/img/2x.png',
+	'hatch-cross': '/img/cross.png',
+	dashed: '/img/dashed.png',
+	connected: '/img/connected.png',
+};
+
 export const WidthPicker = ({ width, setWidth, layerType }) => {
 	return (
 		<FormControl
@@ -110,7 +138,8 @@ export const WidthPicker = ({ width, setWidth, layerType }) => {
 				value={width}
 				onChange={e => {
 					if (e.target.value) {
-						if (e.target.value >= 0 && e.target.value <= 50) {
+						const MAX_WIDTH = 50;
+						if (e.target.value >= 0 && e.target.value <= MAX_WIDTH) {
 							setWidth(e.target.value);
 						}
 					} else {
@@ -123,6 +152,11 @@ export const WidthPicker = ({ width, setWidth, layerType }) => {
 		</FormControl>
 	);
 };
+WidthPicker.propTypes = {
+	width: PropTypes.number.isRequired,
+	setWidth: PropTypes.func.isRequired,
+	layerType: PropTypes.string.isRequired,
+};
 
 export const useLayerStyle = layer => {
 	const layerType = layer.layerPaintProps[0]?.paintType;
@@ -134,15 +168,25 @@ export const useLayerStyle = layer => {
 	const initialLayerEnableStroke = !(layer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor === false);
 	const initialLayerAttributeBasedColors = layer.layerSettings?.attributeBasedColors || {};
 	const initialLayerAttributeBasedStrokeColors = layer.layerSettings?.attributeBasedStrokeColors || {};
+	const initialLayerAttributeFillStyles = layer.layerSettings?.attributeBasedStyles || {};
+	const initialLayerAttributeLineStyles = layer.layerSettings?.attributeBasedLineStyles || {};
 	const initialLayerSelectedAttribute = layer.layerSettings?.selectedAttribute || null;
 	const initialLayerSelectedStrokeAttribute = layer.layerSettings?.selectedStrokeAttribute || null;
-	const initialStrokeWidth = layer.layerPaintProps[0]?.paintProps?.strokeWidth || 20;
+	const initialLayerFillStyle = layer.layerSettings?.selectedFillStyle || null;
+	const initialLayerLineStyle = layer.layerSettings?.selectedLineStyle || null;
+	const DEFAULT_STROKE_WIDTH = 20;
+	const initialStrokeWidth = layer.layerPaintProps[0]?.paintProps?.strokeWidth || DEFAULT_STROKE_WIDTH;
+
 	const initialFillColor =
 		layerType === 'fill'
 			? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps['fill-color'])
 			: layerType === 'line'
 				? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps['line-color'])
 				: ifRgbaConvt(layer.layerPaintProps[0]?.paintProps['circle-color']);
+
+	if (layerType === 'fill' && layer.layerPaintProps?.[0]?.paintProps) {
+		layer.layerPaintProps[0].paintProps['fill-opacity'] = 1;
+	}
 	const initialStrokeColor =
 		layerType === 'fill'
 			? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps['fill-outline-color'])
@@ -165,14 +209,20 @@ export const useLayerStyle = layer => {
 	const [width, setWidth] = useState(initialWidth);
 	const [layerName, setLayerName] = useState();
 	const [fillColor, setFillColor] = useState(initialFillColor);
+	const [fillStyle, setFillStyle] = useState(layer.layerSettings?.fillStyle || null);
+	const [lineStyle, setLineStyle] = useState(layer.layerSettings?.lineStyle || null);
 
 	// Added state for enable layer fill
 	const [enablefillColor, setEnableFillColor] = useState(initialLayerEnableFill);
 	const [enableStrokeColor, setEnableStrokeColor] = useState(initialLayerEnableStroke);
 	const [selectedValue, setSelectedValue] = useState(initialLayerSelectedAttribute);
 	const [selectedStrokeValue, setSelectedStrokeValue] = useState(initialLayerSelectedStrokeAttribute);
+	const [selectedFillStyle, setSelectedFillStyle] = useState(initialLayerFillStyle);
+	const [selectedLineStyle, setSelectedLineStyle] = useState(initialLayerLineStyle);
 	const [attributeBasedColors, setAttributeBasedColors] = useState(initialLayerAttributeBasedColors);
 	const [attributeBasedStrokeColors, setAttributeBasedStrokeColors] = useState(initialLayerAttributeBasedStrokeColors);
+	const [attributeBasedStyles, setAttributeBasedStyles] = useState(initialLayerAttributeFillStyles);
+	const [attributeBasedLineStyles, setAttributeBasedLineStyles] = useState(initialLayerAttributeLineStyles);
 
 	const [layerLabelVisibility, setLayerLabelVisibility] = useState(initialLayerLabelVisibility);
 	const [layerClickability, setLayerClickability] = useState(initialLayerClickable);
@@ -183,13 +233,16 @@ export const useLayerStyle = layer => {
 	useEffect(() => {
 		setFillColor(initialFillColor);
 		setStrokeColor(initialStrokeColor);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [selectedValue, selectedStrokeValue]);
+		setFillStyle(layer.layerSettings?.fillStyle);
+		setLineStyle(layer.layerSettings?.lineStyle);
+	}, [selectedValue, selectedStrokeValue, selectedFillStyle, selectedLineStyle]);
 
 	useEffect(() => {
 		setWidth(initialWidth);
 		setFillColor(initialFillColor);
 		setStrokeColor(initialStrokeColor);
+		setFillStyle(layer.layerSettings?.fillStyle);
+		setLineStyle(layer.layerSettings?.lineStyle);
 	}, [initialFillColor, initialStrokeColor, initialWidth, layer]);
 
 	const handleLayerChange = () => {
@@ -205,8 +258,14 @@ export const useLayerStyle = layer => {
 			layer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
 			!_.isEqual(layer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
 			!_.isEqual(layer.layerSettings?.attributeBasedStrokeColors, attributeBasedStrokeColors) ||
+			!_.isEqual(layer.layerSettings?.attributeBasedStyles, attributeBasedStyles) ||
+			!_.isEqual(layer.layerSettings?.attributeBasedLineStyles, attributeBasedLineStyles) ||
 			layer.layerSettings?.selectedAttribute?.label !== selectedValue?.label ||
-			layer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label
+			layer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label ||
+			layer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label ||
+			layer.layerSettings?.selectedLineStyle?.label !== selectedLineStyle?.label ||
+			layer.layerSettings?.fillStyle !== fillStyle ||
+			layer.layerSettings?.lineStyle !== lineStyle
 		) {
 			let currentLayer = { ...layer };
 			let fColor;
@@ -216,7 +275,9 @@ export const useLayerStyle = layer => {
 
 			if (fillColor && fillColor.rgb) {
 				fColor =
-					fillColor.rgb.length === 3 ? 'rgb(' + fillColor.rgb.join() + ')' : 'rgba(' + fillColor.rgb.join() + ')';
+					fillColor.rgb.length === ALPHA_INDEX
+						? 'rgb(' + fillColor.rgb.join() + ')'
+						: 'rgba(' + fillColor.rgb.join() + ')';
 			}
 
 			if (fillColor && (fillColor.alpha || fillColor.alpha === 0)) {
@@ -228,7 +289,9 @@ export const useLayerStyle = layer => {
 
 			if (strokeColor && strokeColor.rgb) {
 				sColor =
-					strokeColor.rgb.length === 3 ? 'rgb(' + strokeColor.rgb.join() + ')' : 'rgba(' + strokeColor.rgb.join() + ')';
+					strokeColor.rgb.length === ALPHA_INDEX
+						? 'rgb(' + strokeColor.rgb.join() + ')'
+						: 'rgba(' + strokeColor.rgb.join() + ')';
 			}
 			const layerSettings = copy(currentLayer.layerSettings);
 			layerSettings.interaction.interactionDetail.click = layerClickability;
@@ -247,6 +310,22 @@ export const useLayerStyle = layer => {
 			layerSettings.attributeBasedStrokeColors = attributeBasedStrokeColors;
 			layerSettings.selectedStrokeAttribute = selectedStrokeValue;
 
+			//Setting fill style
+			layerSettings.attributeBasedStyles = attributeBasedStyles;
+			layerSettings.selectedFillStyle = selectedFillStyle;
+
+			if (!selectedFillStyle) {
+				layerSettings.fillStyle = fillStyle;
+			}
+
+			//Setting Line Style
+			layerSettings.attributeBasedLineStyles = attributeBasedLineStyles;
+			layerSettings.selectedLineStyle = selectedLineStyle;
+
+			if (!selectedLineStyle) {
+				layerSettings.lineStyle = lineStyle;
+			}
+
 			if (
 				currentLayer &&
 				currentLayer.layerPaintProps &&
@@ -261,7 +340,7 @@ export const useLayerStyle = layer => {
 					}
 
 					if (currentLayer.layerSettings?.colorable) {
-						set(layerPaintProps, `[${i}]labelProps.visibility`, layerLabelVisibility);
+						_.set(layerPaintProps, `[${i}]labelProps.visibility`, layerLabelVisibility);
 					}
 					const layerType = layerPaintProps[i].paintType;
 
@@ -322,7 +401,7 @@ export const useLayerStyle = layer => {
 								layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops &&
 								layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[0] &&
 								layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[1] &&
-								layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[2]
+								layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[TWO]
 							) {
 								layerPaintProps[i] = {
 									...layerPaintProps[i],
@@ -340,7 +419,7 @@ export const useLayerStyle = layer => {
 												stops: [
 													[layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[0][0], fColor],
 													[layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[1][0], fColor],
-													[layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[2][0], fColor],
+													[layerPaintProps[i].clusterProps.clusterPaintProps['circle-color'].stops[TWO][0], fColor],
 												],
 											},
 										},
@@ -486,6 +565,7 @@ export const useLayerStyle = layer => {
 				layerSettings: currentLayer.layerSettings,
 			};
 		}
+		return null;
 	};
 
 	return {
@@ -495,18 +575,30 @@ export const useLayerStyle = layer => {
 		setWidth,
 		fillColor,
 		setFillColor,
+		fillStyle,
+		lineStyle,
+		setLineStyle,
+		setFillStyle,
 		enablefillColor,
 		enableStrokeColor,
 		setEnableStrokeColor,
 		setEnableFillColor,
 		selectedValue,
 		setSelectedValue,
+		selectedFillStyle,
+		selectedLineStyle,
+		setSelectedLineStyle,
+		setSelectedFillStyle,
 		selectedStrokeValue,
 		setSelectedStrokeValue,
 		attributeBasedColors,
 		setAttributeBasedColors,
 		attributeBasedStrokeColors,
 		setAttributeBasedStrokeColors,
+		attributeBasedLineStyles,
+		attributeBasedStyles,
+		setAttributeBasedLineStyles,
+		setAttributeBasedStyles,
 		layerLabelVisibility,
 		setLayerLabelVisibility,
 		layerClickability,

@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Grid, TextField } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
@@ -10,6 +9,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { copy, deepEqual } from 'components/Shared/functions';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 
@@ -228,43 +228,45 @@ const LastCheckDateFilter = ({
 					<>
 						{extraFitlers.includes('checkNumber') && (
 							<Grid item xs style={{ minwidth: '15%' }}>
-								<Autocomplete
-									size="small"
-									onChange={(event, newValue) => {
-										setCheckNumberFilter(newValue);
+								<CustomAutoComplete
+									fieldAttributes={{
+										label: 'Check Number',
+									}}
+									fieldEvents={{
+										onChange: ({ value }) => setCheckNumberFilter(value),
+									}}
+									fieldConfig={{
+										variant: 'outlined',
+										size: 'small',
+										textfieldRestProps: {
+											placeholder: '',
+											style: { backgroundColor: 'white' },
+										},
 									}}
 									options={checkNumbers}
-									renderInput={params => (
-										<TextField
-											{...params}
-											label="Check Number"
-											variant="outlined"
-											placeholder=""
-											style={{ backgroundColor: 'white' }}
-										/>
-									)}
 									disableListWrap
-									id="custom-date-dropdown"
+									id="check-number-dropdown"
 								/>
 							</Grid>
 						)}
 						{extraFitlers.includes('propertyNumber') && (
 							<Grid item xs style={{ minWidth: '15%' }}>
-								<Autocomplete
-									size="small"
-									onChange={(event, newValue) => {
-										setPropertyNumberFilter(newValue);
+								<CustomAutoComplete
+									fieldAttributes={{
+										label: 'Property Number',
+									}}
+									fieldEvents={{
+										onChange: ({ value }) => setPropertyNumberFilter(value),
+									}}
+									fieldConfig={{
+										variant: 'outlined',
+										size: 'small',
+										textfieldRestProps: {
+											placeholder: '',
+											style: { backgroundColor: 'white' },
+										},
 									}}
 									options={propertyNumbers}
-									renderInput={params => (
-										<TextField
-											{...params}
-											label="Property Number"
-											variant="outlined"
-											placeholder=""
-											style={{ backgroundColor: 'white' }}
-										/>
-									)}
 									disableListWrap
 									id="custom-date-dropdown"
 								/>

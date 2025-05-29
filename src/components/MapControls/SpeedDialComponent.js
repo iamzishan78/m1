@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useState, memo } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles';
+import { makeStyles, fade } from '@material-ui/core/styles';
 import AspectRatioOutlinedIcon from '@material-ui/icons/AspectRatioOutlined';
 import CancelIcon from '@material-ui/icons/Cancel';
 import EditIcon from '@material-ui/icons/Edit';
@@ -11,8 +10,11 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 
-import { layerRefs } from 'stateManagement';
+import SyncSharpIcon from '@mui/icons-material/SyncSharp';
+import ViewListOutlinedIcon from '@mui/icons-material/ViewListOutlined';
+
 import { drawController } from 'stateManagement/drawStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
 import { mapStateController } from 'stateManagement/mapStateController';
 import { popupController } from 'stateManagement/popupStateController';
@@ -127,7 +129,6 @@ export function SpeedDialComponent(props) {
 		if (popupStateValues.selectedUserDefinedLayer || drawStateValues.shapeToExtend) {
 			mapControlsController.updateState({ selectedMapControl: 'draw', selectedControl: 'layer' });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedUserDefinedLayer, shapeToExtend]);
 
 	useEffect(() => {
@@ -137,7 +138,6 @@ export function SpeedDialComponent(props) {
 			});
 			mapControlsController.updateState({ selectedMapControl: 'draw', selectedControl: 'layer' });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedAbstracts]);
 
 	const handleOpen = () => {
@@ -156,7 +156,7 @@ export function SpeedDialComponent(props) {
 			window.mapRef?.removeLayer('aoi_label_layer');
 		}
 
-		const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+		const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
 
 		if (!sourceId) {
 			return;
@@ -241,6 +241,14 @@ export function SpeedDialComponent(props) {
 			mapStateController.updateState({ toggleZoomOut: !mapStateController.getValue('toggleZoomOut') });
 		}
 
+		if (action === 'syncMap') {
+			mapStateController.updateState({ isMapRefreshing: true });
+		}
+
+		if (action === 'showLegend') {
+			mapStateController.updateState({ showLegend: !mapStateController.getValue('showLegend') });
+		}
+
 		if (window.drawRef && window.drawRef.getMode() !== 'simple_select') {
 			drawController.updateState({
 				editDraw: false,
@@ -277,13 +285,22 @@ export function SpeedDialComponent(props) {
 			name: 'Zoom To Default Map Position',
 			action: 'zoomout',
 		},
+		{
+			icon: <SyncSharpIcon />,
+			name: 'Sync Map',
+			action: 'syncMap',
+		},
+		{
+			icon: <ViewListOutlinedIcon />,
+			name: 'Show legend',
+			action: 'showLegend',
+		},
 	];
 
 	useEffect(() => {
 		if (popupStateValues.expandedCard) {
 			handleFabClick();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [expandedCard]);
 
 	return (

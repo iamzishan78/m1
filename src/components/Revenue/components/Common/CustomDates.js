@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
-import { Grid, TextField } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import moment from 'moment';
 import PropTypes from 'prop-types';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 
 import { CUSTOM_DATES } from 'utils/data';
 import { handleCustomDateTypeChange } from 'utils/helper';
@@ -69,11 +71,16 @@ export default function Portfolio({
 	setNull,
 	datesInputWidth = 1,
 	setAllDateToNull = true,
+	setSelectedFilter,
 }) {
 	const classes = useStyles();
 	const [value, setValue] = useState(defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES);
 
 	const handleDateTypeChange = date => {
+		if (setSelectedFilter) {
+			setSelectedFilter(date);
+		}
+
 		handleCustomDateTypeChange(
 			date,
 			onChange,
@@ -126,67 +133,71 @@ export default function Portfolio({
 				</Grid>
 			)}
 			<Grid item xs md={datesInputWidth} style={{ marginTop: '2px', maxWidth: '30%' }}>
-				<Autocomplete
-					size="small"
-					value={value}
-					onChange={(event, newValue) => {
-						const newVal = newValue ? newValue : defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES;
-						handleDateTypeChange(newVal);
-						setValue(newVal);
-					}}
-					options={Object.values(CUSTOM_DATES).filter(value => {
-						if (!isProperties && value === 'All Dates') {
-							return false;
-						} else {
+				<CustomAutoComplete
+					fieldAttributes={{
+						label: 'Check Date Range',
+						defaultValue: defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES,
+						value: value,
+						optionArray: Object.values(CUSTOM_DATES).filter(val => {
+							if (!isProperties && val === 'All Dates') {
+								return false;
+							}
 							return true;
-						}
-					})}
-					renderInput={params => (
-						<TextField
-							{...params}
-							label="Check Date Range"
-							variant="outlined"
-							placeholder=""
-							style={{ backgroundColor: 'white' }}
-						/>
-					)}
-					defaultValue={defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES}
+						}),
+					}}
+					fieldEvents={{
+						onChange: ({ value }) => {
+							const newVal = value ?? defaultRange ?? CUSTOM_DATES.ALL_DATES;
+							handleDateTypeChange(newVal);
+							setValue(newVal);
+						},
+					}}
+					fieldConfig={{
+						variant: 'outlined',
+						textfieldRestProps: {
+							style: { backgroundColor: 'white' },
+						},
+					}}
 					disableListWrap
 					id="custom-date-dropdown"
 				/>
 			</Grid>
 			<Grid item xs md={datesInputWidth}>
-				<TextField
-					size="small"
-					margin="dense"
-					type="date"
-					variant="outlined"
-					placeholder="from"
-					fullWidth
-					value={moment(fromDate).format('yyyy-MM-DD')}
-					className={classes.inputFieldDate}
-					InputLabelProps={{
-						shrink: true,
+				<CustomTextField
+					fieldConfig={{
+						type: 'date',
+						size: 'small',
+						margin: 'dense',
+						variant: 'outlined',
+						fullWidth: true,
+						customStyleClass: classes.inputFieldDate,
 					}}
-					InputProps={{
-						classes: {
-							root: classes.dateRoot,
-							focused: classes.focused,
-							notchedOutline: classes.notchedOutline,
+					fieldAttributes={{
+						placeholder: 'from',
+						value: moment(fromDate).format('yyyy-MM-DD'),
+						InputLabelProps: {
+							shrink: true,
+						},
+						InputProps: {
+							classes: {
+								root: classes.dateRoot,
+								focused: classes.focused,
+								notchedOutline: classes.notchedOutline,
+							},
 						},
 					}}
-					onChange={event => {
-						if (event.target.value === '') {
-							setFromDate(
-								`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`
-							);
-						} else {
-							const values = event.target.value.split('-');
-
-							values[0] = +values[0] > 3000 ? values[0].substring(0, 4) : values[0];
-
-							setFromDate(values.join('-'));
-						}
+					fieldEvents={{
+						onChange: value => {
+							if (value === '') {
+								setFromDate(
+									`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`
+								);
+							} else {
+								const values = value.split('-');
+								values[0] = +values[0] > 3000 ? values[0].substring(0, 4) : values[0];
+								setFromDate(values.join('-'));
+							}
+						},
 					}}
 				/>
 			</Grid>
@@ -194,36 +205,40 @@ export default function Portfolio({
 				<label>to</label>
 			</Grid>
 			<Grid item xs md={datesInputWidth}>
-				<TextField
-					size="small"
-					margin="dense"
-					type="date"
-					variant="outlined"
-					placeholder="to"
-					fullWidth
-					value={moment(toDate).format('yyyy-MM-DD')}
-					className={classes.inputFieldDate}
-					onChange={event => {
-						if (event.target.value === '') {
-							setToDate(
-								`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`
-							);
-						} else {
-							const values = event.target.value.split('-');
-
-							values[0] = +values[0] > 3000 ? values[0].substring(0, 4) : values[0];
-
-							setToDate(values.join('-'));
-						}
+				<CustomTextField
+					fieldConfig={{
+						type: 'date',
+						size: 'small',
+						margin: 'dense',
+						variant: 'outlined',
+						fullWidth: true,
+						customStyleClass: classes.inputFieldDate,
 					}}
-					InputLabelProps={{
-						shrink: true,
+					fieldAttributes={{
+						placeholder: 'to',
+						value: moment(toDate).format('yyyy-MM-DD'),
+						InputLabelProps: {
+							shrink: true,
+						},
+						InputProps: {
+							classes: {
+								root: classes.dateRoot,
+								focused: classes.focused,
+								notchedOutline: classes.notchedOutline,
+							},
+						},
 					}}
-					InputProps={{
-						classes: {
-							root: classes.dateRoot,
-							focused: classes.focused,
-							notchedOutline: classes.notchedOutline,
+					fieldEvents={{
+						onChange: value => {
+							if (value === '') {
+								setToDate(
+									`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`
+								);
+							} else {
+								const values = value.split('-');
+								values[0] = +values[0] > 3000 ? values[0].substring(0, 4) : values[0];
+								setToDate(values.join('-'));
+							}
 						},
 					}}
 				/>
@@ -246,4 +261,5 @@ Portfolio.propTypes = {
 	setNull: PropTypes.func,
 	datesInputWidth: PropTypes.number,
 	setAllDateToNull: PropTypes.bool,
+	setSelectedFilter: PropTypes.func,
 };

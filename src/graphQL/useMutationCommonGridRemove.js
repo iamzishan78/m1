@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-export const GRID_GENERIC_REMOVE = gql`
+export const REMOVECOMMONGRIDFUNCTIONALITY = gql`
 	mutation gridGenericRemove(
 		$tableKey: String
 		$deletedData: MRTDeletionInput

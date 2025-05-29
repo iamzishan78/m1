@@ -40,7 +40,6 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
 				});
 			});
 		})();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState?.data?.total, tableState?.filters]);
 
 	return (

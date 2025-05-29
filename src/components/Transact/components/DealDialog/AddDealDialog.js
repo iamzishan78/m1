@@ -46,13 +46,14 @@ import { GET_DEAL_SETTINGS } from 'graphQL/useQueryGetDealSettings';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
-import { showErrorMessage, showSuccessMessage } from 'actions';
-import { AppContext } from 'AppContext';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { layerFiltersController } from 'stateManagement/layerFiltersController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
 import { mapStateController } from 'stateManagement/mapStateController';
 import { tableGlobalController } from 'stateManagement/tableController';
+
+import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 import DealTasksDetails from '../DealTasksDetails';
 import ExistingDeal from './ExistingDeal';
@@ -1531,7 +1532,7 @@ function AddDealDialog(props) {
 															onChange={e => {
 																setInternalId(e.target.value);
 															}}
-															onBlur={() => addUpdateDeal()}
+															// onBlur={() => addUpdateDeal()}
 															InputLabelProps={{
 																shrink: true,
 															}}

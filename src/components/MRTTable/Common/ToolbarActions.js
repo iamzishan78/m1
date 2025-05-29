@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
+import { Typography } from '@material-ui/core';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { IconButton, Tooltip, ToggleButton } from '@mui/material';
 
+import { mkConfig, generateCsv, download } from 'export-to-csv/output';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -14,20 +17,32 @@ import TabHeader from 'components/MRTTable/Common/TabHeader';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
+import { showErrorMessage } from 'actions';
+
 import { excludeFilters } from './CommonToolBarActions';
 import TableHeader from './TableHeader';
 
 function ToolbarActions({ table, tableKey, children }) {
-	const tableState = tableController(tableKey).useCompleteState();
-	const tableStateValues = tableState?.get({ noproxy: true });
-	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const dispatch = useDispatch();
+
+	const { user: getUser } = globalStateController.useState(['user']);
+	const tableStateValues = tableController(tableKey).useCompleteState();
+	const { isClientSide } = tableStateValues;
 
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomeRowsSelected =
 		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
+
+	const filteredColumns = _.pickBy(tableStateValues.columnVisibility, _.identity);
+	let filteredTableSchema = tableStateValues?.TableSchema.filter(obj => {
+		const accessorKey = obj?.accessorKey || obj?.id;
+		return (
+			(filteredColumns[accessorKey] === true && !Object.prototype.hasOwnProperty.call(obj, 'enableColumnFilter')) ||
+			obj?.isHiddenFieldExport
+		);
+	});
 
 	if (
 		tableStateValues?.isSelectAllAllowed &&
@@ -39,9 +54,47 @@ function ToolbarActions({ table, tableKey, children }) {
 
 	useEffect(() => {
 		tableController(tableKey).setMrtTableRef(table);
-	}, []);
+	}, [tableKey]);
+
+	const handleClientSideExport = () => {
+		try {
+			// Generate filename based on current date and table key
+			const timestamp = new Date().toISOString();
+			const filename = `exportGrid_${timestamp}`;
+
+			const csvConfig = mkConfig({
+				fieldSeparator: ',',
+				decimalSeparator: '.',
+				useKeysAsHeaders: true,
+				filename,
+			});
+
+			// Get rows based on selection state
+			const rows = isSomeRowsSelected ? table.getSelectedRowModel().rows : table.getPrePaginationRowModel().rows;
+
+			// Transform and validate data, only including visible column data
+			const data = rows?.map(row => {
+				return filteredTableSchema.reduce((acc, column) => {
+					const value = row.getValue(column.id);
+					// Use column header as key and handle non-primitive values
+					acc[column.header || column.id] = value !== null && typeof value === 'object' ? JSON.stringify(value) : value;
+					return acc;
+				}, {});
+			});
+
+			const csv = generateCsv(csvConfig)(data);
+			download(csvConfig)(csv);
+		} catch (error) {
+			dispatch(showErrorMessage(error?.message || 'Error exporting grid'));
+		}
+	};
 
 	const handleExport = () => {
+		if (isClientSide) {
+			handleClientSideExport();
+			return;
+		}
+
 		tableGlobalController.updateState({
 			dialog: {
 				type: 'exportCompleteGrid',
@@ -86,25 +139,38 @@ function ToolbarActions({ table, tableKey, children }) {
 					: tableStateValues?.data?.total - excludedIds?.length,
 				customValue: tableStateValues?.customValue,
 			};
+
+			deletedData = Object.keys(deletedKeys).reduce((acc, key) => {
+				const { value } = deletedKeys[key];
+
+				if (value) {
+					acc[key] = value;
+				}
+
+				return acc;
+			}, {});
 		} else {
 			deletedData = Object.keys(deletedKeys).reduce((acc, key) => {
 				const { key: originalKey, func, value } = deletedKeys[key];
-				acc[key] =
-					selectedRows?.length > 0
-						? selectedRows.map(item => {
-								let val;
-								if (originalKey) {
-									val = _.get(item, originalKey);
-								}
-								if (func) {
-									val = func(val);
-								}
-								if (value) {
-									val = value;
-								}
-								return val;
-							})
-						: null;
+
+				if (value) {
+					acc[key] = value;
+					return acc;
+				}
+
+				if (selectedRows?.length > 0) {
+					acc[key] = selectedRows.map(item => {
+						let val;
+						if (originalKey) {
+							val = _.get(item, originalKey);
+						}
+						if (func) {
+							val = func(val);
+						}
+						return val;
+					});
+				}
+
 				return acc;
 			}, {});
 			deletedData.bypassSelectAll = deletedKeys?.bypassSelectAll;
@@ -144,10 +210,12 @@ function ToolbarActions({ table, tableKey, children }) {
 					alignItems: 'center',
 				}}
 			>
+				<Typography variant="h5" style={{ fontWeight: 'bold', marginRight: '5px' }}>
+					{tableStateValues.tableHeading}
+				</Typography>
 				<TabHeader labels={tableStateValues.tabLabels} />
-				{tableStateValues.gridViewSettings && !isSomethingSelected && (
-					<GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />
-				)}
+				{tableStateValues.gridViewSettings && !isSomethingSelected && <GridView moduleName={tableKey} />}
+
 				{tableStateValues.defaultHeader && !tableStateValues.gridViewSettings && (
 					<TableHeader {...tableStateValues.defaultHeader} />
 				)}
@@ -187,7 +255,7 @@ function ToolbarActions({ table, tableKey, children }) {
 					</small>
 				</ToggleButton>
 
-				{!tableStateValues.isGeneric && tableStateValues.data?.total > 0 && !tableStateValues.isExportDisabled && (
+				{tableStateValues.data?.total > 0 && !tableStateValues.isExportDisabled && (
 					<IconButton onClick={handleExport} data-testid="download-csv">
 						<Tooltip title="Download CSV" aria-label="add">
 							<CloudDownloadIcon />
@@ -207,6 +275,10 @@ function ToolbarActions({ table, tableKey, children }) {
 	);
 }
 
-ToolbarActions.propTypes = { table: PropTypes.object, tableKey: PropTypes.string, children: PropTypes.object };
+ToolbarActions.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+	children: PropTypes.node,
+};
 
 export default ToolbarActions;

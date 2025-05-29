@@ -79,11 +79,19 @@ const handleQuery = (queryHandler, onData) => {
 	});
 };
 
+const getQuery = identifier => {
+	if (identifier.startsWith('PlatformWells - Point')) {
+		return queries['Wells'];
+	}
+	return queries[identifier] || queries['search'];
+};
+
 const getBoundsQuery = async ({
 	layerId,
 	identifier,
 	layerSettings,
 	isFileLayer,
+	isDynamicLayer,
 	boundingState,
 	onData,
 	geoField,
@@ -92,8 +100,7 @@ const getBoundsQuery = async ({
 	polygonFilter,
 	polygonsFilter,
 }) => {
-	const { isWellsQuery, isOneTimeQuery, isLandGridQuery, isPlatformLandGridQuery } =
-		queries[identifier] || queries['search'];
+	const { isWellsQuery, isOneTimeQuery, isLandGridQuery, isPlatformLandGridQuery } = getQuery(identifier);
 
 	if (isOneTimeQuery) {
 		const queryHandler = {
@@ -215,7 +222,7 @@ const getBoundsQuery = async ({
 				name: 1,
 				fileId: 1,
 				type: 1,
-				'properties.layerShapeName': 1,
+				properties: 1,
 			});
 		} else if (isWellsQuery) {
 			Object.assign(variables.project, {
@@ -229,6 +236,19 @@ const getBoundsQuery = async ({
 			Object.assign(variables.project, {
 				type: 1,
 				properties: 1,
+			});
+		} else if (isDynamicLayer) {
+			Object.assign(variables.project, {
+				'assetShape.shapeJson.geometry': 1,
+				'assetShape.shapeJson.id': 1,
+				'assetShape.shapeJson.type': 1,
+				'assetShape.shapeJson.properties.shapeSubTitle': 1,
+				'assetShape.shapeJson.properties.shapeLabel': 1,
+				'assetShape.shapeJson.properties.layerType': 1,
+				'assetShape.shapeJson.properties.sdType': 1,
+				'assetShape.shapeJson.properties.layerSubType': 1,
+				'assetShape.shapeJson.properties.type': 1,
+				'assetShape.shapeJson.properties.shapeCenter': 1,
 			});
 		} else {
 			Object.assign(variables.project, {
@@ -247,17 +267,30 @@ const getBoundsQuery = async ({
 				shapeArea: 1,
 			});
 		}
-		if (layerSettings.selectedAttribute) {
-			Object.assign(variables.project, {
-				[layerSettings.selectedAttribute.value.replace('.keyword', '')]: 1,
-			});
-		}
-		if (layerSettings.selectedStrokeAttribute) {
-			Object.assign(variables.project, {
-				[layerSettings.selectedStrokeAttribute.value.replace('.keyword', '')]: 1,
-			});
-		}
+		if (!isFileLayer) {
+			if (layerSettings.selectedAttribute) {
+				Object.assign(variables.project, {
+					[layerSettings.selectedAttribute.value.replace('.keyword', '')]: 1,
+				});
+			}
+			if (layerSettings.selectedStrokeAttribute) {
+				Object.assign(variables.project, {
+					[layerSettings.selectedStrokeAttribute.value.replace('.keyword', '')]: 1,
+				});
+			}
 
+			if (layerSettings.selectedFillStyle) {
+				Object.assign(variables.project, {
+					[layerSettings.selectedFillStyle.value.replace('.keyword', '')]: 1,
+				});
+			}
+
+			if (layerSettings.selectedLineStyle) {
+				Object.assign(variables.project, {
+					[layerSettings.selectedLineStyle.value.replace('.keyword', '')]: 1,
+				});
+			}
+		}
 		const queryHandler = {
 			identifier,
 			id: uuid(),

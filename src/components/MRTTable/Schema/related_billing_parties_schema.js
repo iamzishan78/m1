@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
@@ -18,7 +17,7 @@ const RelatedBillingPartiesMeta = {
 		pageIndex: 0,
 		pageSize: 50,
 	},
-	maxTableHeight: 'calc(100vh - 550px)',
+	maxTableHeight: '30vh',
 	CustomToolBar: RelatedBillingPartiesToolbar,
 	isInFiniteScroll: true,
 	isGeneric: false,

@@ -2,38 +2,8 @@ import * as turf from '@turf/turf';
 import gjv from 'geojson-validation';
 
 import { drawController } from 'stateManagement/drawStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 import { popupController } from 'stateManagement/popupStateController';
-
-import { layerRefs } from 'stateManagement';
-
-export const clearMapAndCloseShapeActionsPopup = () => {
-	const currentFeature = drawController.getValue('currentFeature');
-	drawShapeLayerToggle('visible');
-
-	if (currentFeature?.id) {
-		setFeatureProperty(window.drawRef, currentFeature.id, 'shapeEdit', true);
-		window.drawRef?.delete(currentFeature?.id);
-	}
-	window.drawRef?.deleteAll();
-
-	window.drawRef?.changeMode('simple_select');
-
-	popupController.reset();
-	drawController.reset();
-
-	const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
-
-	if (!sourceId) {
-		return;
-	}
-
-	// unselecting the grids
-	const featuresList = window.mapRef?.getSource(sourceId)._data.features;
-	for (let i = 0; i < featuresList.length; i++) {
-		const id = featuresList[i].properties.Id;
-		window.mapRef?.setFeatureState({ source: sourceId, id: id }, { click: false });
-	}
-};
 
 export const setFeatureProperty = (draw, drawFeatureID, field, value) => {
 	if (drawFeatureID !== '' && typeof draw === 'object' && draw?.setFeatureProperty) {
@@ -84,6 +54,35 @@ export const drawShapeLayerToggle = value => {
 	window.mapRef?.setLayoutProperty('gl-draw-polygon-and-line-vertex-stroke-inactive.hot', 'visibility', value);
 };
 
+export const clearMapAndCloseShapeActionsPopup = () => {
+	const currentFeature = drawController.getValue('currentFeature');
+	drawShapeLayerToggle('visible');
+
+	if (currentFeature?.id) {
+		setFeatureProperty(window.drawRef, currentFeature.id, 'shapeEdit', true);
+		window.drawRef?.delete(currentFeature?.id);
+	}
+	window.drawRef?.deleteAll();
+
+	window.drawRef?.changeMode('simple_select');
+
+	popupController.reset();
+	drawController.reset();
+
+	const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
+
+	if (!sourceId) {
+		return;
+	}
+
+	// unselecting the grids
+	const featuresList = window.mapRef?.getSource(sourceId)._data.features;
+	for (let i = 0; i < featuresList.length; i++) {
+		const id = featuresList[i].properties.Id;
+		window.mapRef?.setFeatureState({ source: sourceId, id: id }, { click: false });
+	}
+};
+
 export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
 	let bound = null;
 	if (shapes && shapes.length > 0) {
@@ -124,9 +123,10 @@ export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
 								left: 1200,
 								right: 0,
 							},
+					maxZoom: 18, // Max zoom value
 				}
 			);
-		} catch (err) {
+		} catch {
 			// Removing padding for smaller screens
 			try {
 				if (bound.minLong && bound.minLat && bound.maxLong && bound.maxLat) {
@@ -149,10 +149,34 @@ export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
 };
 
 export const drawShapeStyles = [
+	// ACTIVE (being drawn)
+	// line stroke
+	{
+		id: 'gl-draw-line',
+		type: 'line',
+		filter: ['all', ['==', '$type', 'LineString'], ['!=', 'mode', 'static']],
+		layout: {
+			'line-cap': 'round',
+			'line-join': 'round',
+		},
+		paint: {
+			'line-color': '#ffff00',
+			'line-dasharray': [0.3, 3],
+			'line-width': 4,
+		},
+	},
+
+	// polygon fill
 	{
 		id: 'gl-draw-polygon-fill-inactive',
 		type: 'fill',
-		filter: ['all', ['==', 'active', 'false'], ['==', '$type', 'Polygon'], ['!=', 'mode', 'static']],
+		filter: [
+			'all',
+			['==', 'active', 'false'],
+			['==', '$type', 'Polygon'],
+			['!=', 'mode', 'static'],
+			['!=', 'user_isdragMode', true],
+		],
 		paint: {
 			'fill-color': '#3bb2d0',
 			'fill-outline-color': '#3bb2d0',
@@ -218,7 +242,13 @@ export const drawShapeStyles = [
 	{
 		id: 'gl-draw-line-inactive',
 		type: 'line',
-		filter: ['all', ['==', 'active', 'false'], ['==', '$type', 'LineString'], ['!=', 'mode', 'static']],
+		filter: [
+			'all',
+			['==', 'active', 'false'],
+			['==', '$type', 'LineString'],
+			['!=', 'mode', 'static'],
+			['!=', 'user_meta', 'radiusLine'],
+		],
 		layout: {
 			'line-cap': 'round',
 			'line-join': 'round',
@@ -226,6 +256,26 @@ export const drawShapeStyles = [
 		paint: {
 			'line-color': '#3bb2d0',
 			'line-width': 2,
+		},
+	},
+	{
+		id: 'gl-draw-line-inactive',
+		type: 'line',
+		filter: [
+			'all',
+			['==', 'active', 'false'],
+			['==', '$type', 'LineString'],
+			['!=', 'mode', 'static'],
+			['==', 'user_meta', 'radiusLine'],
+		],
+		layout: {
+			'line-cap': 'round',
+			'line-join': 'round',
+		},
+		paint: {
+			'line-color': '#ffff00',
+			'line-dasharray': [0.3, 3],
+			'line-width': 4,
 		},
 	},
 	{
@@ -290,10 +340,20 @@ export const drawShapeStyles = [
 			['==', '$type', 'Point'],
 			['==', 'meta', 'feature'],
 			['!=', 'mode', 'static'],
+			['!=', 'user_meta', 'labelPoint'],
 		],
 		paint: {
 			'circle-radius': 3,
 			'circle-color': '#3bb2d0',
+		},
+	},
+	{
+		id: 'gl-draw-active-cirle-center-point',
+		type: 'circle',
+		filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'feature'], ['==', 'user_meta', 'labelPoint']],
+		paint: {
+			'circle-radius': 5,
+			'circle-color': '#FFFF00',
 		},
 	},
 	{
@@ -395,10 +455,20 @@ export const drawShapeStyles = [
 	{
 		id: 'gl-draw-polygon-shape-edit',
 		type: 'fill',
-		filter: ['all', ['==', '$type', 'Polygon'], ['==', 'user_shapeEdit', false]],
+		filter: ['all', ['==', '$type', 'Polygon'], ['==', 'user_shapeEdit', false], ['!=', 'user_isdragMode', true]],
 		paint: {
 			'fill-color': '#3bb2d0',
 			'fill-outline-color': '#3bb2d0',
+			'fill-opacity': 0.1,
+		},
+	},
+	{
+		id: 'gl-draw-polygon-circle-edit-fill',
+		type: 'fill',
+		filter: ['all', ['==', '$type', 'Polygon'], ['==', 'user_shapeEdit', false], ['==', 'user_isdragMode', true]],
+		paint: {
+			'fill-color': '#ffff00',
+			'fill-outline-color': '#ffff00',
 			'fill-opacity': 0.1,
 		},
 	},
@@ -410,6 +480,7 @@ export const drawShapeStyles = [
 			['==', '$type', 'Polygon'],
 			// ['!=', 'mode', 'static'],
 			['==', 'user_shapeEdit', false],
+			['!=', 'user_isdragMode', true], // Exclude dragging mode
 		],
 		layout: {
 			'line-cap': 'round',
@@ -418,6 +489,26 @@ export const drawShapeStyles = [
 		paint: {
 			'line-color': '#3bb2d0',
 			'line-width': 2,
+		},
+	},
+	{
+		id: 'gl-draw-polygon-circle-edit-border',
+		type: 'line',
+		filter: [
+			'all',
+			['==', '$type', 'Polygon'],
+			['==', 'user_shapeEdit', false],
+			['==', 'user_isCircle', true],
+			['==', 'user_isdragMode', true],
+		],
+		layout: {
+			'line-cap': 'round',
+			'line-join': 'round',
+		},
+		paint: {
+			'line-color': '#ffff00',
+			'line-dasharray': [0.3, 3],
+			'line-width': 4,
 		},
 	},
 
@@ -517,6 +608,26 @@ export const drawShapeStyles = [
 				delay: 0,
 				duration: 0,
 			},
+		},
+	},
+
+	// radius label
+	{
+		id: 'gl-draw-radius-label',
+		type: 'symbol',
+		filter: ['==', 'user_meta', 'labelPoint'], // only features with meta property 'label'
+		layout: {
+			'icon-text-fit': 'both', // Fit icon width to text
+			'icon-allow-overlap': true,
+			'text-allow-overlap': true,
+			'icon-image': 'rounded',
+			'icon-anchor': 'center',
+			'icon-offset': [0, 8], // Center the icon
+			'text-anchor': 'center', // Center the text within icon
+			'text-field': ['get', 'user_labelText'],
+			'text-offset': [0, -2], // Center the text
+			'text-font': ['Open Sans Bold'],
+			'icon-size': 1.32,
 		},
 	},
 ];

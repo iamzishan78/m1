@@ -7,10 +7,10 @@ import { makeStyles } from '@material-ui/styles';
 import MRTTable from 'components/MRTTable';
 import MultiGridsComponent from 'components/Shared/MultiGridsComponent';
 
-import { paymentGridsInitialData } from 'utils/data';
-
 import { detailCardController } from 'stateManagement/detailCardController';
 import { tableController, tableGlobalController } from 'stateManagement/tableController';
+
+import { paymentGridsInitialData } from 'utils/data';
 
 import { useStyles as customStyles } from '../style';
 

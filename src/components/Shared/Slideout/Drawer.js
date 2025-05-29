@@ -3,12 +3,11 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { slidoutState } from 'stateManagement/initialStates';
 import { slidoutStateController, useSlideoutState } from 'stateManagement/slidoutStateController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
-		height: '85vh',
+		height: '100%',
 		padding: '10px',
 		position: 'absolute',
 		right: 0,
@@ -49,8 +48,8 @@ const useStyles = makeStyles(theme => ({
 export default function Drawer(props) {
 	const classes = useStyles(props);
 
-	const slideoutState = useSlideoutState();
-	const drawerIcons = slideoutState.views.get({ noproxy: true });
+	const slideoutState = slidoutStateController.useState(['views', 'activeTabs', 'view']);
+	const drawerIcons = slideoutState.views;
 
 	const [, setActiveTabs] = useState({}); // State variable for active tabs or current view
 
@@ -65,9 +64,9 @@ export default function Drawer(props) {
 	};
 
 	const getClass = key => {
-		const activeTabs = slideoutState.activeTabs.get({ noproxy: true });
+		const activeTabs = slideoutState.activeTabs;
 
-		const view = slidoutState.view.get({ noproxy: true });
+		const view = slideoutState.view;
 		return activeTabs[key] || view.name === key ? classes.activeIcon : classes.inactiveIcon;
 	};
 

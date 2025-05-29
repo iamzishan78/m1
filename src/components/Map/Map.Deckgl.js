@@ -4,30 +4,33 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
+import MapIcon from '@material-ui/icons/Map';
 
 import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import * as turf from '@turf/turf';
 import gjv from 'geojson-validation';
-import _ from 'lodash';
+import _, { debounce } from 'lodash';
 import mapboxgl from 'mapbox-gl';
-import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
+import { CircleMode } from 'mapbox-gl-draw-circle';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import parseLinkHeader from 'parse-link-header';
 import PropTypes from 'prop-types';
 
 import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
+import Legend from 'components/MapControls/legend';
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
-import { ifPlatformLandGridIdentifiers, layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
+import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
-import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
+import { GET_RECORD_FROM_RUN_TIME_MODEL } from 'graphQL/useQueryRunTimeModel';
 
-import { drawController } from 'stateManagement/drawStateController';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { layerFiltersController } from 'stateManagement/layerFiltersController';
 import { layerController } from 'stateManagement/layerStateController';
@@ -37,24 +40,26 @@ import { navController } from 'stateManagement/navStateController';
 import { popupController } from 'stateManagement/popupStateController';
 
 import { baseTenantsMaps } from 'utils/data';
+import DirectMode from 'utils/direct-mode';
+import DragCircleMode from 'utils/drag-circle-mode';
 import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
-
-import { layerRefs } from 'stateManagement';
+import DragRadiusCircleMode from 'utils/radius-mode';
+import SimpleSelectMode from 'utils/simple-select-mode';
 
 import HugeRequest from './components/HugeRequest';
 import DeckGL from './DeckGL';
-import onRightClick from './DeckGL/helpers/onRightClick';
 import DefaultFiltersTest from './filtersDefaultTest';
 import { setMainMapState } from '../../actions';
 import { SRMode } from './MapBoxDrawRotate/index';
 import { AppContext } from '../../AppContext';
+import backgroundIcon from './sprites/draw-radius-label-background.png';
+import lightBackgroundIcon from './sprites/draw-radius-label-light-background-.png';
 import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { copy } from '../Shared/functions';
 import ZoomFault from './components/ZoomFault';
-import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
+import { extractUniqueFilters } from './DeckGL/helpers/common';
 import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
-import onFeatureClick from './DeckGL/helpers/onFeatureClick';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import MarkerIcon from './sprites/marker-icon.png';
 import {
@@ -87,6 +92,7 @@ const useStyles = makeStyles(() => ({
 			height: '100vh',
 			width: '100% !important',
 		},
+
 		'& .mapboxgl-popup-close-button': { display: 'none' },
 		// "& .mapboxgl-ctrl-group": { backgroundColor: "#0e111a" },
 		// "& .mapboxgl-ctrl button.mapboxgl-ctrl-zoom-in .mapboxgl-ctrl-icon": { backgroundImage: "url('data:image/svg+xml;charset=utf-8,%3Csvg width=\"29\" height=\"29\" viewBox=\"0 0 29 29\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"%23FFFFFF\"%3E%3Cpath d=\"M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5z\"/%3E%3C/svg%3E')" },
@@ -128,17 +134,36 @@ function Map({
 	layerPadding = null,
 }) {
 	// context states
-	const globalState = globalStateController.useState(['layers']);
+	const globalState = globalStateController.useState(['mapReady']);
 	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues');
 	const { selectedShapeFile, selectedPlaces, popupStateValues } = popupController.useState(
 		['selectedShapeFile', 'selectedPlaces'],
 		'popupStateValues'
 	);
 	const { mapStateValues } = mapStateController.useState(
-		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut', 'isDefaultViewAllowed', 'reintializeMap'],
+		[
+			'mapVars',
+			'defaultMapVars',
+			'toggle3d',
+			'toggleZoomOut',
+			'showLegend',
+			'isDefaultViewAllowed',
+			'reintializeMap',
+			'isMapRefreshing',
+		],
 		'mapStateValues'
 	);
-	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
+	const {
+		layers: layersState,
+		wellListFromSearch,
+		baseMapLayers,
+		checkedBaseLayers,
+		layerStateValues,
+	} = layerController.useState(
+		['wellListFromSearch', 'baseMapLayers', 'checkedBaseLayers', 'layers'],
+		'layerStateValues'
+	);
+
 	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const client = useApolloClient();
@@ -203,23 +228,25 @@ function Map({
 		useLazyQuery(ALLLAYERSETTINGSBYUSER);
 
 	// Query to fetch map views from the GraphQL API
-	useQuery(GET_MAP_VIEWS, {
+	useQuery(GET_GRID_VIEWS, {
 		variables: {
 			userId: globalStateController.getValue('user').mongoId,
+			module: 'MapView',
 		},
 		onCompleted: data => {
-			const mapViews = data?.getMapViews?.mapViews;
-			const currentMapView = mapViews?.find(view => view.isCurrent);
-			if (!globalStateController.getValue('mapView')?.selectedMapView) {
-				globalStateController.updateState({
-					mapView: {
-						selectedMapView: currentMapView,
-					},
-				});
-			}
+			const allViews = data?.getGridViews?.gridViews;
+			viewStateController('MapView').initialize({
+				client,
+				allViews,
+				Icon: MapIcon,
+				label: 'Map',
+				styleOverride: {
+					bgColor: { backgroundColor: '#0E111A' },
+					color: { color: 'white' },
+				},
+			});
 		},
 	});
-
 	/// //end/////////temporary
 
 	const fitOverBounds = () => {
@@ -302,10 +329,7 @@ function Map({
 		fetchStyles(abortController)
 			.then(styles => {
 				setMapStyles(styles);
-				setStateApp(state => ({
-					...state,
-					mapStyles: styles,
-				}));
+				mapStateController.updateState({ mapStyles: styles });
 			})
 			.catch(error => {
 				// Handle any errors from fetchStyles
@@ -382,8 +406,46 @@ function Map({
 				id: paramId,
 			},
 		});
+
+		const { data: assetRecord } = await client.query({
+			query: GET_RECORD_FROM_RUN_TIME_MODEL,
+			variables: {
+				_id: paramId,
+				tableName: type,
+			},
+		});
+
+		if (assetRecord?.getRecordFromRunTimeModel?.asset?.assetShape) {
+			const asset = assetRecord?.getRecordFromRunTimeModel?.asset;
+			const assetShape = asset?.assetShape;
+			let feature = copy(assetShape.shapeJson);
+
+			feature.id = asset._id;
+			feature.properties.id = asset._id;
+			feature = { ...feature.properties, ...feature, feature };
+
+			const interval = setInterval(() => {
+				if (window.mapRef) {
+					findBoundsMap([feature], window.mapRef);
+					if (feature?.geometry?.type === 'Point') {
+						drawWellBoundary(feature?.geometry?.coordinates);
+					} else {
+						drawBoundary(feature);
+					}
+					layerController.updateState({ clickedFeature: { object: { id: paramId } } });
+					popupController.updateState({
+						selectedShape: feature,
+						expandedCard: true,
+						popupOpen: false,
+					});
+					clearInterval(interval);
+				}
+			}, 100);
+			return;
+		}
+
 		if (layer?.customLayer) {
-			let layers = globalStateController.getValue('layers');
+			let layers = layerStateValues.layers;
 			if (!layers || layers?.length === 0) {
 				const { data } = await client.query({
 					query: LAYERSETTINGSBYUSER,
@@ -392,9 +454,9 @@ function Map({
 						identifier: convertToTitleCase(layer.customLayer.layer + 's'),
 					},
 				});
-				layers = globalStateController.getValue('layers');
+				layers = layerStateValues.layers;
 				if ((!layers || layers?.length === 0) && data?.layerSettingsByUser) {
-					globalStateController.updateState({
+					layerController.updateState({
 						deckLayer: data.layerSettingsByUser,
 					});
 				}
@@ -434,14 +496,14 @@ function Map({
 		window.mapRef.fitBounds(
 			[
 				[bbox[0] - 0.03, bbox[1] - 0.03], // Southwest coordinates
-				[bbox[0] + 0.03, bbox[1] + 0.03], // Northeast coordinates
+				[bbox[2] + 0.03, bbox[3] + 0.03], // Northeast coordinates
 			],
 			{ padding: { top: 100, bottom: 200, left: 10, right: 100 }, easing: () => 1 }
 		);
 
-		const layers = globalStateController.getValue('layers');
-
-		const layer = layers.find(l => popupStateValues.selectedShapeFile.properties?.layerShapeName === l.layerShapeName);
+		const layer = layerStateValues.layers.find(
+			l => popupStateValues.selectedShapeFile.properties?.layerIdentifier === l.layerIdentifier
+		);
 
 		udLayerClickHandler(popupStateValues.selectedShapeFile, layer);
 	}, [selectedShapeFile]);
@@ -464,30 +526,25 @@ function Map({
 	useEffect(() => {
 		if (stateApp.user && stateApp.user.mongoId) {
 			setLoading(true);
-
 			getAllLayerSettingsByUser({
 				variables: {
 					userId: stateApp.user.mongoId,
+					onlyShowable: true,
 				},
 			});
 		}
 	}, [stateApp.user]);
 
 	useEffect(() => {
-		globalStateController.updateState({ layerSettingsLoading });
+		layerController.updateState({ layerSettingsLoading });
 	}, [layerSettingsLoading]);
 
 	useEffect(() => {
 		if (layerStates && layerStates.allLayerSettingsByUser) {
 			const layers = copy(layerStates.allLayerSettingsByUser);
-			setStateApp(state => ({
-				...state,
-				layers,
-			}));
-			globalState.layers.set(layers);
-			stateApp.layers = layers;
+			layerController.updateState({ layers });
 
-			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
+			const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
 			// for of loop on mapViewFilters
 			for (const filter of mapViewFilters) {
 				const dataSource = filter?.dataSourceName;
@@ -556,38 +613,42 @@ function Map({
 	}, [removeLayerFromMap]);
 
 	useEffect(() => {
-		// USE EFFECT FOR BASEMAP LAYER HANDLING
-		const mapLayers = copy(globalState.stateValues.layers);
-		if (!stateApp.baseMapLayers?.length || !map) {
+		// USE EFFECT FOR LAND GRID INITIAL STATE HANDLING
+		const mapLayers = copy(layerStateValues.layers);
+		if (!layerStateValues.baseMapLayers || !layerStateValues.baseMapLayers.length === 0 || !map) {
 			return;
 		}
 
-		const getBaseMapIndex = name => stateApp.baseMapLayers.findIndex(layer => layer.name === name);
-
 		const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
+		const baseMapLandIndex = layerStateValues.baseMapLayers.findIndex(layer => layer.name === 'Land Grid');
 		const landLayerVisible = landLayer?.layerSettings?.visiable && landLayer?.layerSettings?.showable;
 
-		const layersToToggle = ['Land Grid', 'Roads', 'Map Labels'];
-		const indicesToToggle = layersToToggle.map(getBaseMapIndex).filter(index => index !== -1);
-
-		setStateApp(state => ({
-			...state,
-			checkedBaseLayers: landLayerVisible
-				? [...new Set([...state.checkedBaseLayers, ...indicesToToggle])]
-				: state.checkedBaseLayers.filter(index => !indicesToToggle.includes(index)),
-		}));
-	}, [map, stateApp.baseMapLayers, globalState.layers]);
+		if (!landLayerVisible && layerStateValues.checkedBaseLayers.includes(baseMapLandIndex)) {
+			layerController.memoizedStateUpdate(
+				'checkedBaseLayers',
+				layerStateValues.checkedBaseLayers.filter(l => l !== baseMapLandIndex)
+			);
+		}
+		if (landLayerVisible && !layerStateValues.checkedBaseLayers.includes(baseMapLandIndex)) {
+			layerController.memoizedStateUpdate('checkedBaseLayers', [
+				...layerStateValues.checkedBaseLayers,
+				baseMapLandIndex,
+			]);
+		}
+	}, [map, baseMapLayers, layersState]);
 
 	useEffect(() => {
 		// USE EFFECT FOR BASEMAP LAYER HANDLING
-		const mapLayers = copy(stateApp.layers);
-		if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
+		const mapLayers = copy(layerStateValues.layers);
+		if (layerStateValues.baseMapLayers && layerStateValues.baseMapLayers.length > 0 && map) {
 			const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
-			stateApp.baseMapLayers?.forEach((l, index) => {
-				if (l.name === 'Land Grid' && !stateApp.checkedBaseLayers.includes(index)) {
+			layerStateValues.baseMapLayers?.forEach((l, index) => {
+				if (l.name === 'Land Grid' && !layerStateValues.checkedBaseLayers.includes(index)) {
 					if (landLayer) {
-						landLayer.layerSettings.visiable = false;
-						setStateApp(state => ({ ...state, layers: [...mapLayers] }));
+						if (landLayer.layerSettings.visiable) {
+							landLayer.layerSettings.visiable = false;
+							layerController.updateState({ layers: [...mapLayers] });
+						}
 					}
 				}
 
@@ -598,21 +659,23 @@ function Map({
 				});
 			});
 
-			if (stateApp.checkedBaseLayers.length > 0) {
-				const layers = stateApp.checkedBaseLayers.slice(0);
+			if (layerStateValues.checkedBaseLayers.length > 0) {
+				const layers = layerStateValues.checkedBaseLayers.slice(0);
 				layers.sort((a, b) => b - a);
 				if (layers.length > 0) {
 					let belowlayer = null;
 					for (let k = layers.length - 1; k >= 0; k--) {
 						const i = layers[k];
-						if (stateApp.baseMapLayers[i].name === 'Land Grid') {
+						if (layerStateValues.baseMapLayers[i].name === 'Land Grid') {
 							if (landLayer) {
-								landLayer.layerSettings.visiable = true;
-								setStateApp(state => ({ ...state, layers: [...mapLayers] }));
+								if (!landLayer.layerSettings.visiable) {
+									landLayer.layerSettings.visiable = true;
+									layerController.updateState({ layers: [...mapLayers] });
+								}
 							}
 							continue;
 						}
-						const currentLayerArray = stateApp.baseMapLayers[i].id;
+						const currentLayerArray = layerStateValues.baseMapLayers[i].id;
 
 						currentLayerArray.forEach(j => {
 							const mapLayer = map.getLayer(j);
@@ -630,45 +693,7 @@ function Map({
 				}
 			}
 		}
-	}, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
-
-	useEffect(() => {
-		// USE EFFECT FOR HEATMAP LAYER HANDLES
-		if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
-			stateApp.heatLayers.forEach(l => {
-				l.id.forEach(k => {
-					if (map?.getLayer(k)) {
-						map?.setLayoutProperty(k, 'visibility', 'none');
-					}
-				});
-			});
-
-			if (stateApp.checkedHeats.length > 0) {
-				const layers = stateApp.checkedHeats.slice(0);
-				layers.sort((a, b) => b - a);
-				if (layers.length > 0) {
-					let belowlayer = null;
-					for (let k = layers.length - 1; k >= 0; k--) {
-						const i = layers[k];
-						const currentLayerArray = stateApp.heatLayers[i].id;
-
-						currentLayerArray.forEach(j => {
-							const mapLayer = map.getLayer(j);
-							if (typeof mapLayer !== 'undefined') {
-								if (map.getLayer(j)) {
-									map.setLayoutProperty(j, 'visibility', 'visible');
-									if (belowlayer != null) {
-										map.moveLayer(j, belowlayer);
-									}
-									belowlayer = j;
-								}
-							}
-						});
-					}
-				}
-			}
-		}
-	}, [map, stateApp.checkedHeats, stateApp.heatLayers]);
+	}, [map, checkedBaseLayers, baseMapLayers]);
 
 	function getIndex(value, arr, prop) {
 		for (let i = 0; i < arr.length; i++) {
@@ -691,7 +716,7 @@ function Map({
 	}, [mapStateValues.defaultMapVars]);
 
 	useEffect(() => {
-		const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+		const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
 
 		if (!sourceId) {
 			return;
@@ -705,47 +730,6 @@ function Map({
 			}
 		}
 	}, [stateApp.filterSelectAllAbstract, map]);
-
-	// if this isn't fast enough we can try to only recalc length for features on the tile boundary
-	// if feature is entirely within a tile we difinitively know the length
-	// if it is on the tile boundary we know that the vector feature "may" cross tile boundaries so don't know the true
-	// length from a single tile
-	async function findBadLinestrings(map, tile) {
-		if (!tile) {
-			return;
-		}
-		let repaint = false;
-		const renderedLineStrings = [];
-		tile.querySourceFeatures(renderedLineStrings, {
-			filter: ['in', ['geometry-type'], ['literal', ['LineString', 'MultiLineString']]],
-			sourceLayer: 'wells',
-		});
-		renderedLineStrings.forEach(feature => {
-			const geometryLength = map.getFeatureState({
-				source: 'wellsVT',
-				sourceLayer: 'wells',
-				id: feature.id,
-			})?.geometryLength;
-			const newGeometryLength = Math.round(turf.length(feature.geometry, { units: 'feet' }), 0);
-			if (newGeometryLength > 20000 && !(geometryLength >= newGeometryLength)) {
-				map.setFeatureState(
-					{
-						source: 'wellsVT',
-						sourceLayer: 'wells',
-						id: feature.id,
-					},
-					{
-						geometryLength: Math.max(newGeometryLength, geometryLength || -1),
-					}
-				);
-				repaint = true;
-			}
-		});
-
-		if (repaint) {
-			map.triggerRepaint();
-		}
-	}
 
 	useEffect(() => {
 		if (mapStyles.length <= 0) {
@@ -767,6 +751,7 @@ function Map({
 			if (index === -1) {
 				index = 0;
 			}
+
 			const newMap = new mapboxgl.Map({
 				container: `${id}`,
 				style: `mapbox://styles/m1neral/${mapStyles[index]?.id}`,
@@ -844,6 +829,7 @@ function Map({
 					static: StaticMode,
 					draw_circle: CircleMode,
 					drag_circle: DragCircleMode,
+					radius_circle: DragRadiusCircleMode,
 					direct_select: DirectMode,
 					simple_select: SimpleSelectMode,
 					draw_rectangle: CostumDrawRectangle,
@@ -852,78 +838,13 @@ function Map({
 			});
 			newMap.addControl(Draw);
 
-			newMap.on('sourcedata', e => {
-				if (e.sourceId === 'wellsVT') {
-					findBadLinestrings(e.target, e.tile);
-				}
-			});
-
-			const interval = setInterval(() => {
-				let isDragging = false;
-				let isDrawing = false;
-				if (newMap.__deck) {
-					window.mapRef?.on('draw.actionable', () => {
-						// console.log(window.drawRef?.getMode())
-						isDrawing = !['direct_select', 'simple_select'].includes(window.drawRef?.getMode());
-					});
-					newMap.__deck?.setProps({
-						onDragStart: () => {
-							isDragging = true;
-						},
-						onDragEnd: () => {
-							isDragging = false;
-						},
-						getCursor: ({ isHovering }) =>
-							isDrawing ? 'crosshair' : isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab',
-						onClick: ({ x, y, coordinate }, { rightButton, srcEvent }) => {
-							const drawMode = window.drawRef?.getMode();
-
-							if (drawMode?.includes('draw') || drawMode?.includes('drag')) {
-								window.mapRef?.resize();
-								return;
-							}
-
-							if (rightButton || srcEvent.shiftKey) {
-								onRightClick({ x, y, coordinate });
-								return;
-							}
-
-							const getLandGrid = window.event.ctrlKey || window.event.metaKey;
-							const getMultiLandGrid = drawController.getValue('multiSelectLandGrids');
-
-							const { clickedFeature, layer } = getClickedFeature({ x, y, getLandGrid, getMultiLandGrid });
-							const previousClickedFeature = layerController.getValue('clickedFeature');
-							const clickOnSameFeature =
-								previousClickedFeature && previousClickedFeature?.object?.id === clickedFeature?.object?.id;
-							if (!clickedFeature || clickOnSameFeature) {
-								const selectedPlace = selectedPlaces.get({ noproxy: true });
-								if (!selectedPlace) {
-									// Reset the state when slected search is not places
-									popupController.reset();
-								}
-								// If the path is not '/' or ' ' and the map is not rendered through deal dialog
-								if (!['', '/'].includes(window.location.pathname) && stateApp.transactBarView !== 'Map') {
-									history.replace({ pathname: '/' });
-								}
-								return;
-							}
-							if (!getLandGrid && !getMultiLandGrid && !ifPlatformLandGridIdentifiers(clickedFeature.layer.id)) {
-								drawBoundary(clickedFeature.object);
-							}
-
-							layerController.updateState({ clickedFeature });
-							onFeatureClick(clickedFeature, layer);
-						},
-					});
-					clearInterval(interval);
-				}
-			}, 500);
-
 			newMap.on('load', () => {
 				window.mapRef = null; // Remove the existing map instance to avoid rendering multiple maps
 				window.drawRef = null; //  Remove the existing map instance to avoid rendering multiple maps
 				window.mapRef = newMap;
 				window.drawRef = Draw;
+				// Initializing overlay
+				DeckGlLayer.initializeOverlay({ transactBarView: stateApp.transactBarView });
 				layerController.resetMapStates(true);
 
 				setStateApp(state => ({
@@ -938,26 +859,21 @@ function Map({
 					// add image to the active style and make it SDF-enabled
 					newMap.addImage('marker-icon', image, { sdf: true });
 				});
-				setTimeout(() => {
-					// eslint-disable-next-line no-new
-					new DeckGlLayer({
-						layerId: 'top_deck_layer',
-						type: 'ScatterplotLayer',
-						props: {
-							data: [],
-						},
-					});
 
-					// eslint-disable-next-line no-new
-					new DeckGlLayer({
-						layerId: 'first_deck_layer',
-						type: 'ScatterplotLayer',
-						beforeLayer: 'top_deck_layer',
-						props: {
-							data: [],
-						},
+				let labelIcon = backgroundIcon;
+				if (mapStateValues.mapVars.styleId === 'Dark') {
+					labelIcon = lightBackgroundIcon;
+				}
+				newMap.loadImage(labelIcon, (error, image) => {
+					if (error) {
+						throw error;
+					}
+					newMap.addImage('rounded', image, {
+						content: [3, 3, 13, 13],
+						stretchX: [[7, 9]],
+						stretchY: [[7, 9]],
 					});
-				}, 250);
+				});
 
 				// FOR aoi_labels
 				newMap.addSource('aoi_label_source', {
@@ -973,6 +889,22 @@ function Map({
 				setLoading(false);
 				mapStateController.updateState({ reintializeMap: false });
 
+				// Extract the current search string from the URL
+				const searchParams = new URLSearchParams(history?.location?.search);
+
+				if (!searchParams.has('zoom') || !searchParams.has('lng') || !searchParams.has('lat') || !searchParams?.size) {
+					return; // Return early if any required parameter is missing
+				}
+				const lng = searchParams?.get('lng');
+				const lat = searchParams?.get('lat');
+				const zoom = searchParams?.get('zoom');
+				newMap.jumpTo({
+					center: {
+						lng,
+						lat,
+					},
+					zoom: zoom,
+				});
 				onLoad();
 			});
 		};
@@ -984,6 +916,14 @@ function Map({
 		}
 	}, [map, mapStyles, mapStateValues.mapVars.styleId]);
 
+	useEffect(() => {
+		if (mapStateValues.isMapRefreshing) {
+			// Reset bounds for all layers
+			layerController.resetBounds('all');
+			// Update the map state to indicate that refreshing is complete
+			mapStateController.updateState({ isMapRefreshing: false });
+		}
+	}, [mapStateValues.isMapRefreshing]);
 	// Use effect for removing shape filter
 	useEffect(() => {
 		if (!loading) {
@@ -1183,9 +1123,7 @@ function Map({
 
 	useEffect(() => {
 		if (map && selectedPlaces) {
-			const places = selectedPlaces.get({
-				noproxy: true,
-			});
+			const places = selectedPlaces;
 			if (!places) {
 				return;
 			}
@@ -1314,6 +1252,38 @@ function Map({
 	}, [mapStateValues.toggle3d]);
 
 	useEffect(() => {
+		const mapRef = window.mapRef;
+
+		if (mapRef) {
+			// Update for values
+			const setCoordinateAtUrl = debounce(() => {
+				const url = new URL(window.location);
+
+				// Create an object to hold all parameters
+				const params = {
+					lat: mapRef.getCenter()?.lat,
+					lng: mapRef.getCenter()?.lng,
+					zoom: mapRef.getZoom(),
+				};
+
+				// Iterate over the object and set all parameters at once
+				Object.entries(params).forEach(([key, value]) => {
+					url.searchParams.set(key, value);
+				});
+
+				// Update the browser's URL
+				window.history.replaceState({}, '', url);
+			}, 500);
+
+			// Listen to the map events
+			mapRef.on('move', setCoordinateAtUrl);
+			mapRef.on('zoom', setCoordinateAtUrl);
+			mapRef.on('rotate', setCoordinateAtUrl);
+			setCoordinateAtUrl();
+		}
+	}, [globalState.mapReady]);
+
+	useEffect(() => {
 		// Map will be reset if we move to another page
 		return () => {
 			layerController.resetMap();
@@ -1331,6 +1301,22 @@ function Map({
 
 			<DeckGL hideShape={hideShape} />
 			{openSpeedDial && <SpeedDialComponent expandedPanel={expandedPanel} openSpeedDial={openSpeedDial} />}
+			{mapStateValues?.showLegend && (
+				<div
+					style={{
+						position: 'absolute',
+						width: '340px',
+						right: '100px',
+						top: '300px',
+						maxHeight: '500px',
+						overflowY: 'auto',
+						overflowX: 'hidden',
+						zIndex: 9,
+					}}
+				>
+					<Legend />
+				</div>
+			)}
 
 			{mapControls && <MapControls />}
 			<ZoomFault zoomFaultStatus={stateApp.zoomFault} />

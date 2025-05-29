@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-
+import { useHistory, Link } from 'react-router-dom';
 import {
 	Avatar,
 	Box,
@@ -35,11 +34,11 @@ import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/Confirma
 import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
 import { modifyExandableCardStyle } from 'components/Shared/functions/shapeLayer';
 
-import { showInfoMessage } from 'actions';
-import { layerRefs } from 'stateManagement';
 import { drawController } from 'stateManagement/drawStateController';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { popupController } from 'stateManagement/popupStateController';
+
+import { showInfoMessage } from 'actions';
 
 import ReportBugModal from './components/ReportBugModal';
 import { ExpandableCardContext } from './ExpandableCardContext';
@@ -54,6 +53,8 @@ import ExpandIcon from './components/svgIcons/ExpandIcon';
 import ShrinkIcon from './components/svgIcons/ShrinkIcon';
 
 import 'material-icons/iconfont/material-icons.css';
+import EditNote from 'components/Shared/svgIcons/edit_note';
+import { UserSession } from 'utils/user';
 
 function ExpandableCard(props) {
 	// initials
@@ -185,8 +186,8 @@ function ExpandableCard(props) {
 			transition: 'height 0.1s',
 			background: '#fff',
 			padding: '0 !important',
-			overflow: 'auto',
-			// overflowY:'hidden',
+			overflowX: 'hidden',
+			overflowY: 'auto',
 			'&::-webkit-scrollbar': {
 				width: '0.4em',
 			},
@@ -411,7 +412,13 @@ function ExpandableCard(props) {
 				viewDoc: null,
 				rotateableFeature: null,
 			}));
-			history.replace({ pathname: '/' });
+			// Extract the current search query from the location object
+			const currentSearch = location.search;
+			// Replace the pathname but retain the query parameters
+			history.replace({
+				pathname: '/', // Set the new path
+				search: currentSearch, // Retain the current search parameters
+			});
 		}
 		handleCloseExpandableCard();
 		//if EC is inside map popup you need to close it
@@ -442,16 +449,22 @@ function ExpandableCard(props) {
 				{selectedShape ? (
 					<>
 						<Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+							{!selectedShape?.isGenericAssetShape && (
+								<Grid item>
+									<Avatar color="#1a2341">
+										<FolderIcon fontColor="#1a2341" />
+									</Avatar>
+								</Grid>
+							)}
 							<Grid item>
-								<Avatar color="#1a2341">
-									<FolderIcon fontColor="#1a2341" />
-								</Avatar>
-							</Grid>
-							<Grid item>
-								<Box className="name">
-									{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
-								</Box>
-								<Box className="description">{subTitle}</Box>
+								{!selectedShape?.isGenericAssetShape && (
+									<>
+										<Box className="name">
+											{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
+										</Box>
+										<Box className="description">{subTitle}</Box>
+									</>
+								)}
 								{targetLabel === 'unit' && <Box className="type">Unit</Box>}
 								{targetLabel === 'agreement' && (
 									<Box className="type">
@@ -512,7 +525,7 @@ function ExpandableCard(props) {
 
 			for (let i = 0; i < selectedAbstracts.length; i++) {
 				const id = selectedAbstracts[i].properties.Id;
-				const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+				const sourceId = globalStateController.getValue('abstract_geo')?.sourceId;
 				if (sourceId) {
 					window.mapRef?.setFeatureState({ source: sourceId, id }, { click: false });
 				}
@@ -547,6 +560,7 @@ function ExpandableCard(props) {
 			showShapeActionsPopup: true,
 			editDraw: true,
 			shapeEditMode: 'fullEdit',
+			isEditingShape: true,
 		});
 
 		popupController.setState({
@@ -690,14 +704,25 @@ function ExpandableCard(props) {
 									</IconButton>
 								</Tooltip>
 							)}
+							{targetLabel === 'agreement' && (
+								<Tooltip title={'Open Analyst View'} data-testid="open-analyst-view" placement="top">
+									<IconButton>
+										<Link
+											to={`/land/agreement/details/${selectedShape.id}/?tenant=${UserSession.getStorageItem('tenantName')}`}
+										>
+											<EditNote />
+										</Link>
+									</IconButton>
+								</Tooltip>
+							)}
 							{targetLabel !== 'activity' &&
 								targetLabel !== 'contact' &&
 								targetLabel !== 'parcel' &&
 								!selectedShape && (
 									<CommentsWithIcon
-										objectId={targetSourceId.toLowerCase()}
-										targetLabel={props.targetLabel}
-										iconZiseSmall={!stateExpandableCard.expanded}
+										objectId={targetSourceId?.toLowerCase()}
+										targetLabel={props?.targetLabel}
+										iconZiseSmall={!stateExpandableCard?.expanded}
 									/>
 								)}
 
@@ -707,16 +732,16 @@ function ExpandableCard(props) {
 								!selectedShape &&
 								targetLabel !== 'recent_submitted_permits' && (
 									<TaggerWithIcon
-										objectId={targetSourceId.toLowerCase()}
-										targetLabel={props.targetLabel}
+										objectId={targetSourceId?.toLowerCase()}
+										targetLabel={props?.targetLabel}
 										iconZiseSmall={!stateExpandableCard.expanded}
 									/>
 								)}
 
 							{targetLabel === 'contact' && parent !== 'table' && (
 								<LinkWithIcon
-									objectId={targetSourceId.toLowerCase()}
-									targetLabel={props.targetLabel}
+									objectId={targetSourceId?.toLowerCase()}
+									targetLabel={props?.targetLabel}
 									iconZiseSmall={!stateExpandableCard.expanded}
 								/>
 							)}
@@ -729,7 +754,7 @@ function ExpandableCard(props) {
 									<TrackToggleButton
 										target={target}
 										targetLabel={targetLabel}
-										targetSourceId={targetSourceId.toLowerCase()}
+										targetSourceId={targetSourceId?.toLowerCase()}
 										iconZiseSmall={!stateExpandableCard.expanded}
 									/>
 								)}

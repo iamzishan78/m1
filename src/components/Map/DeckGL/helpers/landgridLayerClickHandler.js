@@ -15,8 +15,21 @@ const onAbstactLayerClick = (feature, action) => {
 	const selectedAbstracts = drawController.getValue('selectedAbstracts');
 
 	let drawStateToUpdate;
-	if (window.mapRef?.getLayer('Land Grid_selection')) {
-		window.mapRef.removeLayer('Land Grid_selection');
+
+	DeckGlLayer.addLayer({
+		layerId: 'Land Grid_selection',
+		type: 'SimpleGeoJsonLayer',
+		props: {
+			data: [],
+			pickable: true,
+			stroked: false,
+			filled: true,
+			getFillColor: [136, 136, 136, 77],
+		},
+	});
+
+	if (DeckGlLayer?.getLayer('Land Grid_selection')) {
+		DeckGlLayer.removeLayer('Land Grid_selection');
 	}
 
 	let requiredAbstracts = [];
@@ -39,10 +52,9 @@ const onAbstactLayerClick = (feature, action) => {
 		};
 	}
 
-	// eslint-disable-next-line no-new
-	new DeckGlLayer({
+	DeckGlLayer.addLayer({
 		layerId: 'Land Grid_selection',
-		type: 'GeoJsonLayer',
+		type: 'SimpleGeoJsonLayer',
 		props: {
 			data: requiredAbstracts,
 			pickable: true,

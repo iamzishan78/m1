@@ -4,14 +4,15 @@ import { useLazyQuery } from '@apollo/client';
 import get from 'lodash/get';
 import orderBy from 'lodash/orderBy';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import { WellCardContext } from 'components/WellCard/WellCardContext';
 import WellProdChart from 'components/WellProdChart/WellProdChart';
 import { WellProdChartContext } from 'components/WellProdChart/WellProdChartContext';
 
 import { GET_ASSOCIATED_WELL_PRODUCTION_DATA } from 'graphQL/useQueryAssociatedWellProductionData';
+
 import { AppContext } from 'AppContext';
-import PropTypes from 'prop-types';
 
 const ValidationChart = ({
 	filter,
@@ -108,7 +109,9 @@ const ValidationChart = ({
 					});
 				}
 			});
-			if (setAssociatedWellIds) setAssociatedWellIds(wellIds);
+			if (setAssociatedWellIds) {
+				setAssociatedWellIds(wellIds);
+			}
 			setStateApp(stateApp => ({
 				...stateApp,
 				associatedWellIds: wellIds,

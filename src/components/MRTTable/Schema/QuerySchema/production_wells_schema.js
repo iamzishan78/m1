@@ -1,6 +1,3 @@
-/* eslint-disable react/prop-types */
-import React from 'react';
-
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 import { PRODUCTIONDETAILQUERY } from 'graphQL/useQueryProductionDetail';
@@ -29,9 +26,7 @@ const ProductionWellsMeta = {
 		return rows?.map(row => row?.Id) || [];
 	},
 	isClientSide: true,
-	isSelectAllAllowed: true,
 	isDeleteDisabled: true,
-	isExportDisabled: true,
 	enableFacetedValues: true,
 	columnVirtualization: true,
 	isInFiniteScroll: true,

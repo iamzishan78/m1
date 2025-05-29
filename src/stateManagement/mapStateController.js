@@ -1,14 +1,32 @@
-import { hookStateController } from 'stateManagement/hookStateController';
+import { StateController } from './stateController';
 
-import { mapState, mapStateInitialState } from './initialStates';
-
-const mapStateControllerHandler = state => ({
-	moved: () => {
-		state.moved.set(!state.moved.get({ noproxy: true }));
-	},
-});
-
-export const mapStateController = {
-	...mapStateControllerHandler(mapState),
-	...hookStateController(mapState, mapStateInitialState),
+const defaultMapVars = {
+	zoom: 4.88,
+	center: { lng: -98.8, lat: 38 },
+	pitch: 0,
+	bearing: 0,
+	styleId: 'Outdoors',
+	moved: false,
 };
+
+export const mapStateInitialState = {
+	mapStyles: [],
+	mapVars: defaultMapVars,
+	defaultMapVars,
+	isDefaultViewAllowed: true,
+	showLegend: false,
+	isMapRefreshing: false,
+};
+
+class MapStateController extends StateController {
+	constructor(initialState) {
+		super(initialState, MapStateController.name);
+		this.autoBind(this);
+	}
+
+	moved() {
+		this.updateState({ moved: !this.getValue('moved') });
+	}
+}
+
+export const mapStateController = new MapStateController(mapStateInitialState);

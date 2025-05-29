@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { Grid, InputAdornment, Paper, TextField } from '@material-ui/core';
+import { Grid, InputAdornment, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import CheckIcon from '@material-ui/icons/Check';
 import EditIcon from '@material-ui/icons/Edit';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import ArrowDropDownIcon from '@material-ui/lab/es/internal/svg-icons/ArrowDropDown';
 
 import isEmpty from 'lodash/isEmpty';
+import PropTypes from 'prop-types';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 
 import { colorPallete } from 'utils/consts';
-
-import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(() => ({
 	noBorder: {
@@ -59,17 +59,12 @@ const CustomFieldSelect = ({
 	const classes = useStyles();
 	const [options, setOptions] = useState([]);
 	const [search, setSearch] = useState('');
-	const [, setStateApp] = useContext(AppContext);
 	const defaultValue = {
 		label: '--',
 		value: '--',
 	};
 	const [showOptions, setShowOptions] = useState(false);
 	const [showIcon, setShowIcon] = useState(false);
-
-	useEffect(() => {
-		onFilterChange('');
-	}, [dropdownOptions]);
 
 	const onFilterChange = search => {
 		const options = JSON.parse(
@@ -84,16 +79,20 @@ const CustomFieldSelect = ({
 		setSearch(search);
 	};
 
-	const onChange = (e, act, reason) => {
+	const onChange = ({ event, value, reason }) => {
 		if (reason === 'clear') {
-			e.stopPropagation();
+			event.stopPropagation();
 		}
-		if (act?.value === 'search') {
-			e.stopPropagation();
-		} else if (act?.value !== 'editOption') {
-			onCustomKeyChange(act?.value !== defaultValue.value ? act?.value : null);
+		if (value === 'search') {
+			event.stopPropagation();
+		} else if (value !== 'editOption') {
+			onCustomKeyChange(value !== defaultValue.value ? value : null);
 		}
 	};
+
+	useEffect(() => {
+		onFilterChange('');
+	}, [dropdownOptions]);
 
 	useEffect(() => {
 		if (value) {
@@ -106,10 +105,10 @@ const CustomFieldSelect = ({
 				const pallete = colorPallete.find(pallete => pallete.id === opt.palleteId);
 				if (column.iconType === 'Bullet Point') {
 					document.getElementById(`colorText_${index}_${column.name}`).innerHTML = `
-          <div style="display:flex;">
-            <div class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}; margin-right:5px;"></div>
-            <span>${data}</span>
-          </div>`;
+	      <div style="display:flex;">
+	        <div class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}; margin-right:5px;"></div>
+	        <span>${data}</span>
+	      </div>`;
 				} else {
 					document.getElementById(`colorText_${index}_${column.name}`).innerHTML =
 						`<span class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}">${data}</span>`;
@@ -131,6 +130,8 @@ const CustomFieldSelect = ({
 				border: variant === 'outlined' ? '1px solid rgba(0, 0, 0, 0.23)' : 'none',
 				borderBottom: fullWidth ? '1px solid rgba(0, 0, 0, 0.23)' : 'none',
 				borderRadius: '6px',
+				display: 'flex',
+				alignItems: 'center',
 			}}
 			onClick={e => e.stopPropagation()}
 			onMouseLeave={() => {
@@ -139,165 +140,145 @@ const CustomFieldSelect = ({
 			}}
 			onMouseEnter={() => setShowIcon(true)}
 		>
-			<Autocomplete
-				popupIcon={<ArrowDropDownIcon visibility={fullWidth || showIcon ? 'visible' : 'hidden'} />}
-				className={classes.search}
-				style={{
-					height: '100%',
-					margin: 0,
-				}}
-				classes={{ paper: classes.paper }}
-				PaperComponent={props => {
-					return (
-						<Paper
-							className={props.className}
-							style={{
-								width: fullWidth ? 'none' : 'fit-content',
-								'max-width': fullWidth ? 'none' : '400px',
-							}}
-						>
-							{props.children}
-						</Paper>
-					);
-				}}
+			<CustomAutoComplete
 				open={showOptions}
-				defaultValue={defaultValue.value}
-				value={value}
-				disableListWrap
-				options={options
-					.filter(op => typeof op.value === 'string')
-					.map(op => ({
-						...op,
-						label: op.value,
-						value: op.value,
-					}))}
-				getOptionLabel={option => (option?.label ? option.label : '')}
-				getOptionSelected={option => {
-					return option.value === value || option.value === value?.value;
+				popupIcon={<ArrowDropDownIcon visibility={fullWidth || showIcon ? 'visible' : 'hidden'} />}
+				fieldAttributes={{
+					value: value,
+					defaultValue: defaultValue.value,
+					optionArray: options,
 				}}
-				filterOptions={options => {
-					return options;
+				fieldEvents={{
+					onChange: onChange,
+					onTextFieldChange: onFilterChange,
 				}}
-				renderOption={option => {
-					const pallete = colorPallete.find(pallete => pallete.id === option.palleteId);
-					if (option.value === 'editOption') {
-						return (
-							<Grid
-								style={{
-									'flex-wrap': 'nowrap',
-									marginTop: '5px',
-									borderTop: '1px solid #959595',
-									padding: '8px 6px 2px 6px',
-								}}
-								container
-								spacing={0}
-								onClick={() => {
-									setShowOptions(false);
-									globalStateController.updateState({
-										showFieldModal: true,
-										selectedMeta: isEmpty(column) ? null : column,
-									});
-								}}
-							>
+				fieldConfig={{
+					size: 'small',
+					variant: 'standard',
+					disabled: false,
+					allowNewOptions: false,
+					renderOptionComp: ({ option }) => {
+						const pallete = colorPallete.find(pallete => pallete.id === option.palleteId);
+						if (option.value === 'editOption') {
+							return (
 								<Grid
-									style={{ 'flex-grow': 1, width: 'fit-content', 'max-width': 'max-content' }}
-									container
-									item
-									xs={2}
-									alignItems="center"
-								>
-									<EditIcon style={{ alignSelf: 'center', fontSize: 18, marginRight: 5 }} />
-								</Grid>
-								<Grid
-									container
-									item
-									xs={10}
-									alignItems="center"
 									style={{
-										fontSize: 14,
-										'white-space': 'nowrap',
-										'flex-grow': 1,
-										width: 'fit-content',
+										'flex-wrap': 'nowrap',
+										marginTop: '5px',
+										borderTop: '1px solid #959595',
+										padding: '8px 6px 2px 6px',
+									}}
+									container
+									spacing={0}
+									onClick={() => {
+										setShowOptions(false);
+										globalStateController.updateState({
+											showFieldModal: true,
+											selectedMeta: isEmpty(column) ? null : column,
+										});
 									}}
 								>
-									Edit options
-								</Grid>
-							</Grid>
-						);
-					} else if (option.value === 'search') {
-						return (
-							<div style={{ display: 'flex', padding: '10px', width: '100%' }}>
-								<TextField
-									variant="outlined"
-									size="small"
-									placeholder="Search"
-									fullWidth
-									autoFocus
-									value={search}
-									defaultValue={search}
-									onChange={e => onFilterChange(e.target.value)}
-								/>
-							</div>
-						);
-					} else {
-						return (
-							<Grid
-								style={{ 'flex-grow': 1, width: 'fit-content', 'flex-wrap': 'nowrap' }}
-								className={classes.myClass}
-								container
-								spacing={0}
-							>
-								<Grid
-									style={{ 'flex-grow': 1, width: 'fit-content', 'max-width': 'max-content' }}
-									container
-									item
-									xs={2}
-									alignItems="center"
-								>
-									<CheckIcon
+									<Grid
+										style={{ 'flex-grow': 1, width: 'fit-content', 'max-width': 'max-content' }}
+										container
+										item
+										xs={2}
+										alignItems="center"
+									>
+										<EditIcon style={{ alignSelf: 'center', fontSize: 18, marginRight: 5 }} />
+									</Grid>
+									<Grid
+										container
+										item
+										xs={10}
+										alignItems="center"
 										style={{
-											fontSize: 13,
-											marginRight: 5,
-											visibility:
-												(typeof value === 'string' && option.value === value) ||
-												option.value === value?.label ||
-												(!value && option.value === defaultValue.label)
-													? 'visible'
-													: 'hidden',
+											fontSize: 14,
+											'white-space': 'nowrap',
+											'flex-grow': 1,
+											width: 'fit-content',
 										}}
-									/>
-								</Grid>
-								<Grid
-									style={{ 'flex-grow': 1, width: 'fit-content' /*"max-width": "max-content"*/ }}
-									container
-									item
-									xs={10}
-									alignItems="center"
-								>
-									<Grid style={{ 'flex-grow': 1, width: 'fit-content' }} item xs>
-										<span
-											style={{
-												width: '100%',
-												// display: "inline-block",
-												fontWeight: 400,
-												backgroundColor: pallete?.color,
-												color: pallete?.textColor,
-												padding: '3px 10px',
-												borderRadius: 26,
-												fontSize: 14,
-												overflow: 'hidden',
-												'white-space': 'nowrap',
-												'text-overflow': 'ellipsis',
-											}}
-										>
-											{option.label}
-										</span>
+									>
+										Edit options
 									</Grid>
 								</Grid>
-							</Grid>
-						);
-					}
+							);
+						} else if (option.value === 'search') {
+							return (
+								<div style={{ display: 'flex', padding: '10px', width: '100%' }}>
+									<TextField
+										variant="outlined"
+										size="small"
+										placeholder="Search"
+										fullWidth
+										autoFocus
+										value={search}
+										defaultValue={search}
+										onChange={e => onFilterChange(e.target.value)}
+									/>
+								</div>
+							);
+						} else {
+							return (
+								<Grid
+									style={{ 'flex-grow': 1, width: 'fit-content', 'flex-wrap': 'nowrap' }}
+									className={classes.myClass}
+									container
+									spacing={0}
+								>
+									<Grid
+										style={{ 'flex-grow': 1, width: 'fit-content', 'max-width': 'max-content' }}
+										container
+										item
+										xs={2}
+										alignItems="center"
+									>
+										<CheckIcon
+											style={{
+												fontSize: 13,
+												marginRight: 5,
+												visibility:
+													(typeof value === 'string' && option.value === value) ||
+													option.value === value?.label ||
+													(!value && option.value === defaultValue.label)
+														? 'visible'
+														: 'hidden',
+											}}
+										/>
+									</Grid>
+									<Grid
+										style={{ 'flex-grow': 1, width: 'fit-content' /*"max-width": "max-content"*/ }}
+										container
+										item
+										xs={10}
+										alignItems="center"
+									>
+										<Grid style={{ 'flex-grow': 1, width: 'fit-content' }} item xs>
+											<span
+												style={{
+													width: '100%',
+													fontWeight: 400,
+													backgroundColor: pallete?.color,
+													color: pallete?.textColor,
+													padding: '3px 10px',
+													borderRadius: 26,
+													fontSize: 14,
+													overflow: 'hidden',
+													'white-space': 'nowrap',
+													'text-overflow': 'ellipsis',
+												}}
+											>
+												{option.value}
+											</span>
+										</Grid>
+									</Grid>
+								</Grid>
+							);
+						}
+					},
 				}}
+				//This Render Input method is used and CustomAutoComplete's own method
+				// is ignored since it is overriden by following renderInput method
 				renderInput={params => (
 					<>
 						<div
@@ -328,10 +309,21 @@ const CustomFieldSelect = ({
 						</div>
 					</>
 				)}
-				onChange={onChange}
 			/>
 		</div>
 	);
+};
+
+CustomFieldSelect.propTypes = {
+	index: PropTypes.number,
+	value: PropTypes.any,
+	onCustomKeyChange: PropTypes.func,
+	dropdownOptions: PropTypes.array,
+	column: PropTypes.object,
+	fullWidth: PropTypes.bool,
+	variant: PropTypes.string,
+	valueMarginLeft: PropTypes.number,
+	isOptionsEditable: PropTypes.bool,
 };
 
 export default CustomFieldSelect;

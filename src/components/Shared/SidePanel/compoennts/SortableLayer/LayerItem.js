@@ -3,13 +3,8 @@ import { Flipped } from 'react-flip-toolkit';
 import { useSelector } from 'react-redux';
 import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
 
-import { Box, Grid, ListItemIcon } from '@material-ui/core';
-import { FormControlLabel } from '@material-ui/core';
-import { Switch } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import { Box, Grid, ListItemIcon, FormControlLabel, Switch } from '@material-ui/core';
 import { DragIndicator } from '@material-ui/icons';
-
-// icons
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
@@ -18,12 +13,27 @@ import { makeStyles } from '@material-ui/styles';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { Badge, IconButton } from '@mui/material';
 
+import PropTypes from 'prop-types';
+
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
+
 import { globalStateController } from 'stateManagement/globalStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
 import { mapStateController } from 'stateManagement/mapStateController';
 
 import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';
+import NameWithTooltip from '../Common/NameWithTooltip';
+
+const ZERO = 0;
+const ONE = 1;
+const TWO = 2;
+const THREE = 3;
+const EIGHTEEN = 18;
+const TWENTY = 20;
+const FOURTY = 40;
+const FIVE_HUNDRED = 500;
+const SIX_HUNDRED = 600;
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({
@@ -33,11 +43,11 @@ const useStyles = makeStyles(theme => ({
 
 		// marginLeft: theme.spacing(props.depth * 2),
 		color: props.muted ? theme.palette.primary.dark : 'inherit',
-		zIndex: props.muted ? 1 : 0,
-		fontWeight: props.data.type === 'group' ? 600 : 500,
-		fontSize: props.data.type === 'group' ? 20 : 18,
+		zIndex: props.muted ? ONE : ZERO,
+		fontWeight: props.data.type === 'group' ? SIX_HUNDRED : FIVE_HUNDRED,
+		fontSize: props.data.type === 'group' ? TWENTY : EIGHTEEN,
 		position: 'relative',
-		height: (props.data.collapsed && props.data.type === 'layer') || !props.data.showable ? 0 : '50px',
+		height: (props.data.collapsed && props.data.type === 'layer') || !props.data.showable ? ZERO : '50px',
 		overflow: 'hidden',
 		disabledLayerTitle: {
 			'& span': { color: 'rgb(127, 149, 199) !important' },
@@ -64,7 +74,7 @@ const useStyles = makeStyles(theme => ({
 		alignItems: 'center',
 	}),
 	subContainer: props => ({
-		marginLeft: theme.spacing(props.depth * 2),
+		marginLeft: theme.spacing(props.depth * TWO),
 	}),
 }));
 
@@ -77,8 +87,11 @@ const LayerItem = React.memo(props => {
 	const { type, collapsed, name } = data;
 
 	const {
-		stateValues: { emptyGroups, mapView },
-	} = globalStateController.useState(['emptyGroups', 'mapView']);
+		stateValues: { selectedView },
+	} = viewStateController('MapView').useState(['selectedView']);
+	const {
+		stateValues: { emptyGroups },
+	} = globalStateController.useState(['emptyGroups']);
 
 	const [{ isDragging }, drag, preview] = useDrag({
 		collect: monitor => {
@@ -86,11 +99,11 @@ const LayerItem = React.memo(props => {
 				isDragging: monitor.isDragging(),
 			};
 		},
-		begin(f) {
+		begin() {
 			itemRef.current = data;
 			onDragBegin(data);
 		},
-		end(f) {
+		end() {
 			onDragEnd(itemRef.current, data);
 		},
 	});
@@ -112,21 +125,21 @@ const LayerItem = React.memo(props => {
 	const handleLayerZoomClick = bbox => {
 		window.mapRef?.fitBounds(
 			[
-				[bbox[0], bbox[1]], // southwestern corner of the bounds
-				[bbox[2], bbox[3]], // northeastern corner of the bounds
+				[bbox[ZERO], bbox[ONE]], // southwestern corner of the bounds
+				[bbox[TWO], bbox[THREE]], // northeastern corner of the bounds
 			],
-			{ padding: { top: 40, bottom: 40, left: 40, right: 40 }, easing: () => 1 }
+			{ padding: { top: FOURTY, bottom: FOURTY, left: FOURTY, right: FOURTY }, easing: () => ONE }
 		);
 		mapStateController.moved();
 	};
 
-	const layerFilters = mapView?.selectedMapView?.filters?.filter(filter => {
+	const layerFilters = selectedView?.filters.filter(filter => {
 		const { dataSourceName } = filter || {};
 
 		// In case of shape files
 		const fileId = dataSourceName.substring(0, dataSourceName.indexOf('_'));
-		const layerShapeName = dataSourceName.substring(dataSourceName.indexOf('_') + 1);
-		if (fileId === data?.file && layerShapeName === data?.layerShapeName) {
+		const layerIdentifier = dataSourceName.substring(dataSourceName.indexOf('_') + 1);
+		if (fileId === data?.file && layerIdentifier === data?.layerIdentifier) {
 			return true;
 		}
 
@@ -180,10 +193,16 @@ const LayerItem = React.memo(props => {
 										<ListItemIcon />
 									)}
 								</Box>
-
-								<Typography id={id} color="secondary" noWrap>
-									{name}
-								</Typography>
+								<NameWithTooltip
+									style={{
+										color: 'secondary',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap',
+									}}
+									index={hoverItemIndex}
+									title={name}
+									height={'18px'}
+								/>
 								<Box paddingLeft={1} display="flex">
 									{type === 'group' && (
 										<ListItemIcon onClick={handleClick}>
@@ -192,11 +211,15 @@ const LayerItem = React.memo(props => {
 									)}
 								</Box>
 								<div className="zoom-section">
-									{type !== 'group' && data.visiable && data.file && data.defaultSettings?.bbox && (
-										<ListItemIcon onClick={() => handleLayerZoomClick(data.defaultSettings.bbox)}>
-											<ZoomInIcon htmlColor="#ffff" />
-										</ListItemIcon>
-									)}
+									{type !== 'group' &&
+										data.visiable &&
+										data.file &&
+										data.defaultSettings?.bbox &&
+										data.defaultSettings.bbox.length >= 4 && (
+											<ListItemIcon onClick={() => handleLayerZoomClick(data.defaultSettings.bbox)}>
+												<ZoomInIcon htmlColor="#ffff" />
+											</ListItemIcon>
+										)}
 								</div>
 								{layerFilters?.length ? (
 									<IconButton>
@@ -276,5 +299,32 @@ const LayerItem = React.memo(props => {
 		</Flipped>
 	);
 });
+
+LayerItem.displayName = 'LayerItem';
+
+LayerItem.propTypes = {
+	id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+	depth: PropTypes.number.isRequired,
+	data: PropTypes.shape({
+		type: PropTypes.string,
+		collapsed: PropTypes.bool,
+		name: PropTypes.string,
+		file: PropTypes.string,
+		layerIdentifier: PropTypes.string,
+		identifier: PropTypes.string,
+		layerName: PropTypes.string,
+		emptyLayer: PropTypes.bool,
+		visiable: PropTypes.bool,
+		defaultSettings: PropTypes.shape({
+			bbox: PropTypes.arrayOf(PropTypes.number),
+		}),
+		id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	}).isRequired,
+	onToggleCollapse: PropTypes.func.isRequired,
+	onToggleGroup: PropTypes.func.isRequired,
+	updateLayer: PropTypes.func.isRequired,
+	onDragEnd: PropTypes.func.isRequired,
+	onDragBegin: PropTypes.func.isRequired,
+};
 
 export default LayerItem;

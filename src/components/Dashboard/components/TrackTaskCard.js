@@ -2,25 +2,25 @@ import React, { Fragment, useState, useEffect, useRef, useCallback } from 'react
 
 import { Grid, TextField, CircularProgress, Box } from '@material-ui/core';
 import CardHeader from '@material-ui/core/CardHeader';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
 
 import * as am4charts from '@amcharts/amcharts4/charts';
 import * as am4core from '@amcharts/amcharts4/core';
 import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import ReactDOMServer from 'react-dom/server';
 
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 
 import { GET_ACTIVITY_TASK_PER_USER } from 'graphQL/useQueryActivityTaskPerUser';
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
 import { CUSTOM_DATES } from 'utils/data';
-import { getRangeFilters } from 'utils/helper';
-import { handleCustomDateTypeChange } from 'utils/helper';
+import { getRangeFilters, handleCustomDateTypeChange } from 'utils/helper';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	actionBar: {
 		backgroundColor: '#f7f7f7',
 		width: '100%',
@@ -96,6 +96,14 @@ const Title = ({ fromDate, setFromDate, toDate, setToDate, minDate }) => {
 			</Grid>
 		</Grid>
 	);
+};
+
+Title.propTypes = {
+	fromDate: PropTypes.string,
+	setFromDate: PropTypes.func.isRequired,
+	toDate: PropTypes.string.isRequired,
+	setToDate: PropTypes.func.isRequired,
+	minDate: PropTypes.string,
 };
 
 export default function TrackTaskCard() {
@@ -276,7 +284,7 @@ export default function TrackTaskCard() {
 		chart.legend.marginLeft = 20; // Optional: add some margin
 
 		// Adapter to update legend position
-		chart.legend.adapter.add('y', (position, target) => {
+		chart.legend.adapter.add('y', () => {
 			return 30;
 		}); // Optional: add some margin
 
@@ -290,7 +298,7 @@ export default function TrackTaskCard() {
 		titleLabel.y = am4core.percent(0);
 		titleLabel.horizontalCenter = 'middle';
 		titleLabel.verticalCenter = 'bottom';
-		titleLabel.adapter.add('y', (y, target) => {
+		titleLabel.adapter.add('y', () => {
 			return 30; // Adjust the title's vertical position
 		});
 		// Adjust position relative to the x-axis and legend
@@ -377,28 +385,27 @@ function TaskFilters({ fromDate, setFromDate, toDate, setToDate, minDate }) {
 	return (
 		<Grid container direction="row" display="flex" alignItems="center" spacing={1} flexWrap={'noWrap'}>
 			<Grid item style={{ marginTop: '2px', maxWidth: '35%' }} xs={4}>
-				<Autocomplete
-					size="small"
-					onChange={(event, newValue) => {
-						if (newValue === null) {
-							handleDateTypeChange('This Month');
-						} else {
-							handleDateTypeChange(newValue);
-						}
+				<CustomAutoComplete
+					fieldAttributes={{
+						label: 'Date Range',
+						value: CUSTOM_DATES.ALL_DATES,
+					}}
+					fieldEvents={{
+						onChange: ({ value }) => {
+							handleDateTypeChange(value ?? 'This Month');
+						},
+					}}
+					fieldConfig={{
+						variant: 'outlined',
+						size: 'small',
+						textfieldRestProps: {
+							placeholder: '',
+							style: { backgroundColor: 'white' },
+						},
 					}}
 					options={Object.values(CUSTOM_DATES)}
-					renderInput={params => (
-						<TextField
-							{...params}
-							variant="outlined"
-							label="Date Range"
-							placeholder=""
-							style={{ backgroundColor: 'white' }}
-						/>
-					)}
-					defaultValue={CUSTOM_DATES.ALL_DATES}
-					disableListWrap
 					id="custom-date-dropdown"
+					disableListWrap
 				/>
 			</Grid>
 			<Grid item xs={3} style={{ minWidth: '160px' }}>
@@ -467,3 +474,11 @@ function TaskFilters({ fromDate, setFromDate, toDate, setToDate, minDate }) {
 		</Grid>
 	);
 }
+
+TaskFilters.propTypes = {
+	fromDate: PropTypes.string,
+	setFromDate: PropTypes.func.isRequired,
+	toDate: PropTypes.string.isRequired,
+	setToDate: PropTypes.func.isRequired,
+	minDate: PropTypes.string,
+};

@@ -1,8 +1,16 @@
 import React, { useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 
+import { useLazyQuery } from '@apollo/client';
+
 import MRTTable from 'components/MRTTable';
+
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -34,6 +42,17 @@ const useStyles = makeStyles(theme => ({
 
 export default function DocumentComponent() {
 	const classes = useStyles();
+	const location = useLocation();
+
+	const [getDbData, { data: elasticData }] = useLazyQuery(GET_DB_DATA, {
+		fetchPolicy: 'no-cache',
+	});
+
+	// Function to extract the document ID from the URL
+	const getDocIdFromUrl = () => {
+		const match = location.pathname.match(/details\/([^/]+)/);
+		return match ? match[1] : null;
+	};
 
 	useEffect(() => {
 		return () => {
@@ -47,9 +66,46 @@ export default function DocumentComponent() {
 		};
 	}, []);
 
+	useEffect(() => {
+		// Set the initial document ID from the URL on page load or refresh
+		const idFromUrl = getDocIdFromUrl();
+		if (idFromUrl) {
+			getDbData({
+				variables: {
+					index: 'documents_flat',
+					pagination: {
+						first: 1,
+						keep_alive: '1micros',
+					},
+					search: {},
+					filters: { field: '_id', value: [idFromUrl] },
+					sort: [],
+				},
+			});
+		}
+	}, [location]);
+
+	useEffect(() => {
+		if (elasticData?.getDbData?.hits?.length) {
+			tableGlobalController.updateState({
+				documentDialog: {
+					type: 'createAndAddDocument',
+					tableKey: 'DocumentTable',
+					selectedRow: elasticData?.getDbData?.hits[0],
+				},
+			});
+
+			slidoutStateController.updateState({
+				newEntity: false,
+				title: 'File Detail',
+			});
+		}
+	}, [elasticData]);
+
 	return (
 		<div className={classes.root}>
 			{/* Documents Table*/}
+			{/* 65465465465 */}
 			<MRTTable name="DocumentTable" />
 		</div>
 	);

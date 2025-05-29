@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { IconButton, Grid, Table, TableCell, TableBody, FormControl, CircularProgress } from '@material-ui/core';
@@ -9,9 +9,9 @@ import Typography from '@material-ui/core/Typography';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
 
-import { hookstate, useHookstate } from '@hookstate/core';
 import { set, get, upperFirst, capitalize } from 'lodash';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import filterConsts from 'components/Common/TableAddDialog/Common/filterConsts';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
@@ -20,9 +20,9 @@ import CountyField from 'components/Revenue/components/Properties/DetailComponen
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { summaryTableStyles } from 'components/ShapeDetailCard/style';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
-import DateField from 'components/Shared/components/Fields/DateField';
-import NumberField from 'components/Shared/components/Fields/NumberField';
+import CustomTypography from 'components/Shared/components/Fields/CustomTypography';
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import { copy } from 'components/Shared/functions';
@@ -35,10 +35,9 @@ import { globalStateController } from 'stateManagement/globalStateController';
 
 import { KEYBOARD_KEYS, INTEREST_TO_FIXED } from 'utils/consts';
 import { US_STATES_CODES } from 'utils/data';
-import { getRoundedNra, isEven, validateUrl } from 'utils/helper';
+import { getRoundedNra, isEven } from 'utils/helper';
 
 import { showErrorMessage, showInfoMessage } from 'actions';
-import { AppContext } from 'AppContext';
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps, loading }) {
 	const dispatch = useDispatch();
@@ -105,14 +104,14 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 		</div>
 	);
 }
-const editIconState = hookstate({});
 
 function EditIconComponent({ data, dataKey, classes, onClick }) {
-	const state = useHookstate(editIconState[dataKey]);
+	const { editIconState } = globalStateController.useState(['editIconState']);
+	const state = editIconState[dataKey];
 
 	return (
 		<>
-			{state.get() && (
+			{state && (
 				<Tooltip title={'Edit'} placement="top">
 					<IconButton size="small" onClick={onClick} data-testid={`edit-${data.label}`}>
 						<CreateTwoToneIcon id="contPencilIcon" className={classes.pencilIcon} />
@@ -138,7 +137,6 @@ export default function SummaryTableInfo({
 }) {
 	const classes = summaryTableStyles();
 	const dispatch = useDispatch();
-	const [, setStateApp] = useContext(AppContext);
 	const [tableDataState, setTableDataState] = useState({});
 	const [state, setState] = useState();
 	const [county, setCounty] = useState();
@@ -378,10 +376,18 @@ export default function SummaryTableInfo({
 								className={classes.cell1}
 								align="left"
 								onMouseEnter={() => {
-									editIconState.set({ [`${data.key}key`]: true });
+									globalStateController.updateState({
+										editIconState: {
+											[`${data.key}key`]: true,
+										},
+									});
 								}}
 								onMouseLeave={() => {
-									editIconState.set({ [`${data.key}key`]: false });
+									globalStateController.updateState({
+										editIconState: {
+											[`${data.key}key`]: false,
+										},
+									});
 								}}
 							>
 								{data.isCustom || data.isCustomData ? (
@@ -441,10 +447,18 @@ export default function SummaryTableInfo({
 								className={classes.cell2}
 								data-testid={`data-cell-${data.label}`}
 								onMouseEnter={() => {
-									editIconState.set({ [data.key]: true });
+									globalStateController.updateState({
+										editIconState: {
+											[data.key]: true,
+										},
+									});
 								}}
 								onMouseLeave={() => {
-									editIconState.set({ [data.key]: false });
+									globalStateController.updateState({
+										editIconState: {
+											[data.key]: false,
+										},
+									});
 								}}
 							>
 								{tableDataState[data.key] ? (
@@ -507,14 +521,21 @@ export default function SummaryTableInfo({
 													<CustomTextField
 														id={`field-${data.key}`}
 														index={data.key}
-														field={data}
-														fieldKey={data.key}
-														defaultValue={get(tableTempProperties, `${data.key}`, '')}
-														showLinkPopup={false}
-														offClickHandler={(key, value) => {
-															set(tableTempProperties, key, value);
-															setTableTempProperties(tableTempProperties);
-															updateProperties(null, key, value);
+														fieldConfig={{
+															size: 'small',
+															variant: 'outlined',
+															margin: 'dense',
+															disabled: data.disabled,
+														}}
+														fieldAttributes={{
+															defaultValue: get(tableTempProperties, `${data.key}`, ''),
+														}}
+														fieldEvents={{
+															onBlur: value => {
+																set(tableTempProperties, data.key, value);
+																setTableTempProperties(tableTempProperties);
+																updateProperties(null, data.key, value);
+															},
 														}}
 													/>
 												) : (
@@ -540,30 +561,44 @@ export default function SummaryTableInfo({
 											</>
 										)}
 										{data.type === 'number' && (
-											<NumberField
+											<CustomTextField
 												id={`field-${data.key}`}
-												index={index}
-												field={data}
-												fieldKey={data.key}
-												defaultValue={get(tableTempProperties, `${data.key}`, '')}
-												offClickHandler={(key, value) => {
-													set(tableTempProperties, key, value);
-													setTableTempProperties(tableTempProperties);
-													updateProperties(null, key, value);
+												fieldConfig={{
+													size: 'small',
+													variant: 'outlined',
+													margin: 'dense',
+													disabled: data.disabled,
+													type: 'number',
+												}}
+												fieldAttributes={{
+													defaultValue: get(tableTempProperties, `${data.key}`, ''),
+												}}
+												fieldEvents={{
+													onBlur: value => {
+														set(tableTempProperties, data.key, value);
+														setTableTempProperties(tableTempProperties);
+														updateProperties(null, data.key, value);
+													},
 												}}
 											/>
 										)}
 										{data.type === 'date' && (
-											<DateField
+											<CustomDatePicker
 												id={`field-${data.key}`}
-												index={index}
-												field={data}
-												fieldKey={data.key}
-												defaultValue={get(tableTempProperties, `${data.key}`, '')}
-												offClickHandler={(key, value) => {
-													set(tableTempProperties, key, value);
-													setTableTempProperties(tableTempProperties);
-													updateProperties(null, key, value);
+												fieldAttributes={{
+													name: data.key,
+													value: get(tableTempProperties, `${data.key}`, ''),
+												}}
+												fieldConfig={{
+													variant: 'standard',
+													size: 'small',
+												}}
+												fieldEvents={{
+													onChange: newValue => {
+														set(tableTempProperties, data.key, newValue.toDate());
+														setTableTempProperties({ ...tableTempProperties });
+														updateProperties?.(null, data.key, newValue.toDate());
+													},
 												}}
 											/>
 										)}
@@ -611,7 +646,6 @@ export default function SummaryTableInfo({
 										)}
 										{data.type === 'custom' && (
 											<>
-												{console.log('data 2', data)}
 												{['qualifier', 'reviewer'].includes(data.key) && (
 													<UserList
 														id={data.key + 'Input'}
@@ -676,7 +710,7 @@ export default function SummaryTableInfo({
 														(get(properties, `${data.key}`, '')
 															? moment(get(properties, `${data.key}`, ''))
 																	.utc(true)
-																	.format('DD/MM/yyyy')
+																	.format('L')
 															: '-')}
 													{data.type === 'custom' && (
 														<>{['qualifier', 'reviewer'].includes(data.key) && (properties[data.key]?.name || '-')}</>
@@ -688,14 +722,17 @@ export default function SummaryTableInfo({
 														data.type !== 'multiselect' &&
 														data.type !== 'calculation' &&
 														data.type !== 'state' &&
-														data.type !== 'county' &&
-														(data.type === 'text' && validateUrl(get(tableTempProperties, `${data.key}`, '')) ? (
-															<a href={get(tableTempProperties, `${data.key}`, '')} target="_blank" rel="noreferrer">
-																{get(tableTempProperties, `${data.key}`, '')}
-															</a>
-														) : (
-															data.value || get(properties, `${data.key}`, '-')
-														))}
+														data.type !== 'county' && (
+															<>
+																<CustomTypography
+																	value={
+																		get(tableTempProperties, `${data.key}`, '') ||
+																		data.value ||
+																		get(properties, `${data.key}`, '-')
+																	}
+																/>
+															</>
+														)}
 
 													{data.type === 'state' &&
 														(get(properties, 'originalProperties.StateAbbreviation', '') ||
@@ -757,3 +794,58 @@ export default function SummaryTableInfo({
 		</Table>
 	);
 }
+
+EditIconComponent.propTypes = {
+	data: PropTypes.object,
+	dataKey: PropTypes.string,
+	classes: PropTypes.object,
+	onClick: PropTypes.func,
+};
+
+TableTextField.propTypes = {
+	data: PropTypes.shape({
+		type: PropTypes.string,
+		label: PropTypes.string,
+		key: PropTypes.string,
+	}),
+	value: PropTypes.shape({
+		unitNra: PropTypes.number,
+		calculatedNra: PropTypes.number,
+	}),
+	onChange: PropTypes.func,
+	onKeyDown: PropTypes.func,
+	onBlur: PropTypes.func,
+	onWheel: PropTypes.func,
+	showMessage: PropTypes.bool,
+	type: PropTypes.string,
+	InputProps: PropTypes.object,
+	loading: PropTypes.bool,
+};
+
+SummaryTableInfo.propTypes = {
+	tableData: PropTypes.arrayOf(
+		PropTypes.shape({
+			key: PropTypes.string,
+			label: PropTypes.string,
+			type: PropTypes.string,
+			options: PropTypes.array,
+			isCustom: PropTypes.bool,
+			isCustomData: PropTypes.bool,
+			formatValue: PropTypes.func,
+			value: PropTypes.any,
+			InputProps: PropTypes.object,
+			disabled: PropTypes.bool,
+			nonEditable: PropTypes.bool,
+		})
+	),
+	properties: PropTypes.object,
+	updateProperties: PropTypes.func,
+	updateCustomProperties: PropTypes.func,
+	search: PropTypes.string,
+	metaData: PropTypes.array,
+	id: PropTypes.string,
+	updating: PropTypes.bool,
+	isCustomLayerAutoComplete: PropTypes.bool,
+	customLayer: PropTypes.object,
+	shapeType: PropTypes.string,
+};

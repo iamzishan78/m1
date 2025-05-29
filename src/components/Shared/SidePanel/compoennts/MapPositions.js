@@ -55,6 +55,15 @@ export default function MapPositions(props) {
 	const { defaultMapVars, mapVars } = stateValues;
 	const [centerError, setCenterError] = useState(false);
 	const center = watch('center', '');
+
+	const getVars = mapVars => {
+		const vars = {
+			...mapVars,
+			center: `${mapVars.center.lat}, ${mapVars.center.lng}`,
+		};
+		return vars;
+	};
+
 	useEffect(() => {
 		if (defaultMapVars) {
 			const vars = getVars(defaultMapVars);
@@ -78,41 +87,35 @@ export default function MapPositions(props) {
 		}
 	}, [center]);
 
-	const getVars = mapVars => {
-		const vars = {
-			...mapVars,
-			center: `${mapVars.center.lat}, ${mapVars.center.lng}`,
-		};
-		return vars;
-	};
-
 	useEffect(() => {
 		const mapRef = window.mapRef;
 
-		if (mapRef) {
-			// Update for values
-			const updateFormFields = () => {
-				setValue('zoom', mapRef.getZoom());
-				setValue('bearing', mapRef.getBearing());
-				setValue('pitch', mapRef.getPitch());
-				setValue('center', `${mapRef.getCenter().lat}, ${mapRef.getCenter().lng}`);
-			};
-
-			// Listen to the map events
-			mapRef.on('move', updateFormFields);
-			mapRef.on('zoom', updateFormFields);
-			mapRef.on('rotate', updateFormFields);
-
-			// Initial values update
-			updateFormFields();
-
-			// Cleanup on unmount
-			return () => {
-				mapRef.off('move', updateFormFields);
-				mapRef.off('zoom', updateFormFields);
-				mapRef.off('rotate', updateFormFields);
-			};
+		if (!mapRef) {
+			return null;
 		}
+
+		// Update for values
+		const updateFormFields = () => {
+			setValue('zoom', mapRef.getZoom());
+			setValue('bearing', mapRef.getBearing());
+			setValue('pitch', mapRef.getPitch());
+			setValue('center', `${mapRef.getCenter().lat}, ${mapRef.getCenter().lng}`);
+		};
+
+		// Listen to the map events
+		mapRef.on('move', updateFormFields);
+		mapRef.on('zoom', updateFormFields);
+		mapRef.on('rotate', updateFormFields);
+
+		// Initial values update
+		updateFormFields();
+
+		// Cleanup on unmount
+		return () => {
+			mapRef.off('move', updateFormFields);
+			mapRef.off('zoom', updateFormFields);
+			mapRef.off('rotate', updateFormFields);
+		};
 	}, [setValue, mapReady]);
 
 	const submitFunc = values => {
@@ -146,23 +149,39 @@ export default function MapPositions(props) {
 				style={{ padding: '15px 10px' }}
 			>
 				<Grid item xs={4}>
-					<Controller control={control} name="zoom" label="Zoom" as={StyledTextField} />
+					<Controller
+						control={control}
+						name="zoom"
+						render={({ field }) => <StyledTextField {...field} label="Zoom" />}
+					/>
 				</Grid>
 				<Grid item xs={4}>
-					<Controller control={control} name="bearing" label="Bearing" as={StyledTextField} />
+					<Controller
+						control={control}
+						name="bearing"
+						render={({ field }) => <StyledTextField {...field} label="Bearing" />}
+					/>
 				</Grid>
 				<Grid item xs={4}>
-					<Controller control={control} name="pitch" label="Pitch" as={StyledTextField} />
+					<Controller
+						control={control}
+						name="pitch"
+						render={({ field }) => <StyledTextField {...field} label="Pitch" />}
+					/>
 				</Grid>
 				<Grid item xs={12}>
 					<Controller
 						control={control}
 						name="center"
-						label="Center"
-						as={StyledTextField}
-						type="text"
-						error={centerError}
-						helperText={centerError ? 'Invalid Value' : ''} // helper text for errors
+						render={({ field }) => (
+							<StyledTextField
+								{...field}
+								label="Center"
+								type="text"
+								error={centerError}
+								helperText={centerError ? 'Invalid Value' : ''} // helper text for errors
+							/>
+						)}
 					/>
 				</Grid>
 			</Grid>

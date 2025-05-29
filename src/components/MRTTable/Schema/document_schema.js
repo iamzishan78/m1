@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
@@ -18,6 +17,8 @@ import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
 import { slidoutStateController } from 'stateManagement/slidoutStateController';
 import { tableGlobalController } from 'stateManagement/tableController';
 
+import { history } from 'store';
+
 const esIndex = 'documents_flat';
 
 const onClickedRow = selectedRow => {
@@ -33,6 +34,7 @@ const onClickedRow = selectedRow => {
 		newEntity: false,
 		title: 'File Detail',
 	});
+	history.push(`/documents/details/${selectedRow?._id}`);
 };
 
 const onCustomKeyChange = async (client, row, value, item) => {
@@ -135,6 +137,7 @@ const DocumentMeta = {
 			name: 'name.keyword',
 			id: 'name',
 			header: 'File Name',
+			size: 400,
 			Cell: ({ row }) => {
 				return <FileName docInfo={row?.original} />;
 			},
@@ -196,8 +199,8 @@ const DocumentMeta = {
 
 		{
 			...CommonSchema.ACTION_COLUMN,
-			name: 'actionMenu',
-			id: 'actionMenu',
+			name: 'fileDownload',
+			id: 'fileDownload',
 			header: ' ',
 			size: 70,
 			Cell: ({ row }) => {
@@ -207,8 +210,8 @@ const DocumentMeta = {
 
 		{
 			...CommonSchema.ACTION_COLUMN,
-			name: 'actionMenu2',
-			id: 'actionMenu2',
+			name: 'fileView',
+			id: 'fileView',
 			header: ' ',
 			size: 70,
 			Cell: ({ row }) => {

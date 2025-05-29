@@ -17,13 +17,15 @@ import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 import { layerController } from 'stateManagement/layerStateController.js';
 import { mapControlsController } from 'stateManagement/mapControlsController.js';
 
+import { copy } from 'utils/helper';
+
 import { deepEqualObjects } from '../../../functions';
 import ColorControl from '../../../svgIcons/color-control.js';
 import ClickIcon from '../../../svgIcons/cursor-click.js';
 import UserDefined from '../../../svgIcons/user-defined.js';
 import { ifLayerHaveData } from '../common.js';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	list: {
 		padding: 0,
 	},
@@ -32,17 +34,20 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateApp, setStateApp }) {
+function LayerItem({ layer, index, provided, type, handleToggle, labelId }) {
 	const [hoverItemIndex, setHoverItem] = useState(-1);
 
-	layerController.useState(['wellListFromSearch']);
+	const { layerStateValues } = layerController.useState(
+		['wellListFromSearch', 'checkedBaseLayers', 'checkedHeats'],
+		'layerStateValues'
+	);
 
 	const classes = useStyles();
 
 	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
 	const handleToggleInteraction = (layer, index) => () => {
-		const currentLayers = [];
+		const currentLayers = copy(layerController.getValue('layers'));
 		const updatedLayer = {
 			...layer,
 			layerSettings: {
@@ -57,9 +62,8 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
 			},
 		};
 
-		//// saving to stateApp
 		currentLayers[index] = updatedLayer;
-		setStateApp(stateApp => ({ ...stateApp, layers: [...currentLayers] }));
+		layerController.updateState({ layers: [...currentLayers] });
 
 		//// saving to mongo
 		updateLayerSettings({
@@ -166,10 +170,10 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
 	const getLayerChecked = ({ layer, index }) => {
 		if (type === 'layer' && layer) {
 			return layer.layerSettings.visiable !== false;
-		} else if (type === 'base' && typeof index === 'number' && stateApp.checkedBaseLayers) {
-			return stateApp.checkedBaseLayers.indexOf(index) !== -1;
-		} else if (type === 'heatMaps' && typeof index === 'number' && stateApp.checkedHeats) {
-			return stateApp.checkedHeats.indexOf(index) !== -1;
+		} else if (type === 'base' && typeof index === 'number' && layerStateValues.checkedBaseLayers) {
+			return layerStateValues.checkedBaseLayers.indexOf(index) !== -1;
+		} else if (type === 'heatMaps' && typeof index === 'number' && layerStateValues.checkedHeats) {
+			return layerStateValues.checkedHeats.indexOf(index) !== -1;
 		} else {
 			return false;
 		}

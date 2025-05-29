@@ -11,24 +11,21 @@ import PropTypes from 'prop-types';
 
 import AdminProvider from 'components/Admin/AdminProvider';
 import AnalyticsProvider from 'components/Analytics/AnalyticsProvider';
+import LoginCard from 'components/Auth0Login/LoginCard';
 import DataProvider from 'components/Data/DataProvider';
 import Land from 'components/Land';
 import RevenueProvider from 'components/Revenue/RevenueProvider';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 
+import { simpleAuthBypass } from 'utils/data';
 import { UserSession } from 'utils/user';
 
 import Providers from 'Providers';
 
-//
-
 import ActivitiesProvider from './components/Activities/ActivitiesProvider';
 import AlertsProvider from './components/Alerts/AlertsProvider';
 import Auth0Login from './components/Auth0Login';
-import AzureLogin from './components/AzureLogin';
-import ForgotPassword from './components/AzureLogin/ForgotPassword';
-import SignUpCard from './components/AzureLogin/SignUpCard';
 import BulkUpload from './components/BulkUpload/BulkUpload';
 import ContactDetailsProvider from './components/ContactDetailCard/ContactDetailsProvider';
 import ContactDetailedInfoProvider from './components/ContactDetailedInfo/ContactDetailedInfoProvider';
@@ -46,25 +43,26 @@ import { history } from './store';
 
 const PrivateRoute = ({ component, ...options }) => {
 	const user = globalStateController.getValue('user');
-	globalStateController.useState(['bypassLogin', 'bypassType']);
 	const { isAuthenticated } = useAuth0();
+
+	globalStateController.useState(['tenant']);
 
 	const userSessionIsLoaded = useSelector(({ session }) => session.isLoaded);
 	const apolloClient = useApolloClient();
 
-	if (user && Date.parse(user.authTokenExpires) < Date.now()) {
+	if (user && simpleAuthBypass && Date.parse(user.authTokenExpires) < Date.now()) {
 		UserSession.deleteSession();
 	}
 
 	const finalComponent =
 		user &&
-		(Date.parse(user.authTokenExpires) > Date.now() || (globalStateController.isAuth0Bypass() && isAuthenticated)) &&
+		((simpleAuthBypass && Date.parse(user.authTokenExpires) > Date.now()) || (!simpleAuthBypass && isAuthenticated)) &&
 		apolloClient &&
 		userSessionIsLoaded
 			? component
-			: globalStateController.isAuth0Bypass()
+			: !simpleAuthBypass && globalStateController.getValue('tenant')
 				? Auth0Login
-				: AzureLogin;
+				: LoginCard;
 
 	return (
 		<div>
@@ -86,10 +84,8 @@ function App() {
 								path={['/', '/map/:type/:paramId', '/map/:type/:paramId/:lati/:longi']}
 								component={MapProvider}
 							/>
-							<Route exact path="/signup" component={SignUpCard} />
-							<Route exact path="/forgotpassword" component={ForgotPassword} />
 							<PrivateRoute path="/flow" component={TransactProvider} />
-							<PrivateRoute exact path="/documents" component={DocumentProvider} />
+							<PrivateRoute path="/documents" component={DocumentProvider} />
 							<PrivateRoute exact path="/documents/:documentId/view" component={DocumentProvider} />
 							<PrivateRoute path="/calendar" component={ActivitiesProvider} />
 							<PrivateRoute exact path="/title" component={TitleOpinionProvider} />

@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 
-import ExportOwnersAndContacts from 'components/Shared/ExportOwnerAndContacts';
 import RecalculateSlideout from 'components/Common/RecalculateSlideout';
+import ExportOwnersAndContacts from 'components/Shared/ExportOwnerAndContacts';
 
 import { tableGlobalController } from 'stateManagement/tableController';
 

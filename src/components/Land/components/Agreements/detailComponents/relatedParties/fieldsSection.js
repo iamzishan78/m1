@@ -14,7 +14,6 @@ import {
 	Popover,
 	List,
 	ListItem,
-	Typography,
 } from '@material-ui/core';
 import { DeleteOutline as DeleteIcon, MoreVert as MoreVertIcon } from '@material-ui/icons';
 import AddIcon from '@material-ui/icons/Add';
@@ -23,20 +22,21 @@ import { makeStyles } from '@material-ui/styles';
 
 import { useMutation } from '@apollo/client';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import PropTypes from 'prop-types';
 import { v4 as uuid } from 'uuid';
 
 import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';
 import Comments from 'components/Shared/Comments';
-import AutoComplete from 'components/Shared/components/Fields/AutoComplete';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 
-import { UPSERT_CONTACT_RELATED_AGREEMENT, UPSERT_RELATED_PARTY } from 'graphQL/useMutationRelatedParty';
+import { UPSERT_CONTACT_RELATED_AGREEMENT } from 'graphQL/useMutationRelatedParty';
 
 import { copy } from 'utils/helper';
 
 import { useStyles as customStyles } from '../style';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	icons: {
 		backgroundColor: 'transparent',
 		marginLeft: 'auto',
@@ -116,7 +116,6 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 			}
 			setFields(parties);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [relatedParties]);
 
 	useEffect(() => {
@@ -153,56 +152,37 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 			<Grid container display="flex" direction="row">
 				<Grid id="rp-row-container" item xs={12} display="flex" style={{ margin: '20px 0px 35px' }}>
 					{fields.map((item, index) => (
-						<Grid item xs={12} onMouseEnter={() => setHoverParty(index)} onMouseLeave={() => setHoverParty(-1)}>
+						<Grid
+							item
+							xs={12}
+							key={item?._id}
+							onMouseLeave={() => setHoverParty(-1)}
+							onMouseEnter={() => setHoverParty(index)}
+						>
 							<Grid container className={customClasses.gridStyle}>
 								<Grid item xs={1} style={{ display: 'flex' }}>
 									<div className={customClasses.fieldLabel}>Party {index + 1}</div>
 								</Grid>
 								<Grid item xs={4}>
-									<AutoComplete
-										debug
-										defaultValue={item.type ?? ''}
-										value={item.type ?? ''}
-										options={partyTypes}
-										getOptionSelected={(option, value) => {
-											return option === value;
+									<CustomAutoComplete
+										fieldConfig={{
+											variant: 'outlined',
+											margin: 'dense',
 										}}
-										onChange={value => {
-											if (!value || typeof value === 'string') {
-												handleUpdateParty({ type: value }, index);
-											} else {
-												setPartyTypes([...partyTypes, value.value]);
-												handleUpdateParty({ type: value.value }, index);
-											}
+										fieldAttributes={{
+											value: item.type ?? '',
+											optionArray: partyTypes,
 										}}
-										renderOption={option => {
-											if (option.id === 'newEntity') {
-												return <Typography style={{ color: 'midnightblue' }}>Add '{option.value}'</Typography>;
-											}
-
-											return (
-												<Grid container spacing={0}>
-													<Grid container item xs={12} alignItems="center">
-														<Grid item xs>
-															<Typography variant="body2" color="textSecondary">
-																{option}
-															</Typography>
-														</Grid>
-													</Grid>
-												</Grid>
-											);
+										fieldEvents={{
+											onChange: ({ value }) => {
+												if (!value || typeof value === 'string') {
+													handleUpdateParty({ type: value }, index);
+												} else {
+													setPartyTypes([...partyTypes, value.value]);
+													handleUpdateParty({ type: value.value }, index);
+												}
+											},
 										}}
-										renderInput={params1 => (
-											<TextField
-												margin="dense"
-												{...params1}
-												variant="outlined"
-												InputLabelProps={{
-													...params1.InputLabelProps,
-													shrink: true,
-												}}
-											/>
-										)}
 									/>
 								</Grid>
 								<Grid item xs={5} style={{ paddingLeft: '20px' }}>
@@ -351,8 +331,8 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 				<Dialog
 					open={openCommentsDialog.state ? true : false}
 					onClose={() => setCommentsDialog(null)}
-					fullWidth={false}
-					maxWidth
+					fullWidth={true}
+					maxWidth="sm"
 				>
 					{openCommentsDialog && (
 						<Comments
@@ -360,7 +340,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 							targetSourceId={openCommentsDialog.targetSourceId}
 							targetLabel="contact"
 							refetchQueries={['getRelatedParties']}
-							placeholder={"Add a question or post an update"}
+							placeholder={'Add a question or post an update'}
 							isSaveAllowed={true}
 							isHelperTextAllow={false}
 						/>
@@ -370,3 +350,11 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 		</>
 	);
 }
+
+FieldsSection.propTypes = {
+	relatedParties: PropTypes.array,
+	agreementId: PropTypes.string,
+	agreementName: PropTypes.string,
+	agreementNumber: PropTypes.string,
+	partiesLoading: PropTypes.bool,
+};

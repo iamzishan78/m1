@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { Views } from 'react-big-calendar';
 
 import Button from '@material-ui/core/Button';
@@ -10,13 +10,15 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import moment from 'moment';
+import PropTypes from 'prop-types';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { AppContext } from 'AppContext';
 
-const useToolbarStyles = makeStyles(theme => ({
+const useToolbarStyles = makeStyles(() => ({
 	root: {
 		padding: '16px',
 		display: 'flex',
@@ -123,15 +125,12 @@ const ActivitiesToolbar = ({
 	view,
 	obligationOptions,
 	setView,
-	mongoUsers,
 	activities,
-	operatorList,
 	type = 'Activity',
 	...toolbar
 }) => {
 	const classes = useToolbarStyles();
 	const [stateApp] = useContext(AppContext);
-	const [selectedObligationType, setObligationType] = useState({ label: 'All', value: 'all' });
 
 	const goToBack = () => {
 		setSelectedDate(state => {
@@ -278,82 +277,86 @@ const ActivitiesToolbar = ({
 			<div className={classes.left}>
 				<div className={classes.filterByTypeDisplay}>
 					{type === 'Activity' && (
-						<Autocomplete
-							id="activityFilterByType"
-							options={filteredActivityTypesOptions}
-							getOptionLabel={option => option.label}
-							style={{ width: 220 }}
-							size="small"
-							defaultValue={filteredActivityTypesOptions.find(o => o.value === activityFilterByType)}
-							value={filteredActivityTypesOptions.find(o => o.value === activityFilterByType)}
-							onChange={(_, value) => {
-								setActivityFilterByType(value?.value ?? 'all');
+						<CustomAutoComplete
+							fieldConfig={{
+								size: 'small',
+								variant: 'outlined',
 							}}
-							renderInput={params => (
-								<TextField {...params} label="Activity Type" variant="outlined" value={activityFilterByType} />
-							)}
+							fieldAttributes={{
+								label: 'Activity Type',
+								optionArray: filteredActivityTypesOptions,
+								defaultValue: filteredActivityTypesOptions.find(o => o.value === activityFilterByType),
+								value: filteredActivityTypesOptions.find(o => o.value === activityFilterByType),
+							}}
+							fieldEvents={{
+								onChange: ({ value }) => {
+									setActivityFilterByType(value ?? 'all');
+								},
+							}}
+							style={{ width: 220 }}
 						/>
 					)}
 					{type === 'Obligation' && (
-						<Autocomplete
-							id="obligationType"
-							options={filteredActivityTypesOptions}
-							getOptionLabel={option => option.label}
-							style={{ width: 220 }}
-							size="small"
-							defaultValue={filteredActivityTypesOptions.find(o => o.value === activityFilterByType)}
-							value={filteredActivityTypesOptions.find(o => o.value === activityFilterByType)}
-							onChange={(_, value) => {
-								setActivityFilterByType(value?.value ?? 'all');
+						<CustomAutoComplete
+							fieldConfig={{
+								size: 'small',
+								variant: 'outlined',
 							}}
-							renderInput={params => <TextField {...params} label="Obligation Type" variant="outlined" />}
+							fieldAttributes={{
+								label: 'Obligation Type',
+								optionArray: filteredActivityTypesOptions,
+								defaultValue: filteredActivityTypesOptions.find(o => o.value === activityFilterByType),
+								value: filteredActivityTypesOptions.find(o => o.value === activityFilterByType),
+							}}
+							fieldEvents={{
+								onChange: ({ value }) => {
+									setActivityFilterByType(value ?? 'all');
+								},
+							}}
+							style={{ width: 220 }}
 						/>
 					)}
 				</div>
 				<div className={classes.filterByTypeDisplay}>
-					<Autocomplete
-						id="activityFilterByOwner"
-						options={acitvityOwnerOptions}
-						getOptionLabel={option => option.label}
-						style={{ width: 220 }}
-						size="small"
-						defaultValue={acitvityOwnerOptions.find(u => u.value === activityFilterByOwner)}
-						value={acitvityOwnerOptions.find(u => u.value === activityFilterByOwner)}
-						onChange={(_, value) => {
-							setActivityFilterByOwner(value?.value ?? 'all');
+					<CustomAutoComplete
+						fieldConfig={{
+							size: 'small',
+							variant: 'outlined',
 						}}
-						renderInput={params => (
-							<TextField
-								{...params}
-								label={type === 'Obligation' ? 'Assigned To' : 'Owner'}
-								variant="outlined"
-								value={activityFilterByOwner}
-							/>
-						)}
+						fieldAttributes={{
+							label: type === 'Obligation' ? 'Assigned To' : 'Owner',
+							optionArray: acitvityOwnerOptions,
+							defaultValue: acitvityOwnerOptions.find(u => u.value === activityFilterByOwner),
+							value: acitvityOwnerOptions.find(u => u.value === activityFilterByOwner),
+						}}
+						fieldEvents={{
+							onChange: ({ value }) => {
+								setActivityFilterByOwner(value ?? 'all');
+							},
+						}}
+						style={{ width: 220 }}
 					/>
 				</div>
 
 				{type === 'Obligation' && (
 					<div className={classes.filterByTypeDisplay}>
-						<Autocomplete
-							id="activityFilterByResponsibleParty"
-							options={responsiblePartyOptions}
-							getOptionLabel={option => option.label}
-							style={{ width: 220 }}
-							size="small"
-							defaultValue={responsiblePartyOptions.find(u => u.value === activityFilterByResponsibleParty)}
-							value={responsiblePartyOptions.find(u => u.value === activityFilterByResponsibleParty)}
-							onChange={(_, value) => {
-								setActivityFilterByResponsibleParty(value?.value ?? 'all');
+						<CustomAutoComplete
+							fieldConfig={{
+								size: 'small',
+								variant: 'outlined',
 							}}
-							renderInput={params => (
-								<TextField
-									{...params}
-									label="Responsible Party"
-									variant="outlined"
-									value={activityFilterByResponsibleParty}
-								/>
-							)}
+							fieldAttributes={{
+								label: 'Responsible Party',
+								optionArray: responsiblePartyOptions,
+								defaultValue: responsiblePartyOptions.find(u => u.value === activityFilterByResponsibleParty),
+								value: responsiblePartyOptions.find(u => u.value === activityFilterByResponsibleParty),
+							}}
+							fieldEvents={{
+								onChange: ({ value }) => {
+									setActivityFilterByResponsibleParty(value ?? 'all');
+								},
+							}}
+							style={{ width: 220 }}
 						/>
 					</div>
 				)}
@@ -432,6 +435,44 @@ const ActivitiesToolbar = ({
 			</div>
 		</div>
 	);
+};
+
+ActivitiesToolbar.propTypes = {
+	activityFilterByType: PropTypes.string,
+	setActivityFilterByType: PropTypes.func,
+	activityFilterByTime: PropTypes.string,
+	setActivityFilterByTime: PropTypes.func,
+	activityFilterByOwner: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	setActivityFilterByOwner: PropTypes.func,
+	activityFilterByResponsibleParty: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	setActivityFilterByResponsibleParty: PropTypes.func,
+	setSelectedDate: PropTypes.func,
+	selectedDate: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.object, // Date or Moment
+	]),
+	view: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	obligationOptions: PropTypes.arrayOf(
+		PropTypes.shape({
+			label: PropTypes.string,
+			value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		})
+	),
+	setView: PropTypes.func,
+	mongoUsers: PropTypes.array, // Could be refined if user shape is known
+	activities: PropTypes.arrayOf(
+		PropTypes.shape({
+			ownerId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+			ownerName: PropTypes.string,
+			dateTime: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+			type: PropTypes.string,
+			responsibleParty: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		})
+	),
+	operatorList: PropTypes.array,
+	type: PropTypes.string,
+	// Accept any additional toolbar props
+	toolbar: PropTypes.object,
 };
 
 export default ActivitiesToolbar;

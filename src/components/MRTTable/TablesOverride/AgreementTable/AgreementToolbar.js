@@ -4,10 +4,10 @@ import { Button, ButtonGroup } from '@material-ui/core';
 
 import MetaFieldList from 'components/MRTTable/Common/MetaData/MetaFieldList';
 
-import MetaField from 'utils/MetaField';
-
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableController } from 'stateManagement/tableController';
+
+import MetaField from 'utils/MetaField';
 
 function AgreementToolBar({ table, tableKey }) {
 	const Controller = tableController(tableKey);

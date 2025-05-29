@@ -181,7 +181,6 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 											size="small"
 											htmlColor="#fff"
 											onClick={() => {
-												setData(defaultData);
 												setSearch('');
 											}}
 										>

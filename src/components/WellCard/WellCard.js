@@ -16,13 +16,11 @@ import Typography from '@material-ui/core/Typography';
 
 import { useLazyQuery } from '@apollo/client';
 
+import { globalStateController } from 'stateManagement/globalStateController';
 import { popupController } from 'stateManagement/popupStateController';
 
 import { WellCardContext } from './WellCardContext';
-import { AppContext } from '../../AppContext';
 import { ExpandableCardContext } from '../ExpandableCard/ExpandableCardContext';
-
-//custom components
 import OwnershipIcon from './components/svgIcons/OwnershipIcon';
 import ProductionIcon from './components/svgIcons/ProductionIcon';
 import WellIcon from './components/svgIcons/WellIcon';
@@ -31,7 +29,7 @@ import { WELLSUMMARYDETAILQUERY } from '../../graphQL/useQueryWellSummaryDetail'
 import convert_date from '../Shared/valueformatters/convert_date.js';
 import formatBOE from '../Shared/valueformatters/format_boe.js';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	card: {
 		borderStyle: 'none',
 		height: '100%',
@@ -98,7 +96,6 @@ const useStyles = makeStyles(theme => ({
 		padding: '5px',
 		alignContent: 'center',
 		background: '#F6F6F6',
-		border: '0px',
 	},
 	cell2: {
 		border: '0px',
@@ -142,8 +139,6 @@ const useStyles = makeStyles(theme => ({
 const wellCardHeight = 'calc(94vh - 20px)';
 
 function WellCard() {
-	// context
-	const [stateApp] = useContext(AppContext);
 	const [stateExpandableCard] = useContext(ExpandableCardContext);
 	const [, setStateWellCard] = useContext(WellCardContext);
 
@@ -156,6 +151,7 @@ function WellCard() {
 	// queries
 	const [getWellSummaryDetail, { data: dataWellSummary }] = useLazyQuery(WELLSUMMARYDETAILQUERY);
 
+	const { user } = globalStateController.useState(['user']);
 	const { selectedWell, stateValues } = popupController.useState(['expandedCard', 'selectedWell']);
 
 	const { selectedWell: selectedWellVal } = stateValues;
@@ -163,20 +159,22 @@ function WellCard() {
 	useEffect(() => {
 		if (!source) {
 			setSource({
-				sourceId: stateApp.user.id,
+				sourceId: user.id,
 				label: 'user',
-				name: stateApp.user.name,
+				name: user.name,
 				type: 'vertex',
 				properties: [],
 			});
 		}
-	}, [stateApp.user, source]);
+	}, [user?.id, source]);
 
 	useEffect(() => {
-		getWellSummaryDetail({
-			variables: { id: selectedWellVal.id },
-		});
-	}, [selectedWell]);
+		if (selectedWell?.id) {
+			getWellSummaryDetail({
+				variables: { id: selectedWellVal.id },
+			});
+		}
+	}, [selectedWell?.id]);
 
 	useEffect(() => {
 		if (dataWellSummary) {

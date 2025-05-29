@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
+
 import { TextField, Switch, Button, Typography, makeStyles } from '@material-ui/core';
-import DialpadIntegrationIcon from 'components/Shared/svgIcons/dialpad-integration';
+
 import { Grid } from '@mui/material';
-import { EXTERNAL_TOOL_EXISTS } from 'graphQL/useQueryExternalToolExists';
+
 import { useLazyQuery } from '@apollo/client';
+
+import DialpadIntegrationIcon from 'components/Shared/svgIcons/dialpad-integration';
+
+import { EXTERNAL_TOOL_EXISTS } from 'graphQL/useQueryExternalToolExists';
 
 const useStyles = makeStyles(() => ({
 	textField: {

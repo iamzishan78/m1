@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -10,14 +11,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { extractValueRecursively } from 'components/MRTTable/utils/helper';
-import { useDispatch } from 'react-redux';
-import { showErrorMessage } from 'actions';
-import { AppContext } from 'AppContext';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
-
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 
@@ -26,6 +24,9 @@ import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { sideDialogController } from 'stateManagement/sideDialogController';
 import { tableGlobalController } from 'stateManagement/tableController';
+
+import { showErrorMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	dialogContent: {
@@ -71,10 +72,9 @@ export default function AddContactDialogContent(props) {
 	const [stateApp] = React.useContext(AppContext);
 	const Controller = sideDialogController('contactDialog');
 	const formState = Controller.useCompleteState();
-	const formStateValues = formState?.get({ noproxy: true });
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 	const dispatch = useDispatch();
 
 	const { control, reset, getValues, setValue, watch } = useForm();
@@ -115,16 +115,22 @@ export default function AddContactDialogContent(props) {
 			...contactFormValues,
 		});
 
+		const updatedFormStateValues = Controller.getAllValues();
+
 		// got required contact values
 		const contact = extractValueRecursively({
-			...formStateValues,
-			ownerType: formStateValues?.ownerType ? formStateValues?.ownerType?.value : null,
+			...updatedFormStateValues,
+			ownerType: updatedFormStateValues?.ownerType ?? null,
 			createBy: getUser?._id,
 			lastUpdateBy: getUser?._id,
 		});
-		addContact({
-			variables: { contact },
-			refetchQueries: ['getPaginatedContacts', 'getContact', 'getESContacts', 'getESSimpleSearch'],
+
+		// eslint-disable-next-line no-unused-vars
+		const { DialogKey, ...filteredContact } = contact;
+
+		await addContact({
+			variables: { contact: filteredContact },
+			refetchQueries: ['getPaginatedContacts', 'getContact', 'getESContacts', 'getDbData'],
 			awaitRefetchQueries: true,
 		});
 		tableGlobalController.refetch();
@@ -190,3 +196,7 @@ export default function AddContactDialogContent(props) {
 		</RightDialog>
 	);
 }
+
+AddContactDialogContent.propTypes = {
+	onClose: PropTypes.func.isRequired,
+};

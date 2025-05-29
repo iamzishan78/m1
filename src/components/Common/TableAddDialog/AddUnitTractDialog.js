@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
 
 import { Box, CircularProgress, Dialog, Typography } from '@material-ui/core';
@@ -131,6 +132,7 @@ function AddUnitTractDialog(props) {
 					'legalDescription',
 					'basin',
 					'field',
+					'unitTractId',
 				])
 			);
 		}
@@ -276,57 +278,74 @@ function AddUnitTractDialog(props) {
 							setSelectedShapeLayer={setSelectedShapeLayer}
 							register={register}
 							control={control}
+							watch={watch}
 						/>
 
 						<Controller
-							as={TextField}
 							control={control}
-							variant="outlined"
-							margin="dense"
 							name="shapeArea"
-							label={'Tract Calc. Acres'}
-							InputLabelProps={{ shrink: true }}
-							fullWidth
 							disabled
 							defaultValue={tract?.shapeArea || ''}
+							render={({ field }) => (
+								<TextField
+									{...field}
+									variant="outlined"
+									margin="dense"
+									label={'Tract Calc. Acres'}
+									InputLabelProps={{ shrink: true }}
+									fullWidth
+								/>
+							)}
 						/>
 
 						<Controller
-							as={TextField}
 							control={control}
-							variant="outlined"
-							margin="dense"
 							name="sdGrossAcres"
-							label={'Tract Gross Acres'}
-							InputLabelProps={{ shrink: true }}
-							fullWidth
-							disabled
 							defaultValue={tract?.sdGrossAcres || ''}
+							disabled
+							render={({ field }) => (
+								<TextField
+									{...field}
+									variant="outlined"
+									margin="dense"
+									label={'Tract Gross Acres'}
+									InputLabelProps={{ shrink: true }}
+									fullWidth
+								/>
+							)}
 						/>
 
 						<Controller
-							as={TextField}
 							control={control}
-							variant="outlined"
-							margin="dense"
 							name="unitTractId"
-							label={'Unit Tract ID'}
-							InputLabelProps={{ shrink: true }}
-							fullWidth
-							onWheel={e => e.target.blur()}
+							render={({ field }) => (
+								<TextField
+									{...field}
+									variant="outlined"
+									margin="dense"
+									label={'Unit Tract ID'}
+									InputLabelProps={{ shrink: true }}
+									fullWidth
+									onWheel={e => e.target.blur()}
+								/>
+							)}
 						/>
 
 						<Controller
-							as={TextField}
 							control={control}
-							variant="outlined"
-							margin="dense"
 							name="uAcres"
-							label={'Unit Tract Acres'}
-							InputLabelProps={{ shrink: true }}
-							type="number"
-							fullWidth
-							onWheel={e => e.target.blur()}
+							render={({ field }) => (
+								<TextField
+									{...field}
+									variant="outlined"
+									margin="dense"
+									label={'Unit Tract Acres'}
+									InputLabelProps={{ shrink: true }}
+									type="number"
+									fullWidth
+									onWheel={e => e.target.blur()}
+								/>
+							)}
 						/>
 					</div>
 
@@ -363,5 +382,22 @@ function AddUnitTractDialog(props) {
 		</>
 	);
 }
+
+AddUnitTractDialog.propTypes = {
+	open: PropTypes.bool.isRequired,
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	shapeId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	shapeType: PropTypes.string,
+	seletedTract: PropTypes.shape({
+		_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		parcel: PropTypes.shape({
+			_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+			name: PropTypes.string,
+		}),
+		parcelId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		name: PropTypes.string,
+	}),
+	onClose: PropTypes.func.isRequired,
+};
 
 export default AddUnitTractDialog;

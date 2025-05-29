@@ -2,7 +2,7 @@ import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import { slidoutState } from 'stateManagement/initialStates';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import DialogContent from './DialogContent';
 import Drawer from './Drawer';
@@ -12,11 +12,12 @@ const useStyles = makeStyles(theme => ({
 		overflowY: 'overlay',
 		overflowX: 'hidden',
 		marginRight: selectedActivity ? '60px' : '0px',
+		flexGrow: 1,
 	}),
 }));
 
 function Dialog() {
-	const selectedActivity = slidoutState.selectedActivity.get({ noproxy: true });
+	const { selectedActivity } = slidoutStateController.useState(['selectedActivity']);
 	const classes = useStyles({ selectedActivity });
 
 	return (

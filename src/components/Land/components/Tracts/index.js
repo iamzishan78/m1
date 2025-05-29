@@ -78,7 +78,7 @@ const Tracts = () => {
 				<AnalyticsCards
 					parent="Tracts"
 					esIndex={esIndex[selectedTab]}
-					esFilters={[...tableStateValues.defaultFilters, ...tableStateValues?.filters] || []}
+					esFilters={[...tableStateValues.defaultFilters, ...tableStateValues.filters]}
 					totalCount={tableStateValues?.data?.rows?.length ? tableStateValues?.data?.total : 0}
 					cardsDefault={cardsDefault}
 					searchQuery={searchQuery}

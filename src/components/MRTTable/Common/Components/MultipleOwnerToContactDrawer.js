@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Controller, useForm } from 'react-hook-form';
 
 import {
@@ -30,13 +31,14 @@ import CampaignField from 'components/ContactDetailCard/components/FieldContent/
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
-import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import { copy, setStateIfDeepEqual } from 'components/Shared/functions';
 import Tags from 'components/Shared/Tagger';
 
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 import { globalStateController } from 'stateManagement/globalStateController';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
@@ -365,7 +367,7 @@ const MultipleOwnerToContactDrawer = ({
 									control={control}
 									name="contactStatus"
 									defaultValue={contactStatusOptions[0].value}
-									render={props => (
+									render={({ field }) => (
 										<Select
 											styles={{
 												menu: provided => ({ ...provided, zIndex: 9999 }),
@@ -373,7 +375,7 @@ const MultipleOwnerToContactDrawer = ({
 											value={contactStatus}
 											menuPlacement="auto"
 											onChange={e => {
-												props.onChange(e.target.value);
+												field.onChange(e.target.value);
 											}}
 											className={classes.fullWidth}
 											isDisabled={globalStateValues.selectedMeta}
@@ -387,18 +389,25 @@ const MultipleOwnerToContactDrawer = ({
 							</div>
 							<div className={classes.field}>
 								<label className={classes.bold}>Contact Owner</label>
-								<Controller
+								<CustomAutoComplete
 									control={control}
-									name="contactOwner"
-									render={props => (
-										<ContactAutoComplete
-											value={contactOwner}
-											contactValue="email"
-											onChange={(e, user) => {
-												props.onChange(user.value);
-											}}
-										/>
-									)}
+									watch={watch}
+									fieldAttributes={{
+										name: 'contactOwner',
+										value: contactOwner,
+										placeholder: 'Select Contact Owner',
+										query: GETMONGOUSERS,
+										getOptions: hits =>
+											hits.data.allMongoUsers
+												.map(user => ({
+													_id: user.email,
+													name: user.displayName || user.name,
+												}))
+												.filter(user => user.name),
+									}}
+									fieldConfig={{
+										size: 'medium',
+									}}
 								/>
 							</div>
 							<div className={classes.field}>
@@ -406,13 +415,13 @@ const MultipleOwnerToContactDrawer = ({
 								<Controller
 									control={control}
 									name="campaigns"
-									render={params => (
+									render={({ field }) => (
 										<CampaignField
-											{...params}
-											value={params.value}
+											{...field}
+											value={field.value}
 											className={classes.maxWidth}
 											onChange={values => {
-												params.onChange(values);
+												field.onChange(values);
 												setCampaigns(values.map(val => ({ ...val, id: val._id })));
 											}}
 											fullWidth
@@ -476,6 +485,24 @@ const MultipleOwnerToContactDrawer = ({
 			)}
 		</RightDialog>
 	);
+};
+
+MultipleOwnerToContactDrawer.propTypes = {
+	onClose: PropTypes.func.isRequired,
+	rows: PropTypes.arrayOf(
+		PropTypes.shape({
+			id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+			_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+			name: PropTypes.string,
+			OwnerName: PropTypes.string,
+			isEntity: PropTypes.bool,
+		})
+	).isRequired,
+	setRows: PropTypes.func.isRequired,
+	getContactCampaignAction: PropTypes.func.isRequired,
+	convertMultipleOwnerToContactAction: PropTypes.func.isRequired,
+	jobName: PropTypes.string,
+	jobType: PropTypes.string,
 };
 
 export default MultipleOwnerToContactDrawer;

@@ -3,8 +3,16 @@ import Avatar from 'react-avatar';
 import { useHistory } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
 
-import { Grid, Typography } from '@material-ui/core';
-import { CircularProgress, Menu, MenuItem, TextField, InputAdornment, IconButton } from '@material-ui/core';
+import {
+	Grid,
+	Typography,
+	CircularProgress,
+	Menu,
+	MenuItem,
+	TextField,
+	InputAdornment,
+	IconButton,
+} from '@material-ui/core';
 import CardHeader from '@material-ui/core/CardHeader';
 import List from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
@@ -12,8 +20,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Tooltip from '@material-ui/core/Tooltip';
-import { LocalAtm } from '@material-ui/icons';
-import { DescriptionOutlined } from '@material-ui/icons';
+import { LocalAtm, DescriptionOutlined } from '@material-ui/icons';
 import ClearIcon from '@material-ui/icons/Clear';
 import FolderIcon from '@material-ui/icons/Folder';
 import ContactIcon from '@material-ui/icons/Group';
@@ -231,7 +238,6 @@ const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) 
 										size="small"
 										htmlColor="#fff"
 										onClick={() => {
-											setNotifications(defaultData);
 											setSearch('');
 										}}
 									>
@@ -289,7 +295,7 @@ const Notifications = () => {
 	const [tab, setTab] = useState(0);
 	const [copyData, setCopyData] = useState([]);
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const [archiveAllMentions] = useMutation(ARCHIVE_ALL_MUTATIONS);
 	const [updateNotificationStatus] = useMutation(UPDATE_NOTIFICATION_STATUS);

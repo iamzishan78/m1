@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState, Fragment, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { IconButton, TextField, withStyles, Typography, Grid } from '@material-ui/core';
@@ -11,7 +11,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
 import { BlockBlobClient } from '@azure/storage-blob';
 import _ from 'lodash';
 import loadashFilter from 'lodash/filter';
@@ -19,22 +19,24 @@ import PropTypes from 'prop-types';
 
 import Loader from 'components/Loaders';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
-import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
-import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import { UPDATE_DOCUMENT, UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocument';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
-import { CREATED_STATUS, ONE_MB } from 'utils/consts';
-
-import { showErrorMessage } from 'actions';
+import { formStateController } from 'stateManagement/formStateController';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
-import { createViewStateController, initialState } from './AddAndEditController';
+import { CREATED_STATUS, ONE_MB } from 'utils/consts';
+import { convertFile } from 'utils/tesseractHelper';
+
+import { showErrorMessage } from 'actions';
+
 import UploadZone from './UploadZone';
 
 const filter = createFilterOptions();
@@ -195,7 +197,9 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	const dispatch = useDispatch();
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
+
+	const client = useApolloClient();
 
 	const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(DOCUMENT_TYPE, {
 		fetchPolicy: 'no-cache',
@@ -212,9 +216,8 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 
 	const [updateDocument] = useMutation(UPDATE_DOCUMENT);
 
-	const formController = createViewStateController(tableKey);
-	const formState = formController.useCompleteState();
-	const formStateValues = formState?.get({ noproxy: true });
+	const formState = formStateController.useCompleteState();
+	const formStateValues = formState;
 
 	const tableState = tableController(tableKey).useState(['TableSchema', 'columnVisibility']);
 	const tableStateValues = tableState.stateValues;
@@ -224,9 +227,12 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		return filteredColumns[accessorKey] === true && obj?.isCustom;
 	});
 
-	const [fileUpload, setFileUpload] = useState({ upload: false, fileExtension: null, fileInformation: '' });
 	const [inputFile, setInputFile] = useState(null);
 	const [fileDownload, setFileDownload] = useState(false);
+
+	const setFileUpload = useCallback(fileUpload => {
+		formStateController.updateState({ fileUpload });
+	}, []);
 
 	useEffect(() => {
 		if (selectedDocument?._id || fileDownload) {
@@ -238,8 +244,11 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		if (viewFilesResult && !fileDownload) {
 			let fileInformation = viewFilesResult?.viewFiles[0];
 			const splittedStrings = fileInformation?.name?.split('.');
-			let docExtention = splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
-			setFileUpload({ upload: true, fileExtension: docExtention, fileInformation });
+			const isFileExist = selectedDocument?.url?.trim() ? false : true;
+			let docExtention = selectedDocument?.url?.trim()
+				? null
+				: splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
+			setFileUpload({ upload: isFileExist, fileExtension: docExtention, fileInformation });
 		}
 
 		if (fileDownload) {
@@ -264,6 +273,20 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 			const MBS = 4;
 
 			if (file_id) {
+				const documentDialog = tableGlobalController.getValue('documentDialog');
+
+				if (!documentDialog.selectedRow?._id) {
+					tableGlobalController.updateState({
+						documentDialog: {
+							...documentDialog,
+							selectedRow: {
+								...documentDialog.selectedRow,
+								_id: file_id,
+							},
+						},
+					});
+				}
+
 				const blockBlobClient = new BlockBlobClient(uri);
 				blockBlobClient
 					.uploadBrowserData(inputFile, {
@@ -278,62 +301,41 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 					.then(res => {
 						if (res?._response?.status !== CREATED_STATUS) {
 							dispatch(showErrorMessage('Upload failed'));
+							return;
 						}
+
+						if (formStateValues.fileUpload.fileExtension !== 'pdf') {
+							return;
+						}
+
+						convertFile(formStateValues.fileUpload.fileInformation, (texts, error) => {
+							if (error) {
+								return;
+							}
+
+							client
+								.mutate({
+									mutation: UPDATE_PDF_TEXTS,
+									variables: {
+										fileId: file_id,
+										pageTexts: texts.map((text, index) => ({ text, page: index + 1 })),
+									},
+								})
+								.then(() => {
+									tableGlobalController.refetch();
+								});
+						});
 					})
 					.catch(err => console.log(err));
-
-				delete formStateValues.tableKey;
-				const document = {
-					...formStateValues,
-					fileId: file_id,
-				};
-
-				Loader.createToast('DocumentUpdating', 'Document Updating in Progress');
-				updateDocument({
-					variables: {
-						document,
-					},
-					refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
-					awaitRefetchQueries: true,
-				}).then(res => {
-					if (res?.data?.updateDocumentFile) {
-						const { success, message } = res.data.updateDocumentFile;
-						if (success) {
-							Loader.successToast('DocumentUpdating', message);
-						} else {
-							Loader.errorToast('DocumentUpdating', message);
-						}
-					} else {
-						Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
-					}
-
-					tableGlobalController.refetch();
-				});
-
-				handleClose();
 			}
 		}
 	}, [addFileData]);
 
-	useEffect(() => {
-		let fieldsValue = {};
-		if (selectedDocument) {
-			fieldsValue = _.pick(selectedDocument, Object.keys(initialState));
-		}
-		formController?.initialize(tableKey, fieldsValue);
-
-		return () => {
-			formController?.reset();
-		};
-	}, []);
-
 	const uploadFile = () => {
-		Loader.createToast('FileUploading', 'File Uploading in Progress');
-
-		setInputFile(fileUpload?.fileInformation);
+		setInputFile(formStateValues.fileUpload?.fileInformation);
 		addFile({
 			variables: {
-				fileName: fileUpload?.fileInformation?.name,
+				fileName: formStateValues.fileUpload?.fileInformation?.name,
 				userId: getUser?._id,
 				// relatedObjectId: null,
 				// relatedObjectType: null,
@@ -354,6 +356,12 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 			}
 		});
 	};
+
+	useEffect(() => {
+		if (formStateValues.fileUpload && formStateValues.fileUpload.upload) {
+			uploadFile();
+		}
+	}, [formStateValues.fileUpload]);
 
 	const replaceFile = fileIdToDelete => {
 		Loader.createToast('ReplaceFile', 'File Deletion in Progress');
@@ -387,7 +395,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 					flexGrow: 1,
 					overflow: 'auto',
 					minHeight: '2em',
-					maxHeight: 'calc(100vh - 310px)',
+					maxHeight: 'calc(100vh - 400px)',
 				}}
 			>
 				<List>
@@ -399,7 +407,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							multiline
 							value={formStateValues?.documentNumber}
 							onChange={e => {
-								formState?.documentNumber?.set(e.target.value);
+								formStateController.updateState({ documentNumber: e.target.value });
 							}}
 						/>
 					</ListItem>
@@ -411,7 +419,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							multiline
 							value={formStateValues?.documentName}
 							onChange={e => {
-								formState?.documentName?.set(e.target.value);
+								formStateController.updateState({ documentName: e.target.value });
 							}}
 						/>
 					</ListItem>
@@ -427,17 +435,22 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								} else if (value?.name) {
 									documentType = value.name;
 								}
-								formState?.documentType?.set(documentType);
+								formStateController.updateState({ documentType });
 							}}
 							value={formStateValues?.documentType}
 						/>
 					</ListItem>
 					<ListItem className={classes.listItem}>
 						<h4>File Date</h4>
-						<GenericDateField
-							value={formStateValues?.dateTime}
-							onChange={value => {
-								formState?.dateTime?.set(value);
+						<CustomDatePicker
+							fieldAttributes={{ value: formStateValues?.dateTime }}
+							fieldEvents={{
+								onChange: value => {
+									formStateController.updateState({ dateTime: value });
+								},
+							}}
+							fieldConfig={{
+								variant: 'standard',
 							}}
 						/>
 					</ListItem>
@@ -455,7 +468,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								multiline
 								value={formStateValues?.book}
 								onChange={e => {
-									formState?.book?.set(e.target.value);
+									formStateController.updateState({ book: e.target.value });
 								}}
 							/>
 						</div>
@@ -472,7 +485,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								multiline
 								value={formStateValues?.page}
 								onChange={e => {
-									formState?.page?.set(e.target.value);
+									formStateController.updateState({ page: e.target.value });
 								}}
 							/>
 						</div>
@@ -484,7 +497,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								multiline
 								value={formStateValues?.instrument}
 								onChange={e => {
-									formState?.instrument?.set(e.target.value);
+									formStateController.updateState({ instrument: e.target.value });
 								}}
 							/>
 						</div>
@@ -500,7 +513,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 											className={classes.maxWidth}
 											value={formStateValues?.custom_data?.[meta?.dbKey]}
 											onChange={e => {
-												formController.updateState({
+												formStateController.updateState({
 													custom_data: {
 														...(formStateValues.custom_data || {}),
 														[meta?.dbKey]: e.target.value,
@@ -524,7 +537,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 											value={formStateValues?.custom_data?.[meta?.dbKey]}
 											onCustomKeyChange={value => {
 												let dropdownValue = value ? value : null;
-												formController.updateState({
+												formStateController.updateState({
 													custom_data: {
 														...(formStateValues.custom_data || {}),
 														[meta?.dbKey]: dropdownValue,
@@ -571,22 +584,30 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 					}
 					interactive
 				>
-					{new RegExp(['jpg', 'jpeg', 'png', 'bmp'].join('|')).test(fileUpload?.fileExtension) ? (
+					{new RegExp(['jpg', 'jpeg', 'png', 'bmp'].join('|')).test(formStateValues.fileUpload?.fileExtension) ? (
 						<img
-							src={fileUpload?.fileInformation?.uri}
-							alt={fileUpload?.fileInformation?.name}
+							src={formStateValues.fileUpload?.fileInformation?.uri}
+							alt={formStateValues.fileUpload?.fileInformation?.name}
 							className={classes.forImage}
 						></img>
 					) : (
-						<div className={fileUpload?.fileExtension ? classes.forImageContainer : ''} onClick={() => {}}>
-							{get_file_icon(fileUpload?.fileExtension)}
+						<div
+							className={formStateValues.fileUpload?.fileExtension ? classes.forImageContainer : ''}
+							onClick={() => {}}
+						>
+							{get_file_icon(formStateValues.fileUpload?.fileExtension)}
 						</div>
 					)}
 				</LightTooltip>
 
-				{!fileUpload?.fileExtension ? (
+				{!formStateValues.fileUpload?.fileExtension ? (
 					<div className={classes.Uploadcomp}>
-						<UploadZone userId={getUser?._id} fileId={selectedDocument?._id} setFileUpload={setFileUpload} />
+						<UploadZone
+							userId={getUser?._id}
+							fileId={selectedDocument?._id}
+							setFileUpload={setFileUpload}
+							title={'Upload Document'}
+						/>
 					</div>
 				) : null}
 				<div className={classes.dialogFooter}>
@@ -612,10 +633,41 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						color="secondary"
 						size="medium"
 						disableElevation
-						disabled={!fileUpload?.upload}
+						disabled={!formStateValues.fileUpload?.upload}
 						onClick={() => {
-							if (fileUpload?.upload) {
-								uploadFile();
+							if (formStateValues.fileUpload?.upload) {
+								Loader.createToast('FileUploading', 'File Uploading in Progress');
+
+								const document = {
+									...formStateValues,
+									fileId: addFileData?.addFileDescriptor?.file?.id || selectedDocument?._id,
+								};
+								delete document.tableKey;
+								delete document.fileUpload;
+
+								Loader.createToast('DocumentUpdating', 'Document Updating in Progress');
+								updateDocument({
+									variables: {
+										document,
+									},
+									refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
+									awaitRefetchQueries: true,
+								}).then(res => {
+									if (res?.data?.updateDocumentFile) {
+										const { success, message } = res.data.updateDocumentFile;
+										if (success) {
+											Loader.successToast('DocumentUpdating', message);
+										} else {
+											Loader.errorToast('DocumentUpdating', message);
+										}
+									} else {
+										Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
+									}
+
+									tableGlobalController.refetch();
+								});
+
+								handleClose();
 							}
 						}}
 						className={classes.footerButton}

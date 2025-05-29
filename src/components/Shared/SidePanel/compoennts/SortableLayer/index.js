@@ -8,10 +8,12 @@ import { ContextProvider } from 'react-sortly';
 import { Box, CircularProgress } from '@material-ui/core';
 
 import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
 
 import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
 
 import FileTree from './FileTree';
 
@@ -42,16 +44,15 @@ const getEmptyGroupAndLayer = (group, type) => {
 			id: group.groupId,
 		};
 	}
+
+	return null;
 };
 
 const dnd = isMobile ? TouchBackend : HTML5Backend;
 const SortableLayer = ({ mongoId, search }) => {
 	const [layerMap, setLayerMap] = useState([]);
-	const { layers, panelItems, stateValues } = globalStateController.useState([
-		'layers',
-		'previousLayers',
-		'panelItems',
-	]);
+	const { panelItems, stateValues } = globalStateController.useState(['previousLayers', 'panelItems']);
+	const { layers, layerStateValues } = layerController.useState(['layers'], 'layerStateValues');
 	const [getLayerGroups, { data: layerGroupData }] = useLazyQuery(GET_LAYER_GROUPS);
 
 	useEffect(() => {
@@ -60,7 +61,7 @@ const SortableLayer = ({ mongoId, search }) => {
 
 	useEffect(() => {
 		if (layerGroupData?.getLayerGroups) {
-			const hookStateAppLayers = stateValues.layers;
+			const hookStateAppLayers = layerStateValues.layers;
 			const layerGroups = layerGroupData?.getLayerGroups;
 			const groupHandled = [];
 			const layerAndGroups = [];
@@ -72,13 +73,14 @@ const SortableLayer = ({ mongoId, search }) => {
 							const groups = hookStateAppLayers.filter(i => i.groupId === item.groupId);
 							const visiable = !!groups.find(i => i.layerSettings.visiable);
 							const showable = !!groups.find(i => i.layerSettings.showable);
+							const groupData = layerGroups.find(g => g.groupId === item.groupId);
 							layerAndGroups.push({
 								depth: 0,
 								type: 'group',
 								collapsed: true,
 								showable,
 								visiable,
-								name: item.groupName,
+								name: groupData ? groupData.name : item.groupName,
 								id: item.groupId,
 							});
 							groups.forEach(item => {
@@ -90,7 +92,7 @@ const SortableLayer = ({ mongoId, search }) => {
 									visiable: item.layerSettings.visiable,
 									depth: 1,
 									type: 'layer',
-									id: item._id,
+									id: item.layerId,
 								});
 							});
 						}
@@ -104,7 +106,7 @@ const SortableLayer = ({ mongoId, search }) => {
 								name: item.layerName,
 								depth: 0,
 								type: 'layer',
-								id: item._id,
+								id: item.layerId,
 							});
 						}
 					}
@@ -125,14 +127,17 @@ const SortableLayer = ({ mongoId, search }) => {
 					}
 
 					const index = layerAndGroups.findIndex(layerAndGroup => layerAndGroup.id === emptyGroup.above);
+					const TWO = 2;
+					const THREE = 3;
 					if (index && layerAndGroups[index]?.type === 'layer') {
 						layerAndGroups.splice(index + 1, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
-						layerAndGroups.splice(index + 2, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
+						layerAndGroups.splice(index + TWO, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
 						return;
 					}
 					if (index && layerAndGroups[index]?.type === 'group') {
-						layerAndGroups.splice(index + 2, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
-						layerAndGroups.splice(index + 3, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
+						layerAndGroups.splice(index + TWO, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
+						layerAndGroups.splice(index + THREE, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
+
 						return;
 					}
 				});
@@ -169,6 +174,10 @@ const SortableLayer = ({ mongoId, search }) => {
 			)}
 		</>
 	);
+};
+SortableLayer.propTypes = {
+	mongoId: PropTypes.string.isRequired,
+	search: PropTypes.string,
 };
 
 export default React.memo(SortableLayer);

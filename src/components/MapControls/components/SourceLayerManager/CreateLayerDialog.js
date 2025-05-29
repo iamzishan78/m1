@@ -14,7 +14,7 @@ import { useMutation } from '@apollo/client';
 
 import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';
 
-import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { showErrorMessage } from 'actions';
@@ -45,7 +45,8 @@ const CreateLayerDialog = () => {
 
 	const handleCreateLayers = async () => {
 		if (!groupName || !layerNames.length) {
-			return setError(true);
+			setError(true);
+			return;
 		}
 
 		createDatasetLayers({
@@ -67,7 +68,7 @@ const CreateLayerDialog = () => {
 			layerAddControl: null,
 		});
 
-		globalStateController.updateState({ layerSettingsLoading: true });
+		layerController.updateState({ layerSettingsLoading: true });
 	};
 
 	const handleCancel = () => {
@@ -126,6 +127,7 @@ const CreateLayerDialog = () => {
 						<>
 							{dataset?.categories?.map(({ name }, i) => (
 								<TextField
+									key={name}
 									focused
 									required
 									margin="dense"

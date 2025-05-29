@@ -11,6 +11,7 @@ import {
 import PropTypes from 'prop-types';
 
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
+import DailpadIcon from 'components/Shared/components/svgIcons/DailpadIcon';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import CopyIcon from 'components/Shared/svgIcons/CopyIcon';
 import TextSmsIcon from 'components/Shared/svgIcons/textsms';
@@ -19,7 +20,6 @@ import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
 import { globalStateController } from 'stateManagement/globalStateController';
 
 import EditionPopover from '../EditionPopover';
-import DailpadIcon from 'components/Shared/components/svgIcons/DailpadIcon';
 
 function PencilEditIcon({
 	onClick,

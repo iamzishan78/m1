@@ -20,15 +20,15 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
-import loadashFilter from 'lodash/filter';
 import { grey600, grey400 } from 'material-ui/styles/colors';
+import PropTypes from 'prop-types';
 
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
-import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import AutoCompleteDocumentList from 'components/Shared/Forms/Fields/AutoCompleteDocumentList';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
@@ -45,10 +45,6 @@ import { tableGlobalController } from 'stateManagement/tableController';
 import { AppContext } from 'AppContext';
 
 import UploadZone from '../../Shared/UploadZone';
-
-// functions
-
-const filter = createFilterOptions();
 
 const useStyles = makeStyles({
 	list: {
@@ -196,7 +192,6 @@ export default function RelatedFile(props) {
 		partyName2: '',
 		fileId: '',
 	};
-	const recentFiles = [];
 	const classes = useStyles();
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 
@@ -233,6 +228,33 @@ export default function RelatedFile(props) {
 		refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'shapeSummaryDetails', 'getDbData', 'getContact'], // refetch table data on adding new documents
 		awaitRefetchQueries: true,
 	});
+	const [viewFiles, { data: viewFileSResult }] = useLazyQuery(VIEWFILESQUERY, {
+		fetchPolicy: 'no-cache',
+	});
+
+	const addExistingDocument = () => {
+		setLoader(true);
+		const fileId = fileData?.addFileDescriptor?.file?.id;
+		addFile({
+			variables: {
+				fileName: newDocument.fileName || newDocument.documentName,
+				descriptorObjectId: fileId || newDocument.fileId,
+				userId: stateApp.user.mongoId,
+				relatedObjectId: props.relatedObjectId,
+				relatedObjectType: props.relatedObjectType,
+			},
+			// add queries to refetch
+			refetchQueries: ['getParcelFiles', 'getDbData'],
+			awaitRefetchQueries: true,
+		}).then(() => {
+			props.setShowDocumentSlider('');
+			setNameAutValueParty1({ name: '', _id: null });
+			setNameAutValueParty2({ name: '', _id: null });
+			setNewDocument(documentInitial);
+			setLoader(false);
+			tableGlobalController.refetch();
+		});
+	};
 
 	useEffect(() => {
 		getDocuments({
@@ -363,30 +385,6 @@ export default function RelatedFile(props) {
 		});
 	};
 
-	const addExistingDocument = () => {
-		setLoader(true);
-		const fileId = fileData?.addFileDescriptor?.file?.id;
-		addFile({
-			variables: {
-				fileName: newDocument.fileName || newDocument.documentName,
-				descriptorObjectId: fileId || newDocument.fileId,
-				userId: stateApp.user.mongoId,
-				relatedObjectId: props.relatedObjectId,
-				relatedObjectType: props.relatedObjectType,
-			},
-			// add queries to refetch
-			refetchQueries: ['getParcelFiles', 'getDbData', 'getContact', 'getRecentContactFiles'],
-			awaitRefetchQueries: true,
-		}).then(() => {
-			props.setShowDocumentSlider('');
-			setNameAutValueParty1({ name: '', _id: null });
-			setNameAutValueParty2({ name: '', _id: null });
-			setNewDocument(documentInitial);
-			setLoader(false);
-			tableGlobalController.refetch();
-		});
-	};
-
 	const handleViewFile = async id => {
 		viewFile({ variables: { fileId: id } });
 	};
@@ -432,10 +430,6 @@ export default function RelatedFile(props) {
 			});
 		}
 	};
-
-	const [viewFiles, { data: viewFileSResult }] = useLazyQuery(VIEWFILESQUERY, {
-		fetchPolicy: 'no-cache',
-	});
 
 	const LightTooltip = withStyles(theme => ({
 		tooltip: {
@@ -588,82 +582,6 @@ export default function RelatedFile(props) {
 										<AutoCompleteDocumentList search={search} setSearch={setSearch} onSelect={onSearcSelected} />
 									</Grid>
 								</Grid>
-								{/* <Autocomplete
-                  defaultValue={search}
-                  value={search}
-                  disableListWrap
-                  className={classes.maxWidth}
-                  options={
-                    documents?.getFiles
-                      ? documents?.getFiles?.map((doc) => {
-                        return {
-                          _id: doc.fileId,
-                          name: doc.documentName,
-                          number: doc.documentNumber,
-                          fileName: doc.fileName,
-                        };
-                      })
-                      : []
-                  }
-                  getOptionLabel={(option) => {
-                    if (typeof option === "string") {
-                      return option;
-                    }
-                    if (option.inputValue) {
-                      return option.name;
-                    }
-
-                    // if (option?.name) return option.name;
-                    // else return "";
-                  }}
-                  renderOption={(option) => (
-                    <React.Fragment>
-                      <Grid container direction="column">
-                        <Grid item>{option.name}</Grid>
-                        <Grid item className={classes.optionNumber}>
-                          {option.number}
-                        </Grid>
-                      </Grid>
-                    </React.Fragment>
-                  )}
-                  getOptionSelected={(option, value) => {
-                    return option?._id === value?._id;
-                  }}
-                  onInputChange={(event, value) => {
-                    setSearch(value);
-                  }}
-                  filterOptions={(options, params) => {
-                    const filtered = options.filter(
-                      (opt) =>
-                        opt.name?.toLowerCase()?.includes(search?.toLowerCase()) ||
-                        opt.number?.toLowerCase()?.includes(search?.toLowerCase())
-                    );
-                    return filtered;
-                  }}
-                  onChange={(event, newValue) => {
-                    if (newValue) {
-                      const document = documents.getFiles.find((doc) => doc.fileId === newValue._id);
-                      onSearcSelected(document);
-                    } else setNewDocument(documentInitial);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      variant="outlined"
-                      margin="dense"
-                      placeholder="Search by document name or number"
-                      {...params}
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SearchIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                      size="small"
-                    />
-                  )}
-                 /> */}
 							</ListItem>
 						)}
 					</>
@@ -742,62 +660,23 @@ export default function RelatedFile(props) {
 					}}
 				>
 					<h4>File Date</h4>
-					{/* <KeyboardDatePicker
-            className={classes.maxWidth}
-            disableToolbar
-            disabled={selectedType === "existing"}
-            variant="inline"
-            format="MM/DD/YYYY"
-            margin="normal"
-            id="fileDate"
-            value={newDocument?.dateTime ? new Date(newDocument.dateTime) : null}
-            onChange={(date) => {
-              setNewDocument({
-                ...newDocument,
-                dateTime: date ? String(date["_d"]) : "",
-              });
-            }}
-            KeyboardButtonProps={{
-              "aria-label": "change date",
-            }}
-          /> */}
 
-					<GenericDateField
-						value={newDocument?.dateTime}
-						onChange={value => {
-							setNewDocument({
-								...newDocument,
-								dateTime: value,
-							});
+					<CustomDatePicker
+						fieldAttributes={{ value: newDocument?.dateTime }}
+						fieldEvents={{
+							onChange: value => {
+								setNewDocument({
+									...newDocument,
+									dateTime: value,
+								});
+							},
+						}}
+						fieldConfig={{
+							variant: 'standard',
+							disabled: selectedType === 'existing',
 						}}
 					/>
 				</ListItem>
-				{/* <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Party 1 Name</h4>
-          <ContactPaginatedDropdown
-            nameAutValue={nameAutValueParty1}
-            setNameAutValue={setNameAutValueParty1}
-          />
-        </ListItem>
-        <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Party 2 Name</h4>
-          <ContactPaginatedDropdown
-            nameAutValue={nameAutValueParty2}
-            setNameAutValue={setNameAutValueParty2}
-          />
-        </ListItem> */}
 
 				<ListItem
 					style={{
@@ -817,6 +696,7 @@ export default function RelatedFile(props) {
 							className={classes.maxWidth}
 							multiline
 							value={newDocument?.book}
+							disabled={selectedType === 'existing'}
 							onChange={e => {
 								setNewDocument({
 									...newDocument,
@@ -837,6 +717,7 @@ export default function RelatedFile(props) {
 							className={classes.maxWidth}
 							multiline
 							value={newDocument?.page}
+							disabled={selectedType === 'existing'}
 							onChange={e => {
 								setNewDocument({
 									...newDocument,
@@ -852,6 +733,7 @@ export default function RelatedFile(props) {
 							className={classes.maxWidth}
 							multiline
 							value={newDocument?.instrument}
+							disabled={selectedType === 'existing'}
 							onChange={e => {
 								setNewDocument({
 									...newDocument,
@@ -861,38 +743,16 @@ export default function RelatedFile(props) {
 						/>
 					</div>
 				</ListItem>
-
-				{/* <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Recording Info</h4>
-          <TextField
-            className={classes.maxWidth}
-            multiline
-            disabled={selectedType === "existing"}
-            value={newDocument?.recordingInfo}
-            onChange={(e) => {
-              setNewDocument({
-                ...newDocument,
-                recordingInfo: e.target.value,
-              });
-            }}
-          />
-        </ListItem> */}
 			</List>
 
-			{newDocument?.fileId || fileData ? (
+			{(newDocument?.fileId || fileData) && (
 				<ListItem>
 					<div style={{ display: 'flex', justifyContent: 'start' }}>
-						{viewFileSResult?.viewFiles?.map((value, key) => {
+						{viewFileSResult?.viewFiles?.map((value, index) => {
 							let fileExtension = value?.name?.slice(value.name.lastIndexOf('.') + 1)?.toLowerCase();
-							if (key <= 1) {
+							if (index <= 1) {
 								return (
-									<div key={key}>
+									<div key={value.uri}>
 										<LightTooltip
 											title={
 												<div className={classes.IconSection}>
@@ -958,75 +818,6 @@ export default function RelatedFile(props) {
              
               />
          </div> */}
-					</div>
-				</ListItem>
-			) : (
-				<ListItem>
-					<div style={{ display: 'flex', justifyContent: 'start' }}>
-						{recentFiles?.map((value, key) => {
-							let fileExtension = value?.name?.slice(value.name.lastIndexOf('.') + 1)?.toLowerCase();
-							if (key <= 1) {
-								return (
-									<div key={key}>
-										<LightTooltip
-											title={
-												<div className={classes.IconSection}>
-													<IconButton
-														size="small"
-														onClick={() => {
-															setOpenDeleteConfirmDialog(true);
-															setFileIdToDelete(value.id);
-														}}
-													>
-														<DeleteIcon />
-													</IconButton>
-
-													<IconButton
-														disabled={false}
-														size="small"
-														// onClick={() =>
-														//   handleViewFile(
-														//     files?.getFileDescriptors[key].fileId
-														//   )
-														// }
-													>
-														<GetAppIcon />
-													</IconButton>
-												</div>
-											}
-											interactive
-										>
-											<div>
-												{new RegExp(['jpg', 'jpeg', 'png', 'bmp'].join('|')).test(fileExtension) ? (
-													<img src={value.uri} alt={value.name} className={classes.forImage}></img>
-												) : (
-													<div
-														className={classes.forImageContainer}
-														onClick={() => {
-															if (fileExtension === 'pdf') {
-																setStateApp({
-																	...stateApp,
-																	viewDoc: { uri: value.uri, name: value.name },
-																});
-															} else {
-																handleViewFile();
-															}
-														}}
-													>
-														{get_file_icon(fileExtension)}
-													</div>
-												)}
-												<div className={classes.imageSubText}>
-													{value?.name?.length > 12 ? value.name.slice(0, 8) + '...' : value.name}
-												</div>
-											</div>
-										</LightTooltip>
-									</div>
-								);
-							} else {
-								return null;
-							}
-						})}
 					</div>
 				</ListItem>
 			)}
@@ -1111,117 +902,182 @@ export default function RelatedFile(props) {
 	);
 }
 
-const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
-	const useStyles = makeStyles({
-		inputRoot: {
-			backgroundColor: '#ffffff',
-		},
-		listbox: {
-			boxSizing: 'border-box',
-			'& ul': {
-				padding: 0,
-				margin: 0,
-			},
-		},
-	});
+// const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
+// 	const useStyles = makeStyles({
+// 		inputRoot: {
+// 			backgroundColor: '#ffffff',
+// 		},
+// 		listbox: {
+// 			boxSizing: 'border-box',
+// 			'& ul': {
+// 				padding: 0,
+// 				margin: 0,
+// 			},
+// 		},
+// 	});
 
-	const classes = useStyles();
+// 	const classes = useStyles();
 
-	const onInputChange = (event, value) => {
-		setDocumentType(value);
-	};
+// 	const onInputChange = (event, value) => {
+// 		setDocumentType(value);
+// 	};
+// 	return (
+// 		<Autocomplete
+// 			defaultValue={value}
+// 			value={value}
+// 			disableListWrap
+// 			classes={classes}
+// 			options={
+// 				documentTypes
+// 					? documentTypes?.getFilesType?.map(type => {
+// 							return { _id: type, name: type };
+// 						})
+// 					: []
+// 			}
+// 			getOptionLabel={option => {
+// 				// Value selected with enter, right from the input
+// 				if (typeof option === 'string') {
+// 					return option;
+// 				}
+// 				// Add "xxx" option created dynamically
+// 				if (option.inputValue) {
+// 					return option.name;
+// 				}
+
+// 				if (option?.name) {
+// 					return option.name;
+// 				} else {
+// 					return '';
+// 				}
+// 			}}
+// 			getOptionSelected={(option, value) => {
+// 				return option?._id === value?._id;
+// 			}}
+// 			renderOption={option => {
+// 				if (option._id === 'newEntity') {
+// 					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
+// 				}
+
+// 				return (
+// 					<Grid container spacing={0}>
+// 						<Grid container item xs={12} alignItems="center">
+// 							<Grid item xs>
+// 								<span style={{ fontWeight: 400 }}>{option.name}</span>
+
+// 								<Typography variant="body2" color="textSecondary">
+// 									{joinAddress(option)}
+// 								</Typography>
+// 							</Grid>
+// 						</Grid>
+// 					</Grid>
+// 				);
+// 			}}
+// 			onInputChange={onInputChange}
+// 			filterOptions={(options, params) => {
+// 				let inputValue = JSON.parse(JSON.stringify(value));
+// 				if (inputValue.name) {
+// 					inputValue = inputValue.name;
+// 				}
+// 				const filtered = filter(options, { ...params, inputValue });
+// 				const isExist = loadashFilter(filtered, filter => {
+// 					return filter._id === inputValue;
+// 				});
+// 				// Suggest the creation of a new value
+// 				if (inputValue !== '' && (!isExist || isExist.length === 0)) {
+// 					filtered.unshift({
+// 						name: inputValue,
+// 						_id: 'newEntity',
+// 					});
+// 				}
+// 				return filtered;
+// 			}}
+// 			onChange={(event, newValue) => {
+// 				if (newValue && newValue._id) {
+// 					if (newValue._id !== 'newEntity') {
+// 						setDocumentType(newValue);
+// 					} else {
+// 						setDocumentType({ _id: 'newEntity', name: newValue.name });
+// 					}
+// 				} else {
+// 					setDocumentType('');
+// 				}
+// 			}}
+// 			renderInput={params => (
+// 				<TextField
+// 					margin="dense"
+// 					{...params}
+// 					InputProps={{
+// 						...params.InputProps,
+// 					}}
+// 					size="small"
+// 				/>
+// 			)}
+// 			{...other}
+// 		/>
+// 	);
+// };
+
+const DocumentType = ({ documentTypes, setDocumentType, value, disabled, className }) => {
+	const options = documentTypes
+		? documentTypes?.getFilesType?.map(type => {
+				return { _id: type, name: type };
+			})
+		: [];
+	console.log('Idhr');
+
 	return (
-		<Autocomplete
-			defaultValue={value}
-			value={value}
-			disableListWrap
-			classes={classes}
-			options={
-				documentTypes
-					? documentTypes?.getFilesType?.map(type => {
-							return { _id: type, name: type };
-						})
-					: []
-			}
-			getOptionLabel={option => {
-				// Value selected with enter, right from the input
-				if (typeof option === 'string') {
-					return option;
-				}
-				// Add "xxx" option created dynamically
-				if (option.inputValue) {
-					return option.name;
-				}
-
-				if (option?.name) {
-					return option.name;
-				} else {
-					return '';
-				}
+		<CustomAutoComplete
+			fieldAttributes={{
+				label: 'Document Type',
+				value: value,
+				optionArray: options,
 			}}
-			getOptionSelected={(option, value) => {
-				return option?._id === value?._id;
-			}}
-			renderOption={option => {
-				if (option._id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
-				}
+			fieldConfig={{
+				disabled: disabled,
+				allowNewOptions: true,
+				inputClassName: className,
+				getCustomOptionLabel: option => {
+					if (typeof option === 'string') {
+						return option;
+					}
+					return option.name;
+				},
+				renderOptionComp: ({ option }) => {
+					return (
+						<Grid container spacing={0}>
+							<Grid container item xs={12} alignItems="center">
+								<Grid item xs>
+									<span style={{ fontWeight: 400 }}>{option.name}</span>
 
-				return (
-					<Grid container spacing={0}>
-						<Grid container item xs={12} alignItems="center">
-							<Grid item xs>
-								<span style={{ fontWeight: 400 }}>{option.name}</span>
-
-								<Typography variant="body2" color="textSecondary">
-									{joinAddress(option)}
-								</Typography>
+									<Typography variant="body2" color="textSecondary">
+										{joinAddress(option)}
+									</Typography>
+								</Grid>
 							</Grid>
 						</Grid>
-					</Grid>
-				);
+					);
+				},
 			}}
-			onInputChange={onInputChange}
-			filterOptions={(options, params) => {
-				let inputValue = JSON.parse(JSON.stringify(value));
-				if (inputValue.name) {
-					inputValue = inputValue.name;
-				}
-				const filtered = filter(options, { ...params, inputValue });
-				const isExist = loadashFilter(filtered, filter => {
-					return filter._id === inputValue;
-				});
-				// Suggest the creation of a new value
-				if (inputValue !== '' && (!isExist || isExist.length === 0)) {
-					filtered.unshift({
-						name: inputValue,
-						_id: 'newEntity',
-					});
-				}
-				return filtered;
+			fieldEvents={{
+				onChange: ({ value }) => {
+					setDocumentType(value ?? '');
+				},
 			}}
-			onChange={(event, newValue) => {
-				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') {
-						setDocumentType(newValue);
-					} else {
-						setDocumentType({ _id: 'newEntity', name: newValue.name });
-					}
-				} else {
-					setDocumentType('');
-				}
-			}}
-			renderInput={params => (
-				<TextField
-					margin="dense"
-					{...params}
-					InputProps={{
-						...params.InputProps,
-					}}
-					size="small"
-				/>
-			)}
-			{...other}
 		/>
 	);
+};
+
+RelatedFile.propTypes = {
+	parcelId: PropTypes.string,
+	relatedObjectId: PropTypes.string,
+	relatedObjectType: PropTypes.string,
+	setShowDocumentSlider: PropTypes.func.isRequired,
+};
+
+DocumentType.propTypes = {
+	setDocumentType: PropTypes.func.isRequired,
+	value: PropTypes.string,
+	documentTypes: PropTypes.object,
+	disabled: PropTypes.bool,
+	className: PropTypes.string,
 };

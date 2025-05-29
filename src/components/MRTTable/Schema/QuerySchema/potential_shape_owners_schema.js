@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
@@ -43,9 +42,7 @@ const PotentialShapeOwnersMeta = {
 	getIdsFromRows: rows => rows?.map(row => row?.id) || [],
 	CustomToolBar: PotentialShapeOwnersToolbar,
 	isClientSide: true,
-	isSelectAllAllowed: true,
 	isDeleteDisabled: true,
-	isExportDisabled: true,
 	enableFacetedValues: true,
 	TableSchema: [
 		{

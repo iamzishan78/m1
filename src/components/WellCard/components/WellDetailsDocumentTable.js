@@ -14,8 +14,6 @@ import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
 import { tableGlobalController } from 'stateManagement/tableController';
 
-// QUERIES
-
 import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
@@ -75,7 +73,6 @@ function WellDetailsDocumentTable(props) {
 				relatedObjectType: 'Well',
 			},
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.selectedWell.tenantWellId, showDocumentSlider, getAllFiles]);
 
 	const onClickAdd = () => {
@@ -125,7 +122,6 @@ function WellDetailsDocumentTable(props) {
 				setShowDocumentSlider(true);
 			},
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[props?.selectedWell?.tenantWellId, props?.selectedWell?.id]
 	);
 

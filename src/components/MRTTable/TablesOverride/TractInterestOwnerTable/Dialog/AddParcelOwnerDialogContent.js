@@ -30,11 +30,11 @@ import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
 
-import { UserSession } from 'utils/user';
-
 import { globalStateController } from 'stateManagement/globalStateController';
 import { sideDialogController, tractInterestOwnerState } from 'stateManagement/sideDialogController';
 import { tableGlobalController } from 'stateManagement/tableController';
+
+import { UserSession } from 'utils/user';
 
 import { showErrorMessage, showSuccessMessage } from '../../../../../../src/actions';
 
@@ -82,15 +82,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
+	const formState = sideDialogController('tractInterestDialog').useCompleteState();
+	const formStateValues = formState;
+
 	const dispatch = useDispatch();
 	const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 	const tenantName = UserSession.getStorageItem('tenantName');
 
-	const formState = sideDialogController('tractInterestDialog').useCompleteState();
-	const formStateValues = formState?.get({ noproxy: true });
-
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const { control, reset, getValues, setValue, watch } = useForm();
 
@@ -255,6 +255,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 						ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
 						campaignPriority:
 							ownerToAdd.campaignPriority && (ownerToAdd.campaignPriority.value || ownerToAdd.campaignPriority),
+						isPurchased: ownerToAdd.isPurchased && (ownerToAdd.isPurchased.value || ownerToAdd.isPurchased),
 					},
 				},
 			});
@@ -281,13 +282,15 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 			handleUpdateContact(formStateValues);
 		}
 
+		const updatedFormStateValues = sideDialogController('tractInterestDialog').getAllValues();
+
 		// Fixed label value issue
 		if (selectedRow) {
 			const parcelOwner = extractValueRecursively({
 				_id: selectedRow?._id,
-				...formStateValues,
-				deals: formStateValues?.deals || [],
-				relatedObject: formStateValues.relatedObject,
+				...updatedFormStateValues,
+				deals: updatedFormStateValues?.deals || [],
+				relatedObject: updatedFormStateValues.relatedObject,
 				createBy: getUser?._id,
 				lastUpdateBy: getUser?._id,
 			});
@@ -300,9 +303,9 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 			// Fixed label value issue
 			// Update parcel owner object for autocompletes
 			const parcelOwner = extractValueRecursively({
-				...formStateValues,
-				deals: formStateValues?.deals || [],
-				relatedObject: formStateValues.relatedObject,
+				...updatedFormStateValues,
+				deals: updatedFormStateValues?.deals || [],
+				relatedObject: updatedFormStateValues.relatedObject,
 				createBy: getUser?._id,
 				lastUpdateBy: getUser?._id,
 			});
@@ -330,6 +333,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 			rowData.qtr3 = qtr3;
 			rowData.qtr4 = qtr4;
 			rowData.contactStatus = selectedRow?.contact?.contactStatus;
+			rowData.isPurchased = selectedRow?.isPurchased == 'true' ? true : false;
 			rowData.status = selectedRow?.contact?.status;
 			rowData.contactOwners = selectedRow?.contactOwners; // auto-complete the contact owner in slideout
 			rowData.relatedObject = selectedRow?.contactId || selectedRow?.ownerEntity;

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
@@ -27,10 +26,7 @@ const WellOwnersMeta = {
 	getIdsFromRows: rows => rows?.map(row => row?.globalOwnerId) || [],
 	CustomToolBar: WellOwnersToolbar,
 	isClientSide: true,
-	disableRowSelection: true,
-	isSelectAllAllowed: true,
 	isDeleteDisabled: true,
-	isExportDisabled: true,
 	enableFacetedValues: true,
 	isInFiniteScroll: true,
 	TableSchema: [

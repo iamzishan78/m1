@@ -10,8 +10,9 @@ import { DropzoneAreaBase } from 'material-ui-dropzone';
 
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
 
-import { showErrorMessage, showWarningMessage } from '../../../actions';
 import { tableGlobalController } from 'stateManagement/tableController';
+
+import { showErrorMessage, showWarningMessage } from '../../../actions';
 
 const useStyles = makeStyles(theme => ({
 	dropzoneClass: {
@@ -34,7 +35,6 @@ const useStyles = makeStyles(theme => ({
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'center',
-		border: '2px dashed rgb(176, 176, 176)',
 		border: '2px dashed #dddddd',
 		marginBottom: '30px',
 		// marginLeft: '20px',

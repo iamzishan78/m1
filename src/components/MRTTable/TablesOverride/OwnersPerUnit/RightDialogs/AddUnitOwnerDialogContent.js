@@ -27,10 +27,11 @@ import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-import { showErrorMessage, showSuccessMessage } from 'actions';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { sideDialogController, unitInterestOwnerState } from 'stateManagement/sideDialogController';
 import { tableGlobalController } from 'stateManagement/tableController';
+
+import { showErrorMessage, showSuccessMessage } from 'actions';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {
@@ -99,7 +100,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function AddUnitOwnerDialogContent({
 	selectedRow,
-	setSelectedRow,
 	uAcres,
 	uUnitPricing,
 	uMaxUnitPricing,
@@ -109,16 +109,14 @@ export default function AddUnitOwnerDialogContent({
 	const dispatch = useDispatch();
 
 	const formState = sideDialogController('unitInterestDialog').useCompleteState();
-	const formStateValues = formState?.get({ noproxy: true });
+	const formStateValues = formState;
 	const [metafields, setMetaFields] = useState([]);
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
+	const getUser = user;
 
 	const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 	const { control, reset, setValue, getValues, watch } = useForm();
-
-	// CONTACT
 
 	const [addOwnerToAShape, { data: mutationData }] = useMutation(ADD_OWNER_TOA_SHAPE);
 
@@ -127,6 +125,12 @@ export default function AddUnitOwnerDialogContent({
 	const [updateContact] = useMutation(UPDATECONTACT);
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+
+	const handleClickDialogClose = () => {
+		props.onClose();
+		sideDialogController('unitInterestDialog').reset();
+		reset();
+	};
 
 	useEffect(() => {
 		sideDialogController('unitInterestDialog').updateState({
@@ -149,6 +153,7 @@ export default function AddUnitOwnerDialogContent({
 			const rowData = _.merge({}, unitInterestOwnerState, filteredSelectedRow);
 
 			rowData.contactStatus = selectedRow?.contact?.contactStatus;
+			rowData.isPurchased = selectedRow?.isPurchased == 'true' ? true : false;
 			rowData.status = selectedRow?.contact?.status;
 			rowData.relatedObject = selectedRow?.contactId || selectedRow?.ownerEntity;
 			rowData.contactOwners = selectedRow?.contactOwners; // auto-complete the contact owner in slideout
@@ -188,12 +193,6 @@ export default function AddUnitOwnerDialogContent({
 		}
 	}, [mutationData, updateData]);
 
-	const handleClickDialogClose = () => {
-		props.onClose();
-		sideDialogController('unitInterestDialog').reset();
-		reset();
-	};
-
 	const handleUpdateContact = ownerToAdd => {
 		if (
 			((ownerToAdd.contactStatus || selectedRow?.contactStatus) &&
@@ -218,6 +217,7 @@ export default function AddUnitOwnerDialogContent({
 						ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
 						campaignPriority:
 							ownerToAdd.campaignPriority && (ownerToAdd.campaignPriority.value || ownerToAdd.campaignPriority),
+						isPurchased: ownerToAdd.isPurchased && (ownerToAdd.isPurchased.value || ownerToAdd.isPurchased),
 					},
 				},
 			});
@@ -231,7 +231,10 @@ export default function AddUnitOwnerDialogContent({
 			...unitOwnerFormValue,
 		});
 
-		const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
+		let updatedFormStateValues = sideDialogController('unitInterestDialog').getAllValues();
+
+		const ownerType =
+			updatedFormStateValues.ownerType && (updatedFormStateValues.ownerType.value || updatedFormStateValues.ownerType);
 
 		if (formStateValues?.newOwner) {
 			sideDialogController('unitInterestDialog').updateState({
@@ -241,15 +244,18 @@ export default function AddUnitOwnerDialogContent({
 				},
 			});
 		} else {
-			handleUpdateContact(formStateValues);
+			handleUpdateContact(updatedFormStateValues);
 		}
+
+		updatedFormStateValues = sideDialogController('unitInterestDialog').getAllValues();
+
 		if (selectedRow) {
 			// Update shape owner object for autocompletes
 			const shapeOwner = extractValueRecursively({
 				_id: selectedRow?._id,
-				...formStateValues,
-				deals: formStateValues?.deals || [],
-				relatedObject: formStateValues.relatedObject,
+				...updatedFormStateValues,
+				deals: updatedFormStateValues?.deals || [],
+				relatedObject: updatedFormStateValues.relatedObject,
 				createBy: getUser?._id,
 				lastUpdateBy: getUser?._id,
 				shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
@@ -266,9 +272,9 @@ export default function AddUnitOwnerDialogContent({
 		} else {
 			// Update shape owner object for autocompletes
 			const shapeOwner = extractValueRecursively({
-				...formStateValues,
-				deals: formStateValues?.deals || [],
-				relatedObject: formStateValues.relatedObject,
+				...updatedFormStateValues,
+				deals: updatedFormStateValues?.deals || [],
+				relatedObject: updatedFormStateValues.relatedObject,
 				createBy: getUser?._id,
 				lastUpdateBy: getUser?._id,
 				shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),

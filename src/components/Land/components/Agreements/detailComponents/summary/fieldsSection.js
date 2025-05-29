@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment, useContext } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { Controller } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -22,14 +22,14 @@ import EditIcon from '@material-ui/icons/Edit';
 import { useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
 import uniqBy from 'lodash/uniqBy';
+import PropTypes from 'prop-types';
 
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
-import DateField from 'components/Shared/components/Fields/DateField';
-import NumberField from 'components/Shared/components/Fields/NumberField';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
@@ -80,6 +80,21 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
+	const onGlobalKeyDown = e => {
+		const id = e?.target?.id;
+
+		if (e.keyCode === KEYBOARD_KEYS.TAB) {
+			if (e.shiftKey) {
+				if (!document.getElementById(`field-${Number(id.split('-')[1]) - 1}`)) {
+					e.preventDefault();
+					return;
+				} else {
+					document.getElementById(`field-${Number(id.split('-')[1])}`).focus();
+				}
+			}
+		}
+	};
+
 	useEffect(() => {
 		document.addEventListener('keydown', onGlobalKeyDown, false);
 		document.addEventListener('blur', () => {});
@@ -127,21 +142,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 		}
 	}, [metaDataRes, agreementDetails, globalStateValues.user?.mongoId]);
 
-	const onGlobalKeyDown = e => {
-		const id = e?.target?.id;
-
-		if (e.keyCode === KEYBOARD_KEYS.TAB) {
-			if (e.shiftKey) {
-				if (!document.getElementById(`field-${Number(id.split('-')[1]) - 1}`)) {
-					e.preventDefault();
-					return;
-				} else {
-					document.getElementById(`field-${Number(id.split('-')[1])}`).focus();
-				}
-			}
-		}
-	};
-
 	const addAgreementCustomData = data => {
 		const customData = copy(agreementDetails.custom_data) ?? {};
 		data.forEach(d => {
@@ -165,7 +165,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 			alignItems="center"
 			className={classes.fieldsSection}
 		>
-			{fieldsList.map((field, index) => {
+			{fieldsList.map(field => {
 				const handleEdit = () => {
 					globalStateController.updateState({ showFieldModal: true, selectedMeta: field });
 				};
@@ -181,7 +181,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 					) : undefined;
 
 				return (
-					<Grid item xs={12} key={index + field.label + field.key}>
+					<Grid item xs={12} key={field.label + field.key + field._id}>
 						<Grid container className={classes.gridStyle} style={{ display: 'flex', justifyContent: 'space-between' }}>
 							<Grid
 								item
@@ -216,71 +216,93 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 									setIsHovered(false);
 								}}
 							>
-								<Fragment key={index}>
-									{(field.type === 'text' ||
-										field.type === 'number' ||
-										field.type === 'date' ||
-										field.type === 'dropdown' ||
-										field.type === 'multiselect' ||
-										field.type === 'select') && (
+								<Fragment>
+									{field.type === 'text' && (
+										<CustomTextField
+											id={`field-${field.key}`}
+											style={{ width: 'calc(100% + 8px)' }}
+											control={control}
+											fieldConfig={{
+												disabled: field?.disabled,
+												fullWidth: true,
+												variant: 'outlined',
+												margin: 'dense',
+											}}
+											fieldAttributes={{
+												name: field.key,
+												defaultValue: get(agreementDetails, `${field.key}`, ''),
+												InputProps: {
+													...field.InputProps,
+													endAdornment,
+												},
+											}}
+											fieldEvents={{
+												onBlur: value => {
+													offClickHandler(field.key, value);
+												},
+											}}
+										/>
+									)}
+									{field.type === 'number' && (
+										<CustomTextField
+											id={`field-${field.key}`}
+											style={{ width: 'calc(100% + 8px)' }}
+											control={control}
+											fieldConfig={{
+												disabled: field?.disabled,
+												fullWidth: true,
+												variant: 'outlined',
+												margin: 'dense',
+												type: 'number',
+											}}
+											fieldAttributes={{
+												name: field.key,
+												defaultValue: get(agreementDetails, `${field.key}`, ''),
+												InputProps: {
+													...field.InputProps,
+													endAdornment,
+												},
+											}}
+											fieldEvents={{
+												onBlur: value => {
+													offClickHandler(field.key, value);
+												},
+											}}
+										/>
+									)}
+									{field.type === 'date' && (
+										<CustomDatePicker
+											control={control}
+											id={`field-${field.key}`}
+											fieldConfig={{
+												margin: 'dense',
+												overrideEndAdornment: true,
+											}}
+											fieldAttributes={{
+												name: field.key,
+												value: get(agreementDetails, `${field.key}`, ''),
+												InputProps: {
+													style: { width: 'calc(100% + 8px)' },
+												},
+											}}
+											fieldEvents={{
+												onChange: newValue => {
+													offClickHandler?.(field.key, newValue?.toDate());
+												},
+											}}
+											InputProps={{
+												...field.InputProps,
+												endAdornment,
+											}}
+										/>
+									)}
+									{(field.type === 'dropdown' || field.type === 'multiselect' || field.type === 'select') && (
 										<Controller
 											control={control}
 											name={field.key}
-											render={params => {
+											render={({ field: fieldProps }) => {
 												return (
 													<Fragment>
-														{field.type === 'text' && (
-															<CustomTextField
-																{...params}
-																id={`field-${field.key}`}
-																index={index}
-																field={field}
-																fieldKey={field.key}
-																defaultValue={get(agreementDetails, `${field.key}`, '')}
-																showLinkPopup={true}
-																offClickHandler={(key, value) => {
-																	offClickHandler(key, value);
-																}}
-																InputProps={{
-																	...field.InputProps,
-																	endAdornment,
-																}}
-															/>
-														)}
-														{field.type === 'number' && (
-															<NumberField
-																{...params}
-																id={`field-${field.key}`}
-																index={index}
-																field={field}
-																fieldKey={field.key}
-																defaultValue={get(agreementDetails, `${field.key}`, '')}
-																offClickHandler={(key, value) => {
-																	offClickHandler(key, value);
-																}}
-																InputProps={{
-																	...field.InputProps,
-																	endAdornment,
-																}}
-															/>
-														)}
-														{field.type === 'date' && (
-															<DateField
-																{...params}
-																id={`field-${field.key}`}
-																index={index}
-																field={field}
-																fieldKey={field.key}
-																defaultValue={get(agreementDetails, `${field.key}`, '')}
-																offClickHandler={(key, value) => {
-																	offClickHandler(key, value);
-																}}
-																InputProps={{
-																	...field.InputProps,
-																	endAdornment,
-																}}
-															/>
-														)}
 														{field.type === 'dropdown' && (
 															<div
 																style={{
@@ -304,7 +326,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 														)}
 														{field.type === 'select' && (
 															<Select
-																{...params}
+																{...fieldProps}
 																id={`field-${field.key}`}
 																variant="outlined"
 																fullWidth
@@ -317,7 +339,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 																value={get(agreementDetails, `${field.key}`, '')}
 															>
 																{field.options.map(option => (
-																	<MenuItem value={option.value ? option.value : option}>
+																	<MenuItem key={option.value ?? option} value={option.value ? option.value : option}>
 																		{option.label ? option.label : option}
 																	</MenuItem>
 																))}
@@ -366,30 +388,30 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 										<Controller
 											control={control}
 											name={field.key}
-											render={props => (
+											render={({ field: fieldProps }) => (
 												<TextField
-													{...props}
+													{...fieldProps}
 													id={`field-${field.key}`}
-													value={parseFloat(props.value).toFixed(TO_FIXED)}
+													value={parseFloat(fieldProps.value).toFixed(TO_FIXED)}
 													className={
 														isAcquisitionCostOverridden ? overrideClasses.valueOveridden : overrideClasses.valueNormal
 													}
 													variant="outlined"
 													margin="dense"
 													fullWidth
-													inputRef={props.ref}
+													inputRef={fieldProps.ref}
 													onWheel={e => e.target.blur()}
 													onChange={e => {
 														const toFixedValue = parseFloat(e.target.value).toFixed(TO_FIXED);
 														const calculatedAcquisitionCost = parseFloat(
 															agreementDetails?.calculated?.totalAcquisitionCost || 0
 														).toFixed(TO_FIXED);
-														props.onChange(toFixedValue);
+														fieldProps.onChange(toFixedValue);
 														setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
 													}}
 													onBlur={() =>
 														offClickHandler(field.key, {
-															value: Number(props.value),
+															value: Number(fieldProps.value),
 															overridden: isAcquisitionCostOverridden,
 														})
 													}
@@ -404,7 +426,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 																			const totalAcquisitionCost = parseFloat(
 																				agreementDetails?.calculated?.totalAcquisitionCost || 0
 																			).toFixed(TO_FIXED);
-																			props.onChange(totalAcquisitionCost);
+																			fieldProps.onChange(totalAcquisitionCost);
 																			offClickHandler(field.key, {
 																				value: Number(totalAcquisitionCost),
 																				overridden: isAcquisitionCostOverridden,
@@ -478,3 +500,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 		</Grid>
 	);
 }
+
+FieldsSection.propTypes = {
+	updateAgreement: PropTypes.func.isRequired,
+	control: PropTypes.object.isRequired,
+	agreementDetails: PropTypes.object,
+};

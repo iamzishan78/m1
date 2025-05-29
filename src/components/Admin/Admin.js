@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Switch, Route, useLocation } from 'react-router-dom';
 
 import AdminOperation from 'components/Admin/AdminOperation';
+import AssetManagement from 'components/Admin/components/AssetManagement';
 import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
 import Integrations from 'components/Integrations';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
@@ -13,6 +14,7 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
 
 import { AdminManagementRoutes } from 'utils/data';
+import { UserSession } from 'utils/user';
 
 import { AppContext } from 'AppContext';
 
@@ -26,10 +28,19 @@ const Components = {
 	BulkDataEditing,
 	BulkDataEditingDetail,
 	Integrations,
+	AssetManagement,
 };
 
 function isM1neralAddress(email) {
 	return email.endsWith('@m1neral.com');
+}
+
+function isTestEnv() {
+	let tenantName = UserSession.getStorageItem('tenantName');
+
+	let validTenants = ['frontier', 'm1development', 'localhost'];
+	let isValidTenant = validTenants.map(tenant => tenant.toLowerCase()).includes(tenantName.toLowerCase());
+	return isValidTenant;
 }
 
 export default function Admin() {
@@ -71,6 +82,10 @@ export default function Admin() {
 		if (!isM1neralAddress(stateApp.user.email)) {
 			delete allPaths['ADMINOPERATION'];
 			delete allPaths['INTEGRATION'];
+		}
+
+		if (!isTestEnv()) {
+			delete allPaths['ASSET_MANAGEMENT'];
 		}
 		const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.CONTACTSUBMENU);
 		// const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);
@@ -114,7 +129,7 @@ export default function Admin() {
 				actions={sidePanelOptions}
 			>
 				{Object.values(allowedPaths).map(option => (
-					<Switch key={option.link}>
+					<Switch key={option.title}>
 						<Route exact path={option.link} component={Components[option.component]} />
 					</Switch>
 				))}

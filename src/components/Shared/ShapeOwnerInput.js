@@ -42,7 +42,7 @@ function ShapeOwnerInput({ data, shapeType, shapeData, onBlur, label = '' }) {
 				customLayer,
 				userId: stateApp.user.mongoId,
 			},
-			refetchQueries: ['customLayer', 'getAllLayerSettingsByUser', 'getMetaData'],
+			refetchQueries: ['customLayer', 'getMetaData'],
 			awaitRefetchQueries: true,
 		});
 	};

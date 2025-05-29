@@ -5,7 +5,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		height: 'calc(100vh - 52px)',
 		padding: '10px',
@@ -53,7 +53,7 @@ export default function Drawer(props) {
 	const drawerIcons = slideOutStateValues?.views;
 
 	const handleClick = view => {
-		slideOutState.view.set(view);
+		slidoutStateController.updateState({ view });
 	};
 
 	const getClass = key => {
@@ -65,13 +65,13 @@ export default function Drawer(props) {
 
 	return (
 		<div className={classes.root}>
-			{drawerIcons.map((view, index) => {
+			{drawerIcons.map(view => {
 				const { name, Icon, show } = view;
 				if (show === false) {
 					return null;
 				}
 				return (
-					<Tooltip key={index} title={name} placement="left">
+					<Tooltip key={name} title={name} placement="left">
 						<div className={`${classes.icon} ${getClass(name)}`} onClick={() => handleClick(view)}>
 							<Icon {...props} opacity="1" height="30" />
 						</div>

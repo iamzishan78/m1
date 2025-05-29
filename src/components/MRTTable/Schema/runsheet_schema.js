@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import GavelIcon from '@material-ui/icons/Gavel';

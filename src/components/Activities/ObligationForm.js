@@ -1,31 +1,52 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect, useRef } from 'react';
 
 import { FormControl, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { useHookstate } from '@hookstate/core';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
-import DateField from 'components/Shared/Slideout/FieldComponents/DateField';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
 import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
-import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTextfield';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
 import { DELETEACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-import { AppContext } from 'AppContext';
-import { slidoutState } from 'stateManagement/initialStates';
-import { globalState } from 'stateManagement/initialStates';
+import { formStateController } from 'stateManagement/formStateController';
+import { globalStateController } from 'stateManagement/globalStateController';
 import { slidoutStateController } from 'stateManagement/slidoutStateController';
 import { tableGlobalController } from 'stateManagement/tableController';
 
-import { obligationFormState } from './obligationFormStateController';
+import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
+const commonTextFieldProps = {
+	fieldConfig: {
+		margin: 'dense',
+		variant: 'outlined',
+		size: 'small',
+		disabled: true,
+	},
+	fieldAttributes: {
+		titleComponent: 'div',
+		layout: 'horizontal',
+	},
+	sx: {
+		'&:hover': {
+			backgroundColor: '#EBEBEB',
+		},
+	},
+};
+
+const useStyles = makeStyles(() => ({
+	fieldGridStyle: {
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
 	dialogExpCard: {
 		'& .MuiDialog-paperScrollPaper': {
 			height: '100%',
@@ -172,10 +193,13 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	const classes = useStyles();
 	const [stateApp] = useContext(AppContext);
 	const [users, setUsers] = useState([]);
-	const { selectedActivity } = slidoutState;
 
-	const activityName = useHookstate(slidoutState.title).get({ noproxy: true });
-	const formMode = useHookstate(slidoutState.formMode);
+	const { title, formMode, selectedActivity } = slidoutStateController.useState([
+		'title',
+		'formMode',
+		'selectedActivity',
+	]);
+	const activityName = title;
 	const {
 		activityType,
 		startDate,
@@ -185,10 +209,20 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		obligationValue,
 		responsibleParty,
 		owner,
-		assignedOwner,
 		status,
 		notes,
-	} = useHookstate(obligationFormState);
+	} = formStateController.useState([
+		'activityType',
+		'startDate',
+		'endDate',
+		'frequency',
+		'applicable',
+		'obligationValue',
+		'responsibleParty',
+		'owner',
+		'status',
+		'notes',
+	]);
 
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
 		fetchPolicy: 'cache-and-network',
@@ -209,6 +243,28 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		}
 	}, [userLists]);
 
+	const clearFields = () => {
+		formStateController.updateState({
+			notes: '',
+			activityType: '',
+			status: false,
+			startDate: getCurrentDate(),
+			endDate: getCurrentDate(),
+			applicable: '',
+		});
+
+		slidoutStateController.updateTitle('');
+	};
+
+	const onModalClose = () => {
+		window.history.pushState('', '', '/calendar/obligations');
+
+		clearFields();
+		setSelectedActivityId(null);
+		slidoutStateController.updateState({ selectedActivity: null });
+		slidoutStateController.hideSlideout();
+	};
+
 	const [updateActivityMutation] = useMutation(UPDATEACTIVITY, {
 		onCompleted: () => {
 			onModalClose();
@@ -221,7 +277,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
 		onCompleted: () => {
 			onModalClose();
-			globalState.universalLoader.set(false);
+			globalStateController.updateState({ universalLoader: false });
 			tableGlobalController.refetch();
 		},
 		refetchQueries: ['getAllActivities', 'getDbData'],
@@ -235,29 +291,32 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	];
 
 	const deleteActivity = async () => {
-		globalState.universalLoader.set(true);
+		globalStateController.updateState({ universalLoader: true });
 		await deleteActivityMutation({
 			variables: {
-				id: selectedActivity.get()._id,
+				id: selectedActivity._id,
 			},
 		});
 	};
 
 	useEffect(() => {
-		const activity = selectedActivity.get();
+		const activity = selectedActivity;
 		if (activity) {
-			activityType.set(activity.type);
-			frequency.set(activity.frequency);
-			applicable.set(activity.applicable);
-			obligationValue.set(activity.value);
-			responsibleParty.set(activity.responsibleParty);
-			assignedOwner.set(activity.assignedOwner);
-			status.set(activity.status);
-			notes.set(activity.notes);
-
-			owner.set({
-				name: activity?.ownerName,
-				id: activity?.ownerId,
+			formStateController.updateState({
+				activityType: activity.type,
+				frequency: activity.frequency,
+				applicable: activity.applicable,
+				obligationValue: activity.value,
+				responsibleParty: activity.responsibleParty,
+				assignedOwner: activity.assignedOwner,
+				status: activity.status,
+				notes: activity.notes,
+				owner: {
+					name: activity?.ownerName,
+					id: activity?.ownerId,
+				},
+				startDate: moment.parseZone(activity.start).format('YYYY-MM-DD'),
+				endDate: moment.parseZone(activity.end).format('YYYY-MM-DD'),
 			});
 
 			slidoutStateController.updateTitle(activity.name);
@@ -266,80 +325,108 @@ export default function ObligationForm({ setSelectedActivityId }) {
 			}
 
 			outcomeFieldRef.current?.updateDefaultValue(activity.outcome);
-			endDate.set(moment.parseZone(activity.end).format('yyyy-MM-DD'));
-			startDate.set(moment.parseZone(activity.start).format('yyyy-MM-DD'));
 			slidoutStateController.updateParent('Obligation');
 		}
 	}, []);
 
-	useEffect(() => {
-		if (formMode.get()) {
-			if (formMode.get() === 'update') {
-				updateActivity();
-			} else if (formMode.get() === 'delete') {
-				deleteActivity();
-			}
-
-			formMode.set('');
-			slidoutStateController.hideSlideout();
-		}
-	}, [formMode.get()]);
-
-	const onModalClose = () => {
-		window.history.pushState('', '', '/calendar/obligations');
-
-		clearFields();
-		setSelectedActivityId(null);
-		slidoutState.selectedActivity.set(null);
-		slidoutStateController.hideSlideout();
-	};
-
-	const clearFields = () => {
-		notes.set('');
-
-		activityType.set('');
-		slidoutStateController.updateTitle('');
-		status.set(false);
-		startDate.set(getCurrentDate());
-		endDate.set(getCurrentDate());
-		applicable.set('');
-	};
-
 	const updateActivity = async () => {
-		globalState.universalLoader.set(true);
+		globalStateController.updateState({ universalLoader: true });
 
 		updateActivityMutation({
 			variables: {
 				activity: {
-					_id: selectedActivity.get()?._id,
-					...(status.get() ? { status: status.get() } : {}),
-					notes: notes.get(),
+					_id: selectedActivity?._id,
+					...(status ? { status: status } : {}),
+					notes: notes,
 					user: stateApp.user._id,
 				},
 			},
-		}).then(result => {
-			globalState.universalLoader.set(false);
+		}).then(() => {
+			globalStateController.updateState({ universalLoader: false });
 		});
 	};
+
+	useEffect(() => {
+		if (formMode) {
+			if (formMode === 'update') {
+				updateActivity();
+			} else if (formMode === 'delete') {
+				deleteActivity();
+			}
+			slidoutStateController.updateState({ formMode: '' });
+			slidoutStateController.hideSlideout();
+		}
+	}, [formMode]);
 
 	return (
 		<div>
 			<div className={classes.inputFieldRoot}>
-				<SimpleTextField disabled title="Obligation Type" value={activityType.get()} setValue={() => {}} />
+				<CustomTextField
+					{...commonTextFieldProps}
+					fieldAttributes={{
+						...commonTextFieldProps.fieldAttributes,
+						value: activityType,
+						title: 'Obligation Type',
+					}}
+				/>
 
 				<FormControl variant="outlined" fullWidth size="small">
 					<Grid container className={classes.gridStyle}>
-						<DateField disabled={true} title="Start Date" date={startDate.get()} setDate={() => {}} />
-						<DateField disabled={true} title="End Date" date={endDate.get()} setDate={() => {}} />
+						<CustomDatePicker
+							{...commonTextFieldProps}
+							fieldAttributes={{
+								...commonTextFieldProps.fieldAttributes,
+								name: 'startDate',
+								title: 'Start Date',
+								value: startDate,
+							}}
+						/>
+						<CustomDatePicker
+							{...commonTextFieldProps}
+							fieldAttributes={{
+								...commonTextFieldProps.fieldAttributes,
+								name: 'endDate',
+								title: 'End Date',
+								value: endDate,
+							}}
+						/>
 					</Grid>
 				</FormControl>
 
-				<SimpleTextField disabled title="Frequecy" value={frequency.get()} setValue={() => {}} />
-				{activityType.get() !== 'Payment' && (
-					<SimpleTextField disabled title="Applicable" value={applicable.get()} setValue={() => {}} />
+				<CustomTextField
+					{...commonTextFieldProps}
+					fieldAttributes={{
+						...commonTextFieldProps.fieldAttributes,
+						value: frequency,
+						title: 'Frequecy',
+					}}
+				/>
+				{activityType !== 'Payment' && (
+					<CustomTextField
+						{...commonTextFieldProps}
+						fieldAttributes={{
+							...commonTextFieldProps.fieldAttributes,
+							value: applicable === true ? 'Yes' : 'No',
+							title: 'Applicable',
+						}}
+					/>
 				)}
-				<SimpleTextField disabled title="Value" value={obligationValue.get()} setValue={() => {}} />
-				<SimpleTextField disabled title="Responsible Party" value={responsibleParty.get()} setValue={() => {}} />
+				<CustomTextField
+					{...commonTextFieldProps}
+					fieldAttributes={{
+						...commonTextFieldProps.fieldAttributes,
+						value: obligationValue,
+						title: 'Value',
+					}}
+				/>
+				<CustomTextField
+					{...commonTextFieldProps}
+					fieldAttributes={{
+						...commonTextFieldProps.fieldAttributes,
+						value: responsibleParty,
+						title: 'Responsible Party',
+					}}
+				/>
 
 				<OwnerField
 					disabled={true}
@@ -347,20 +434,27 @@ export default function ObligationForm({ setSelectedActivityId }) {
 					users={users}
 					setOwnerId={value => {
 						const foundText = users.find(item => item.value === value)?.text || '';
-						owner.set({ id: value, name: foundText });
+						formStateController.updateState({ owner: { id: value, name: foundText } });
 					}}
-					ownerId={owner.get()?.id}
+					ownerId={owner?.id}
 				/>
 
 				<SingleSelectField
 					title="Status"
-					value={status.get()}
+					value={status}
 					options={statusOptions}
-					onChange={value => status.set(value)}
+					onChange={value => formStateController.updateState({ status: value })}
 				/>
 
-				<DescriptionField description={notes.get()} setDescription={value => notes.set(value)} />
+				<DescriptionField
+					description={notes}
+					setDescription={value => formStateController.updateState({ notes: value })}
+				/>
 			</div>
 		</div>
 	);
 }
+
+ObligationForm.propTypes = {
+	setSelectedActivityId: PropTypes.func.isRequired,
+};

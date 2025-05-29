@@ -65,11 +65,12 @@ function* getShapeOwnersAndWells(action) {
 		const { client, currentFeature } = action.payload;
 
 		const shapeWellCount = yield client.query({
-			query: GET_DB_DATA_TOTAL,
+			query: GET_DB_DATA,
 			variables: {
 				index: 'platform_wells',
 				filters: [{ type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 				pagination: {
+					getAllData: true,
 					first: 0,
 					after: null,
 				},
@@ -88,7 +89,7 @@ function* getShapeOwnersAndWells(action) {
 			variables: {
 				polygon: currentFeature?.geometry,
 				pagination: {
-					first: get(shapeWellCount, 'data.getDbDataTotal.data', 0),
+					first: get(shapeWellCount, 'data.getDbData.total', 0),
 					after: null,
 				},
 			},
@@ -103,7 +104,7 @@ function* getShapeOwnersAndWells(action) {
 				// shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
 				shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount', 0),
 				// wells: get(wells, 'data.data.getDbData.hits', []),
-				wellsCount: get(shapeWellCount, 'data.getDbDataTotal.data', 0),
+				wellsCount: get(shapeWellCount, 'data.getDbData.total', 0),
 			})
 		);
 	} catch {
@@ -162,14 +163,6 @@ function* getMapFilterShapeOwnersAndCount(action) {
 function* getMapFilterShapeOwnersAndWells(action) {
 	try {
 		const { client, currentFeature, filters, search } = action.payload;
-
-		// const originalFile = await client.mutate({
-		//   mutation: ADDFILE,
-		//   variables: {
-		//     fileName: inputOriginalFile.fileName,
-		//     userId,
-		//   },
-		// })
 
 		const shapeWellCount = yield client.query({
 			query: GET_DB_DATA_TOTAL,

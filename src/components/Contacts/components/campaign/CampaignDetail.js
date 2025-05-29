@@ -23,6 +23,7 @@ import { withStyles } from '@material-ui/styles';
 
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { debounce, get } from 'lodash';
+import PropTypes from 'prop-types';
 import { isEmpty } from 'underscore';
 
 import CampaignHeader from 'components/Contacts/components/campaign/CampaignHeaderSection';
@@ -53,12 +54,14 @@ const StyledTabs = withStyles({
 	},
 })(Tabs);
 
+const THEME_SPACING = 4;
+
 const StyledTab = withStyles(theme => ({
 	root: {
 		textTransform: 'uppercase',
 		minWidth: 72,
 		fontWeight: theme.typography.fontWeightRegular,
-		marginRight: theme.spacing(4),
+		marginRight: theme.spacing(THEME_SPACING),
 		fontFamily: [
 			'-apple-system',
 			'BlinkMacSystemFont',
@@ -206,10 +209,13 @@ const CampaignDetail = ({ viewDoc }) => {
 	const handleScroll = () => {
 		if (!isButtonScroll) {
 			let activeTab = 0;
-			if (getRelativePosition('header-div') < 5) {
+			const HEADER_DIV = 5;
+			const DETAIL_DIV = 30;
+
+			if (getRelativePosition('header-div') < HEADER_DIV) {
 				activeTab = 0;
 			}
-			if (getRelativePosition('detail-div') < 30) {
+			if (getRelativePosition('detail-div') < DETAIL_DIV) {
 				activeTab = 1;
 			}
 
@@ -254,10 +260,10 @@ const CampaignDetail = ({ viewDoc }) => {
 								<Controller
 									control={control}
 									name="name"
-									render={params => (
+									render={({ field }) => (
 										<FormControl variant="outlined" className={classes.inputFieldDealName} fullWidth size="small">
 											<TextField
-												{...params}
+												{...field}
 												margin="dense"
 												variant="outlined"
 												placeholder="Click to enter campaign name"
@@ -427,5 +433,7 @@ const CampaignDetail = ({ viewDoc }) => {
 		</NavHeader>
 	);
 };
+
+CampaignDetail.propTypes = { viewDoc: PropTypes.func };
 
 export default CampaignDetail;

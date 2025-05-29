@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import Grid from '@material-ui/core/Grid';
@@ -127,8 +126,8 @@ const AgreementMeta = {
 
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'shape.shapeJson.properties.originalProperties.stateDetails.keyword',
-			id: 'shape.shapeJson.properties.originalProperties.stateDetails',
+			name: 'shape.shapeJson.properties.originalProperties.State.keyword',
+			id: 'shape.shapeJson.properties.originalProperties.State',
 			header: 'State',
 		},
 

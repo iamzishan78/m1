@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useContext, useEffect, useMemo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Typography } from '@material-ui/core';
@@ -23,19 +23,17 @@ import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 import { GET_DATASETS } from 'graphQL/useQueryDataset';
 import { USER_MAP_SETTINGS_QUERY } from 'graphQL/useQueryUserMapSettings';
 
-
 import { globalStateController } from 'stateManagement/globalStateController';
-import { globalState } from 'stateManagement/initialStates';
 import { layerController } from 'stateManagement/layerStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { scrollbarStyle } from 'styles/common';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
-import { AppContext } from 'AppContext';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import DatasetMenu from './Menu';
+import NameWithTooltip from '../Common/NameWithTooltip';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -108,9 +106,13 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-function Datasets({ headerButton, search, stateApp }) {
+function Datasets({ headerButton, search }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
+
+	const {
+		stateValues: { user },
+	} = globalStateController.useState(['user']);
 
 	const [getDatasets, { data: _datasets }] = useLazyQuery(GET_DATASETS);
 	const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
@@ -121,9 +123,9 @@ function Datasets({ headerButton, search, stateApp }) {
 	const [userMapSettings, { data: mapSettings }] = useLazyQuery(USER_MAP_SETTINGS_QUERY);
 
 	useEffect(() => {
-		userMapSettings({ variables: { user: stateApp.user._id, type: 'DatasetVisibility' } });
-		getDatasets({ variables: { userId: stateApp.user._id } });
-	}, [getDatasets, stateApp.user._id, userMapSettings]);
+		userMapSettings({ variables: { user: user._id, type: 'DatasetVisibility' } });
+		getDatasets({ variables: { userId: user._id } });
+	}, [getDatasets, user._id, userMapSettings]);
 
 	const datasets = useMemo(() => {
 		if (_datasets?.getDatasets?.length && mapSettings?.userMapSettings?.message) {
@@ -136,19 +138,17 @@ function Datasets({ headerButton, search, stateApp }) {
 					dataset.Icon = DatabaseIcon;
 					dataset.visibility = true;
 					dataset.categoryCount = snapGridSideBarData.length;
-					dataset.categories = snapGridSideBarData;
 				} else {
 					dataset.Icon = FileDatasetIcon;
 					dataset.categoryCount = dataset.categories.length;
 					dataset.visibility = typeof settings[dataset._id] === 'undefined' ? true : settings[dataset._id];
 					dataset.categories.forEach(category => {
 						category.file = dataset.file;
-						category.originalFile = dataset.originalFile;
 						category.fileName = dataset?.fileInfo?.name;
 					});
 				}
 			});
-			globalStateController.updateState({ datasets });
+			layerController.updateState({ datasets });
 			datasets = datasets.filter(dataset => {
 				return dataset.visibility;
 			});
@@ -177,9 +177,9 @@ function Datasets({ headerButton, search, stateApp }) {
 			stateToUpdate.layerGridCard = false;
 			stateToUpdate.mapGridCardActivated = true;
 		} else {
-			const layers = globalStateController.getValue('layers');
+			const layers = layerController.getValue('layers');
 			const layer = layers.find(
-				l => l.file === dataset.categories[0]?.file && l.layerShapeName === dataset.categories[0]?.layerShapeName
+				l => l.file === dataset.categories[0]?.file && l.layerIdentifier === dataset.categories[0]?.layerIdentifier
 			);
 			stateToUpdate.selectedLayer = { ...dataset.categories[0], layerSchema: layer?.layerSchema };
 			stateToUpdate.layerGridCard = true;
@@ -190,28 +190,27 @@ function Datasets({ headerButton, search, stateApp }) {
 
 	const handleRemove = (dataset, value) => {
 		datasets.find(d => d._id === dataset._id).visibility = value;
-		globalStateController.updateState({ datasets });
 		const layersSettingsToUpdate = [];
-
-		globalStateController.getValue('layers').forEach((clayer, layerIndex) => {
+		const layers = layerController.getValue('layers');
+		layers.forEach((clayer, layerIndex) => {
 			if (clayer.file === dataset.file) {
 				layersSettingsToUpdate.push({
 					_id: clayer._id,
 					layerSettings: { ...clayer.layerSettings, showable: value },
 				});
 				layerController.handleDeckLayer({ ...clayer, layerSettings: { ...clayer.layerSettings, showable: value } });
-				globalState.layers[layerIndex].merge({
-					layerSettings: {
-						...clayer.layerSettings,
-						showable: value,
-					},
-				});
+				layers[layerIndex].layerSettings = {
+					...clayer.layerSettings,
+					showable: value,
+				};
 			}
 		});
+		layerController.updateState({ layers, datasets });
+
 		updateUserMapSettings({
 			variables: {
 				settings: {
-					user: stateApp.user.mongoId,
+					user: user.mongoId,
 					type: 'DatasetVisibility',
 					settings: { [dataset._id]: value },
 				},
@@ -268,7 +267,7 @@ function Datasets({ headerButton, search, stateApp }) {
 				)}
 			</StyledMenuSecondaryHeaderItem>
 			<div className={classes.root}>
-				{datasets?.map(({ sourceName, Icon, categories, ...rest }) => (
+				{datasets?.map(({ sourceName, Icon, categories, ...rest }, index) => (
 					<Grid
 						className="item"
 						key={`dataset-${sourceName}`}
@@ -332,25 +331,9 @@ Datasets.propTypes = {
 		fn: PropTypes.func.isRequired,
 	}),
 	search: PropTypes.string,
-	stateApp: PropTypes.shape({
-		user: PropTypes.shape({
-			_id: PropTypes.string.isRequired,
-			mongoId: PropTypes.string.isRequired,
-		}).isRequired,
-		layers: PropTypes.array.isRequired,
-	}).isRequired,
 };
 
-const DatasetsMemo = memo(Datasets);
-
-function DatasetsContainer({ headerButton, search }) {
-	const [stateApp] = useContext(AppContext);
-	const stateAppMemo = useMemo(
-		() => ({ layers: stateApp.layers, user: stateApp.user }),
-		[stateApp.layers, stateApp.user]
-	);
-	return <DatasetsMemo stateApp={stateAppMemo} headerButton={headerButton} search={search} />;
-}
+const DatasetsContainer = memo(Datasets);
 
 DatasetsContainer.propTypes = {
 	headerButton: PropTypes.shape({

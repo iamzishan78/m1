@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -37,7 +36,7 @@ const RelatedPaymentsMeta = {
 		pageIndex: 0,
 		pageSize: 50,
 	},
-	maxTableHeight: 'calc(100vh - 550px)',
+	maxTableHeight: '30vh',
 	CustomToolBar: RelatedPaymentsToolbar,
 	isInFiniteScroll: true,
 	enableRowSelected: true,
@@ -99,10 +98,9 @@ const RelatedPaymentsMeta = {
 			},
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'amount.keyword',
 			id: 'amount',
-			type: 'number',
 			header: 'Amount',
 		},
 		{

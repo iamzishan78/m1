@@ -2,8 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 
 import { Select, FormControl, Divider } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
-
-//material-ui components
 import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';

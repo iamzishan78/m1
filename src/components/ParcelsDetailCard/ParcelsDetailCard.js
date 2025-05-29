@@ -284,8 +284,11 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 		}
 	}, [dataCustomLayer, tractOwnerGridState?.data, tractUnitsGridState?.data, tractPotentialUnitsState?.data]);
 
+	const maxTableHeight = 'calc(100vh - 400px)';
+
 	const tractOwnerOverrideMeta = useMemo(
 		() => ({
+			maxTableHeight,
 			tabLabels: ['Tract Ownership', 'Potential Ownership'],
 			defaultFilters: [
 				{ field: 'shape._id', value: parcelObj?._id },
@@ -299,6 +302,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 
 	const potentialShapeOwnersOverrideMeta = useMemo(
 		() => ({
+			maxTableHeight,
 			tabLabels: ['Tract Ownership', 'Potential Ownership'],
 			customProps: { customLayer: parcelObj },
 		}),
@@ -307,6 +311,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 
 	const tractUnitsOverrideMeta = useMemo(
 		() => ({
+			maxTableHeight,
 			tabLabels: ['Related Units', 'Potential Units'],
 			defaultFilters: [{ field: 'parcel._id', value: parcelObj?._id }],
 			customProps: { customLayer: parcelObj },
@@ -316,6 +321,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 
 	const tractPotentialUnitsOverrideMeta = useMemo(
 		() => ({
+			maxTableHeight,
 			tabLabels: ['Related Units', 'Potential Units'],
 			defaultFilters: [
 				{
@@ -333,6 +339,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 	// Table overridden meta
 	const relatedAgreementOverrideMeta = useMemo(
 		() => ({
+			maxTableHeight,
 			defaultFilters: [
 				{ field: 'tract.tractId', value: parcelObj?._id },
 				{ field: 'shapeType', value: 'Agreement' },
@@ -341,7 +348,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 			onCustomKeyChange: null,
 			CustomToolBar: null,
 			gridViewSettings: null,
-			maxTableHeight: 'calc(60vh - 200px)',
 			fetchMetaData: null,
 		}),
 		[parcelObj]
@@ -409,8 +415,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 				customLayer,
 				userId: globalStateController.getValue('user')?._id,
 			},
-			refetchQueries: ['getAllLayerSettingsByUser'],
-			awaitRefetchQueries: true,
 		}).then(res => {
 			jobController.toggleBulkUpload();
 			layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer);
@@ -443,7 +447,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 
 	const relatedDocumentsOverrideMeta = useMemo(
 		() => ({
-			maxTableHeight: 'calc(50vh - 100px)',
+			maxTableHeight,
 			gridViewSettings: null,
 			fetchMetaData: null,
 			defaultFilters: [{ field: 'shapeObj._id', value: parcelObj?._id }],
@@ -458,7 +462,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 
 	const runsheetOverrideMeta = useMemo(
 		() => ({
-			maxTableHeight: 'calc(50vh - 100px)',
+			maxTableHeight,
 			defaultFilters: [
 				{ field: 'customLayerId', value: parcelObj?._id },
 				{ field: 'isRunsheetInstrument', value: 'true' },
@@ -551,7 +555,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 								name="ShapeDetailAgreementTable"
 								overrideMeta={relatedAgreementOverrideMeta}
 							/>,
-							<div key="Documents" className={`${classes.subContent} ${classes.parcelDocument}`}>
+							<div key="Documents">
 								<RelatedDocumentsTable
 									id="relatedDocumentsTable"
 									moduleId={parcelObj?._id}

@@ -1,13 +1,15 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { useApolloClient } from '@apollo/client';
+import { useApolloClient, useMutation } from '@apollo/client';
 import { debounce } from 'lodash';
 
 import { deepEqual } from 'components/Shared/functions';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
 
-import { globalStateController } from 'stateManagement/globalStateController';
+import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
+
+import { drawController } from 'stateManagement/drawStateController';
 import { layerFiltersController } from 'stateManagement/layerFiltersController';
 import { layerController } from 'stateManagement/layerStateController';
 
@@ -40,48 +42,49 @@ function LayerManager() {
 	const moveRef = useRef({});
 	const [isReady, setIsReady] = useState(false);
 
+	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
+
 	const { bbox, recalculate } = layerController.useState(['bbox', 'recalculate']);
-	const { layers, deckLayer, globalStateValues } = globalStateController.useState(
-		['layers', 'deckLayer'],
-		'globalStateValues'
-	);
 	const { polygonFilter, polygonsFilter } = layerFiltersController.useState(['polygonFilter', 'polygonsFilter']);
+	const { layers, deckLayer, layerStateValues } = layerController.useState(['layers', 'deckLayer'], 'layerStateValues');
+
+	const {
+		stateValues: { isDrawing },
+	} = drawController.useState(['isDrawing'], 'stateValues');
 
 	useEffect(() => {
 		if (!window.mapRef) {
-			return;
+			return null;
 		}
 		move(moveRef);
 		window.mapRef?.on?.('move', () => move(moveRef));
+
 		return () => {
 			window.mapRef?.off('move', () => move(moveRef));
 		};
-	}, []);
+	}, [window.mapRef]);
 
 	useEffect(() => {
-		layerController.init(client, history);
-	}, [client, history]);
+		layerController.init(client, history, updateLayerSettings);
+	}, [client, history, updateLayerSettings]);
 
 	useEffect(() => {
-		if (globalStateValues?.layers?.length > 0 && !isReady) {
+		if (layerStateValues?.layers?.length > 0 && !isReady) {
 			setIsReady(true);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layers]);
 
 	useEffect(() => {
-		if (globalStateValues?.deckLayer && globalStateValues?.layers?.length === 0) {
-			layerController.handleDeckLayer(globalStateValues?.deckLayer);
+		if (layerStateValues?.deckLayer && layerStateValues?.layers?.length === 0) {
+			layerController.handleDeckLayer(layerStateValues?.deckLayer);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [deckLayer]);
 
 	useEffect(() => {
 		if (isReady) {
 			layerController.handleChange();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [bbox, recalculate, isReady, polygonFilter, polygonsFilter, layers]);
+	}, [bbox, recalculate, isReady, polygonFilter, polygonsFilter, layers, isDrawing]);
 
 	return null;
 }

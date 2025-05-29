@@ -65,16 +65,6 @@ export default function RevenueStatements() {
 
 	const onGettingPotentialIssues = count => setPotentialIssuesCount(count);
 
-	const getCounts = async () => {
-		const approvedCounts = await getDBCounts('approvalStatus.keyword', 'Approved');
-		const unApprovedCounts = await getDBCounts('approvalStatus.keyword', 'Unapproved');
-		const potentialIssuesCounts = await getDBCounts('isAmountValidated', false, 'term');
-
-		setApprovedCount(approvedCounts);
-		setUnapprovedCount(unApprovedCounts);
-		onGettingPotentialIssues(potentialIssuesCounts);
-	};
-
 	useEffect(() => {
 		return () => {
 			globalStateController.updateState({ globalSearch: '' });
@@ -111,6 +101,16 @@ export default function RevenueStatements() {
 		}
 		setESFilters(filters);
 		setFilterToggle(!filterToggle);
+	};
+
+	const getCounts = async () => {
+		const approvedCounts = await getDBCounts('approvalStatus.keyword', 'Approved');
+		const unApprovedCounts = await getDBCounts('approvalStatus.keyword', 'Unapproved');
+		const potentialIssuesCounts = await getDBCounts('isAmountValidated', false, 'term');
+
+		setApprovedCount(approvedCounts);
+		setUnapprovedCount(unApprovedCounts);
+		onGettingPotentialIssues(potentialIssuesCounts);
 	};
 
 	return (

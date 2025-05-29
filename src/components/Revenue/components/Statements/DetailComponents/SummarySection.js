@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Typography, Grid, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
 import { set, get, uniqBy } from 'lodash';
+import PropTypes from 'prop-types';
 
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
@@ -27,7 +28,16 @@ export const TabButtons = ({ tab, actiiveId, setActive }) => {
 	);
 };
 
-const useStyles = makeStyles(theme => ({
+TabButtons.propTypes = {
+	tab: PropTypes.shape({
+		id: PropTypes.string.isRequired,
+		label: PropTypes.string.isRequired,
+	}).isRequired,
+	actiiveId: PropTypes.string.isRequired,
+	setActive: PropTypes.func.isRequired,
+};
+
+const useStyles = makeStyles(() => ({
 	root: {
 		paddingTop: 0,
 		paddingLeft: 20,
@@ -278,36 +288,42 @@ const SummarySection = ({ checkId }) => {
 				},
 			},
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [checkId]);
 
 	// revenue summary
 	useEffect(() => {
-		if (revSummary) {
-			setRevenueSummaryDetails([
-				{ name: 'Gross Revenue', value: `${revSummary?.grossRevenue[0]?.grossRevenue?.toFixed(2)}` },
-				{
-					name: 'Adjustments',
-					value: `${(revSummary?.ownerDeducts[0]?.ownerDeducts + revSummary?.ownerTax[0]?.ownerTax)?.toFixed(2)}`,
-				},
-				{ name: 'Net Revenue', value: `${revSummary?.netOwnerValue[0]?.netOwnerValue?.toFixed(2)}` },
-				{
-					name: 'Lease Payments',
-					value: revSummary?.leasePayments[0]?.leasePayments?.value
-						? `${revSummary.leasePayments[0]?.leasePayments?.toFixed(2)}`
-						: '-',
-				},
-				{ name: 'Other', value: revSummary?.other[0]?.other ? `${revSummary?.other[0]?.other?.toFixed(2)}` : '-' },
-				{
-					name: 'Total Income',
-					value: `${(
-						get(revSummary, 'netOwnerValue[0].netOwnerValue', 0) +
-						get(revSummary, 'leasePayments[0].leasePayments', 0) +
-						get(revSummary, 'other[0].other', 0)
-					).toFixed(2)}`,
-				},
-			]);
+		if (!revSummary) {
+			return;
 		}
+
+		const grossRev = revSummary?.grossRevenue?.[0]?.grossRevenue || 0;
+		const ownerDeduct = revSummary?.ownerDeducts?.[0]?.ownerDeducts || 0;
+		const ownerTax = revSummary?.ownerTax?.[0]?.ownerTax || 0;
+		const ownerDed = ownerDeduct + ownerTax;
+
+		const netRev = revSummary?.netOwnerValue?.[0]?.netOwnerValue || 0;
+		const leasePay = revSummary?.leasePayments?.[0]?.leasePayments || 0;
+		const other = revSummary?.other?.[0]?.other || 0;
+
+		const format = val => val?.toFixed(2);
+
+		setRevenueSummaryDetails([
+			{ name: 'Gross Revenue', value: format(grossRev) },
+			{ name: 'Adjustments', value: format(ownerDed) },
+			{ name: 'Net Revenue', value: format(netRev) },
+			{
+				name: 'Lease Payments',
+				value: leasePay ? format(leasePay) : '-',
+			},
+			{
+				name: 'Other',
+				value: other ? format(other) : '-',
+			},
+			{
+				name: 'Total Income',
+				value: format(netRev + leasePay + other),
+			},
+		]);
 	}, [revSummary]);
 
 	// // products summary
@@ -340,18 +356,21 @@ const SummarySection = ({ checkId }) => {
 				buckets.push(bucket);
 			});
 
-			buckets = buckets.map(b => ({
+			const formatValue = value => {
+				const rounded = Math.round((value || 0) * 100) / 100;
+				return vf_number(rounded.toFixed(2));
+			};
+
+			const formattedBuckets = buckets.map(b => ({
 				...b,
-				grsProd: b.grossPropertyVolume
-					? vf_number((Math.round(get(b, 'grossPropertyVolume') * 100) / 100).toFixed(2))
-					: '-',
-				netProd: b.grossOwnerVolume ? vf_number((Math.round(get(b, 'grossOwnerVolume') * 100) / 100).toFixed(2)) : '-',
-				netRevenue: b.netRevenue ? vf_number((Math.round(get(b, 'netRevenue') * 100) / 100).toFixed(2)) : '-',
-				avgPrice: b.avgPrice ? vf_number((Math.round(get(b, 'avgPrice') * 100) / 100).toFixed(2)) : '-',
+				grsProd: b.grossPropertyVolume ? formatValue(b.grossPropertyVolume) : '-',
+				netProd: b.grossOwnerVolume ? formatValue(b.grossOwnerVolume) : '-',
+				netRevenue: b.netRevenue ? formatValue(b.netRevenue) : '-',
+				avgPrice: b.avgPrice ? formatValue(b.avgPrice) : '-',
 			}));
-			setProductSummaryDetails(buckets);
+
+			setProductSummaryDetails(formattedBuckets);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [prodSummary]);
 
 	// // adjustment summary
@@ -359,8 +378,23 @@ const SummarySection = ({ checkId }) => {
 		if (adjSummary) {
 			let { deductType, taxType } = adjSummary;
 
-			const deducts = deductType.map(d => ({ name: d?.deductType, value: d?.ownerDeducts?.toFixed(2) }));
-			const taxes = taxType.map(t => ({ name: t?.taxType, value: t?.ownerTax?.toFixed(2) }));
+			const deducts = deductType.map(d => {
+				const rawValue = d?.ownerDeducts;
+				const safeValue = Number(rawValue) || 0; // fallback to 0 if NaN/undefined/null
+				return {
+					name: d?.deductType,
+					value: safeValue.toFixed(2),
+				};
+			});
+
+			const taxes = taxType.map(t => {
+				const rawValue = t?.ownerTax;
+				const safeValue = Number(rawValue) || 0;
+				return {
+					name: t?.taxType,
+					value: safeValue.toFixed(2),
+				};
+			});
 
 			const adjustments = [...deducts, ...taxes];
 			let totalAdjustment = 0;
@@ -380,9 +414,9 @@ const SummarySection = ({ checkId }) => {
 	return (
 		<div className={`${classes.root} flex column justifyStart alignStart w-100`}>
 			<div className={`${classes.tabButtons} flex justifyBetween alignCenter w-100`}>
-				{summaryTabs.map((tab, index) => (
+				{summaryTabs.map(tab => (
 					<TabButtons
-						key={index + 1}
+						key={tab.id}
 						tab={tab}
 						actiiveId={activeTabId}
 						setActive={selectedId => setActiveTabId(selectedId)}
@@ -401,13 +435,13 @@ const SummarySection = ({ checkId }) => {
 					<Grid item xs={6}>
 						<div className={classes.analyticTable}>
 							{revenueSummaryDetails?.length > 0 &&
-								revenueSummaryDetails.map((item, index) => (
+								revenueSummaryDetails.map(item => (
 									<>
 										{['Net Revenue', 'Adjustments', 'Gross Revenue'].includes(item.name) ? (
 											<>
 												{item.name === 'Net Revenue' && <Divider />}
 												<div
-													key={index + 1}
+													key={item.name}
 													className={`${classes.dataCardWidth} ${classes.dataCardMargin} flex justifyBetween alignCenter w-100`}
 												>
 													<div className="flex alignCenter justifyStart">
@@ -474,8 +508,8 @@ const SummarySection = ({ checkId }) => {
 										<Grid item xs={2}></Grid>
 									</Grid>
 								</Grid>
-								{productSummaryDetails.map((product, index) => (
-									<Grid item xs={12}>
+								{productSummaryDetails.map(product => (
+									<Grid item xs={12} key={product.key}>
 										<Grid
 											container
 											display="flex"
@@ -533,11 +567,11 @@ const SummarySection = ({ checkId }) => {
 					<Grid item xs={5}>
 						<div className={classes.analyticTable} style={{ width: '285px !important' }}>
 							{adjustmentSummaryDetails?.length > 0 &&
-								adjustmentSummaryDetails.map((item, index) => (
+								adjustmentSummaryDetails.map(item => (
 									<>
 										{item.name === 'Total Adjustments' && <Divider />}
 										<div
-											key={index + 1}
+											key={item.name}
 											className={`${classes.dataCardWidth} ${classes.dataCardMargin} flex justifyBetween alignCenter w-100`}
 										>
 											<div className="flex alignCenter justifyStart">
@@ -567,3 +601,7 @@ const SummarySection = ({ checkId }) => {
 };
 
 export default SummarySection;
+
+SummarySection.propTypes = {
+	checkId: PropTypes.string,
+};

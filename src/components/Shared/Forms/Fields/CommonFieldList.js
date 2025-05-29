@@ -5,11 +5,11 @@ import { Grid, IconButton, InputAdornment, MenuItem, Select, makeStyles } from '
 import EditIcon from '@material-ui/icons/Edit';
 
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
+import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
-import DateField from 'components/Shared/components/Fields/DateField';
-import NumberField from 'components/Shared/components/Fields/NumberField';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 
@@ -30,7 +30,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 		return null;
 	}
 
-	return fields.map((field, index) => {
+	return fields.map(field => {
 		const fieldKey = (field.key || field.esKey).replaceAll('.keyword', '');
 
 		const handleEdit = () => {
@@ -55,7 +55,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 			<Grid
 				item
 				xs={4}
-				key={index + field.label + fieldKey}
+				key={field.label + fieldKey}
 				style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
 			>
 				<Grid item xs={3}>
@@ -72,13 +72,78 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 						setIsHovered(false);
 					}}
 				>
-					<Fragment key={index}>
-						{(field.type === 'text' ||
-							field.type === 'number' ||
-							field.type === 'date' ||
-							field.type === 'dropdown' ||
-							field.type === 'multiselect' ||
-							field.type === 'select') && (
+					<Fragment key={fieldKey}>
+						{field.type === 'text' && (
+							<CustomTextField
+								id={`field-${fieldKey}`}
+								control={control}
+								fieldConfig={{
+									margin: 'dense',
+									variant: 'outlined',
+									size: 'small',
+									disabled: field?.disabled,
+									customStyleClass: classes.text,
+								}}
+								fieldAttributes={{
+									name: field.key,
+									defaultValue: get(data, `${fieldKey}`, ''),
+									InputProps: {
+										...field.InputProps,
+										endAdornment,
+									},
+								}}
+								fieldEvents={{
+									onBlur: value => offClickHandler(fieldKey, value),
+								}}
+							/>
+						)}
+						{field.type === 'number' && (
+							<CustomTextField
+								id={`field-${fieldKey}`}
+								control={control}
+								fieldConfig={{
+									margin: 'dense',
+									variant: 'outlined',
+									size: 'small',
+									type: 'number',
+									disabled: field?.disabled,
+									customStyleClass: classes.text,
+								}}
+								fieldAttributes={{
+									name: field.key,
+									defaultValue: get(data, `${fieldKey}`, ''),
+									InputProps: {
+										...field.InputProps,
+										endAdornment,
+									},
+								}}
+								fieldEvents={{
+									onBlur: value => offClickHandler(fieldKey, value),
+								}}
+							/>
+						)}
+						{field.type === 'date' && (
+							<CustomDatePicker
+								control={control}
+								fieldAttributes={{
+									name: fieldKey,
+									value: get(data, `${fieldKey}`, ''),
+								}}
+								fieldConfig={{
+									size: 'small',
+									overrideEndAdornment: true,
+								}}
+								fieldEvents={{
+									onChange: newValue => {
+										offClickHandler?.(fieldKey, newValue?.toDate());
+									},
+								}}
+								InputProps={{
+									endAdornment,
+								}}
+							/>
+						)}
+						{(field.type === 'dropdown' || field.type === 'multiselect' || field.type === 'select') && (
 							<Controller
 								key={fieldKey}
 								control={control}
@@ -86,67 +151,6 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 								render={params => {
 									return (
 										<Fragment>
-											{field.type === 'text' && (
-												<CustomTextField
-													{...params}
-													id={`field-${fieldKey}`}
-													index={index}
-													fieldKey={fieldKey}
-													field={field}
-													defaultValue={get(data, `${fieldKey}`, '')}
-													showLinkPopup={true}
-													offClickHandler={(key, value) => {
-														offClickHandler(key, value);
-													}}
-													InputProps={{
-														...field.InputProps,
-														endAdornment,
-													}}
-													props={{
-														className: classes.text,
-													}}
-												/>
-											)}
-											{field.type === 'number' && (
-												<NumberField
-													{...params}
-													id={`field-${fieldKey}`}
-													index={index}
-													fieldKey={fieldKey}
-													field={field}
-													defaultValue={get(data, `${fieldKey}`, '')}
-													offClickHandler={(key, value) => {
-														offClickHandler(key, value);
-													}}
-													InputProps={{
-														...field.InputProps,
-														endAdornment,
-													}}
-													props={{
-														className: classes.text,
-													}}
-												/>
-											)}
-											{field.type === 'date' && (
-												<DateField
-													{...params}
-													id={`field-${fieldKey}`}
-													index={index}
-													field={field}
-													fieldKey={fieldKey}
-													defaultValue={get(data, `${fieldKey}`, '')}
-													offClickHandler={(key, value) => {
-														offClickHandler(key, value);
-													}}
-													InputProps={{
-														...field.InputProps,
-														endAdornment,
-													}}
-													props={{
-														className: classes.text,
-													}}
-												/>
-											)}
 											{field.type === 'dropdown' && (
 												<div
 													style={{
@@ -171,7 +175,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 											)}
 											{field.type === 'select' && (
 												<Select
-													{...params}
+													{...params.field}
 													id={`field-${fieldKey}`}
 													variant="outlined"
 													fullWidth
@@ -184,7 +188,10 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 													value={get(data, `${fieldKey}`, '')}
 												>
 													{field.dropdownOptions.map(option => (
-														<MenuItem value={option.value ? option.value : option}>
+														<MenuItem
+															key={option.value ? option.value : option}
+															value={option.value ? option.value : option}
+														>
 															{option.label ? option.label : option}
 														</MenuItem>
 													))}
@@ -221,6 +228,29 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 			</Grid>
 		);
 	});
+};
+
+CommonFieldList.propTypes = {
+	control: PropTypes.object,
+	data: PropTypes.object,
+	fields: PropTypes.arrayOf(
+		PropTypes.shape({
+			type: PropTypes.oneOf(['text', 'number', 'date', 'dropdown', 'multiselect']),
+			key: PropTypes.string,
+			label: PropTypes.string,
+			disabled: PropTypes.bool,
+			InputProps: PropTypes.object,
+			dropdownOptions: PropTypes.arrayOf(
+				PropTypes.shape({
+					value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+					label: PropTypes.string,
+				})
+			),
+		})
+	),
+	classes: PropTypes.object,
+	endAdornment: PropTypes.node,
+	offClickHandler: PropTypes.func,
 };
 
 export default CommonFieldList;

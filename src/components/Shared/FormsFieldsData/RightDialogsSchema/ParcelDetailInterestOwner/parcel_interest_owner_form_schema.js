@@ -1,3 +1,5 @@
+import React from 'react';
+
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
@@ -45,7 +47,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
 		contactFields.splice(-2);
 		contactFields.push(...contactArray);
 	} else {
-		tractInterestFields.push(contactForm({ getValues, setValue })[3]);
+		tractInterestFields.push(contactForm({ getValues, setValue })[3], contactForm({ getValues, setValue })[14]);
 	}
 
 	const formFields = [
@@ -722,7 +724,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
 		{
 			label: 'Campaigns',
 			name: 'campaigns',
-			renderField: 'campaignName',
+			renderField: 'campaigns',
 		},
 		{
 			label: 'Campaign Priority',

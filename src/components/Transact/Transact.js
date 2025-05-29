@@ -14,7 +14,7 @@ import { get } from 'lodash';
 import moment from 'moment';
 
 import './index.css';
-import { validateEmail } from 'components/AzureLogin/loginHelpers';
+import { validateEmail } from 'components/Auth0Login/helpers';
 import MRTTable from 'components/MRTTable';
 import { getRandomColor } from 'components/Shared/functions/ui.js';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';

@@ -96,7 +96,6 @@ const useStyles = makeStyles(() => ({
 			color: 'rgba(23, 170, 221, 1)',
 		},
 	},
-
 	emailAdornment: {
 		cursor: 'pointer',
 		padding: '0px', // Remove extra padding

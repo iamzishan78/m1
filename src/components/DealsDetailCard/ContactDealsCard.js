@@ -100,7 +100,7 @@ export default function ContactDocumentsCard(props) {
 	}, [data]);
 
 	return contactData ? (
-		<div variant="outlined" className={classes.root}>
+		<div className={classes.root}>
 			<div
 				style={{
 					backgroundColor: '#F2F2F2',

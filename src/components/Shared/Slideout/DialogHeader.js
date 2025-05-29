@@ -10,11 +10,9 @@ import TextField from '@material-ui/core/TextField';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
-import { useHookstate } from '@hookstate/core';
-
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { slidoutState } from 'stateManagement/initialStates';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 const getDealNameFieldHeight = title => {
 	const lineLength = Math.ceil(title.length / 53);
@@ -106,10 +104,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const DialogHeader = ({ handleClickDialogClose, openConfirmationDialog }) => {
-	const title = useHookstate(slidoutState.title);
-	const newEntity = useHookstate(slidoutState.newEntity);
-	const parentType = useHookstate(slidoutState.parentType);
-	const isObligation = parentType.get() === 'Obligation';
+	const { title, newEntity, parentType } = slidoutStateController.useState(['title', 'newEntity', 'parentType']);
+	const isObligation = parentType === 'Obligation';
 
 	const classes = useStyles({ title });
 	const [anchorEl, setAnchorEl] = useState();
@@ -124,7 +120,7 @@ const DialogHeader = ({ handleClickDialogClose, openConfirmationDialog }) => {
 
 	return (
 		<div>
-			<Grid container style={{ padding: '10px' }}>
+			<Grid container style={{ padding: '10px', maxHeight: '115px' }}>
 				<Grid item container xs={9} alignItems="center">
 					<FormControl
 						variant="outlined"
@@ -135,17 +131,17 @@ const DialogHeader = ({ handleClickDialogClose, openConfirmationDialog }) => {
 					>
 						<TextField
 							margin="dense"
-							value={title.get()}
+							value={title}
 							variant="outlined"
 							placeholder="Click to enter title"
 							required
 							multiline
 							autoFocus
 							disabled={isObligation}
-							error={!title.get() && !isObligation}
-							helperText={!title.get() && !isObligation ? 'Enter a title to get started' : ''}
+							error={!title && !isObligation}
+							helperText={!title && !isObligation ? 'Enter a title to get started' : ''}
 							onChange={({ target }) => {
-								title.set(target.value);
+								slidoutStateController.updateState({ title: target.value });
 							}}
 							InputProps={{
 								classes: {
@@ -160,7 +156,7 @@ const DialogHeader = ({ handleClickDialogClose, openConfirmationDialog }) => {
 					</FormControl>
 				</Grid>
 				<Grid item xs={3} className={classes.dialogActions}>
-					{!newEntity.get() && (
+					{!newEntity && (
 						<>
 							<IconButton
 								// disabled={updateDealLoading || addContactLoading}

@@ -52,9 +52,6 @@ const ValidationGrids = ({ propertyId, associatedWellIds }) => {
 		return panelsArray;
 	}, [overrideMeta, associatedWellIds, selectedTab]);
 
-	console.log('overrideMeta: ', overrideMeta);
-	console.log('panels: ', panels);
-
 	return <TabPanels key="ValidationGridsTabPanels" value={selectedTab} panels={panels} />;
 };
 

@@ -10,8 +10,8 @@ import MRTTable from 'components/MRTTable';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
-import { globalStateController } from 'stateManagement/globalStateController';
 import { layerFiltersController } from 'stateManagement/layerFiltersController';
+import { layerController } from 'stateManagement/layerStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
 import { tableGlobalController } from 'stateManagement/tableController';
 
@@ -238,16 +238,16 @@ function MapGridCard() {
 		if (mapControlsStateValues?.selectedLayer) {
 			const fileQuery = generateFileFilters({ fileLayer: mapControlsStateValues.selectedLayer });
 			const fileId = mapControlsStateValues.selectedLayer?.file;
-			const layerShapeName = mapControlsStateValues?.selectedLayer?.layerShapeName;
+			const layerIdentifier = mapControlsStateValues?.selectedLayer?.layerIdentifier;
 
-			const globalLayer = globalStateController
+			const globalLayer = layerController
 				.getValue('layers')
-				?.find(layer => layer?.layerShapeName === layerShapeName && layer?.file === fileId);
+				?.find(layer => layer?.layerIdentifier === layerIdentifier && layer?.file === fileId);
 
-			const layerIdentifier = `${fileId}_${layerShapeName}`;
+			const layerDataSourceName = `${fileId}_${layerIdentifier}`;
 			tableGlobalController.reInitialized();
 			return {
-				filterLayerType: layerIdentifier,
+				filterLayerType: layerDataSourceName,
 				maxTableHeight: '45vh',
 				layerSchema: mapControlsStateValues?.selectedLayer?.layerSchema || globalLayer?.layerSchema,
 				toolbarInternalActions: {
@@ -258,7 +258,7 @@ function MapGridCard() {
 				},
 				defaultFilters: fileQuery?.variables?.filters || [],
 				advanceSearch: fileQuery?.variables?.search?.advanceSearch || [],
-				layerIdentifier,
+				layerDataSourceName,
 			};
 		} else {
 			return {};
@@ -393,7 +393,7 @@ function MapGridCard() {
 												},
 												maxTableHeight: '45vh',
 												filterLayerType: 'Wells',
-												layerIdentifier: 'Wells',
+												layerDataSourceName: 'Wells',
 											}}
 										/>
 									)}
@@ -427,7 +427,7 @@ function MapGridCard() {
 												},
 												maxTableHeight: '45vh',
 												filterLayerType: 'Units',
-												layerIdentifier: 'Units',
+												layerDataSourceName: 'Units',
 											}}
 										/>
 									)}
@@ -443,7 +443,7 @@ function MapGridCard() {
 												},
 												maxTableHeight: '45vh',
 												filterLayerType: 'Agreements',
-												layerIdentifier: 'Agreements',
+												layerDataSourceName: 'Agreements',
 											}}
 										/>
 									)}
@@ -460,7 +460,7 @@ function MapGridCard() {
 												},
 												maxTableHeight: '45vh',
 												filterLayerType: 'Parcels',
-												layerIdentifier: 'Parcels',
+												layerDataSourceName: 'Parcels',
 											}}
 										/>
 									)}
@@ -476,7 +476,7 @@ function MapGridCard() {
 												},
 												maxTableHeight: '45vh',
 												filterLayerType: 'My Wells',
-												layerIdentifier: 'My Wells',
+												layerDataSourceName: 'My Wells',
 											}}
 										/>
 									)}

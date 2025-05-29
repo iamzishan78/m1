@@ -8,6 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { drawShapeLayerToggle, findBoundsMap } from 'components/MapControls/commonHelper';
 import {
@@ -129,6 +130,27 @@ export default function QtrQtrSelectorNew({ layerData }) {
 
 	const eventsConfiguredRef = useRef(false);
 
+	const checkForDisabled = () => {
+		let isDisabled = true;
+
+		if (qtrQtr && !layerData?.qtrQtrSelection?.qtrQtr && !Object.keys(qtrQtr).find(key => qtrQtr[key] !== true)) {
+			setDisableUpdate(true);
+			return;
+		}
+
+		if (qtrQtr && !layerData?.qtrQtrSelection?.qtrQtr && Object.keys(qtrQtr).find(key => qtrQtr[key] !== true)) {
+			setDisableUpdate(false);
+			return;
+		}
+		qtrQtr &&
+			Object.keys(qtrQtr).forEach(key => {
+				if (layerData?.qtrQtrSelection?.qtrQtr[key] !== qtrQtr[key]) {
+					isDisabled = false;
+				}
+			});
+		setDisableUpdate(isDisabled);
+	};
+
 	useEffect(() => {
 		if (layerData?.qtrQtrSelection) {
 			setQtr(copy(layerData.qtrQtrSelection.selectedQtr));
@@ -160,11 +182,17 @@ export default function QtrQtrSelectorNew({ layerData }) {
 
 		return () => {
 			window.drawRef?.deleteAll();
+			drawController.updateState({
+				isDrawing: false,
+			});
 		};
 	}, [stateApp.map, drawState.currentFeature]);
 
 	useEffect(() => {
 		if (showAdjustGrid) {
+			drawController.updateState({
+				isDrawing: true,
+			});
 			const feature = copy(layerData.shape);
 			let layerDataCopy = copy(layerData);
 			if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
@@ -176,6 +204,9 @@ export default function QtrQtrSelectorNew({ layerData }) {
 			getRotateAbleShapeFromSelectedQuarters(feature, window.drawRef);
 		} else {
 			window.drawRef?.deleteAll();
+			drawController.updateState({
+				isDrawing: false,
+			});
 		}
 	}, [showAdjustGrid]);
 
@@ -197,41 +228,6 @@ export default function QtrQtrSelectorNew({ layerData }) {
 			drawBoundary(customLayer.shapeJson);
 			layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer);
 		});
-	};
-
-	const checkForDisabled = () => {
-		let isDisabled = true;
-
-		if (qtrQtr && !layerData?.qtrQtrSelection?.qtrQtr && !Object.keys(qtrQtr).find(key => qtrQtr[key] !== true)) {
-			setDisableUpdate(true);
-			return;
-		}
-
-		if (qtrQtr && !layerData?.qtrQtrSelection?.qtrQtr && Object.keys(qtrQtr).find(key => qtrQtr[key] !== true)) {
-			setDisableUpdate(false);
-			return;
-		}
-		qtrQtr &&
-			Object.keys(qtrQtr).forEach(key => {
-				if (layerData?.qtrQtrSelection?.qtrQtr[key] !== qtrQtr[key]) {
-					isDisabled = false;
-				}
-			});
-
-		// if (!layerData?.qtrQtrSelection?.selectedQtr && !qtr.find((q) => q !== '')) {
-		//   setDisableUpdate(true)
-		//   return
-		// }
-		// if (!layerData?.qtrQtrSelection?.selectedQtr && qtr.find((q) => q !== '')) {
-		//   setDisableUpdate(false)
-		//   return
-		// }
-		// qtr.forEach((q, index) => {
-		//   if (layerData?.qtrQtrSelection?.selectedQtr[index] !== q) {
-		//     isDisabled = false
-		//   }
-		// })
-		setDisableUpdate(isDisabled);
 	};
 
 	return (
@@ -860,3 +856,16 @@ export default function QtrQtrSelectorNew({ layerData }) {
 		</div>
 	);
 }
+
+QtrQtrSelectorNew.propTypes = {
+	layerData: PropTypes.shape({
+		state: PropTypes.string,
+		qtrQtrSelection: PropTypes.shape({
+			selectedQtr: PropTypes.arrayOf(PropTypes.string),
+			qtrQtr: PropTypes.object,
+			originalGeometry: PropTypes.object,
+		}),
+		shape: PropTypes.object,
+		_id: PropTypes.string,
+	}).isRequired,
+};

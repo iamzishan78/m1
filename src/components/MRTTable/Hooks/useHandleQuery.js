@@ -34,13 +34,13 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	const client = useApolloClient();
 
 	// Destructure table state values
-	const { isClientSide, modelName } = tableStateValues;
+	const { isClientSide, modelName, isGeneric } = tableStateValues;
 
 	// Function to execute query based on client-side or server-side querying
 	const callQuery = async _pagination => {
 		// Handle client-side query
 		if (isClientSide) {
-			const tableMeta = tableState.get({ noproxy: true });
+			const tableMeta = tableState;
 
 			Controller.updateState({
 				isLoading: true,
@@ -74,6 +74,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				isLoading: false,
 				isFetching: false,
 				isError: false,
+				...(isGeneric && Controller.getGenericState(rows)),
 			});
 
 			return;
@@ -82,9 +83,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		// Handle server-side query
 		const resetPaginationVal = resetPagination.current;
 
-		const tableMeta = tableState.get({ noproxy: true });
+		const tableMeta = tableState;
 		const pagination = _pagination || tableMeta.pagination;
-		const { TableSchema } = tableMeta;
+		const { TableSchema, fetchDynamicSchema } = tableMeta;
 		const isElasticIndex = tableStateValues?.esIndex?.includes('platformData:');
 
 		if (!TableSchema) {
@@ -121,7 +122,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 					})(),
 					order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
 				}
-			: tableState?.defaultSort?.get({ noproxy: true });
+			: tableState?.defaultSort;
 
 		if (metaField?.isCustom) {
 			sort.unmapped_type = 'keyword';
@@ -149,6 +150,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			sort,
 			filters,
 			parent: tableStateValues.tableKey,
+			isDynamicAsset: !!fetchDynamicSchema?.name,
 		};
 
 		// Update layer filters if filter layer type is defined
@@ -219,8 +221,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		});
 
 		// Merge rows for infinite scroll
-		if (tableState?.isInFiniteScroll?.get() && !resetPaginationVal) {
-			const prevData = tableState?.data?.get({ noproxy: true }).rows || [];
+		if (tableState?.isInFiniteScroll && !resetPaginationVal) {
+			const prevData = tableState?.data?.rows || [];
 			rows = mergeArrays(prevData, rows, '_id');
 		}
 
@@ -243,7 +245,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 	// Function to fetch footer aggregation data
 	async function fetchFooterAggregationData() {
-		const tableMeta = tableState.get({ noproxy: true });
+		const tableMeta = tableState;
 		const { TableSchema, defaultFilters, esIndex, filters } = tableMeta;
 
 		if (!TableSchema) {
@@ -328,7 +330,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			return;
 		}
 
-		if (!tableState.query.get()) {
+		if (!tableState.query) {
 			return;
 		}
 
@@ -348,18 +350,18 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (tableStateValues?.data?.rows?.length > 0) {
 			tableRef?.current?.scrollToIndex?.(0);
 
-			const tableMeta = tableState.get({ noproxy: true });
+			const tableMeta = tableState;
 
 			if (tableMeta.pagination?.pageIndex !== previousPagination.current?.pageIndex) {
 				const pagination = {
 					pit: tableMeta.data?.pit,
 					...tableMeta.pagination,
 					before:
-						tableMeta.data.rows && tableMeta.pagination?.pageIndex < previousPagination.current.pageIndex
+						tableMeta.data.rows && tableMeta.pagination?.pageIndex < previousPagination?.current?.pageIndex
 							? tableMeta.data.rows[0]?.sort
 							: null,
 					after:
-						tableMeta.data.rows && tableMeta.pagination?.pageIndex > previousPagination.current.pageIndex
+						tableMeta.data.rows && tableMeta.pagination?.pageIndex > previousPagination?.current?.pageIndex
 							? tableMeta.data.rows[tableMeta.data.rows.length - 1]?.sort
 							: null,
 					pageIndex: tableMeta.pagination?.pageIndex,
@@ -376,7 +378,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			return;
 		}
 
-		const tableMeta = tableState.get({ noproxy: true });
+		const tableMeta = tableState;
 
 		if (!tableMeta) {
 			return;
@@ -407,7 +409,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				return;
 			}
 
-			if (!tableState?.isInFiniteScroll?.get()) {
+			if (!tableState?.isInFiniteScroll) {
 				return;
 			}
 
@@ -415,11 +417,11 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				return;
 			}
 
-			if (tableState?.isFetching?.get()) {
+			if (tableState?.isFetching) {
 				return;
 			}
 
-			const data = tableState?.data?.get({ noproxy: true });
+			const data = tableState?.data;
 
 			if (data?.rows?.length >= data?.total) {
 				return;
@@ -440,7 +442,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			const REFETCH_BUFFER = 200;
 
 			if (scrollHeight - scrollTop - clientHeight < REFETCH_BUFFER) {
-				const tableMeta = tableState.get({ noproxy: true });
+				const tableMeta = tableState;
 
 				if (!tableMeta) {
 					return;

@@ -81,7 +81,6 @@ export default function FilterFromGeo() {
 				filterGeography: null,
 			}));
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		stateNav.stateName,
 		stateNav.countyName,
@@ -145,7 +144,6 @@ export default function FilterFromGeo() {
 				fitBounds: null,
 			}));
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		stateNav.stateName,
 		stateNav.countyName,
@@ -178,7 +176,6 @@ export default function FilterFromGeo() {
 				}));
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data]);
 
 	// For Geography count

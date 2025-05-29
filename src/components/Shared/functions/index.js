@@ -183,12 +183,24 @@ export const formatDate = (date, simple = true) => {
 	if (!date) {
 		return '--';
 	}
-	return moment(date).format(simple ? 'MM/DD/YYYY' : 'MMMM D, YYYY');
+	const format = simple ? 'MM/DD/YYYY' : 'MMMM D, YYYY';
+	if (date.includes('T00:00:00.000Z')) {
+		return moment.utc(date).format(format);
+	}
+	return moment(date).format(format);
+};
+
+export const formatFieldDate = (date, format = 'yyyy-MM-DD') => {
+	if (!date) {
+		return '';
+	}
+	return moment.utc(date || '').format(format);
 };
 
 export const processInBatches = async (promises, batchSize) => {
 	for (let i = 0; i < promises.length; i += batchSize) {
 		const batch = promises.slice(i, i + batchSize);
+		// eslint-disable-next-line no-await-in-loop
 		await Promise.all(batch);
 	}
 };
@@ -242,4 +254,21 @@ export const mergeArrays = (arr1, arr2, uniqueField) => {
 
 	// Convert the merged object back to an array
 	return values(mergedKeyed);
+};
+
+export const normalizeUrl = url => {
+	if (typeof url !== 'string' || !url.trim()) {
+		return ''; // Handle invalid input
+	}
+
+	const lowerUrl = url.toLowerCase();
+	if (!lowerUrl.startsWith('http://') && !lowerUrl.startsWith('https://')) {
+		url = `https://${url}`;
+	}
+
+	if (!url.endsWith('/')) {
+		url += '/'; // Ensure URL ends with a slash
+	}
+
+	return url;
 };

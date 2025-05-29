@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 
 import { Grid, TextField } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
 
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import MRTFilterComponent from 'components/MRTTable/Common/MRTFilterComponent';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { CUSTOM_DATES } from 'utils/data';
 import { handleCustomDateTypeChange } from 'utils/helper';
@@ -88,27 +88,29 @@ export default function CustomDatesActivities({ setFromDate, setToDate, minDate,
 				<Grid container alignItems="center" spacing={2}>
 					<label className={classes.label}>Created Date</label>
 					<Grid item xs={2} sm={2} md={2} lg={2} xl={2}>
-						<Autocomplete
-							size="small"
-							onChange={(event, newValue) => {
-								if (newValue === null) {
-									handleDateTypeChange('This Month');
-								} else {
-									handleDateTypeChange(newValue);
-								}
+						<CustomAutoComplete
+							fieldAttributes={{
+								label: 'Date Range',
+								value: CUSTOM_DATES.ALL_DATES,
+								optionArray: Object.values(CUSTOM_DATES),
 							}}
-							options={Object.values(CUSTOM_DATES)}
-							renderInput={params => (
-								<TextField
-									{...params}
-									variant="outlined"
-									label="Date Range"
-									placeholder=""
-									style={{ backgroundColor: 'white' }}
-								/>
-							)}
-							defaultValue={CUSTOM_DATES.ALL_DATES}
-							disableListWrap
+							fieldEvents={{
+								onChange: ({ value }) => {
+									if (value === null) {
+										handleDateTypeChange('This Month');
+									} else {
+										handleDateTypeChange(value);
+									}
+								},
+							}}
+							fieldConfig={{
+								variant: 'outlined',
+								size: 'small',
+								textfieldRestProps: {
+									placeholder: '',
+									style: { backgroundColor: 'white' },
+								},
+							}}
 							id="custom-date-dropdown"
 						/>
 					</Grid>

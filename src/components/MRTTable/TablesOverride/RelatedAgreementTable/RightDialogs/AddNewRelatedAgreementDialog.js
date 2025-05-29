@@ -1,7 +1,15 @@
 import React, { useMemo } from 'react';
 
-import { Button, DialogContent, DialogActions, CircularProgress } from '@material-ui/core';
-import { Typography, TextField, Grid, FormControl } from '@material-ui/core';
+import {
+	Button,
+	DialogContent,
+	DialogActions,
+	CircularProgress,
+	Typography,
+	TextField,
+	Grid,
+	FormControl,
+} from '@material-ui/core';
 import FolderIcon from '@material-ui/icons/Folder';
 import { makeStyles } from '@material-ui/styles';
 
@@ -239,8 +247,9 @@ const AddNewRelatedAgreementDialog = props => {
 												value: 'agreement',
 											},
 										]}
-										renderOption={option => {
-											if (option.id === 'newEntity') {
+										renderOption={({ option }) => {
+											if (!option) return;
+											if (option?.id === 'newEntity') {
 												return;
 											}
 											let parts = parse([option.key[4], option.key[2]], []);

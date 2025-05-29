@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 
-import AddUnitOwnerDialogContent from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs/AddUnitOwnerDialogContent';
 import RecalculateSlideout from 'components/Common/RecalculateSlideout';
+import AddUnitOwnerDialogContent from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs/AddUnitOwnerDialogContent';
 
 import { tableGlobalController } from 'stateManagement/tableController';
 

@@ -6,8 +6,6 @@ import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-
-// import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -16,18 +14,17 @@ import { useMutation, useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
 
 import DeleteDocumentConfirmation from 'components/Shared/DeleteDocumentConfirmation';
-
-// functions
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 
 import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
 import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
 import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 
+import { tableGlobalController } from 'stateManagement/tableController';
+
 import { AppContext } from 'AppContext';
 
 import UploadZone from './DailogUploadZone';
-import { tableGlobalController } from 'stateManagement/tableController';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const useStyles = makeStyles(theme => ({
@@ -285,7 +282,7 @@ const Documents = memo(props => {
 		},
 	}))(Tooltip);
 	return (
-		<div className={classes.root} variant="outlined">
+		<div className={classes.root}>
 			<CardActions style={{ padding: '23px 0px 8px 0px' }}>
 				{props.isTransactPage && (
 					<Grid item xs={12} style={{ minHeight: '35px' }}>

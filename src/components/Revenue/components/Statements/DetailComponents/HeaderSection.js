@@ -11,12 +11,12 @@ import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
 import debounce from 'lodash/debounce';
 import orderBy from 'lodash/orderBy';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
+import { formatFieldDate } from 'components/Shared/functions';
 
 import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
 import { GET_DB_FILTERS, GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
@@ -191,16 +191,16 @@ function HeaderFunction(props) {
 								control={control}
 								name="checkNumber"
 								defaultValue={''}
-								render={props => (
+								render={({ field }) => (
 									<TextField
 										margin="dense"
 										type="text"
 										variant="outlined"
 										onChange={e => {
-											props.onChange(e.target.value);
+											field.onChange(e.target.value);
 											handleUpdateCheck({ checkNumber: e.target.value });
 										}}
-										value={props.value || ''}
+										value={field.value || ''}
 										fullWidth
 									/>
 								)}
@@ -217,16 +217,16 @@ function HeaderFunction(props) {
 							<Controller
 								control={control}
 								name="payor"
-								render={params => (
+								render={({ field }) => (
 									<AutoCompleteWithAddNew
-										{...params}
+										{...field}
 										value={searchOperator}
 										variant="outlined"
 										setValue={value => {
 											if (value?._id) {
-												params.onChange({ _id: value._id, name: value.name });
+												field.onChange({ _id: value._id, name: value.name });
 											} else {
-												params.onChange({});
+												field.onChange({});
 											}
 											if (value?._id === 'newEntity') {
 												delete value._id;
@@ -263,20 +263,20 @@ function HeaderFunction(props) {
 							<Controller
 								control={control}
 								name="checkDate"
-								defaultValue={moment.utc(props?.value || '').format('MM/DD/YYYY')} // format date in utc format
-								render={props => (
+								defaultValue={null} // format date in utc format
+								render={({ field }) => (
 									<TextField
 										type="date"
 										variant="outlined"
 										margin="normal"
 										fullWidth
-										value={moment.utc(props?.value || '').format('yyyy-MM-DD')}
+										value={formatFieldDate(props?.value)}
 										onChange={e => {
-											props.onChange(e.target.value);
+											field.onChange(e.target.value);
 										}}
 										onBlur={e => {
 											handleUpdateCheck({
-												checkDate: moment.utc(e.target.value).toDate(), // format date in utc format
+												checkDate: e.target.value,
 											});
 										}}
 										InputLabelProps={{
@@ -289,11 +289,11 @@ function HeaderFunction(props) {
 										InputProps={{
 											endAdornment: (
 												<IconButton
-													onClick={() =>
+													onClick={() => {
 														handleUpdateCheck({
 															checkDate: null,
-														})
-													}
+														});
+													}}
 												>
 													<Clear style={{ height: 22, width: 22 }} />
 												</IconButton>
@@ -320,19 +320,19 @@ function HeaderFunction(props) {
 								control={control}
 								name="payee.number"
 								defaultValue={''}
-								render={props => (
+								render={({ field }) => (
 									<TextField
 										margin="dense"
 										type="text"
 										variant="outlined"
 										fullWidth
 										onChange={e => {
-											props.onChange(e.target.value);
+											field.onChange(e.target.value);
 											handleUpdateCheck({
 												payee: { ...check.payee, number: e.target.value },
 											});
 										}}
-										value={props.value || ''}
+										value={field.value || ''}
 									/>
 								)}
 							/>
@@ -351,7 +351,7 @@ function HeaderFunction(props) {
 								control={control}
 								name="payee"
 								defaultValue={check?.payee || {}}
-								render={({ onChange, value }) => (
+								render={({ field: { onChange, value } }) => (
 									<AutocompEntityNamesList
 										variant="outlined"
 										margin=""
@@ -390,19 +390,19 @@ function HeaderFunction(props) {
 								control={control}
 								name="depositDate"
 								defaultValue={null}
-								render={props => (
+								render={({ field }) => (
 									<TextField
 										type="date"
 										variant="outlined"
 										margin="normal"
 										fullWidth
-										value={moment.utc(props?.value).format('YYYY-MM-DD')}
+										value={formatFieldDate(props?.value)}
 										onChange={e => {
-											props.onChange(e.target.value);
+											field.onChange(e.target.value);
 										}}
 										onBlur={e => {
 											handleUpdateCheck({
-												depositDate: moment.utc(e.target.value).toISOString(),
+												depositDate: e.target.value,
 											});
 										}}
 										InputLabelProps={{
@@ -446,26 +446,26 @@ function HeaderFunction(props) {
 								control={control}
 								name="checkAmount"
 								defaultValue={''}
-								render={params => (
+								render={({ field }) => (
 									<TextField
 										margin="dense"
 										type="text"
 										variant="outlined"
 										fullWidth
 										onChange={e => {
-											params.onChange(parseFloat(e.target.value).toFixed(2));
+											field.onChange(parseFloat(e.target.value).toFixed(2));
 										}}
 										InputProps={{
 											startAdornment: <InputAdornment position="start"> $</InputAdornment>,
 											inputComponent: CurrencyFormatCustomWithoutPrefix,
-											endAdornment: !isEqualCheckAmount(params.value) ? (
+											endAdornment: !isEqualCheckAmount(field.value) ? (
 												<Tooltip title="Sum of line items not equal to check amount">
 													<ErrorOutline style={{ color: 'red' }} />
 												</Tooltip>
 											) : null,
 										}}
-										value={parseFloat(params.value).toFixed(2) || ''}
-										onBlur={() => handleUpdateCheck({ checkAmount: Number(params.value) })}
+										value={parseFloat(field.value).toFixed(2) || ''}
+										onBlur={() => handleUpdateCheck({ checkAmount: Number(field.value) })}
 									/>
 								)}
 							/>
@@ -483,13 +483,13 @@ function HeaderFunction(props) {
 								control={control}
 								name="source"
 								defaultValue={''}
-								render={props => (
+								render={({ field }) => (
 									<Select
 										fullWidth
 										variant="outlined"
-										value={props.value || ''}
+										value={field.value || ''}
 										onChange={e => {
-											props.onChange(e.target.value);
+											field.onChange(e.target.value);
 											handleUpdateCheck({ source: e.target.value });
 										}}
 									>
@@ -512,16 +512,16 @@ function HeaderFunction(props) {
 								control={control}
 								name="sourceId"
 								defaultValue={''}
-								render={props => (
+								render={({ field }) => (
 									<TextField
 										margin="dense"
 										type="text"
 										variant="outlined"
 										onChange={e => {
-											props.onChange(e.target.value);
+											field.onChange(e.target.value);
 											handleUpdateCheck({ sourceId: e.target.value });
 										}}
-										value={props.value || ''}
+										value={field.value || ''}
 										fullWidth
 									/>
 								)}

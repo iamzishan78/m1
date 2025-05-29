@@ -1,29 +1,14 @@
 import React, { useEffect, useState, useMemo } from 'react';
 
-import { Typography, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-
 import { useLazyQuery } from '@apollo/client';
 import pick from 'lodash/pick';
+import PropTypes from 'prop-types';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { PARCELOWNERSQUERY } from 'graphQL/useQueryParcelOwners.js';
 
 import joinAddress from '../../valueformatters/join-address.js';
-
-const useStyles = makeStyles({
-	inputRoot: {
-		// backgroundColor: "#ffffff",
-	},
-	listbox: {
-		boxSizing: 'border-box',
-		'& ul': {
-			padding: 0,
-			margin: 0,
-		},
-	},
-});
 
 const AutoCompleteParcelOwners = ({ onChange, value, parcel, onBlur, ...other }) => {
 	const [esData, setEsData] = useState([]);
@@ -52,12 +37,12 @@ const AutoCompleteParcelOwners = ({ onChange, value, parcel, onBlur, ...other })
 		}
 	}, [elasticData]);
 
-	const classes = useStyles();
-
 	const options = useMemo(() => {
 		if (esData?.length > 0) {
 			return esData.map(data => ({
 				_id: data.ownerEntity,
+				value: data.ownerEntity,
+				label: data?.relatedObject?.entityDetail?.name,
 				...data?.relatedObject?.entityDetail,
 				ownerData: {
 					...pick(data, [
@@ -74,94 +59,65 @@ const AutoCompleteParcelOwners = ({ onChange, value, parcel, onBlur, ...other })
 				},
 			}));
 		}
-
 		return [];
 	}, [esData]);
 
+	const renderOptionComp = ({ option }) => (
+		<div>
+			<p style={{ fontWeight: 400, margin: 0 }}>{option.name}</p>
+			<p style={{ color: 'rgba(0, 0, 0, 0.6)', fontSize: '0.875rem', margin: 0 }}>{joinAddress(option)}</p>
+		</div>
+	);
+
 	return (
-		<Autocomplete
-			defaultValue={{ _id: value, name: value }}
-			value={value}
-			disableListWrap
-			classes={classes}
-			onBlur={onBlur}
-			options={options}
-			getOptionLabel={option => {
-				// Value selected with enter, right from the input
-				if (typeof option === 'string') {
-					return option;
-				}
-				// Add "xxx" option created dynamically
-				if (option.inputValue) {
-					return option.name;
-				}
-
-				if (option?.name) {
-					return option.name;
-				} else {
-					return '';
-				}
+		<CustomAutoComplete
+			fieldAttributes={{
+				name: 'parcelOwner',
+				label: other?.label,
+				value,
+				optionArray: options,
+				placeholder: other?.placeholder || null,
 			}}
-			getOptionSelected={(option, value) => {
-				return option?._id === value?._id;
+			fieldConfig={{
+				variant: other?.variant || 'standard',
+				margin: other?.margin || 'dense',
+				size: 'small',
+				renderOptionComp,
+				textFieldInputProps: other?.InputProps,
+				textfieldRestProps: {
+					InputLabelProps: other?.InputLabelProps,
+					autoFocus: true,
+				},
 			}}
-			renderOption={option => {
-				// if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
-
-				return (
-					<Grid container spacing={0}>
-						<Grid container item xs={12} alignItems="center">
-							<Grid item xs>
-								<span style={{ fontWeight: 400 }}>{option.name}</span>
-								<Typography variant="body2" color="textSecondary">
-									{joinAddress(option)}
-								</Typography>
-							</Grid>
-						</Grid>
-					</Grid>
-				);
+			fieldEvents={{
+				onBlur,
+				onChange: ({ value }) => {
+					const option = options.find(option => option._id === value);
+					onChange(null, option);
+				},
 			}}
-			filterOptions={(options, params) => {
-				const inputValue = params.inputValue;
-				const filtered = createFilterOptions()(options, { ...params, inputValue });
-				// const isExist = loadashFilter(filtered, (filter) => {
-				//     return filter._id === inputValue;
-				// });
-				// Suggest the creation of a new value
-				// if (inputValue !== "" && (!isExist || isExist.length === 0)) {
-				//     filtered.unshift({
-				//         name: inputValue,
-				//         _id: "newEntity",
-				//     });
-				// }
-				return filtered;
-			}}
-			onChange={(event, newValue) => {
-				onChange(event, newValue);
-			}}
-			renderInput={params => (
-				<TextField
-					variant={other.variant}
-					margin={other.margin}
-					label={other.label}
-					placeholder={other.placeholder}
-					{...params}
-					InputLabelProps={{
-						...params.InputLabelProps,
-						...other.InputLabelProps,
-					}}
-					InputProps={{
-						...params.InputProps,
-						...other.InputProps,
-					}}
-					fullWidth
-					autoFocus
-					size="small"
-				/>
-			)}
-			// {...other}
 		/>
 	);
+};
+
+AutoCompleteParcelOwners.propTypes = {
+	onChange: PropTypes.func.isRequired,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	parcel: PropTypes.shape({
+		_id: PropTypes.string,
+		tractId: PropTypes.string,
+		qtrQtr: PropTypes.object,
+	}).isRequired,
+	onBlur: PropTypes.func,
+	other: PropTypes.shape({
+		label: PropTypes.string,
+		placeholder: PropTypes.string,
+		variant: PropTypes.string,
+		margin: PropTypes.string,
+		InputProps: PropTypes.object,
+		InputLabelProps: PropTypes.object,
+		setTotalOwners: PropTypes.func,
+	}),
 };
 
 export default AutoCompleteParcelOwners;

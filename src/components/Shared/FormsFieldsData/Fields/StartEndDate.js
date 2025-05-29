@@ -1,96 +1,68 @@
 import React from 'react';
-import { Controller } from 'react-hook-form';
-
-import { KeyboardDatePicker } from '@material-ui/pickers';
 
 import { Grid } from '@mui/material';
 
-const classes = {
-	marginNormal: {
-		marginTop: '0px',
-		marginBottom: '0px',
-		'& .MuiIconButton-label': {
-			'& .MuiSvgIcon-root': {
-				color: '#7f7f7f !important',
-				fill: '#7f7f7f !important',
-			},
-		},
-	},
-};
+import PropTypes from 'prop-types';
+
+import CustomDatePicker from '../../components/Fields/CustomDatePicker';
 
 function StartEndDate({ control, item, watch, error }) {
-	const {
-		// field props
-		onBlur,
-		onStartDateChange,
-		onEndDateChange,
-		disabled = false,
-		required = false,
-	} = item || {};
-
-	const watchStartDate = watch('startDate');
-	const watchEndDate = watch('endDate');
+	const { onStartDateChange, onEndDateChange, disabled = false, required = false } = item || {};
 
 	return (
-		<Grid container alignItems="center" spacing={2}>
+		<Grid container alignItems="center" spacing={2} sx={{ pt: 3, pb: 1 }}>
 			<Grid item xs={6}>
-				<Controller
+				<CustomDatePicker
 					control={control}
-					name={'startDate'}
-					render={props => (
-						<KeyboardDatePicker
-							className={classes.marginNormal}
-							disableToolbar
-							fullWidth
-							disabled={disabled}
-							label={'Start Date'}
-							inputVariant="outlined"
-							variant="inline"
-							format="MM/DD/YYYY"
-							margin="normal"
-							id={'startDate'}
-							ref={props.ref}
-							value={props.value || null}
-							onChange={date => {
-								onStartDateChange ? onStartDateChange(date) : props.onChange(date);
-							}}
-							onBlur={onBlur}
-							KeyboardButtonProps={{ 'aria-label': 'change date' }}
-							error={required && !watchStartDate && error}
-						/>
-					)}
+					fieldAttributes={{
+						name: 'startDate',
+						label: 'Start Date',
+						format: 'MM/DD/YYYY',
+					}}
+					fieldConfig={{
+						variant: 'standard',
+						disabled,
+						required,
+					}}
+					fieldEvents={{
+						onChange: value => onStartDateChange(value.toDate()),
+					}}
+					error={required && !watch('startDate') && error}
 				/>
 			</Grid>
 			<Grid item xs={6}>
-				<Controller
+				<CustomDatePicker
 					control={control}
-					name={'endDate'}
-					render={props => (
-						<KeyboardDatePicker
-							className={classes.marginNormal}
-							disableToolbar
-							fullWidth
-							disabled={disabled}
-							label={'End Date'}
-							inputVariant="outlined"
-							variant="inline"
-							format="MM/DD/YYYY"
-							margin="normal"
-							id={'endDate'}
-							ref={props.ref}
-							value={props.value || null}
-							onChange={date => {
-								onEndDateChange ? onEndDateChange(date) : props.onChange(date);
-							}}
-							onBlur={onBlur}
-							KeyboardButtonProps={{ 'aria-label': 'change date' }}
-							error={required && !watchEndDate && error}
-						/>
-					)}
+					fieldAttributes={{
+						name: 'endDate',
+						label: 'End Date',
+						format: 'MM/DD/YYYY',
+					}}
+					fieldConfig={{
+						variant: 'standard',
+						disabled,
+						required,
+					}}
+					fieldEvents={{
+						onChange: value => onEndDateChange(value.toDate()),
+					}}
+					error={required && !watch('endDate') && error}
 				/>
 			</Grid>
 		</Grid>
 	);
 }
+
+StartEndDate.propTypes = {
+	control: PropTypes.object.isRequired,
+	item: PropTypes.shape({
+		onStartDateChange: PropTypes.func.isRequired,
+		onEndDateChange: PropTypes.func.isRequired,
+		disabled: PropTypes.bool,
+		required: PropTypes.bool,
+	}).isRequired,
+	watch: PropTypes.func.isRequired,
+	error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+};
 
 export default StartEndDate;

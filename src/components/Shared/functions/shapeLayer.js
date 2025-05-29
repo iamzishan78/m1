@@ -123,6 +123,8 @@ export const shapeTypeLayers = ['unit', 'agreement', 'contract', 'lease', 'deed'
 export const defaultLayers = ['interest', 'parcel', 'unit', 'contract', 'lease', 'deed', 'surface'];
 export const agreementLayers = ['agreement', 'contract', 'lease', 'deed', 'surface'];
 
+export const aggregationLayers = ['hexagon layer', 'heatmap layer', 'grid layer'];
+
 export const agreementLayerIdentifiers = ['Deeds', 'Leases', 'Contracts', 'Surfaces'];
 export const deckGlDataLayerIdentifiers = [
 	...agreementLayerIdentifiers,

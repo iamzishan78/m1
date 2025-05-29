@@ -18,10 +18,12 @@ import { Autocomplete } from '@material-ui/lab';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { v4 as uuid } from 'uuid';
 
+import { copy } from 'components/Shared/functions';
+
 import { ADDLAYER } from 'graphQL/useMutationAddLayer';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 
-import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { AppContext } from 'AppContext';
@@ -52,47 +54,63 @@ function NewLayerManager() {
 		setLayerClickability,
 		strokeColor,
 		setStrokeColor,
+		handleLayerChange,
 	} = useLayerStyle(layer);
 
 	const [source, setSource] = useState();
 	const [selectCategory, setCategory] = useState();
+	const [selectGeometry, setGeometry] = useState();
 
-	const { globalStateValues } = globalStateController.useState(['datasets'], 'globalStateValues');
+	const { datasets, layerStateValues } = layerController.useState(['datasets'], 'layerStateValues');
 
 	const handleClose = () => {
 		mapControlsController.updateState({ manageLayer: false });
 	};
 
 	const createLayer = () => {
-		const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
-		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
-		const layerShapeName = source.name === 'M1 Platform' ? null : selectCategory.name;
-		const identifier = source.name === 'M1 Platform' ? selectCategory.label + uuid() : layerName + uuid();
+		const layerType = source.name === 'M1 Platform' ? 'data layer' : selectGeometry?.value || 'file layer';
+
+		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.layerIdentifier;
+
+		let layerIdentifier = selectCategory.layerIdentifier;
+		if (layerIdentifier.startsWith('Tracts')) {
+			layerIdentifier = layerIdentifier.replace('Tracts', 'Parcels');
+		}
 
 		addLayer({
 			variables: {
 				layer: {
 					...layer,
 					layerCategory,
-					layerShapeName,
+					layerIdentifier,
 					layerType,
-					identifier,
+					identifier: layerIdentifier + uuid(),
 					groupId: null,
 					groupName: null,
 					file: source.file,
 					layerName: layerName,
 					layerGeometry: selectCategory.layerGeometry,
-					originalFile: source.originalFile,
-					defaultSettings: getDefaultSettings(selectCategory.layerGeometry, layerName, selectCategory.bbox),
+					defaultSettings: {
+						...handleLayerChange(),
+						bbox: selectCategory?.bbox || [],
+					},
 					layerSchema: shapeFileSchema?.getShapeFileSchema || [],
 					layerPaintProps: undefined,
 					layerSettings: undefined,
 					public: true,
+					dataset: source._id,
 				},
 			},
-			refetchQueries: ['getAllLayerSettingsByUser'],
-			awaitRefetchQueries: true,
-		}).then(() => {
+		}).then(async ({ data }) => {
+			const layerToAdd = copy(data.addLayer.userLayer);
+			if (layerToAdd) {
+				const { projectedLayers, layers } = layerController.getValues(['projectedLayers', 'layers']);
+				layerController.updateState({
+					projectedLayers: [...projectedLayers, layerToAdd],
+					layers: [...layers, layerToAdd],
+				});
+			}
+
 			handleClose();
 		});
 	};
@@ -102,30 +120,44 @@ function NewLayerManager() {
 			getShapeFileSchema({
 				variables: {
 					file: source.file,
-					layerShapeName: selectCategory.layerShapeName,
+					layerIdentifier: selectCategory.layerIdentifier,
 				},
 			});
 		}
 	}, [source, selectCategory, getShapeFileSchema]);
 
 	const _datasets = useMemo(() => {
-		const datasets = globalStateValues.datasets;
-		return datasets || [];
-	}, [globalStateValues.datasets]);
+		const wellsSource = {
+			_id: '67c81d0894b843cd5fbbc87d',
+			sourceName: 'PlatformWells',
+			types: ['Point'],
+			public: true,
+			IsDeleted: false,
+
+			categories: [
+				{
+					name: 'PlatformWells - Point',
+					layerGeometry: 'Point',
+					layerIdentifier: 'PlatformWells - Point',
+				},
+			],
+			name: 'PlatformWells',
+			categoryCount: 1,
+			visibility: true,
+		};
+		return layerStateValues.datasets ? [...layerStateValues.datasets, wellsSource] : [];
+	}, [datasets]);
+
 	const layerCategories = useMemo(() => {
-		const dataset = globalStateValues.datasets.find(dataset => dataset.name === source?.name);
+		const dataset = layerStateValues.datasets.find(dataset => dataset.name === source?.name);
 		if (source?.name === 'M1 Platform') {
-			dataset.categories = dataset?.categories.filter(category => category.value !== 'agreement');
-			dataset.categories = [
-				...dataset.categories,
-				{ value: 'Deeds', label: 'Deeds' },
-				{ value: 'Leases', label: 'Leases' },
-				{ value: 'Contracts', label: 'Contracts' },
-				{ value: 'Surfaces', label: 'Surfaces' },
-			];
+			dataset.categories = dataset?.categories.filter(category => category.isNewLayerCreationAllowed);
+		}
+		if (source?.name === 'PlatformWells') {
+			return source?.categories;
 		}
 		return dataset?.categories || [];
-	}, [source, globalStateValues.datasets]);
+	}, [source, datasets]);
 
 	return (
 		<ClickAwayListener>
@@ -166,6 +198,23 @@ function NewLayerManager() {
 								renderInput={params => <TextField {...params} label="Select Category" />}
 							/>
 						</Grid>
+						{selectCategory?.layerGeometry === 'Point' && (
+							<Grid item xs={12}>
+								<Autocomplete
+									id="layer-geometry"
+									options={[
+										{ label: 'Point', value: 'point' },
+										{ label: 'Hexagon', value: 'hexagon layer' },
+										{ label: 'Heat Maps', value: 'heatmap layer' },
+										{ label: 'Grid', value: 'grid layer' },
+									]}
+									getOptionLabel={option => `${option.label}`}
+									value={selectGeometry}
+									onChange={(_, layerGeometry) => setGeometry(layerGeometry)}
+									renderInput={params => <TextField {...params} label="Select Layer Geometry" />}
+								/>
+							</Grid>
+						)}
 						<Grid item xs={12}>
 							<TextField
 								margin="dense"

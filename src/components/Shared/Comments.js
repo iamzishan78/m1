@@ -28,6 +28,8 @@ import CommentType from 'components/Shared/components/Comment/CommentType';
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
+import { tableGlobalController } from 'stateManagement/tableController';
+
 import { UserSession } from 'utils/user';
 
 import { AppContext } from '../../AppContext';
@@ -35,12 +37,9 @@ import { REMOVECOMMENT } from '../../graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from '../../graphQL/useMutationUpsertComment';
 import { COMMENTSBYOBJECTIDQUERY } from '../../graphQL/useQueryCommentsByObjectId';
 import { COMMENTSBYOBJECTSIDS } from '../../graphQL/useQueryCommentsByObjectsIds';
-
-// import value formatters
+import MentionsUser from '../Shared/MentionsUser';
 import capitalizeFirstLetter from '../Shared/valueformatters/capitalize-first-letter.js';
 import CommentField from './components/Fields/CommentField';
-import MentionsUser from '../Shared/MentionsUser';
-import { tableGlobalController } from 'stateManagement/tableController';
 
 const AntSwitch = withStyles(theme => ({
 	root: {

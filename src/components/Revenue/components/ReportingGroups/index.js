@@ -8,8 +8,6 @@ import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 
 import { tableController } from 'stateManagement/tableController';
 
-// actions
-
 const useStyles = makeStyles(theme => ({
 	root: { paddingTop: '65px' },
 	propertyTableContainer: {

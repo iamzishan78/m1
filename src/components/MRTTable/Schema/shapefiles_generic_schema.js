@@ -34,7 +34,7 @@ const ShapesFilesGenericMeta = {
 	TableSchema: [],
 
 	esIndex: 'shapefile_flat',
-	orderKeys: ['_id', 'id', 'ID', 'layerShapeName', 'layerGeometry', 'geometry'],
+	orderKeys: ['_id', 'id', 'ID', 'layerIdentifier', 'layerGeometry', 'geometry'],
 	excludedKeys: ['sort', 'file', 'IsDeleted', 'isDeleted', 'flatSyncAt'],
 	nestedKey: 'properties',
 	generateSchema: (keys, rows) => {
@@ -53,6 +53,15 @@ const ShapesFilesGenericMeta = {
 					size: 70,
 					Cell: ({ row }) => {
 						const id = row.getValue('_id');
+						const hasValidGeometry =
+							row.original.geometry &&
+							Array.isArray(row.original.geometry.coordinates) &&
+							row.original.geometry.coordinates.length > 0;
+
+						// If geometry is invalid, don't show the FlyToMap icon
+						if (!hasValidGeometry) {
+							return null;
+						}
 						const Action = history => {
 							const flyTo = () => {
 								drawBoundary(row.original);

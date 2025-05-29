@@ -32,7 +32,6 @@ const Secondarypanel = () => {
 
 	const leftPixels = useMemo(() => {
 		return get(document.getElementById('layer-side-panel'), 'style.minWidth', '0px');
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [get(document.getElementById('layer-side-panel'), 'style.minWidth', '0px')]);
 
 	const classes = useStyles({ leftPixels });

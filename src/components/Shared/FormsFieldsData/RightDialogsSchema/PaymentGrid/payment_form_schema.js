@@ -1,7 +1,8 @@
-import { InputAdornment } from '@material-ui/core';
-
 import moment from 'moment';
 
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
+
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GET_PAYMENT_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetPaymentAutoCompleteList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
@@ -12,6 +13,12 @@ const getNextPaymentDate = (value, startDate, endDate) => {
 
 	const start = new Date(startDate);
 	const end = new Date(endDate);
+	const current = new Date();
+
+	// Check if startDate is greater than current date
+	if (start > current) {
+		return startDate; // Return startDate if it's in the future
+	}
 
 	if (end <= start) {
 		return startDate; // Return startDate if endDate is less than or equal to startDate
@@ -88,18 +95,41 @@ const paymentForm = ({ setValue, getValues, isUpdate }) => {
 			},
 		},
 		{
-			renderField: 'startEndDate',
-			required: true,
+			label: 'Start Date',
+			name: 'startDate',
 			disabled: isUpdate,
-			onStartDateChange: value => {
+			type: 'date',
+			required: true,
+			onChange: value => {
 				setValue('startDate', value);
 				const { endDate, frequency } = getValues();
 				setValue('nextPayment', getNextPaymentDate(frequency, value, endDate));
 			},
-			onEndDateChange: value => {
+		},
+		{
+			label: 'End Date',
+			name: 'endDate',
+			disabled: isUpdate,
+			type: 'date',
+			required: true,
+			onChange: value => {
 				setValue('endDate', value);
 				const { startDate, frequency } = getValues();
 				setValue('nextPayment', getNextPaymentDate(frequency, startDate, value));
+			},
+			onBlur: value => {
+				const { startDate, frequency } = getValues();
+				const start = new Date(startDate);
+				const end = new Date(value);
+				if (end < start) {
+					setValue('endDate', startDate);
+					setValue('nextPayment', getNextPaymentDate(frequency, startDate, startDate));
+					return startDate;
+				} else {
+					setValue('endDate', value);
+					setValue('nextPayment', getNextPaymentDate(frequency, startDate, value));
+					return value;
+				}
 			},
 		},
 		{
@@ -120,7 +150,12 @@ const paymentForm = ({ setValue, getValues, isUpdate }) => {
 				{ label: 'Weekly', value: 'Weekly' },
 			],
 		},
-
+		{
+			label: 'Next Payment',
+			name: 'nextPayment',
+			disabled: true,
+			type: 'date',
+		},
 		{
 			label: 'Amount',
 			name: 'amount',
@@ -129,16 +164,15 @@ const paymentForm = ({ setValue, getValues, isUpdate }) => {
 			onChange: value => {
 				setValue('amount', value);
 			},
-			type: 'number',
 			InputProps: {
-				endAdornment: <InputAdornment position="end">$</InputAdornment>,
+				inputComponent: CurrencyFormatCustom,
 			},
-		},
-		{
-			label: 'Next Payment',
-			name: 'nextPayment',
-			disabled: true,
-			renderField: 'datePicker',
+			onBlur: value => {
+				const cleanedValue = value.replace(/[$,]/g, '');
+				const numericValue = parseFloat(cleanedValue);
+				const formattedValue = numericValue.toFixed(2);
+				return formattedValue;
+			},
 		},
 		{
 			label: 'Company Share',
@@ -146,26 +180,34 @@ const paymentForm = ({ setValue, getValues, isUpdate }) => {
 			onChange: value => {
 				setValue('companyShare', value);
 			},
-			type: 'number',
 			InputProps: {
-				endAdornment: <InputAdornment position="end">$</InputAdornment>,
+				inputComponent: CurrencyFormatCustom,
+			},
+			onBlur: value => {
+				const cleanedValue = value.replace(/[$,]/g, '');
+				const numericValue = parseFloat(cleanedValue);
+				const formattedValue = numericValue.toFixed(2);
+				return formattedValue;
 			},
 		},
 		{
 			label: 'Responsible Party',
 			name: 'responsibleParty',
-			renderField: 'autoCompleteNewOption',
-			query: GET_PAYMENT_AUTOCOMPLETE_LIST,
+			renderField: 'autoComplete',
+			query: GET_ES_FILTER_LIST,
 			variables: {
-				key: 'responsibleParty',
+				esIndex: 'properties_flat',
+				filterKey: 'operator.name',
 			},
 			getOptions: apiRes => {
 				// Transform API response into options for autocomplete
-				const filterData = apiRes?.data?.paymentAutoCompleteList.map(option => ({
-					label: option,
-					value: option,
-				}));
-				return filterData;
+				const filterData = apiRes?.data?.getESFilterList?.hits
+					?.filter(option => option?.key)
+					?.map(option => ({
+						label: option.key,
+						value: option.key,
+					}));
+				return filterData ?? [];
 			},
 			onChange: selectedOption => {
 				setValue('responsibleParty', selectedOption);

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
@@ -64,7 +63,7 @@ const TractMeta = {
 				>
 					<ColumnWithLink
 						value={renderedCellValue || row.getValue('shapeJson.properties.originalProperties.State')}
-						link={`/map/parcels/${row.getValue('_id')}`}
+						link={`/map/parcels/${row?.original?.parcel?._id}`}
 					/>
 				</div>
 			),

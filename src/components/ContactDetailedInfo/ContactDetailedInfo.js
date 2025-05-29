@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 import { Grid, Box, FormControlLabel, FormGroup, Switch, InputAdornment, IconButton } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -15,6 +14,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import {
 	getBasicInfoContent,

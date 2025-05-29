@@ -21,13 +21,11 @@ import payeeForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/Paye
 import paymentForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PaymentGrid/payment_form_schema';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-// functions
+import { detailCardController } from 'stateManagement/detailCardController';
+import { paymentState, sideDialogController } from 'stateManagement/sideDialogController';
+import { tableGlobalController } from 'stateManagement/tableController';
 
 import { checkFormRequireField } from 'utils/helper';
-
-import { detailCardController } from 'stateManagement/detailCardController';
-import { sideDialogController } from 'stateManagement/sideDialogController';
-import { tableGlobalController } from 'stateManagement/tableController';
 
 const useStyles = makeStyles({
 	list: {
@@ -162,6 +160,8 @@ const useStyles = makeStyles({
 });
 
 export default function AddNewRelatedData({ title, addNewData, formName }) {
+	const Controller = sideDialogController(formName);
+	const formState = Controller.useCompleteState();
 	const classes = useStyles();
 	let [loader, setLoader] = useState(false);
 	const { control, reset, getValues, setValue, watch } = useForm();
@@ -171,9 +171,7 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 	});
 	const [error, setError] = useState(false);
 
-	const Controller = sideDialogController(formName);
 	const paymentMultiGrid = tableGlobalController.getValue('paymentMultiGrid');
-	const formState = Controller.useCompleteState();
 
 	// Memoize form schema to avoid unnecessary re-renders
 	const formSchema = useMemo(() => {
@@ -207,8 +205,6 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 				return null;
 			}
 		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [formState?.rerenderJson]);
 
 	const handleDeleteCancel = () => {
@@ -250,11 +246,16 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 	useEffect(() => {
 		if (!isEmpty(paymentMultiGrid?.paymentData) && formName === 'paymentDialog') {
 			const rowData = paymentMultiGrid?.paymentData;
-			rowData.assignedTo = rowData?.assignedTo?._id || '';
-			Controller.updateState(rowData);
-			reset(rowData);
+			const filteredData = Object.keys(rowData).reduce((acc, key) => {
+				if (key in paymentState) {
+					acc[key] = rowData[key];
+				}
+				return acc;
+			}, {});
+			filteredData.assignedTo = rowData?.assignedTo?._id || '';
+			Controller.updateState(filteredData);
+			reset(filteredData);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [paymentMultiGrid?.paymentData]);
 
 	const DocumentDetail = anchor => (

@@ -1,12 +1,14 @@
 import React from 'react';
 
-import { Grid, TextField } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
-const useStyles = makeStyles(theme => ({
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+
+const useStyles = makeStyles(() => ({
 	actionBar: {
 		backgroundColor: '#f7f7f7',
 		width: '100%',
@@ -16,9 +18,6 @@ const useStyles = makeStyles(theme => ({
 			minWidth: '350px',
 		},
 	},
-	fieldWidth: {
-		minWidth: '360px !important',
-	},
 }));
 
 const LastCheckDateFilter = ({ calculationOption, setCalculationOption, options }) => {
@@ -26,32 +25,47 @@ const LastCheckDateFilter = ({ calculationOption, setCalculationOption, options 
 
 	return (
 		<div className={classes.actionBar}>
-			<Grid
-				container
-				alignItems="center"
-				// justifyContent="space-between"
-				spacing={2}
-				style={{ padding: '12px 0px 0px 45px', width: '100%' }}
-			>
-				<Autocomplete
-					size="small"
-					className={classes.fieldWidth}
-					onChange={(event, newValue) => {
-						const selectedOption = _.find(options, { value: newValue });
-						setCalculationOption(selectedOption);
+			<Grid container alignItems="center" spacing={2} style={{ padding: '12px 0px 0px 45px', width: '100%' }}>
+				<CustomAutoComplete
+					fieldConfig={{
+						variant: 'outlined',
+						textfieldRestProps: {
+							style: {
+								width: '360px',
+							},
+						},
 					}}
-					value={calculationOption?.value}
-					options={options.map(o => o.value)}
-					renderInput={params => (
-						<TextField {...params} label="" variant="outlined" placeholder="" style={{ backgroundColor: 'white' }} />
-					)}
-					// defaultValue={options[0]}
+					fieldAttributes={{
+						value: calculationOption?.value,
+						optionArray: options,
+						options: options.map(option => option.value),
+					}}
+					fieldEvents={{
+						onChange: ({ value }) => {
+							const selectedOption = _.find(options, { value });
+							setCalculationOption(selectedOption);
+						},
+					}}
 					disableListWrap
 					id="custom-date-dropdown"
 				/>
 			</Grid>
 		</div>
 	);
+};
+
+LastCheckDateFilter.propTypes = {
+	calculationOption: PropTypes.shape({
+		value: PropTypes.any,
+		// Add other fields if known, e.g. label: PropTypes.string,
+	}),
+	setCalculationOption: PropTypes.func.isRequired,
+	options: PropTypes.arrayOf(
+		PropTypes.shape({
+			value: PropTypes.any,
+			// Add other fields if known, e.g. label: PropTypes.string,
+		})
+	).isRequired,
 };
 
 export default LastCheckDateFilter;

@@ -1,25 +1,24 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import React, { useContext, useState, useEffect, useMemo, useRef } from 'react';
 
-import { Button, TextField, IconButton, CircularProgress, FormControl, Grid, makeStyles } from '@material-ui/core';
+import { Button, IconButton, CircularProgress, FormControl, Grid, makeStyles } from '@material-ui/core';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
-import { Autocomplete } from '@material-ui/lab';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
-import get from 'lodash/get';
+import { get, uniq } from 'lodash';
+import PropTypes from 'prop-types';
 
-import AutoCompleteAddNewField from 'components/Common/AutoCompleteWithAddNew';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { ADD_RELATED_CONTACT } from 'graphQL/useMutationRelatedContact';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
 import { tableGlobalController } from 'stateManagement/tableController';
 
 import RightDialog from './RightDialog';
 import { AppContext } from '../../../AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogHeader: {
 		display: 'flex',
 		justifyContent: 'space-between',
@@ -56,21 +55,6 @@ export default function AddRelatedContactModal(props) {
 		},
 	});
 
-	useEffect(() => {
-		getContacts();
-	}, [stateApp.addRelatedContactDialog]);
-
-	useEffect(() => {
-		if (response?.addRelatedContact?.success) {
-			setFormFields({
-				contact: null,
-				relationType: '',
-			});
-			autoCompletRef.current.updateDefaultValue('');
-			handleClose();
-		}
-	}, [response]);
-
 	const getContacts = (search = '') => {
 		getESSearch({
 			variables: {
@@ -94,6 +78,22 @@ export default function AddRelatedContactModal(props) {
 	};
 
 	const handleClose = () => setStateApp({ ...stateApp, addRelatedContactDialog: false });
+
+	useEffect(() => {
+		getContacts();
+	}, [stateApp.addRelatedContactDialog]);
+
+	useEffect(() => {
+		if (response?.addRelatedContact?.success) {
+			setFormFields({
+				contact: null,
+				relationType: '',
+			});
+			autoCompletRef?.current?.updateDefaultValue('');
+			handleClose();
+		}
+	}, [response]);
+
 	const handleSave = () => {
 		addContact({
 			variables: {
@@ -113,7 +113,7 @@ export default function AddRelatedContactModal(props) {
 
 	const formattedContactOptions = useMemo(() => {
 		const options = get(esFilter, 'getDbData.hits', []).map(option => ({
-			value: option._id,
+			_id: option._id,
 			name: option.name,
 			fullObject: option,
 		}));
@@ -158,51 +158,80 @@ export default function AddRelatedContactModal(props) {
 					</h4>
 
 					<div style={{ marginBottom: '10px ' }}>
-						<Autocomplete
-							id="search-contacts"
-							getOptionSelected={(option, value) => option.name === value.name}
-							getOptionLabel={option => option.name}
-							options={formattedContactOptions}
-							loading={loading}
-							value={formFields.contact}
-							onInputChange={onInputChange}
-							onChange={(_, newValue) => {
-								setFormFields({ ...formFields, contact: newValue });
+						<CustomAutoComplete
+							fieldAttributes={{
+								value: formFields?.contact?.name ?? '',
+								label: 'Search Contact',
+								query: GET_DB_DATA,
+								variables: {
+									index: 'contacts_flat',
+									pagination: {
+										first: 25,
+										after: null,
+									},
+									search: {
+										query: '*',
+										fields: ['name', '_id'],
+									},
+									sort: {
+										field: 'lastUpdateAt',
+										order: 'desc',
+										unmapped_type: 'date',
+									},
+									filters: [],
+								},
+								getOptions: hits =>
+									get(hits, 'data.getDbData.hits', []).map(option => ({
+										_id: option._id,
+										name: option.name,
+										fullObject: option,
+									})),
 							}}
-							renderInput={params => (
-								<TextField
-									{...params}
-									label="Search Contact"
-									variant="outlined"
-									size="small"
-									InputProps={{
-										...params.InputProps,
-										endAdornment: (
-											<React.Fragment>
-												{loading ? <CircularProgress color="inherit" size={20} /> : null}
-												{params.InputProps.endAdornment}
-											</React.Fragment>
-										),
-									}}
-								/>
-							)}
+							fieldConfig={{
+								size: 'small',
+								variant: 'outlined',
+							}}
+							fieldEvents={{
+								onInputChange: onInputChange,
+								onChange: ({ value }) => {
+									const selectedContact = formattedContactOptions?.find(option => option?._id === value?._id);
+									console.log({ value, selectedContact });
+									if (!selectedContact) {
+										return;
+									}
+									const contact = {
+										value: selectedContact?._id,
+										name: selectedContact?.name,
+										fullObject: selectedContact?.fullObject,
+									};
+									setFormFields({ ...formFields, contact });
+								},
+							}}
 						/>
 					</div>
+
 					<div style={{ marginBottom: '10px' }}>
-						<AutoCompleteAddNewField
-							ref={autoCompletRef}
-							id="related-contact-search"
-							queryParams={{
-								esIndex: 'contacts_flat',
-								filterKey: 'relatedContacts.relationshipType.keyword',
-								size: 50,
+						<CustomAutoComplete
+							fieldAttributes={{
+								value: formFields.relationType,
+								label: 'Relationship Type',
+								query: GET_ES_FILTER_LIST,
+								variables: {
+									esIndex: 'contacts_flat',
+									filterKey: 'relatedContacts.relationshipType.keyword',
+									size: 50,
+								},
+								getOptions: hits =>
+									uniq([...RelationshipTypeOptions, ...get(hits, 'data.getESFilterList.hits', []).map(doc => doc.key)]),
 							}}
-							onChange={data => {
-								setFormFields({ ...formFields, relationType: data.name });
+							fieldConfig={{
+								size: 'small',
+								variant: 'outlined',
+								allowNewOptions: true,
 							}}
-							defaultOptions={RelationshipTypeOptions}
-							value={formFields.relationType}
-							inputProps={{ variant: 'outlined', label: 'Relationship Type' }}
+							fieldEvents={{
+								onChange: ({ value }) => setFormFields({ ...formFields, relationType: value }),
+							}}
 						/>
 					</div>
 				</div>
@@ -239,3 +268,8 @@ export default function AddRelatedContactModal(props) {
 		</RightDialog>
 	);
 }
+
+AddRelatedContactModal.propTypes = {
+	relatedObject: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.object]).isRequired,
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};

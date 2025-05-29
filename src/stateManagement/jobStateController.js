@@ -1,79 +1,78 @@
-import { hookStateController } from 'stateManagement/hookStateController';
+import { StateController } from './stateController';
 
-import { jobInitialState, jobState } from './initialStates';
+export const jobInitialState = {
+	activeStepNumber: 0,
+	csvDataToSend: [],
+	mappedHeadersFromCSV: [],
+	m1neralHeaders: [],
+	csvDataList: [],
+	transferData: null,
+	uploaderFormValues: {},
+	selectedShapeLayerOption: null,
+	bulkUpload: false,
+	jobType: null,
+	job: null,
+};
 
-const jobStateControllerHandler = () => ({
-	toggleBulkUpload: () => {
-		jobState.bulkUpload.set(!jobState.bulkUpload.get());
-	},
-	nextStep: () => {
-		jobState.activeStepNumber.set(jobState.activeStepNumber.get() + 1);
-	},
-	prevStep: () => {
-		if (jobState.activeStepNumber.get() === 0) {
+class JobStateController extends StateController {
+	constructor(initialState) {
+		super(initialState, JobStateController.name);
+		this.autoBind(this);
+	}
+
+	initialize(stateToUpdate = {}) {
+		this.updateState({
+			...jobInitialState,
+			...stateToUpdate,
+		});
+	}
+
+	toggleBulkUpload() {
+		this.updateState({ bulkUpload: !this.getValue('bulkUpload') });
+	}
+
+	nextStep() {
+		this.updateState({ activeStepNumber: this.getValue('activeStepNumber') + 1 });
+	}
+
+	prevStep() {
+		if (this.getValue('activeStepNumber') === 0) {
 			return;
 		}
+		this.updateState({ activeStepNumber: this.getValue('activeStepNumber') - 1 });
+	}
 
-		jobState.activeStepNumber.set(jobState.activeStepNumber.get() - 1);
-	},
+	async onRowAdd(newData) {
+		const csvDataToSend = this.getValue('csvDataToSend') || [];
+		this.updateState({ csvDataToSend: [...csvDataToSend, newData] });
+	}
 
-	onRowAdd: newData => {
-		return new Promise((resolve, reject) => {
-			try {
-				jobState.csvDataToSend.set([...jobController.getValue('csvDataToSend'), newData]);
-				resolve();
-			} catch (error) {
-				reject(error);
-			}
-		});
-	},
+	async onRowUpdate(newData, oldData) {
+		if (!oldData) {
+			throw new Error('Old data not provided');
+		}
 
-	onRowUpdate: (newData, oldData) => {
-		return new Promise((resolve, reject) => {
-			try {
-				if (!oldData) {
-					throw new Error('Old data not provided');
-				}
+		const csvDataToSend = this.getValue('csvDataToSend');
+		const index = csvDataToSend.indexOf(oldData);
+		if (index === -1) {
+			throw new Error('Old data not found in csvDataToSend');
+		}
 
-				const csvDataToSend = jobController.getValue('csvDataToSend');
-				const index = csvDataToSend.indexOf(oldData);
+		delete newData.reason;
+		delete newData.invalidKey;
 
-				if (index === -1) {
-					throw new Error('Old data not found in csvDataToSend');
-				}
+		csvDataToSend[index] = newData;
+		this.updateState({ csvDataToSend: [...csvDataToSend] });
+	}
 
-				delete newData.reason;
-				delete newData.invalidKey;
+	async onRowDelete(oldData) {
+		const csvDataToSend = [...this.getValue('csvDataToSend')];
+		const index = csvDataToSend.indexOf(oldData);
+		if (index !== -1) {
+			csvDataToSend.splice(index, 1);
+			this.updateState({ csvDataToSend });
+		}
+	}
+}
 
-				csvDataToSend[index] = newData;
-
-				jobState.csvDataToSend.set(csvDataToSend);
-
-				resolve();
-			} catch (error) {
-				reject(error);
-			}
-		});
-	},
-
-	onRowDelete: oldData => {
-		return new Promise((resolve, reject) => {
-			try {
-				const csvDataToSend = jobController.getValue('csvDataToSend');
-
-				csvDataToSend.splice(csvDataToSend.indexOf(oldData), 1);
-
-				jobState.csvDataToSend.set(csvDataToSend);
-
-				resolve();
-			} catch (error) {
-				reject(error);
-			}
-		});
-	},
-});
-
-export const jobController = {
-	...jobStateControllerHandler(jobState),
-	...hookStateController(jobState, jobInitialState),
-};
+export const jobController = new JobStateController(jobInitialState);

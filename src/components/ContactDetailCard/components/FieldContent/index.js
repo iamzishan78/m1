@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Typography, Grid } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import { TextField, Link, CircularProgress } from '@material-ui/core';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
-import _ from 'lodash';
-import loadashFilter from 'lodash/filter';
+import { get, has } from 'lodash';
 import PropTypes from 'prop-types';
 
-import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import CopyPurchaseInfo from 'components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo';
 import {
 	textFieldLabels,
@@ -25,9 +18,11 @@ import {
 import MergeHistory from 'components/ContactDetailCard/components/FieldContent/MergeHistory';
 import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
-import { phoneStatusOptions, contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { contactStatusOptions, phoneStatusOptions } from 'components/ContactDetailedInfo/helper';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
-import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
+import CustomTypography from 'components/Shared/components/Fields/CustomTypography';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { phonenumber } from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 import { formatDate } from 'components/Shared/functions';
@@ -38,18 +33,17 @@ import { UPDATE_CONTACT_PURCHASE_DATA } from 'graphQL/useMutationContactPurchase
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { UPDATEMELISSA, UPDATEMELISSAADDRESS } from 'graphQL/useMutationUpdateMelissaRecords';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
 
 import { showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
-import AutoCompleteAddNewField from './AutoCompleteAddNewField';
 import CampaignField from './CampaignField';
 import EntityType from './EntityType';
 import { timeZoneOptions } from './timeZoneList';
 
-const filter = createFilterOptions();
 export default function FieldContent({
 	children,
 	id,
@@ -71,7 +65,6 @@ export default function FieldContent({
 	row,
 	handleQuickActionActivity,
 	metafields,
-	purchaseDataId = null,
 }) {
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 	const [edit, setEdit] = useState(null);
@@ -87,158 +80,17 @@ export default function FieldContent({
 	const [updateMelissaAddress] = useMutation(UPDATEMELISSAADDRESS);
 	const classes = useStyles({ noMargin, loading: loading || loadingPurchaseData, fieldsCount });
 
-	const dialpadFeature = React.useMemo(() => {
-		return stateApp.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION);
-	}, [stateApp.user]);
-
-	// contactOwnerId field used in autocomplete of contact owner
-	const ignorableFieldsInCount = ['contactOwnerId'];
-
 	const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
 	// const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
 	const [statusOptions, setStatusOptions] = useState([]);
-
-	useEffect(() => {
-		getFilters({
-			variables: {
-				esIndex: 'contacts_flat',
-				filterKey: 'status.keyword',
-				size: 50,
-			},
-		});
-	}, [getFilters]);
-
-	useEffect(() => {
-		if (filtersData?.getESFilterList?.hits) {
-			const allFiltersData = filtersData.getESFilterList.hits.map(hit => hit.key);
-			let filterData = filtersData.getESFilterList.hits.map(hit => hit.key);
-			for (let i = 0; i < contactStatusOptions.length; i++) {
-				filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
-			}
-			for (let i = 0; i < contactStatusOptions.length; i++) {
-				if (
-					(contactStatusOptions[i].notInclude && allFiltersData.find(d => d === contactStatusOptions[i].value)) ||
-					!contactStatusOptions[i].notInclude
-				) {
-					filterData.push(contactStatusOptions[i].label);
-				}
-			}
-			setStatusOptions(filterData);
-		}
-	}, [filtersData]);
-
-	useEffect(() => {
-		const ignorableFieldsInCount = ['contactOwnerId'];
-
-		if (content) {
-			setEditContent({ ...content });
-			setShowContent({ ...content });
-
-			let count = 0;
-			for (const fieldName in content) {
-				if (_.has(content, fieldName) && !ignorableFieldsInCount.includes(fieldName)) {
-					count++;
-				}
-			}
-			setFieldsCount(count);
-		}
-	}, [content]);
-
-	useEffect(() => {
-		editContent.ownerType && handleUpdating();
-	}, [editContent.ownerType]);
-
-	useEffect(() => {
-		if (fieldsCount <= 1) {
-			let fieldName;
-			for (const key in editContent) {
-				fieldName = key;
-				break;
-			}
-			if (document.getElementById('fieldContentInput' + fieldName)) {
-				document.getElementById('fieldContentInput' + fieldName).focus();
-			}
-		}
-	}, [edit]);
-
-	const getOrganizedContent = () => {
-		let textArray = [];
-		for (const key in showContent) {
-			if (_.has(showContent, key) && showContent[key] && showContent[key] !== '') {
-				if (
-					key === 'zip' ||
-					key === 'country' ||
-					key === 'zipAlt' ||
-					key === 'countryAlt' ||
-					key === 'title' ||
-					key === 'firstName' ||
-					key === 'middleName' ||
-					key === 'lastName' ||
-					key === 'suffix'
-				) {
-					textArray = [[textArray.join(', '), showContent[key]].join(' ')];
-				} else if (key === 'jobTitle') {
-					textArray = [[textArray.join(', '), showContent[key]].join(' - ')];
-				} else if (key === 'contactOwner' || key === 'contactOwnerId') {
-					if (key === 'contactOwner') {
-						textArray.push(showContent[key] || '');
-					}
-				} else {
-					textArray.push(showContent[key]);
-				}
-			}
-		}
-
-		return textArray;
-	};
-
-	const handleEditClick = (e, isCopy = false) => {
-		e.persist();
-		e.preventDefault();
-		if (isCopy) {
-			navigator.clipboard.writeText(getOrganizedContent() || '');
-		} else {
-			setEdit(!edit ? e.currentTarget : null);
-		}
-	};
-
-	const keyDownHandler = (event, fieldNames) => {
-		event.stopPropagation();
-		const fields = {};
-		fieldNames.forEach(field => (fields[field] = content[field]));
-		if (event.key === 'Escape') {
-			setEdit(null);
-			setEditContent({ ...fields });
-		}
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			handleUpdating();
-		}
-	};
-
-	const onBlurHandler = fieldNames => {
-		const fields = {}; // Initialize an empty object to store field values
-
-		// Iterate over fieldNames and assign corresponding values from content object
-		fieldNames.forEach(field => (fields[field] = content[field]));
-		// Check if editContent exists and has more than one property, return if true
-		// if editContent has more than one property we don't need to close popup on blur
-		if (Object.keys(editContent || {})?.length > 1) {
-			return;
-		}
-
-		// Reset edit state and update editContent with field values
-		setEdit(null); // It closes popup on blur
-		setEditContent({ ...fields });
-	};
 
 	const handleUpdating = (val = null) => {
 		const customData = {};
 
 		// Iterate over the keys of the original object
 		for (const key in editContent) {
-			if (_.has(editContent, key)) {
+			if (has(editContent, key)) {
 				// Check if the key starts with 'custom_data.'
 				if (key.startsWith('custom_data.')) {
 					// Extract the custom field name
@@ -367,6 +219,140 @@ export default function FieldContent({
 		setEdit(null);
 	};
 
+	useEffect(() => {
+		getFilters({
+			variables: {
+				esIndex: 'contacts_flat',
+				filterKey: 'status.keyword',
+				size: 50,
+			},
+		});
+	}, [getFilters]);
+
+	useEffect(() => {
+		if (filtersData?.getESFilterList?.hits) {
+			const allFiltersData = filtersData.getESFilterList.hits.map(hit => hit.key);
+			let filterData = filtersData.getESFilterList.hits.map(hit => hit.key);
+			for (let i = 0; i < contactStatusOptions.length; i++) {
+				filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
+			}
+			for (let i = 0; i < contactStatusOptions.length; i++) {
+				if (
+					(contactStatusOptions[i].notInclude && allFiltersData.find(d => d === contactStatusOptions[i].value)) ||
+					!contactStatusOptions[i].notInclude
+				) {
+					filterData.push(contactStatusOptions[i].label);
+				}
+			}
+			setStatusOptions(filterData);
+		}
+	}, [filtersData]);
+
+	useEffect(() => {
+		const ignorableFieldsInCount = ['contactOwnerId'];
+
+		if (content) {
+			setEditContent({ ...content });
+			setShowContent({ ...content });
+
+			let count = 0;
+			for (const fieldName in content) {
+				if (has(content, fieldName) && !ignorableFieldsInCount.includes(fieldName)) {
+					count++;
+				}
+			}
+			setFieldsCount(count);
+		}
+	}, [content]);
+
+	useEffect(() => {
+		editContent.ownerType && handleUpdating();
+	}, [editContent.ownerType]);
+
+	useEffect(() => {
+		if (fieldsCount <= 1) {
+			let fieldName;
+			for (const key in editContent) {
+				fieldName = key;
+				break;
+			}
+			if (document.getElementById('fieldContentInput' + fieldName)) {
+				document.getElementById('fieldContentInput' + fieldName).focus();
+			}
+		}
+	}, [edit]);
+
+	const getOrganizedContent = () => {
+		let textArray = [];
+		for (const key in showContent) {
+			if (has(showContent, key) && showContent[key] && showContent[key] !== '') {
+				if (
+					key === 'zip' ||
+					key === 'country' ||
+					key === 'zipAlt' ||
+					key === 'countryAlt' ||
+					key === 'title' ||
+					key === 'firstName' ||
+					key === 'middleName' ||
+					key === 'lastName' ||
+					key === 'suffix'
+				) {
+					textArray = [[textArray.join(', '), showContent[key]].join(' ')];
+				} else if (key === 'jobTitle') {
+					textArray = [[textArray.join(', '), showContent[key]].join(' - ')];
+				} else if (key === 'contactOwner' || key === 'contactOwnerId') {
+					if (key === 'contactOwner') {
+						textArray.push(showContent[key] || '');
+					}
+				} else {
+					textArray.push(showContent[key]);
+				}
+			}
+		}
+
+		return textArray;
+	};
+
+	const handleEditClick = (e, isCopy = false) => {
+		e.persist();
+		e.preventDefault();
+		if (isCopy) {
+			navigator.clipboard.writeText(getOrganizedContent() || '');
+		} else {
+			setEdit(!edit ? e.currentTarget : null);
+		}
+	};
+
+	const keyDownHandler = (event, fieldNames) => {
+		event.stopPropagation();
+		const fields = {};
+		fieldNames.forEach(field => (fields[field] = content[field]));
+		if (event.key === 'Escape') {
+			setEdit(null);
+			setEditContent({ ...fields });
+		}
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			handleUpdating();
+		}
+	};
+
+	const onBlurHandler = fieldNames => {
+		const fields = {}; // Initialize an empty object to store field values
+
+		// Iterate over fieldNames and assign corresponding values from content object
+		fieldNames.forEach(field => (fields[field] = content[field]));
+		// Check if editContent exists and has more than one property, return if true
+		// if editContent has more than one property we don't need to close popup on blur
+		if (Object.keys(editContent || {})?.length > 1) {
+			return;
+		}
+
+		// Reset edit state and update editContent with field values
+		setEdit(null); // It closes popup on blur
+		setEditContent({ ...fields });
+	};
+
 	const formatFieldValue = (val, metaField) => {
 		if (metaField?.type === 'date') {
 			return formatDate(val);
@@ -380,248 +366,367 @@ export default function FieldContent({
 		return val;
 	};
 
-	const phoneStatusFields = ['phone1Status', 'phone2Status', 'phone3Status', 'phone4Status', 'phone5Status'];
 	let inputsArray = [];
 	if (edit) {
 		for (const fieldName in editContent) {
 			if (fieldName === 'contactOwner' || fieldName === 'contactOwnerId') {
 				if (fieldName === 'contactOwner') {
 					inputsArray.push(
-						<ContactAutoComplete
-							value={editContent.contactOwnerId ? editContent.contactOwnerId : ''}
-							onChange={(e, user) => {
-								setEditContent({ contactOwner: user.text, contactOwnerId: user.value });
+						<CustomAutoComplete
+							fieldAttributes={{
+								value: editContent.contactOwnerId ? editContent.contactOwnerId : '',
+								placeholder: 'Select Contact Owner',
+								query: GETMONGOUSERS,
+								getOptions: hits =>
+									hits.data.allMongoUsers
+										.map(user => ({
+											_id: user._id,
+											name: user.displayName || user.name,
+										}))
+										.filter(user => user.name),
+							}}
+							fieldEvents={{
+								onChange: ({ value: user }) => setEditContent({ contactOwner: user.name, contactOwnerId: user._id }),
+								onBlur: () => onBlurHandler(['contactOwner', 'contactOwnerId']),
+							}}
+							fieldConfig={{
+								size: 'medium',
 							}}
 							onKeyDown={event => keyDownHandler(event, ['contactOwner', 'contactOwnerId'])}
-							onBlur={() => onBlurHandler(['contactOwner', 'contactOwnerId'])}
 						/>
 					);
 				}
-			} else if (_.has(editContent, fieldName)) {
+			} else if (has(editContent, fieldName)) {
 				const metaField = metafields ? metafields.find(meta => meta?.esKey === fieldName) : null;
-				inputsArray.push(
-					fieldName === 'contactStatus' ? (
-						<ContactStatus
-							className={classes.maxWidth}
-							setValue={value => {
-								let val = value.name;
-								const data = contactStatusOptions.find(s => s.label === val);
-								if (data) {
-									val = data.value;
-								}
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: val,
-								}));
-								handleUpdating(val);
-							}}
-							fieldKey="contactStatus"
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-						/>
-					) : fieldName === 'status' ? (
-						<Status
-							className={classes.maxWidth}
-							options={statusOptions}
-							setDocumentType={value => {
-								let val = value.name;
-								const data = contactStatusOptions.find(s => s.label === val);
-								if (data) {
-									val = data.value;
-								}
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: val,
-								}));
-								handleUpdating(val);
-							}}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-						/>
-					) : fieldName === 'timeZone' ? (
-						<Autocomplete
-							id={'fieldContentInput' + fieldName}
-							key={'fieldContentInput' + fieldName}
-							options={timeZoneOptions}
-							getOptionLabel={option => option || editContent[fieldName]}
-							onChange={(e, data) => {
-								e.persist();
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: data || '',
-								}));
-							}}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							autoComplete
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-							style={{ width: '100%' }}
-							renderInput={params => (
-								<TextField
-									{...params}
-									label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
-									className={classes.editTextField}
-								/>
-							)}
-						/>
-					) : phoneStatusFields.includes(fieldName) ? (
-						<Autocomplete
-							id={'fieldContentInput' + fieldName}
-							key={'fieldContentInput' + fieldName}
-							options={phoneStatusOptions}
-							onChange={(e, data) => {
-								e.persist();
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: data || '',
-								}));
-							}}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							autoComplete
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-							style={{ width: '100%' }}
-							renderInput={params => (
-								<TextField
-									{...params}
-									label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
-									className={classes.editTextField}
-								/>
-							)}
-						/>
-					) : fieldName.startsWith('custom_data') && metaField?.type === 'dropdown' ? (
-						<ReactSelectField
-							fullWidth
-							showUnderline
-							showChevron={true}
-							index={'contacts'}
-							dropdownOptions={metaField?.dropdownOptions}
-							column={metaField}
-							isSingleSelect={true}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onCustomKeyChange={value => {
-								const fields = {};
-								fields[fieldName] = value;
-								setEdit(null);
-								setEditContent({ ...fields });
-								handleUpdating(value);
-							}}
-						/>
-					) : fieldName.startsWith('custom_data') && metaField?.type === 'multiselect' ? (
-						<ReactSelectField
-							fullWidth
-							showUnderline
-							showChevron={true}
-							index={'contacts'}
-							dropdownOptions={metaField?.dropdownOptions}
-							column={metaField}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onCustomKeyChange={value => {
-								const fields = {}; // Initialize an empty object to store field values
-								fields[fieldName] = value;
+				let component;
 
-								// Reset edit state and update editContent with field values
-								setEdit(null); // It closes popup on blur
-								setEditContent({ ...fields });
-								handleUpdating(value);
-							}}
-						/>
-					) : fieldName.startsWith('custom_data') && metaField?.type === 'date' ? (
-						<>
-							<TextField
-								key={'fieldContentInput' + fieldName}
-								id={'fieldContentInput' + fieldName}
-								data-testid={fieldName}
-								className={classes.editTextField}
-								variant="outlined"
-								size="small"
-								autoComplete="nope"
-								fullWidth
-								label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
-								multiline={false} // For date fields, multiline should be false
-								type="date" // Use date type for date picker
-								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-								onChange={e => {
-									e.persist();
+				switch (fieldName) {
+					case 'contactStatus':
+						component = (
+							<CustomAutoComplete
+								fieldAttributes={{
+									label: 'Status',
+									value: editContent[fieldName] === null ? '' : editContent[fieldName],
+									query: GET_ES_FILTER_LIST,
+									variables: {
+										esIndex: 'contacts_flat',
+										filterKey: 'contactStatus.keyword',
+										size: 50,
+									},
+									getOptions: res => res?.data?.getESFilterList?.hits?.map(hit => hit.key).filter(option => option),
+								}}
+								fieldConfig={{
+									size: 'small',
+									margin: 'dense',
+									variant: 'outlined',
+								}}
+								fieldEvents={{
+									onChange: ({ value }) => {
+										let val = value;
+										const data = contactStatusOptions.find(s => s.label === val);
+										if (data) {
+											val = data.value;
+										}
+										setEditContent(editContent => ({
+											...editContent,
+											[fieldName]: val,
+										}));
+										handleUpdating(val);
+									},
+									onBlur: () => onBlurHandler([fieldName]),
+								}}
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+							/>
+						);
+						break;
+
+					case 'status':
+						component = (
+							<CustomAutoComplete
+								fieldAttributes={{
+									value: editContent[fieldName] === null ? '' : editContent[fieldName],
+									optionArray: statusOptions.filter(option => option),
+								}}
+								fieldEvents={{
+									onChange: ({ value }) => {
+										let val = value;
+										const data = contactStatusOptions.find(s => s.label === val);
+										if (data) {
+											val = data.value;
+										}
+										setEditContent(editContent => ({
+											...editContent,
+											[fieldName]: val,
+										}));
+										handleUpdating(val);
+									},
+									onBlur: () => onBlurHandler([fieldName]),
+								}}
+								fieldConfig={{
+									variant: 'outlined',
+									textfieldRestProps: {
+										className: classes.editTextField,
+										autoFocus: true,
+									},
+								}}
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+							/>
+						);
+						break;
+
+					case 'timeZone':
+						component = (
+							<CustomAutoComplete
+								fieldAttributes={{
+									value: editContent[fieldName] === null ? '' : editContent[fieldName],
+									label: fieldsCount > 1 ? textFieldLabels(fieldName) : null,
+									optionArray: timeZoneOptions,
+								}}
+								fieldConfig={{
+									size: 'small',
+									variant: 'outlined',
+									textfieldRestProps: {
+										className: classes.editTextField,
+										style: { width: '100%' },
+										id: 'fieldContentInput' + fieldName,
+										autoFocus: true,
+									},
+								}}
+								fieldEvents={{
+									onChange: ({ value }) => {
+										setEditContent(editContent => ({
+											...editContent,
+											[fieldName]: value || '',
+										}));
+									},
+									onBlur: () => onBlurHandler([fieldName]),
+								}}
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+							/>
+						);
+						break;
+
+					case 'ownerType':
+						component = (
+							<EntityType
+								className={classes.maxWidth}
+								setDocumentType={value => {
+									let val = value.name;
+									const data = contactStatusOptions.find(s => s.label === val);
+									if (data) {
+										val = data.value;
+									}
 									setEditContent(editContent => ({
 										...editContent,
-										[fieldName]: e.target.value, // Ensure value is in YYYY-MM-DD format
+										[fieldName]: val,
 									}));
 								}}
+								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
 								onKeyDown={event => keyDownHandler(event, [fieldName])}
 								onBlur={() => onBlurHandler([fieldName])}
 							/>
-						</>
-					) : fieldName === 'ownerType' ? (
-						<EntityType
-							className={classes.maxWidth}
-							setDocumentType={value => {
-								let val = value.name;
-								const data = contactStatusOptions.find(s => s.label === val);
-								if (data) {
-									val = data.value;
-								}
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: val,
-								}));
-							}}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-						/>
-					) : fieldName === 'outcome' ? (
-						<AutoCompleteAddNewField
-							id="contact-detail-outcome"
-							queryParams={{
-								esIndex: 'contacts_flat',
-								filterKey: 'outcome.keyword',
-								size: 50,
-							}}
-							onChange={data => {
-								setEditContent(editContent => ({
-									...editContent,
-									[fieldName]: data.name || '',
-								}));
+						);
+						break;
 
-								handleUpdating(data.name);
-							}}
-							defaultOptions={outcomeOptions}
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-						/>
-					) : (
-						<TextField
-							key={'fieldContentInput' + fieldName}
-							id={'fieldContentInput' + fieldName}
-							data-testid={fieldName}
-							className={classes.editTextField}
-							variant="outlined"
-							size="small"
-							autoComplete="nope"
-							fullWidth
-							label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
-							multiline
-							value={editContent[fieldName] === null ? '' : editContent[fieldName]}
-							onChange={e => {
-								const { value } = e.target;
-								let currValue = value;
-								if (row?.isPhoneNumber) {
-									currValue = !dialpadFeature || phonenumber(value) ? value : '';
-								}
-								setEditContent(prev => ({
-									...prev,
-									[fieldName]: currValue,
-								}));
-							}}
-							onKeyDown={event => keyDownHandler(event, [fieldName])}
-							onBlur={() => onBlurHandler([fieldName])}
-						/>
-					)
-				);
+					case 'outcome':
+						component = (
+							<CustomAutoComplete
+								fieldAttributes={{
+									value: editContent[fieldName] === null ? '' : editContent[fieldName],
+									optionArray: outcomeOptions,
+									queryParams: {
+										esIndex: 'contacts_flat',
+										filterKey: 'outcome.keyword',
+										size: 50,
+									},
+								}}
+								fieldConfig={{
+									size: 'small',
+									variant: 'outlined',
+									textfieldRestProps: {
+										className: classes.editTextField,
+										style: { width: '100%' },
+										id: 'contact-detail-outcome',
+										autoFocus: true,
+									},
+								}}
+								fieldEvents={{
+									onChange: ({ value }) => {
+										setEditContent(editContent => ({
+											...editContent,
+											[fieldName]: value || '',
+										}));
+										handleUpdating(value);
+									},
+									onBlur: () => onBlurHandler([fieldName]),
+								}}
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+							/>
+						);
+						break;
+
+					case 'phone1Status':
+					case 'phone2Status':
+					case 'phone3Status':
+					case 'phone4Status':
+					case 'phone5Status':
+						component = (
+							<CustomAutoComplete
+								fieldAttributes={{
+									value: editContent[fieldName] === null ? '' : editContent[fieldName],
+									label: fieldsCount > 1 ? textFieldLabels(fieldName) : null,
+									optionArray: phoneStatusOptions,
+								}}
+								fieldConfig={{
+									size: 'small',
+									variant: 'outlined',
+									textfieldRestProps: {
+										className: classes.editTextField,
+										style: { width: '100%' },
+										id: 'fieldContentInput' + fieldName,
+										autoFocus: true,
+									},
+								}}
+								fieldEvents={{
+									onChange: ({ value }) => {
+										setEditContent(editContent => ({
+											...editContent,
+											[fieldName]: value || '',
+										}));
+									},
+									onBlur: () => onBlurHandler([fieldName]),
+								}}
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+							/>
+						);
+						break;
+
+					default:
+						if (fieldName.startsWith('custom_data')) {
+							switch (metaField?.type) {
+								case 'dropdown':
+									component = (
+										<CustomAutoComplete
+											fieldAttributes={{
+												value: editContent[fieldName] === null ? '' : editContent[fieldName],
+												label: fieldsCount > 1 ? textFieldLabels(fieldName) : null,
+												optionArray: metaField?.dropdownOptions.map(option => option?.value),
+											}}
+											fieldConfig={{
+												size: 'small',
+												variant: 'outlined',
+												textfieldRestProps: {
+													className: classes.editTextField,
+													style: { width: '100%' },
+													id: 'fieldContentInput' + fieldName,
+													autoFocus: true,
+												},
+											}}
+											fieldEvents={{
+												onChange: ({ value }) => {
+													setEditContent(editContent => ({
+														...editContent,
+														[fieldName]: value || '',
+													}));
+												},
+												onBlur: () => onBlurHandler([fieldName]),
+											}}
+											onKeyDown={event => keyDownHandler(event, [fieldName])}
+										/>
+									);
+									break;
+
+								case 'multiselect':
+									component = (
+										<ReactSelectField
+											fullWidth
+											showUnderline
+											showChevron={true}
+											index={'contacts'}
+											dropdownOptions={metaField?.dropdownOptions}
+											column={metaField}
+											value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+											onCustomKeyChange={value => {
+												const fields = {};
+												fields[fieldName] = value;
+												setEdit(null); // It closes popup on blur
+												setEditContent({ ...fields });
+												handleUpdating(value);
+											}}
+										/>
+									);
+									break;
+
+								case 'date':
+									component = (
+										<TextField
+											key={'fieldContentInput' + fieldName}
+											id={'fieldContentInput' + fieldName}
+											data-testid={fieldName}
+											className={classes.editTextField}
+											variant="outlined"
+											size="small"
+											autoComplete="nope"
+											fullWidth
+											label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+											multiline={false}
+											type="date"
+											value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+											onChange={e => {
+												e.persist();
+												setEditContent(editContent => ({
+													...editContent,
+													[fieldName]: e.target.value,
+												}));
+											}}
+											onKeyDown={event => keyDownHandler(event, [fieldName])}
+											onBlur={() => onBlurHandler([fieldName])}
+										/>
+									);
+									break;
+
+								default:
+									break;
+							}
+						}
+
+						if (!component) {
+							component = (
+								<CustomTextField
+									fieldEvents={{
+										onChange: value => {
+											setEditContent(editContent => ({
+												...editContent,
+												[fieldName]: row?.isPhoneNumber && !phonenumber(value) ? '' : value,
+											}));
+										},
+										onKeyDown: event => keyDownHandler(event, [fieldName]),
+										onBlur: () => onBlurHandler([fieldName]),
+									}}
+									fieldConfig={{
+										autoFocus: true,
+										size: 'small',
+										variant: 'outlined',
+										textfieldRestProps: {
+											autoFocus: true,
+										},
+									}}
+									fieldAttributes={{
+										name: fieldName,
+										value: editContent[fieldName] === null ? '' : editContent[fieldName],
+										label: fieldsCount > 1 ? textFieldLabels(fieldName) : null,
+										InputProps: {
+											autoComplete: 'nope',
+										},
+									}}
+								/>
+							);
+						}
+				}
+
+				if (component) {
+					inputsArray.push(component);
+				}
 			}
 		}
 
@@ -633,11 +738,31 @@ export default function FieldContent({
 						<span>Return</span> to save
 					</p>
 				),
-			]; /////return an input if only one field
+			];
 		}
 	}
 
 	let textArray = getOrganizedContent();
+
+	function getFormattedText({ textArray, onlyChildren, children, metaField, name }) {
+		let result;
+
+		if (textArray.length > 0) {
+			const renderGenericField = !metaField || (metaField?.type && ['link', 'text'].includes(metaField.type));
+
+			if (renderGenericField) {
+				return <CustomTypography value={textArray} />;
+			} else if (onlyChildren) {
+				result = children || '';
+			} else {
+				result = formatFieldValue(textArray.join(', '), metaField);
+			}
+		} else {
+			result = `${name ? name + ' ' : ''} Not Available`;
+		}
+
+		return result;
+	}
 
 	const renderOutput = Object.keys(content).includes('campaigns') ? (
 		<CampaignField
@@ -649,7 +774,7 @@ export default function FieldContent({
 				}));
 				handleUpdating(value);
 			}}
-			value={_.get(editContent, 'campaigns', [])}
+			value={get(editContent, 'campaigns', [])}
 			fullWidth
 			targetLabel="Contact"
 			targetLabelId={id}
@@ -657,64 +782,69 @@ export default function FieldContent({
 			onBlur={() => onBlurHandler(['campaigns'])}
 		/>
 	) : (
-		<span>
-			{childrenLeft && !onlyChildren && children ? children : ''}
-			{/* Wrap the contact details tab title inside span to fix it position */}
-			<span
-				style={{
-					marginTop: '4px',
-					display: 'inline-block',
-				}}
-			>
-				{textArray.length > 0
-					? onlyChildren
-						? children
-							? children
-							: ''
-						: textArray.join(', ')
-					: `${name ? name + ' ' : ''} Not Available`}{' '}
-			</span>
-			{!onlyChildren && !disabled && (
-				<PencilEditIcon
-					handleUpdating={handleUpdating}
-					anchorEl={edit}
-					setAnchorEl={setEdit}
-					content={inputsArray}
-					onClick={handleEditClick}
-					isCopy={true}
-					setEditContent={setEditContent}
-					editContent={content}
-					row={row}
-					handleQuickActionActivity={handleQuickActionActivity}
-					isPurchased={isPurchased}
-				/>
-			)}
-			{fieldType === FieldTypes.Contact && isMerged && (
-				<MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
-			)}
-			{isPurchased && (
-				<CopyPurchaseInfo
-					updateContact={updateContact}
-					userId={stateApp.user.mongoId}
-					content={content}
-					contactId={id}
-				/>
-			)}
-			{textArray.length > 0 && name === 'Address' ? ( // show google map and zillow icon when address exists
-				<>
-					<Link onClick={() => window.open(getAddressUrl(content), '_blank')}>
-						<GoogleMapIcon />
-					</Link>
-					<Link onClick={() => window.open(getZillowAddressUrl(content), '_blank')}>
-						<ZillowIcon />
-					</Link>
-				</>
-			) : (
-				''
-			)}
-			{!childrenLeft && !onlyChildren && children ? children : ''}
-			{isCurEdited ? ' (edited)' : ''}
-		</span>
+		(() => {
+			// Find the metafield object with an eskey matching a key in content
+			const metaField = metafields
+				? metafields.find(metafield => {
+						return Object.keys(content).includes(metafield.esKey);
+					})
+				: null;
+
+			return (
+				<span>
+					{childrenLeft && !onlyChildren && children ? children : ''}
+					{/* Wrap the contact details tab title inside span to fix it position */}
+					<span
+						style={{
+							marginTop: '4px',
+							display: 'inline-block',
+						}}
+					>
+						{getFormattedText({ textArray, onlyChildren, children, metaField, name })}
+					</span>
+					{!onlyChildren && !disabled && (
+						<PencilEditIcon
+							handleUpdating={handleUpdating}
+							anchorEl={edit}
+							setAnchorEl={setEdit}
+							content={inputsArray}
+							onClick={handleEditClick}
+							isCopy={true}
+							setEditContent={setEditContent}
+							editContent={content}
+							row={row}
+							handleQuickActionActivity={handleQuickActionActivity}
+							isPurchased={isPurchased}
+						/>
+					)}
+					{fieldType === FieldTypes.Contact && isMerged && (
+						<MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
+					)}
+					{isPurchased && (
+						<CopyPurchaseInfo
+							updateContact={updateContact}
+							userId={stateApp.user.mongoId}
+							content={content}
+							contactId={id}
+						/>
+					)}
+					{textArray.length > 0 && name === 'Address' ? ( // show google map and zillow icon when address exists
+						<>
+							<Link onClick={() => window.open(getAddressUrl(content), '_blank')}>
+								<GoogleMapIcon />
+							</Link>
+							<Link onClick={() => window.open(getZillowAddressUrl(content), '_blank')}>
+								<ZillowIcon />
+							</Link>
+						</>
+					) : (
+						''
+					)}
+					{!childrenLeft && !onlyChildren && children ? children : ''}
+					{isCurEdited ? ' (edited)' : ''}
+				</span>
+			);
+		})()
 	);
 
 	return (
@@ -746,123 +876,6 @@ export default function FieldContent({
 	);
 }
 
-export const Status = ({ setDocumentType, value, options, ...other }) => {
-	const useStyles = makeStyles({
-		inputRoot: {
-			backgroundColor: '#ffffff',
-		},
-		listbox: {
-			boxSizing: 'border-box',
-			'& ul': {
-				padding: 0,
-				margin: 0,
-			},
-		},
-	});
-
-	const classes = useStyles();
-
-	const [search, setSearch] = useState(value);
-
-	useEffect(() => {
-		setSearch(value);
-	}, [value]);
-
-	const onInputChange = (event, value) => {
-		setSearch(value);
-	};
-
-	return (
-		<Autocomplete
-			defaultValue={search}
-			value={search}
-			disableListWrap
-			classes={classes}
-			options={
-				options?.map(type => {
-					return { _id: type, name: type };
-				}) ?? []
-			}
-			getOptionLabel={option => {
-				// Value selected with enter, right from the input
-				if (typeof option === 'string') {
-					return option;
-				}
-				// Add "xxx" option created dynamically
-				if (option.inputValue) {
-					return option.name;
-				}
-
-				if (option?.name) {
-					return option.name;
-				} else {
-					return '';
-				}
-			}}
-			getOptionSelected={option => {
-				return option?._id === search;
-			}}
-			renderOption={option => {
-				if (option._id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
-				}
-
-				return (
-					<Grid container spacing={0}>
-						<Grid container item xs={12} alignItems="center">
-							<Grid item xs>
-								<span style={{ fontWeight: 400 }}>{option.name}</span>
-							</Grid>
-						</Grid>
-					</Grid>
-				);
-			}}
-			onInputChange={onInputChange}
-			filterOptions={(options, params) => {
-				let inputValue = JSON.parse(JSON.stringify(search));
-				if (inputValue.name) {
-					inputValue = inputValue.name;
-				}
-				const filtered = filter(options, { ...params, inputValue });
-				const isExist = loadashFilter(filtered, filter => {
-					return filter._id === inputValue;
-				});
-				// Suggest the creation of a new value
-				if (inputValue !== '' && (!isExist || isExist.length === 0)) {
-					filtered.unshift({
-						name: inputValue,
-						_id: 'newEntity',
-					});
-				}
-				return filtered;
-			}}
-			onChange={(event, newValue) => {
-				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') {
-						setDocumentType(newValue);
-					} else {
-						setDocumentType({ _id: 'newEntity', name: newValue.name });
-					}
-				} else {
-					setSearch('');
-					setDocumentType({ _id: '', name: '' });
-				}
-			}}
-			renderInput={params => (
-				<TextField
-					margin="dense"
-					{...params}
-					InputProps={{
-						...params.InputProps,
-					}}
-					size="small"
-				/>
-			)}
-			{...other}
-		/>
-	);
-};
-
 FieldContent.propTypes = {
 	children: PropTypes.node,
 	id: PropTypes.string.isRequired,
@@ -871,24 +884,18 @@ FieldContent.propTypes = {
 	melissaRecordId: PropTypes.string,
 	melissaAddressRecordId: PropTypes.string,
 	content: PropTypes.object.isRequired,
-	childrenLeft: PropTypes.bool,
+	childrenLeft: PropTypes.node,
 	onlyChildren: PropTypes.bool,
 	name: PropTypes.string,
 	noMargin: PropTypes.bool,
 	noInputFooter: PropTypes.bool,
-	linkType: PropTypes.oneOf(Object.values(LinkTypes)),
-	fieldType: PropTypes.oneOf(Object.values(FieldTypes)),
+	linkType: PropTypes.oneOf([LinkTypes.Mail, LinkTypes.Simple]),
+	fieldType: PropTypes.oneOf([FieldTypes.Contact, FieldTypes.MelissaRecord, FieldTypes.MelissaAddressRecord]),
 	isEdited: PropTypes.bool,
 	isMerged: PropTypes.bool,
 	disabled: PropTypes.bool,
 	row: PropTypes.object,
 	handleQuickActionActivity: PropTypes.func,
-	metafields: PropTypes.arrayOf(PropTypes.object),
+	metafields: PropTypes.array,
 	purchaseDataId: PropTypes.string,
-};
-
-Status.propTypes = {
-	setDocumentType: PropTypes.func.isRequired,
-	value: PropTypes.string.isRequired,
-	options: PropTypes.arrayOf(PropTypes.string).isRequired,
 };

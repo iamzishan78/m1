@@ -17,9 +17,6 @@ import Typography from '@material-ui/core/Typography';
 import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
 
-//material-ui components
-
-//custom components
 import { globalStateController } from 'stateManagement/globalStateController';
 import { popupController } from 'stateManagement/popupStateController';
 
@@ -27,10 +24,6 @@ import OilGasIcon from './components/svgIcons/OilGasIcon';
 import OwnershipIcon from './components/svgIcons/OwnershipIcon';
 import ProductionIcon from './components/svgIcons/ProductionIcon';
 import WellIcon from './components/svgIcons/WellIcon';
-
-// queries
-
-// value formatters
 import convert_date from '../Shared/valueformatters/convert_date.js';
 import formatBOE from '../Shared/valueformatters/format_boe.js';
 
@@ -103,7 +96,6 @@ const useStyles = makeStyles(theme => ({
 		padding: '5px',
 		alignContent: 'center',
 		background: '#F6F6F6',
-		border: '0px',
 	},
 
 	cell2: {

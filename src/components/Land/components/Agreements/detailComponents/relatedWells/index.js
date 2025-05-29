@@ -5,16 +5,16 @@ import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 
 import { useQuery } from '@apollo/client';
-
 import PropTypes from 'prop-types';
 
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import MRTTable from 'components/MRTTable';
 
+import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+
 import { tableGlobalController } from 'stateManagement/tableController';
 
 import { useStyles as customStyles } from '../style';
-import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(() => ({
 	root: {

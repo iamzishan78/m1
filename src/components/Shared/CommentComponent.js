@@ -1,4 +1,3 @@
-/* eslint-disable react/no-array-index-key */
 import React, { useState, useEffect, Fragment, useRef, useCallback } from 'react';
 import Avatar from 'react-avatar';
 import { useDispatch } from 'react-redux';
@@ -15,7 +14,6 @@ import {
 } from '@material-ui/icons';
 
 import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
-import DOMPurify from 'dompurify';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ru from 'javascript-time-ago/locale/ru';
@@ -34,24 +32,17 @@ import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
 
 import { globalStateController } from 'stateManagement/globalStateController';
-import { slidoutState } from 'stateManagement/initialStates';
+import { slidoutStateController } from 'stateManagement/slidoutStateController';
 
 import { updatePinComments } from 'store/actions/commonActions';
 
 import { UserSession } from 'utils/user';
 
 import CommentsAutoComplete from './CommentsAutoComplete';
+import CustomTypography from './components/Fields/CustomTypography';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
-
-// Hook into DOMPurify to safely allow target="_blank"
-DOMPurify.addHook('afterSanitizeAttributes', node => {
-	if (node.tagName === 'A') {
-		node.setAttribute('target', '_blank');
-		node.setAttribute('rel', 'noopener noreferrer');
-	}
-});
 
 const useStyles = makeStyles(() => ({
 	container: ({ isFileDetail }) => ({
@@ -197,14 +188,6 @@ const typeOptions = [
 	{ label: 'Mailer', value: 'mailer' },
 ];
 
-function urlify(text) {
-	const urlRegex = /(https?:\/\/[^\s]+)/g;
-
-	return text.replace(urlRegex, url => {
-		return '<a href="' + url + '">' + url + '</a>';
-	});
-}
-
 export function getLikedPeoplesName(comment, myUserId) {
 	const { likedBy } = comment;
 	const names = (likedBy || []).map(user => {
@@ -269,7 +252,7 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 													.substring(lastIndex, match.index)
 													.split('\n')
 													.map((text, idx) => (
-														<React.Fragment key={`text-${idx}`}>
+														<React.Fragment key={`text-${text}`}>
 															{idx > 0 && <br />}
 															{text}
 														</React.Fragment>
@@ -295,7 +278,7 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 												.substring(lastIndex)
 												.split('\n')
 												.map((text, idx) => (
-													<React.Fragment key={`end-text-${idx}`}>
+													<React.Fragment key={`end-text-${text}`}>
 														{idx > 0 && <br />}
 														{text}
 													</React.Fragment>
@@ -313,18 +296,11 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 						);
 					}
 
-					return (
-						<p className={classes.commentWords} key={index}>
-							{splittedWord}
-						</p>
-					);
+					return <CustomTypography key={index} className={classes.commentWords} value={splittedWord} />;
 				} else {
 					// Process regular words, ensure spaces are correctly handled
 					const _word = index !== formatComment.length - 1 ? `${word}` : word;
-					const sanitizedData = () => ({
-						__html: DOMPurify.sanitize(urlify(_word)),
-					});
-					return <span className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()} key={index}></span>;
+					return <CustomTypography key={index} className={classes.commentWords} value={_word} />;
 				}
 			})}
 		</div>
@@ -333,6 +309,9 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 
 export default function CommentComponent(props) {
 	const { targetSourceId, commentsHeight } = props;
+	const ACTIVITY_TAB = 2;
+	const MAX_COMMENTS = 7;
+
 	const classes = useStyles({
 		commentsHeight,
 		isFileDetail: props.targetLabel === 'file' || false,
@@ -356,6 +335,7 @@ export default function CommentComponent(props) {
 	const [showCommentActionId, setShowCommentActionId] = useState(null);
 	const [loadingComments, setLoadingComments] = useState(true);
 	const [scrollIntoView, setScrollIntoView] = useState(false);
+
 	const commentContainerRef = useRef(null);
 	const [tab, setTab] = useState(0);
 	const [activityType, setActivityType] = useState('all');
@@ -492,6 +472,7 @@ export default function CommentComponent(props) {
 				allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId]);
 			}
 			allComments = sortArrayBasedOnTs(allComments);
+
 			if (tab === 0) {
 				setCommentsArray(allComments);
 			} else if (tab === 1) {
@@ -668,14 +649,14 @@ export default function CommentComponent(props) {
 	};
 
 	useEffect(() => {
-		if (commentsArray?.length > 0 && scrollIntoView) {
+		if (commentsArray?.length > 0 && !showAllComments) {
 			commentContainerRef?.current?.scrollIntoView({
 				behavior: 'smooth',
-				block: 'start',
+				block: 'end',
 				inline: 'start',
 			});
 		}
-	}, [commentsArray, scrollIntoView]);
+	}, [commentsArray, scrollIntoView, showAllComments]);
 
 	const addNewComment = value => {
 		const userDetails = user;
@@ -701,7 +682,7 @@ export default function CommentComponent(props) {
 			state.push(newComment);
 			return state;
 		});
-		setScrollIntoView(true);
+		setScrollIntoView(state => !state);
 
 		const comment = {
 			comment: typeof value === 'object' ? newCommentCleaner(value.comment) : newCommentCleaner(value),
@@ -715,7 +696,7 @@ export default function CommentComponent(props) {
 		};
 
 		if (props.targetLabel === 'activity') {
-			slidoutState.newComments.set([...slidoutState.newComments.get(), comment]);
+			slidoutStateController.updateState({ newComments: [...slidoutStateController.getValue('newComments'), comment] });
 		}
 
 		upsertComment({
@@ -725,14 +706,15 @@ export default function CommentComponent(props) {
 			refetchQueries: ['getCommentsByObjectId', 'getCommentsCounter', 'getCommentsByObjectsIds', 'getContact'],
 			awaitRefetchQueries: true,
 		}).then(() => {
-			setScrollIntoView(false);
+			setScrollIntoView(state => !state);
 		});
 		setShowActions(false);
 		setComment('');
 	};
 
 	const getCount = () => {
-		let indexToShow = commentsArray.length > 5 ? commentsArray.length - 5 : 0;
+		const n = 5;
+		let indexToShow = commentsArray.length > n ? commentsArray.length - n : 0;
 		return indexToShow;
 	};
 
@@ -762,9 +744,9 @@ export default function CommentComponent(props) {
 		() => (
 			<>
 				{pinnedComments?.map(
-					(pinnedComment, key) =>
+					pinnedComment =>
 						pinnedComment?.user?.name && (
-							<Fragment key={key}>
+							<Fragment key={pinnedComment?._id}>
 								<Grid
 									id="commentsArea"
 									container
@@ -873,7 +855,7 @@ export default function CommentComponent(props) {
 								pinnedCommentsJsx
 							}
 
-							{!showAllComments && commentsArray.length > 7 && (
+							{!showAllComments && commentsArray.length > MAX_COMMENTS && (
 								<div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
 									<span
 										onClick={() => {
@@ -884,20 +866,20 @@ export default function CommentComponent(props) {
 									</span>
 								</div>
 							)}
-							{showAllComments && commentsArray.length > 7 && (
+							{showAllComments && commentsArray.length > MAX_COMMENTS && (
 								<div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
 									<span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
 								</div>
 							)}
 
 							{commentsArray.map((eachComment, index) => {
-								let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
+								let indexToShow = commentsArray.length > MAX_COMMENTS ? commentsArray.length - MAX_COMMENTS : 0;
 
 								const commentorText = eachComment?.user?.name || eachComment?.user?.email;
 
 								return (
-									commentorText && (
-										<Fragment key={index}>
+									eachComment?.user?.name && (
+										<Fragment key={eachComment?._id}>
 											{(showAllComments || index >= indexToShow) && (
 												<Grid
 													id="commentsArea"
@@ -977,7 +959,7 @@ export default function CommentComponent(props) {
 														{eachComment?.isActivity === true && (
 															<>
 																<div className={`${classes.whiteSpace}`}>
-																	{eachComment?.activityData.type.replace(/_/g, ' ').toUpperCase()} -{' '}
+																	{eachComment?.activityData.type?.replace(/_/g, ' ').toUpperCase()} -{' '}
 																	{eachComment?.activityData.name}
 																</div>
 																<div className={`${classes.whiteSpace}`}>
@@ -1013,7 +995,7 @@ export default function CommentComponent(props) {
 																</div>
 															))}
 													</Grid>
-													{eachComment?.commentType?.commentType !== 'unitCreation' && (
+													{eachComment?.commentType?.commentType !== 'unitCreation' && !eachComment.isActivity && (
 														<Grid item style={{ maxWidth: '75px', padding: '0px' }}>
 															<IconButton onClick={() => callToggleCommentReactionMutation(eachComment)}>
 																<div
@@ -1074,11 +1056,17 @@ export default function CommentComponent(props) {
 										className={classes.border}
 										style={{ paddingBottom: '20px' }}
 										onClick={() => {
+											setTimeout(() => {
+												setScrollIntoView(state => !state);
+											}, 100);
 											if (!showActions) {
 												setShowActions(true);
 											}
 										}}
 										onBlur={() => {
+											setTimeout(() => {
+												setScrollIntoView(state => !state);
+											}, 100);
 											if (showActions && !comment) {
 												setShowActions(false);
 											}
@@ -1110,7 +1098,7 @@ export const CommentText = ({ eachComment, users }) => {
 
 	return (
 		<div id={eachComment?._id} className={`${classes.whiteSpace}`}>
-			{formatComment.map((word, index) => {
+			{formatComment.map(word => {
 				if (word.includes('{{') && word.includes('}}')) {
 					const splittedWord = word.split(/\r?\n/);
 

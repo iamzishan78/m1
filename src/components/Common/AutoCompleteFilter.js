@@ -1,9 +1,5 @@
-// QUERIES
 import React, { useState, useEffect, useContext } from 'react';
 import { VariableSizeList } from 'react-window';
-
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery } from '@apollo/client';
 import { isArray, isEqual } from 'lodash';
@@ -14,6 +10,7 @@ import PropTypes from 'prop-types';
 import { capitalizeFirstLetter, customStartCaseString } from 'components/Shared/functions';
 
 import { AppContext } from 'AppContext';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 export const AutoCompleteFilter = React.memo(
 	({
@@ -198,78 +195,111 @@ export const AutoCompleteFilter = React.memo(
 		};
 
 		return (
-			<Autocomplete
-				multiple={multiple}
+			<CustomAutoComplete
 				id={`filter-autocomplete-${custom?.filterLabel || label}`}
-				open={open}
-				onOpen={() => setOpen(true)}
-				onClose={() => setOpen(false)}
-				disabled={others.disabled || false}
 				disableListWrap
 				ListboxComponent={ListboxComponent}
-				value={multiple && !value ? [] : value}
-				inputValue={isDate ? search?.toString() : customStartCaseString(search?.toString(), isDate)}
-				getOptionSelected={(option, value) => option.key === value.key}
-				getOptionLabel={option =>
-					customStartCaseString(capitalizeFirstLetter(option?.key?.toString().replace(/^,|,$/gm, '')), isDate)
-				}
-				onChange={(e, value2, reason) => {
-					if (reason === 'clear' || (multiple && value2.length === 0) || (!multiple && !value2?.key)) {
-						filterList[index] = [];
-						setSearch('');
-						setValue(multiple ? [] : { key: 'All' }); // Reset dropdwon to default value correctly
-					} else {
-						if (multiple) {
-							filterList[index].length = 0;
-							value2.forEach(v => {
-								const val = typeof v.key === 'string' ? v.key.replace(/^,|,$/gm, '') : v.key;
-								filterList[index].push(val);
-							});
-							// setSearch(value2[value2.length - 1]?.key);
+				fieldAttributes={{
+					label: custom?.filterLabel || label,
+					value: filterList[index][0],
+					optionArray: options,
+				}}
+				fieldConfig={{
+					variant: others?.variant || 'standard',
+					size: others.inputSize || 'medium',
+					disabled: others.disabled,
+					multiple,
+					loading,
+					getCustomOptionLabel: option =>
+						customStartCaseString(capitalizeFirstLetter(option?.key?.toString().replace(/^,|,$/gm, '')), isDate),
+					textfieldRestProps: {
+						style: { background: 'white' },
+					},
+				}}
+				fieldEvents={{
+					onChange: ({ value, reason }) => {
+						if (reason === 'clear' || (multiple && value.length === 0) || (!multiple && !value?.key)) {
+							filterList[index] = [];
+							setSearch('');
+							setValue(multiple ? [] : { key: 'All' }); // Reset dropdwon to default value correctly
 						} else {
-							filterList[index][0] = typeof value2.key === 'string' ? value2.key.replace(/^,|,$/gm, '') : value2.key;
-							if (custom?.initialCapitalization) {
-								setSearch(capitalizeFirstLetter(value2.key));
+							if (multiple) {
+								filterList[index].length = 0;
+								value.forEach(v => {
+									const val = typeof v.key === 'string' ? v.key.replace(/^,|,$/gm, '') : v.key;
+									filterList[index].push(val);
+								});
+								// setSearch(value[value.length - 1]?.key);
 							} else {
-								setSearch(value2.key);
+								filterList[index][0] = typeof value.key === 'string' ? value.key.replace(/^,|,$/gm, '') : value.key;
+								if (custom?.initialCapitalization) {
+									setSearch(capitalizeFirstLetter(value.key));
+								} else {
+									setSearch(value.key);
+								}
+							}
+
+							setValue(value);
+							if (value?.esKey) {
+								column.activeFilterKey = value?.esKey;
 							}
 						}
-
-						setValue(value2);
-						if (value2?.esKey) {
-							column.activeFilterKey = value2?.esKey;
+						if (setFilters && esIndex !== 'mywells_flat') {
+							setFilters(filterList);
 						}
-					}
-					if (setFilters && esIndex !== 'mywells_flat') {
-						setFilters(filterList);
-					}
 
-					column.filterList = filterList[index];
+						column.filterList = filterList[index];
 
-					const filterVal = filterList[index].length > 1 ? [filterList[index]] : filterList[index];
+						const filterVal = filterList[index].length > 1 ? [filterList[index]] : filterList[index];
 
-					onChange(filterVal, index, column, value2?.esKey || '', reason === 'clear');
+						onChange(filterVal, index, column, value?.esKey || '', reason === 'clear');
+					},
+					onTextFieldChange: value => setSearch(value),
 				}}
-				options={options}
-				loading={loading}
-				renderInput={params => (
-					<TextField
-						{...params}
-						size={others.inputSize ? others.inputSize : undefined}
-						variant={others?.variant ? others?.variant : 'standard'}
-						style={{ background: 'white' }}
-						label={custom?.filterLabel || label}
-						onChange={e => setSearch(e.target.value)}
-						InputProps={{
-							...params.InputProps,
-						}}
-					/>
-				)}
-				{...others}
 			/>
 		);
 	}
 );
+
+AutoCompleteFilter.propTypes = {
+	filterList: PropTypes.arrayOf(PropTypes.array).isRequired,
+	onChange: PropTypes.func.isRequired,
+	index: PropTypes.number.isRequired,
+	column: PropTypes.shape({
+		label: PropTypes.string,
+		filterKey: PropTypes.oneOfType([PropTypes.string, PropTypes.array, PropTypes.object]),
+		type: PropTypes.string,
+		name: PropTypes.string,
+		activeFilterKey: PropTypes.any,
+		filterList: PropTypes.any,
+	}).isRequired,
+	query: PropTypes.object.isRequired,
+	extendSearchQuery: PropTypes.any,
+	searchFields: PropTypes.array,
+	esIndex: PropTypes.string,
+	filters: PropTypes.array,
+	custom: PropTypes.shape({
+		formatedFilterOptions: PropTypes.arrayOf(
+			PropTypes.shape({
+				value: PropTypes.any,
+				label: PropTypes.string,
+			})
+		),
+		filterOptions: PropTypes.array,
+		isState: PropTypes.bool,
+		oRFilter: PropTypes.bool,
+		isDate: PropTypes.bool,
+		isDateTime: PropTypes.bool,
+		toFixed: PropTypes.number,
+		key_as_string: PropTypes.bool,
+		multi_filter_keys: PropTypes.any,
+		filterLabel: PropTypes.string,
+		initialCapitalization: PropTypes.bool,
+	}),
+	setFilters: PropTypes.func,
+	multiple: PropTypes.bool,
+	isDate: PropTypes.bool,
+};
 
 // Adapter for react-window
 const ListboxComponent = React.forwardRef((props, ref) => {

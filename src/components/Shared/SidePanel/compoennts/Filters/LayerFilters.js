@@ -15,19 +15,18 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from '@material-ui/icons';
 
-// Contexts
-
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
-//Components
 import * as LayerFiltersComponents from 'components/Shared/SidePanel/compoennts/Filters';
 
 import { globalStateController } from 'stateManagement/globalStateController';
 import { layerFiltersController } from 'stateManagement/layerFiltersController';
+import { layerController } from 'stateManagement/layerStateController';
 import { navController } from 'stateManagement/navStateController';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
-import UserMapFilter from './UserMapFilter';
 import { customLayersFieldAccessors } from './consts';
+import UserMapFilter from './UserMapFilter';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -170,9 +169,11 @@ const LayerFilters = () => {
 	const classes = useStyles();
 	const [stateNav, setStateNav] = useContext(NavigationContext);
 
+	const {
+		stateValues: { selectedView, shouldSyncView },
+	} = viewStateController('MapView').useState(['selectedView', 'shouldSyncView']);
 	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
-	const { mapStateValues } = globalStateController.useState(['mapView', 'viewChanged'], 'mapStateValues');
-	const layers = globalStateController.getValue('layers');
+	const layers = layerController.getValue('layers');
 
 	const formMethods = useForm({
 		defaultValues: {
@@ -194,31 +195,27 @@ const LayerFilters = () => {
 	);
 
 	useEffect(() => {
-		const selectedMapView = mapStateValues?.mapView?.selectedMapView;
-		if (selectedMapView) {
+		if (selectedView) {
 			resetForm({
-				mapViews: selectedMapView?.filters || [],
+				mapViews: selectedView?.filters || [],
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
-		const selectedMapView = mapStateValues?.mapView?.selectedMapView;
-		if (mapStateValues?.viewChanged === false) {
+		if (shouldSyncView === false) {
 			return;
 		}
 
-		if (selectedMapView) {
+		if (selectedView) {
 			resetForm({
-				mapViews: selectedMapView?.filters || [],
+				mapViews: selectedView?.filters || [],
 			});
-			globalStateController.updateState({
-				viewChanged: false,
+			viewStateController('MapView').updateState({
+				shouldSyncView: false,
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [mapStateValues?.viewChanged]);
+	}, [shouldSyncView]);
 
 	const resetFilters = (params, additionalParamsToReset = {}) => {
 		const geoFiltersToReset = {};
@@ -279,7 +276,7 @@ const LayerFilters = () => {
 		<>
 			<div className={classes.root}>
 				{Object.keys(filterTypes).map((filterType, index) => (
-					<Accordion className={classes.accordionRoot}>
+					<Accordion className={classes.accordionRoot} key={filterType}>
 						<AccordionSummary
 							aria-controls="panel1a-content"
 							id="panel1a-header"
@@ -340,15 +337,17 @@ const LayerFilters = () => {
 						{fields.map((mapView, index) => {
 							// Check if mapView has a valid dataSourceName and if it's a string
 							if (mapView?.dataSourceName && typeof mapView?.dataSourceName === 'string') {
-								// Extract fileId and layerShapeName from dataSourceName
+								// Extract fileId and layerIdentifier from dataSourceName
 								const fileId = mapView?.dataSourceName?.substring(0, mapView?.dataSourceName?.indexOf('_'));
-								const layerShapeName = mapView?.dataSourceName?.substring(mapView?.dataSourceName?.indexOf('_') + 1);
+								const layerIdentifier = mapView?.dataSourceName?.substring(mapView?.dataSourceName?.indexOf('_') + 1);
 
 								// Find the corresponding layer in the layers array
-								const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
+								const layer = layers.find(l => l.file === fileId && l.layerIdentifier === layerIdentifier);
 
 								// Skip rendering if no custom layers field accessor or no matching layer found
-								if (!customLayersFieldAccessors[mapView?.dataSourceName] && !layer) return null;
+								if (!customLayersFieldAccessors[mapView?.dataSourceName] && !layer) {
+									return null;
+								}
 							}
 
 							// Render the UserMapFilter component if the checks pass

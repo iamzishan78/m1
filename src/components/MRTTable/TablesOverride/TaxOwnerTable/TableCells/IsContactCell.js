@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { IconButton, Tooltip } from '@material-ui/core';

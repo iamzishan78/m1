@@ -231,9 +231,11 @@ export default function LinkWithIcon(props) {
 			awaitRefetchQueries: true,
 			onCompleted: () => {
 				handleProcessingOwners(taxOwner.globalOwnerId, 'delete');
+				closeSearchSuggestions();
 			},
 			onError: () => {
 				handleProcessingOwners(taxOwner.globalOwnerId, 'delete');
+				closeSearchSuggestions();
 			},
 		});
 	};

@@ -99,19 +99,19 @@ const PropertyRevenueDetailMeta = {
 			hidden: true,
 		},
 		{
-            ...CommonSchema.COMMON_COLUMN,
-            name: 'check.depositDate.keyword',
-            accessorFn: row => row?.check?.depositDate,
-            id: 'check.depositDate',
-            header: 'Deposit Date',
-            type: 'date',
-            isSearchField: false,
-            // Cell rendering for Check Date column
-            Cell: ({ renderedCellValue, row }) => {
-                return <>{formatDate(renderedCellValue)}</>;
-            },
+			...CommonSchema.COMMON_COLUMN,
+			name: 'check.depositDate.keyword',
+			accessorFn: row => row?.check?.depositDate,
+			id: 'check.depositDate',
+			header: 'Deposit Date',
+			type: 'date',
+			isSearchField: false,
+			// Cell rendering for Check Date column
+			Cell: ({ renderedCellValue, row }) => {
+				return <>{formatDate(renderedCellValue)}</>;
+			},
 			hidden: true,
-        },
+		},
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'check.checkAmount',

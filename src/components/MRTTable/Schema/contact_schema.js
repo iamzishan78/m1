@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 import Avatar from 'react-avatar';
 
@@ -15,6 +14,7 @@ import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagCompon
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
+import DailpadIcon from 'components/Shared/components/svgIcons/DailpadIcon';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import Contact from 'components/Shared/svgIcons/contact';
 
@@ -23,6 +23,8 @@ import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
 import { tableGlobalController } from 'stateManagement/tableController';
 
 import { copy } from 'utils/helper';
+
+import OwnerTypeCell from '../Common/TableCells/OwnerTypeCell';
 
 const esIndex = 'contacts_flat';
 
@@ -622,9 +624,9 @@ const ContactMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'outcome.keyword',
-			accessorKey: 'outcome',
+			...CommonSchema.STRING_COLUMN,
+			name: 'outcome',
+			id: 'outcome',
 			header: 'Outcome',
 			hidden: true,
 		},
@@ -698,8 +700,8 @@ const ContactMeta = {
 			header: 'Contact Owner',
 			isExport: 'contactOwners[0].name',
 			Cell: ({ row }) => {
-				const name = row?.original?.contactOwners?.map(obj => obj.name);
-				return <p>{name?.[0]}</p>;
+				let contactOwner = row?.original?.contactOwners?.[0];
+				return <OwnerTypeCell contactOwner={contactOwner} />;
 			},
 		},
 

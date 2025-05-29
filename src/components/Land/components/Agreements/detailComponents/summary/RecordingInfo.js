@@ -9,7 +9,7 @@ import moment from 'moment';
 
 import { StyledTextField } from '../style';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	fieldContainer: {
 		opacity: 0.7,
 		maxWidth: '30%',
@@ -90,7 +90,7 @@ const Acreage = ({ properties, updateAgreement }) => {
 								control={control}
 								name="recordedDate"
 								defaultValue=""
-								render={params => (
+								render={({ field }) => (
 									<FormControl variant="standard" fullWidth>
 										<InputLabel shrink>Recorded Date</InputLabel>
 										<TextField
@@ -99,14 +99,14 @@ const Acreage = ({ properties, updateAgreement }) => {
 											variant="outlined"
 											margin="dense"
 											fullWidth
-											value={params.value ? moment(watch('recordedDate')).utc(true).format('yyyy-MM-DD') : ''}
+											value={field.value ? moment(watch('recordedDate')).utc(true).format('yyyy-MM-DD') : ''}
 											InputLabelProps={{
 												shrink: true,
 											}}
 											onBlur={event => {
 												offClickHandler('recordedDate', event?.target?.value || null);
 											}}
-											onChange={params.onChange}
+											onChange={field.onChange}
 											disableToolbar
 											KeyboardButtonProps={{ 'aria-label': 'change date' }}
 											format="MM/DD/YYYY"
@@ -117,7 +117,7 @@ const Acreage = ({ properties, updateAgreement }) => {
 														<Clear
 															style={{ height: 22, width: 22 }}
 															onClick={() => {
-																params.onChange(null);
+																field.onChange(null);
 																// reset({ ...getValues(), recordedDate: null });
 																offClickHandler('recordedDate', null);
 															}}
@@ -138,9 +138,9 @@ const Acreage = ({ properties, updateAgreement }) => {
 								control={control}
 								name="recordedBook"
 								defaultValue=""
-								render={params => (
+								render={({ field }) => (
 									<StyledTextField
-										{...params}
+										{...field}
 										label="Book"
 										onBlur={event => {
 											offClickHandler('recordedBook', event?.target?.value || null);
@@ -154,9 +154,9 @@ const Acreage = ({ properties, updateAgreement }) => {
 								control={control}
 								name="recordedPage"
 								defaultValue=""
-								render={params => (
+								render={({ field }) => (
 									<StyledTextField
-										{...params}
+										{...field}
 										label="Page"
 										onBlur={event => {
 											offClickHandler('recordedPage', event?.target?.value || null);
@@ -170,9 +170,9 @@ const Acreage = ({ properties, updateAgreement }) => {
 								control={control}
 								name="recordedInstrumentNumber"
 								defaultValue=""
-								render={params => (
+								render={({ field }) => (
 									<StyledTextField
-										{...params}
+										{...field}
 										label="Instrument #"
 										onBlur={event => {
 											offClickHandler('recordedInstrumentNumber', event?.target?.value || null);

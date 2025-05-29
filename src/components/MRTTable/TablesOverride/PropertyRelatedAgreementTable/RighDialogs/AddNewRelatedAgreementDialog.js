@@ -1,7 +1,15 @@
 import React, { useMemo, useState, useEffect } from 'react';
 
-import { Button, DialogContent, DialogActions, CircularProgress } from '@material-ui/core';
-import { Typography, TextField, Grid, FormControl } from '@material-ui/core';
+import {
+	Button,
+	DialogContent,
+	DialogActions,
+	CircularProgress,
+	Typography,
+	TextField,
+	Grid,
+	FormControl,
+} from '@material-ui/core';
 import FolderIcon from '@material-ui/icons/Folder';
 import { makeStyles } from '@material-ui/styles';
 
@@ -250,7 +258,7 @@ const AddNewRelatedAgreementDialog = ({ customLayerId, handleClose, parentType, 
 												value: 'agreement',
 											},
 										]}
-										renderOption={option => {
+										renderOption={({ option }) => {
 											if (option.id === 'newEntity') {
 												return;
 											}

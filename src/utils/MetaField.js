@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import Select from 'react-select';
 import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
@@ -35,8 +35,6 @@ import { globalStateController } from 'stateManagement/globalStateController';
 import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
 import { colorPallete } from 'utils/consts';
-
-import { AppContext } from 'AppContext';
 
 import { getMetaCss } from './getMetaCss';
 
@@ -302,6 +300,31 @@ const MetaField = ({
 		}
 	}, [filter, selectFilter, metaData]);
 
+	const handleClose = () => {
+		setItems([]);
+		// Using for metaa fields other then grid
+		globalStateController?.updateState?.({
+			showFieldModal: false,
+			selectedMeta: null,
+		});
+		TableController?.updateState?.({
+			showFieldModal: false,
+		});
+	};
+
+	const rippleEffectCall = data => {
+		if (updateColumnSorting) {
+			const columnData = JSON.parse(JSON.stringify(columns));
+			columnData.push({ name: data.name, options: { display: true } });
+			updateColumnSorting(
+				columnData.map(col => ({
+					name: col.name,
+					display: col.options.display ? 'true' : 'false',
+				}))
+			);
+		}
+	};
+
 	const handleSave = () => {
 		const values = getValues();
 		if (globalState.selectedMeta) {
@@ -354,18 +377,6 @@ const MetaField = ({
 		handleClose();
 	};
 
-	const handleClose = () => {
-		setItems([]);
-		// Using for metaa fields other then grid
-		globalStateController?.updateState?.({
-			showFieldModal: false,
-			selectedMeta: null,
-		});
-		TableController?.updateState?.({
-			showFieldModal: false,
-		});
-	};
-
 	const handleDeleteMetaData = () => {
 		updateMetaData({
 			variables: {
@@ -383,19 +394,6 @@ const MetaField = ({
 	const handleDeleteDialog = () => {
 		setAnchorEl(null);
 		setDeleteDialogOpen(true);
-	};
-
-	const rippleEffectCall = data => {
-		if (updateColumnSorting) {
-			const columnData = JSON.parse(JSON.stringify(columns));
-			columnData.push({ name: data.name, options: { display: true } });
-			updateColumnSorting(
-				columnData.map(col => ({
-					name: col.name,
-					display: col.options.display ? 'true' : 'false',
-				}))
-			);
-		}
 	};
 
 	const onSelectLibraryItem = data => {
@@ -507,21 +505,20 @@ const MetaField = ({
 											<Controller
 												control={control}
 												name="title"
-												render={props => (
+												render={({ field }) => (
 													<TextField
 														size="small"
 														type="text"
 														variant="outlined"
-														value={props.value}
-														inputRef={props.ref}
+														value={field.value}
+														inputRef={field.ref}
 														onWheel={e => e.target.blur()}
 														onChange={e => {
-															props.onChange(e.target.value);
+															field.onChange(e.target.value);
 														}}
 														placeholder="e.g. Priority, Stage, Status"
 														fullWidth
 														defaultValue=""
-														disabled={globalState.selectedMeta}
 														onBlur={e => {
 															const name = e.target.value?.replace(/ /g, '_').toLowerCase();
 															checkMetaKeyExists({ variables: { name, category } });
@@ -537,16 +534,16 @@ const MetaField = ({
 												control={control}
 												name="type"
 												defaultValue={options[0].value}
-												render={props => (
+												render={({ field }) => (
 													<Select
 														styles={{
 															menu: provided => ({ ...provided, zIndex: 9999 }),
 														}}
 														menuPlacement="bottom" // Ensures the menu opens below the field
 														// menuPortalTarget={document.body} // Renders the dropdown in a portal (prevents clipping issues)
-														value={options.find(op => op.value === props.value)}
+														value={options.find(op => op.value === field.value)}
 														onChange={e => {
-															props.onChange(e.value);
+															field.onChange(e.value);
 														}}
 														options={options}
 														className={classes.select}
@@ -569,17 +566,17 @@ const MetaField = ({
 												<Controller
 													control={control}
 													name="description"
-													render={props => (
+													render={({ field }) => (
 														<TextField
 															style={{ paddingTop: 20 }}
 															size="small"
 															type="text"
 															variant="outlined"
-															value={props.value}
-															inputRef={props.ref}
+															value={field.value}
+															inputRef={field.ref}
 															onWheel={e => e.target.blur()}
 															onChange={e => {
-																props.onChange(e.target.value);
+																field.onChange(e.target.value);
 															}}
 															placeholder="Description"
 															fullWidth
@@ -600,18 +597,18 @@ const MetaField = ({
 														control={control}
 														name="iconType"
 														defaultValue={globalState?.selectedIconTpe || iconOptions[0].value}
-														render={params => (
+														render={({ field }) => (
 															<Select
 																styles={{
 																	menu: provided => ({ ...provided, zIndex: 9999 }),
 																}}
-																value={iconOptions.find(op => op.value === params.value)}
+																value={iconOptions.find(op => op.value === field.value)}
 																menuPlacement="auto"
 																options={iconOptions}
 																className={classes.select}
 																onChange={e => {
 																	globalStateController.updateState({ selectedIconTpe: e.value });
-																	params.onChange(e.value);
+																	field.onChange(e.value);
 																}}
 															/>
 														)}
@@ -628,7 +625,7 @@ const MetaField = ({
 															? categoryOptions.find(op => op.value === category)?.value
 															: categoryOptions[0].value
 													}
-													render={params => (
+													render={({ field }) => (
 														<Select
 															styles={{
 																menu: provided => ({
@@ -636,8 +633,8 @@ const MetaField = ({
 																	zIndex: 9999,
 																}),
 															}}
-															value={categoryOptions.find(op => op.value === params.value)}
-															menuPlacement="bottom"
+															value={categoryOptions.find(op => op.value === field.value)}
+															menuPlacement="auto"
 															options={categoryOptions}
 															className={classes.select}
 															isDisabled={globalState.selectedMeta}
@@ -656,14 +653,14 @@ const MetaField = ({
 								<Controller
 									control={control}
 									name="isAddedToLibrary"
-									render={props => (
+									render={({ field }) => (
 										<FormControlLabel
 											className={classes.library}
 											style={{ fontSize: 14 }}
 											control={
 												<Checkbox
 													checked={isAddedToLibrary}
-													onChange={e => props.onChange(e.target.checked)}
+													onChange={e => field.onChange(e.target.checked)}
 													color="primary"
 												/>
 											}

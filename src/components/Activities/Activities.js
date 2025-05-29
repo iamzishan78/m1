@@ -7,9 +7,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useLazyQuery } from '@apollo/client';
-import { useHookstate } from '@hookstate/core';
 import { uniqueId } from 'lodash';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import MRTTable from 'components/MRTTable';
 
@@ -27,7 +27,6 @@ import { GETALLACTIVITIES } from '../../graphQL/useQueryGetAllActivities';
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './index.css';
-import { slidoutState } from 'stateManagement/initialStates';
 
 const localizer = momentLocalizer(moment);
 
@@ -40,7 +39,7 @@ const ActivitiesCalendar = props => {
 	const { quickActionsPanelState } = useSelector(({ common }) => common);
 
 	useEffect(() => {
-		const handleShowMoreClick = event => {
+		const handleShowMoreClick = () => {
 			setTimeout(() => {
 				const overlays = document.querySelectorAll('.rbc-overlay');
 				overlays.forEach(overlay => {
@@ -91,7 +90,13 @@ const ActivitiesCalendar = props => {
 	);
 };
 
-const useStyles = makeStyles(theme => ({
+ActivitiesCalendar.propTypes = {
+	events: PropTypes.array,
+	view: PropTypes.string,
+	onEventClick: PropTypes.func.isRequired,
+};
+
+const useStyles = makeStyles(() => ({
 	progress: {
 		marginLeft: '30px',
 		verticalAlign: 'middle',
@@ -145,9 +150,7 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime, activ
 
 const Activities = () => {
 	const classes = useStyles();
-
-	const entityLoading = useHookstate(slidoutState.isLoading);
-	const selectedActivityId = useHookstate(slidoutState.selectedActivityId);
+	const { isLoading, selectedActivityId } = slidoutStateController.useState(['isLoading', 'selectedActivityId']);
 
 	let history = useHistory();
 	const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
@@ -156,7 +159,7 @@ const Activities = () => {
 	const [getContactsForActivity, { data: getContactsForActivityResult }] = useLazyQuery(GET_CONTACTS_FOR_ACTIVITY, {
 		fetchPolicy: 'no-cache',
 		onCompleted: () => {
-			slidoutState.loader.set(false);
+			slidoutStateController.updateState({ loader: false });
 		},
 	});
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
@@ -172,6 +175,20 @@ const Activities = () => {
 	const [activityFilterByTime, setActivityFilterByTime] = useState('all');
 	const activitiesGridState = tableController('ActivitiesTable').useState(['filters']).stateValues;
 	const [view, setView] = React.useState(Views.MONTH);
+
+	const setSelectedActivityId = id => {
+		slidoutStateController.updateState({ selectedActivityId: id });
+	};
+
+	const onModalOpen = () => {
+		slidoutStateController.updateState({ loader: true });
+		getContactsForActivity({
+			variables: { activityId: slidoutStateController.getValue('selectedActivityId') },
+		}).then(() => {
+			slidoutStateController.showSlideout();
+		});
+	};
+
 	useEffect(() => {
 		const contacts = getContactsForActivityResult?.getContactsForActivity?.contacts;
 		setStateApp(stateApp => ({
@@ -189,8 +206,10 @@ const Activities = () => {
 		getAllMongoUsers();
 
 		return () => {
-			slidoutState.selectedActivityId.set('');
-			slidoutState.selectedActivity.set(null);
+			slidoutStateController.updateState({
+				selectedActivityId: '',
+				selectedActivity: null,
+			});
 			slidoutStateController.hideSlideout();
 		};
 	}, []);
@@ -236,13 +255,12 @@ const Activities = () => {
 	}, [events, activityFilterByType, activityFilterByTime, activityFilterByOwner, view]);
 
 	useEffect(() => {
-		if (selectedActivityId.get()) {
-			slidoutState.selectedActivity.set(events.find(act => act._id === selectedActivityId.get()));
-			slidoutStateController.showSlideout();
+		if (selectedActivityId) {
+			slidoutStateController.updateState({ selectedActivity: events.find(act => act._id === selectedActivityId) });
 		} else {
-			slidoutState.selectedActivity.set(null);
+			slidoutStateController.updateState({ selectedActivity: null });
 		}
-	}, [selectedActivityId.get()]);
+	}, [selectedActivityId]);
 
 	useEffect(() => {
 		if (activitiesGridState) {
@@ -298,26 +316,15 @@ const Activities = () => {
 
 	useEffect(() => {
 		getContactsForActivity({
-			variables: { activityId: selectedActivityId.get() },
+			variables: { activityId: selectedActivityId },
 		});
-	}, [selectedActivityId.get()]);
+	}, [selectedActivityId]);
 
 	const onEventClick = event => {
 		window.history.pushState('', '', `/calendar/activities/${event._id}`);
 		setSelectedActivityId(event._id);
 		onModalOpen();
 		slidoutStateController.showSlideout();
-	};
-
-	const onModalOpen = () => {
-		slidoutState.loader.set(true);
-		getContactsForActivity({
-			variables: { activityId: slidoutState.selectedActivityId.get() },
-		});
-	};
-
-	const setSelectedActivityId = id => {
-		slidoutState.selectedActivityId.set(id);
 	};
 
 	const overrideMeta = {
@@ -329,7 +336,7 @@ const Activities = () => {
 
 	return (
 		<div className={classes.root}>
-			{activitiesLoading || entityLoading.get() ? (
+			{activitiesLoading || isLoading ? (
 				<CircularProgress className={classes.progress} size={80} disableShrink color="secondary" />
 			) : (
 				<>
@@ -381,7 +388,7 @@ const Activities = () => {
 						</div>
 					)}
 					<ActivitiesSlideout
-						activityId={selectedActivityId.get()}
+						activityId={selectedActivityId}
 						setSelectedActivityId={setSelectedActivityId}
 						events={events}
 						getContactsForActivity={getContactsForActivity}

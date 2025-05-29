@@ -28,7 +28,7 @@ const costFreeOptions = ['No', 'Yes - All Products', 'Yes - Gas', 'Yes - Oil', '
 
 const productTypeOptions = ['OIL', 'GAS', 'NGL', 'ALL'];
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	sideModal: {
 		marginTop: 20,
 		marginRight: 24,
@@ -179,11 +179,11 @@ const InterestDetailForm = props => {
 						control={control}
 						name="owner"
 						defaultValue={{ name: '', _id: null }}
-						render={params => (
+						render={({ field }) => (
 							<ContactPaginatedAutocomplete
-								nameAutValue={params.value}
+								nameAutValue={field.value}
 								setNameAutValue={value => {
-									params.onChange(value);
+									field.onChange(value);
 								}}
 							/>
 						)}
@@ -195,15 +195,15 @@ const InterestDetailForm = props => {
 						control={control}
 						name="interestType"
 						defaultValue={''}
-						render={params => (
+						render={({ field }) => (
 							<InterestType
 								options={interestTypeOptions.map(option => ({
 									_id: option,
 									name: option,
 								}))}
-								value={params.value}
+								value={field.value}
 								onChange={value => {
-									params.onChange(value);
+									field.onChange(value);
 								}}
 							/>
 						)}
@@ -215,12 +215,12 @@ const InterestDetailForm = props => {
 						control={control}
 						name="productType"
 						defaultValue={null}
-						render={params => (
+						render={({ field }) => (
 							<Select
 								fullWidth
-								value={params.value}
+								value={field.value}
 								onChange={e => {
-									params.onChange(e.target.value);
+									field.onChange(e.target.value);
 								}}
 							>
 								{productTypeOptions.map(option => (
@@ -236,13 +236,13 @@ const InterestDetailForm = props => {
 						control={control}
 						name="interestAmount"
 						defaultValue={''}
-						render={params => (
+						render={({ field }) => (
 							<TextField
 								style={{ width: '100%' }}
 								className={classes.numberField}
 								type="number"
-								value={params.value}
-								onChange={e => params.onChange(e.target.value)}
+								value={field.value}
+								onChange={e => field.onChange(e.target.value)}
 							/>
 						)}
 					/>
@@ -253,19 +253,19 @@ const InterestDetailForm = props => {
 						control={control}
 						name="effectiveDate"
 						defaultValue={null}
-						render={params => (
+						render={({ field }) => (
 							<TextField
-								{...params}
+								{...field}
 								type="date"
 								margin="dense"
 								fullWidth
-								value={params.value ? moment(params.value).utc(true).format('yyyy-MM-DD') : ''}
+								value={field.value ? moment(field.value).utc(true).format('yyyy-MM-DD') : ''}
 								InputLabelProps={{ shrink: true }}
 								InputProps={{
 									endAdornment: (
 										<IconButton
-											onClick={event => {
-												params.onChange('');
+											onClick={() => {
+												field.onChange('');
 											}}
 										>
 											<Clear style={{ height: 22, width: 22 }} />
@@ -283,19 +283,19 @@ const InterestDetailForm = props => {
 						control={control}
 						name="endDate"
 						defaultValue={null}
-						render={params => (
+						render={({ field }) => (
 							<TextField
-								{...params}
+								{...field}
 								type="date"
 								margin="dense"
 								fullWidth
-								value={params.value ? moment(params.value).utc(true).format('yyyy-MM-DD') : ''}
+								value={field.value ? moment(field.value).utc(true).format('yyyy-MM-DD') : ''}
 								InputLabelProps={{ shrink: true }}
 								InputProps={{
 									endAdornment: (
 										<IconButton
-											onClick={event => {
-												params.onChange('');
+											onClick={() => {
+												field.onChange('');
 											}}
 										>
 											<Clear style={{ height: 22, width: 22 }} />
@@ -313,12 +313,12 @@ const InterestDetailForm = props => {
 						control={control}
 						name="status"
 						defaultValue={null}
-						render={params => (
+						render={({ field }) => (
 							<Select
 								fullWidth
-								value={params.value}
+								value={field.value}
 								onChange={e => {
-									params.onChange(e.target.value);
+									field.onChange(e.target.value);
 								}}
 							>
 								{statusOptions.map(option => (
@@ -334,12 +334,12 @@ const InterestDetailForm = props => {
 						control={control}
 						name="costFree"
 						defaultValue={null}
-						render={params => (
+						render={({ field }) => (
 							<Select
 								fullWidth
-								value={params.value}
+								value={field.value}
 								onChange={e => {
-									params.onChange(e.target.value);
+									field.onChange(e.target.value);
 								}}
 							>
 								{costFreeOptions.map(option => (
@@ -415,7 +415,7 @@ const InterestType = ({ onChange, value, options, ...other }) => {
 			}}
 			renderOption={option => {
 				if (option._id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
 				}
 
 				return (
