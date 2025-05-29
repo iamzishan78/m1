@@ -196,6 +196,7 @@ const CheckDetailsMeta = {
 				index: 'properties_flat',
 				id: 'purchaserNumber',
 				type: 'withOriginal',
+				addNewAllowed: false,
 				onChange: (value, row, originals) => {
 					// TO Immediately update the value of other related fields (name, state and county) when the user selects a value from the dropdown (payor prop)
 					const matchedOriginal = originals?.find(original => original?.purchaserNumber === value);
@@ -203,10 +204,12 @@ const CheckDetailsMeta = {
 					unset(row._valuesCache, 'property');
 					unset(row._valuesCache, 'property._id');
 
-					set(row._valuesCache, 'property.purchaserNumber', matchedOriginal.purchaserNumber);
-					set(row._valuesCache, 'property.name', matchedOriginal.name);
-					set(row._valuesCache, 'property.state', matchedOriginal.state);
-					set(row._valuesCache, 'property.county', matchedOriginal.county);
+					if (matchedOriginal) {
+						set(row._valuesCache, 'property.purchaserNumber', matchedOriginal.purchaserNumber);
+						set(row._valuesCache, 'property.name', matchedOriginal.name);
+						set(row._valuesCache, 'property.state', matchedOriginal.state);
+						set(row._valuesCache, 'property.county', matchedOriginal.county);
+					}
 				},
 			}),
 		},
