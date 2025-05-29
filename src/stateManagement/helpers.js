@@ -104,6 +104,7 @@ export const handleMRTSchema = ({
 	layerIdentifier,
 	isClientSide,
 	excludeFields,
+	enableEditing,
 }) => {
 	_Schema = _.uniqBy(_Schema, item => item.accessorKey || item.id);
 
@@ -332,7 +333,7 @@ export const handleMRTSchema = ({
 
 	const ExternalFilter = _TableSchema.filter(column => column.isExternalFilter === true).map(column => column.name);
 
-	const pinnedColumns = _TableSchema.filter(column => column.isPinned);
+	const pinnedColumns = _TableSchema.filter(column => (enableEditing ? column.isPinnedOnEdit : column.isPinned));
 	const pinnedFields = pinnedColumns.map(column => {
 		column.enableResizing = false;
 		column.enableColumnDragging = false;

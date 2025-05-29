@@ -185,6 +185,7 @@ const CheckDetailsMeta = {
 
 		{
 			...CommonSchema.STRING_COLUMN,
+			isPinnedOnEdit: true,
 			name: 'property.purchaserNumber.keyword',
 			id: 'property.purchaserNumber',
 			header: 'Payor Prop #',
