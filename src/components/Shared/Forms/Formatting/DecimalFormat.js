@@ -32,7 +32,6 @@ export function NumberFormatPrecision(props) {
 					},
 				});
 			}}
-			thousandSeparator
 			isNumericString
 			decimalScale={decimalScale}
 			fixedDecimalScale
