@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
-
+import { useLazyQuery } from '@apollo/client';
 import { makeStyles } from '@material-ui/core';
 
-import { useLazyQuery } from '@apollo/client';
-import get from 'lodash/get';
-
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
-
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { GET_COMBINED_FILTER_LIST } from 'graphQL/useQueryGetCombinedFilterList';
 
 const useStyles = makeStyles({
 	inputRoot: {
@@ -25,21 +21,29 @@ const useStyles = makeStyles({
 const ResponsibleParty = ({ value, handleChange, ...rest }) => {
 	const classes = useStyles();
 	const [searchOperator, setSearchOperator] = useState('');
-	const [getOperatorList, { data: operatorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
+	const [getOperatorList, { data: operatorList }] = useLazyQuery(GET_COMBINED_FILTER_LIST, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
 		getOperatorList({
 			variables: {
-				search: searchOperator ? `${searchOperator}*` : '*',
-				filterKey: 'operator.name.keyword',
-				esIndex: 'properties_flat',
 				size: 50,
+				query: searchOperator ? `${searchOperator}*` : '*',
+				searchFields: [
+					{
+						modelName: 'AgreementProvision',
+						filterKey: 'responsibleParty',
+					},
+					{
+						index: 'payment_flat',
+						filterKey: 'responsibleParty',
+					},
+				],
 			},
 		});
 	}, [getOperatorList, searchOperator]);
+
 	return (
 		<AutoCompleteWithAddNew
-			allowNew={false}
 			value={value || searchOperator}
 			variant="outlined"
 			label="Responsible Party"
@@ -49,10 +53,12 @@ const ResponsibleParty = ({ value, handleChange, ...rest }) => {
 			setValue={value => {
 				handleChange(value);
 			}}
-			options={get(operatorList, 'getESFilterList.hits', [])?.map(campaign => ({
-				_id: campaign.key,
-				name: campaign.key,
-			}))}
+			options={
+				operatorList?.getCombinedFilterList?.map(option => ({
+					_id: option,
+					name: option,
+				})) ?? []
+			}
 		/>
 	);
 };
