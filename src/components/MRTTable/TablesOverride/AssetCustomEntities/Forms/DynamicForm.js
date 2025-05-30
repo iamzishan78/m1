@@ -256,6 +256,20 @@ const useStyles = makeStyles(theme => ({
 		fontSize: '0.875rem',
 		lineHeight: 1.5,
 	},
+	errorIndicator: {
+		backgroundColor: theme.palette.error.main,
+		color: 'white',
+		borderRadius: '50%',
+		padding: '2px 6px',
+		fontSize: '0.75rem',
+		marginLeft: '8px',
+		fontWeight: 'bold',
+	},
+	fieldTitleError: {
+		'& .MuiTypography-subtitle1': {
+			color: theme.palette.error.main,
+		},
+	},
 }));
 
 const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDialog = false }) => {
@@ -689,6 +703,16 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 		return `Access: ${restrictions.join(' | ')}`;
 	};
 
+	const getFieldErrors = index => {
+		if (!errors?.[index]) {
+			return null;
+		}
+
+		const fieldErrors = errors[index];
+		const errorCount = Object.keys(fieldErrors).length;
+		return errorCount > 0 ? errorCount : null;
+	};
+
 	return (
 		<div className={classes.root}>
 			{isCreateAssetMode && (
@@ -706,9 +730,9 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 			{fields.map((field, index) => {
 				const fieldId = field.id;
 				const currentTab = activeTab[fieldId] || 0;
-				// Use the watched field data instead of the field prop
 				const currentField = watchedFields[index];
 				const restrictionText = getAccessRestrictionText(currentField);
+				const errorCount = getFieldErrors(index);
 
 				return (
 					<div key={fieldId} className={classes.fieldContainer}>
@@ -718,8 +742,11 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 								aria-controls={`field-${index}-content`}
 								id={`field-${index}-header`}
 							>
-								<div className={classes.fieldTitle}>
-									<Typography variant="subtitle1">{currentField?.label || `Field ${index + 1}`}</Typography>
+								<div className={`${classes.fieldTitle} ${errorCount ? classes.fieldTitleError : ''}`}>
+									<Typography variant="subtitle1">
+										{currentField?.label || `Field ${index + 1}`}
+										{errorCount && <span className={classes.errorIndicator}>{errorCount}</span>}
+									</Typography>
 									{restrictionText && <Chip size="small" label={restrictionText} variant="outlined" />}
 								</div>
 								<div className={classes.fieldActions}>
