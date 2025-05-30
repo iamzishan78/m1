@@ -7,6 +7,7 @@ import { get, set, merge, unset } from 'lodash';
 import { createRow } from 'material-react-table';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import {
 	CommonSchema,
 	editAutoCompleteField,
@@ -81,6 +82,8 @@ const CheckDetailsMeta = {
 	enableEditing: true,
 	enableRowActions: true,
 	positionActionsColumn: 'last',
+	additionalQueries: ['comments'],
+	getIdsFromRows: rows => rows?.map(row => row?._id) || [],
 	getRowId: row => row?._id,
 	onCreatingRowCancel: async ({ table }) => {
 		tableController('CheckDetailsTable').clearEditing();
@@ -196,6 +199,7 @@ const CheckDetailsMeta = {
 				index: 'properties_flat',
 				id: 'purchaserNumber',
 				type: 'withOriginal',
+				addNewAllowed: false,
 				onChange: (value, row, originals) => {
 					// TO Immediately update the value of other related fields (name, state and county) when the user selects a value from the dropdown (payor prop)
 					const matchedOriginal = originals?.find(original => original?.purchaserNumber === value);
@@ -203,10 +207,12 @@ const CheckDetailsMeta = {
 					unset(row._valuesCache, 'property');
 					unset(row._valuesCache, 'property._id');
 
-					set(row._valuesCache, 'property.purchaserNumber', matchedOriginal.purchaserNumber);
-					set(row._valuesCache, 'property.name', matchedOriginal.name);
-					set(row._valuesCache, 'property.state', matchedOriginal.state);
-					set(row._valuesCache, 'property.county', matchedOriginal.county);
+					if (matchedOriginal) {
+						set(row._valuesCache, 'property.purchaserNumber', matchedOriginal.purchaserNumber);
+						set(row._valuesCache, 'property.name', matchedOriginal.name);
+						set(row._valuesCache, 'property.state', matchedOriginal.state);
+						set(row._valuesCache, 'property.county', matchedOriginal.county);
+					}
 				},
 			}),
 		},
@@ -300,10 +306,11 @@ const CheckDetailsMeta = {
 			id: 'product',
 			header: 'Product',
 
-			muiEditTextFieldProps: editFieldProps({
+			Edit: editAutoCompleteField({
 				tableKey: 'CheckDetailsTable',
-				type: 'text',
-				isSelect: true,
+				placeholder: 'Product',
+				index: 'checkdetails_flat',
+				id: 'product',
 			}),
 		},
 
@@ -328,11 +335,11 @@ const CheckDetailsMeta = {
 			name: 'interestType.keyword',
 			id: 'interestType',
 			header: 'Interest Type',
-
-			muiEditTextFieldProps: editFieldProps({
+			Edit: editAutoCompleteField({
 				tableKey: 'CheckDetailsTable',
-				type: 'text',
-				isSelect: true,
+				placeholder: 'Interest Type',
+				index: 'checkdetails_flat',
+				id: 'interestType',
 			}),
 		},
 
@@ -548,6 +555,16 @@ const CheckDetailsMeta = {
 					}
 				},
 			}),
+		},
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ row }) => {
+				const id = row.getValue('_id');
+				const { stateValues } = tableController('CheckDetailsTable').useState(['commentsCounter']);
+				const comment = stateValues?.commentsCounter?.find(comment => comment._id === id);
+				const targetLabel = 'checkDetail';
+				return <CommentCell id={id} value={comment?.total} targetLabel={targetLabel} />;
+			},
 		},
 	],
 };

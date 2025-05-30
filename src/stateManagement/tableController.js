@@ -304,7 +304,7 @@ const tableESStateControllerHandler = state => ({
 		const defaultColumnsPinning = {
 			left: [
 				...(pinnedFields.length > 0
-					? _.concat([rowSelectId, 'mrt-row-numbers'], isClientSide ? pinnedFields : _.slice(pinnedFields, 1))
+					? _.concat([rowSelectId, 'mrt-row-numbers'], isClientSide ? pinnedFields : pull(pinnedFields, rowSelectId))
 					: [rowSelectId, 'mrt-row-numbers']),
 			],
 		};

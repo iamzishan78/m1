@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect, useRef } from 'react';
 
 import { FormControl, Grid } from '@material-ui/core';
@@ -7,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { useHookstate } from '@hookstate/core';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import DateField from 'components/Shared/Slideout/FieldComponents/DateField';
 import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
@@ -17,15 +17,15 @@ import SingleSelectField from 'components/Shared/Slideout/FieldComponents/single
 import { DELETEACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-import { AppContext } from 'AppContext';
-import { slidoutState } from 'stateManagement/initialStates';
-import { globalState } from 'stateManagement/initialStates';
+import { slidoutState, globalState } from 'stateManagement/initialStates';
 import { slidoutStateController } from 'stateManagement/slidoutStateController';
 import { tableGlobalController } from 'stateManagement/tableController';
 
+import { AppContext } from 'AppContext';
+
 import { obligationFormState } from './obligationFormStateController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogExpCard: {
 		'& .MuiDialog-paperScrollPaper': {
 			height: '100%',
@@ -194,6 +194,26 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		fetchPolicy: 'cache-and-network',
 	});
 
+	const clearFields = () => {
+		notes.set('');
+
+		activityType.set('');
+		slidoutStateController.updateTitle('');
+		status.set(false);
+		startDate.set(getCurrentDate());
+		endDate.set(getCurrentDate());
+		applicable.set('');
+	};
+
+	const onModalClose = () => {
+		window.history.pushState('', '', '/calendar/obligations');
+
+		clearFields();
+		setSelectedActivityId(null);
+		slidoutState.selectedActivity.set(null);
+		slidoutStateController.hideSlideout();
+	};
+
 	useEffect(() => {
 		getAllMongoUsers();
 	}, []);
@@ -243,6 +263,23 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		});
 	};
 
+	const updateActivity = async () => {
+		globalState.universalLoader.set(true);
+
+		updateActivityMutation({
+			variables: {
+				activity: {
+					_id: selectedActivity.get()?._id,
+					...(status.get() ? { status: status.get() } : {}),
+					notes: notes.get(),
+					user: stateApp.user._id,
+				},
+			},
+		}).then(() => {
+			globalState.universalLoader.set(false);
+		});
+	};
+
 	useEffect(() => {
 		const activity = selectedActivity.get();
 		if (activity) {
@@ -285,43 +322,6 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		}
 	}, [formMode.get()]);
 
-	const onModalClose = () => {
-		window.history.pushState('', '', '/calendar/obligations');
-
-		clearFields();
-		setSelectedActivityId(null);
-		slidoutState.selectedActivity.set(null);
-		slidoutStateController.hideSlideout();
-	};
-
-	const clearFields = () => {
-		notes.set('');
-
-		activityType.set('');
-		slidoutStateController.updateTitle('');
-		status.set(false);
-		startDate.set(getCurrentDate());
-		endDate.set(getCurrentDate());
-		applicable.set('');
-	};
-
-	const updateActivity = async () => {
-		globalState.universalLoader.set(true);
-
-		updateActivityMutation({
-			variables: {
-				activity: {
-					_id: selectedActivity.get()?._id,
-					...(status.get() ? { status: status.get() } : {}),
-					notes: notes.get(),
-					user: stateApp.user._id,
-				},
-			},
-		}).then(result => {
-			globalState.universalLoader.set(false);
-		});
-	};
-
 	return (
 		<div>
 			<div className={classes.inputFieldRoot}>
@@ -339,7 +339,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 					<SimpleTextField
 						disabled
 						title="Applicable"
-						value={applicable.get() ? (applicable.get() === true ? 'Yes' : 'No') : null}
+						value={applicable.get() != null ? (applicable.get() === true ? 'Yes' : 'No') : null}
 						setValue={() => {}}
 					/>
 				)}
@@ -369,3 +369,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		</div>
 	);
 }
+
+ObligationForm.propTypes = {
+	setSelectedActivityId: PropTypes.func,
+};

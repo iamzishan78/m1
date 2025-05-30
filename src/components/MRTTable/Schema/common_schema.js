@@ -449,7 +449,7 @@ const getFilterVariables = (field, index, type) => ({
 });
 
 export const editAutoCompleteField =
-	({ tableKey, validate, placeholder = '', required = true, id, index, type, onChange }) =>
+	({ tableKey, validate, placeholder = '', required = true, id, index, type, onChange, addNewAllowed = true }) =>
 	// eslint-disable-next-line react/display-name
 	({ cell, row, column }) => {
 		const { data: optionsData } = useQuery(GET_DB_FILTERS, {
@@ -530,13 +530,22 @@ export const editAutoCompleteField =
 					const inputVal = params.inputValue;
 					const isExisting = opts.some(option => option === inputVal);
 
-					if (inputVal !== '' && !isExisting) {
-						filtered.push({ inputValue: inputVal, label: `Add "${inputVal}"` });
+					if (addNewAllowed && inputVal !== '' && !isExisting) {
+						filtered.push({ inputValue: inputVal, label: `Add "${inputVal}"`, addNew: true });
 					}
 					return filtered;
 				}}
 				getOptionLabel={option => (typeof option === 'string' ? option : (option?.inputValue ?? option?.label ?? ''))}
-				renderOption={(props, option) => <li {...props}>{typeof option === 'string' ? option : option.label}</li>}
+				renderOption={(props, option) => (
+					<li
+						{...props}
+						style={{
+							color: option?.addNew ? '#1A1A70' : 'inherit', // MUI primary blue
+						}}
+					>
+						{typeof option === 'string' ? option : option.label}
+					</li>
+				)}
 				sx={{ width: '100%' }}
 				renderInput={params => (
 					<TextField
