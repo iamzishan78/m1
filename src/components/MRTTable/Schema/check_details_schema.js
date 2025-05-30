@@ -308,7 +308,6 @@ const CheckDetailsMeta = {
 				placeholder: 'Product',
 				index: 'checkdetails_flat',
 				id: 'product',
-				addNewAllowed: false,
 			}),
 		},
 
@@ -338,7 +337,6 @@ const CheckDetailsMeta = {
 				placeholder: 'Interest Type',
 				index: 'checkdetails_flat',
 				id: 'interestType',
-				addNewAllowed: false,
 			}),
 		},
 

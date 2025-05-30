@@ -540,7 +540,7 @@ export const editAutoCompleteField =
 					<li
 						{...props}
 						style={{
-							color: option?.addNew ? '#1976d2' : 'inherit', // MUI primary blue
+							color: option?.addNew ? '#1A1A70' : 'inherit', // MUI primary blue
 						}}
 					>
 						{typeof option === 'string' ? option : option.label}
