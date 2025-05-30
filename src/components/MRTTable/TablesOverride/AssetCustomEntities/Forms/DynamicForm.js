@@ -320,8 +320,11 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 			isGridDisplayed: true,
 			isDialogDisplayed: true,
 			isRequired: false,
-			ownerAccess: 'full',
-			userAccess: 'full',
+			accessControl: {
+				admin: 'full',
+				owner: 'full',
+				user: 'full',
+			},
 		});
 	};
 
@@ -579,7 +582,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 						</Typography>
 					</div>
 					<Controller
-						name={`fields[${index}].ownerAccess`}
+						name={`fields[${index}].accessControl.owner`}
 						control={control}
 						defaultValue="full"
 						render={({ field }) => (
@@ -627,7 +630,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 						</Typography>
 					</div>
 					<Controller
-						name={`fields[${index}].userAccess`}
+						name={`fields[${index}].accessControl.user`}
 						control={control}
 						defaultValue="full"
 						render={({ field }) => (
@@ -671,30 +674,19 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 	};
 
 	const getAccessRestrictionText = field => {
-		if (!field?.userAccess) {
+		if (!field?.accessControl) {
 			return null;
 		}
 
 		const restrictions = [];
+		const { admin, owner, user } = field.accessControl;
 
-		// Add Owner access type
-		if (field.ownerAccess) {
-			const ownerAccessType =
-				field.ownerAccess === 'full' ? 'Full' : field.ownerAccess === 'readonly' ? 'Read' : 'Hidden';
-			restrictions.push(`Owner: ${ownerAccessType}`);
-		}
+		// Add access types for each role
+		restrictions.push(`Admin: ${admin === 'full' ? 'Full' : admin === 'readonly' ? 'Read' : 'Hidden'}`);
+		restrictions.push(`Owner: ${owner === 'full' ? 'Full' : owner === 'readonly' ? 'Read' : 'Hidden'}`);
+		restrictions.push(`User: ${user === 'full' ? 'Full' : user === 'readonly' ? 'Read' : 'Hidden'}`);
 
-		// Add Regular User access type
-		if (field.userAccess) {
-			const userAccessType = field.userAccess === 'full' ? 'Full' : field.userAccess === 'readonly' ? 'Read' : 'Hidden';
-			restrictions.push(`User: ${userAccessType}`);
-		}
-
-		if (restrictions.length > 0) {
-			return `Access: ${restrictions.join(' | ')}`;
-		}
-
-		return null;
+		return `Access: ${restrictions.join(' | ')}`;
 	};
 
 	return (

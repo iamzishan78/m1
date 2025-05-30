@@ -56,8 +56,11 @@ const zodValidationSchema = z.object({
 				isGridDisplayed: z.boolean(),
 				isDialogDisplayed: z.boolean(),
 				isRequired: z.boolean(),
-				ownerAccess: z.string().nonempty(),
-				userAccess: z.string().nonempty(),
+				accessControl: z.object({
+					admin: z.string().default('full'),
+					owner: z.string().default('full'),
+					user: z.string().default('full'),
+				}),
 			})
 		)
 		.min(1, 'At least one field is required'),
@@ -79,8 +82,11 @@ function CustomAssetEntityDialog() {
 			isGridDisplayed: true,
 			isDialogDisplayed: true,
 			isRequired: false,
-			ownerAccess: 'full',
-			userAccess: 'full',
+			accessControl: {
+				admin: 'full',
+				owner: 'full',
+				user: 'full',
+			},
 		},
 	];
 	const {
@@ -102,6 +108,7 @@ function CustomAssetEntityDialog() {
 	});
 
 	const fields = useWatch({ control, name: 'fields' });
+	console.log('fields', fields);
 	const creationPlace = watch('creation_place', ''); // Watch the "creation_place" field
 
 	const { stateValues } = tableGlobalController.useState(['AssetCustomEntityDialog', 'selectedAsset']);
