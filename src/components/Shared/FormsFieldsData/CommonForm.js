@@ -53,6 +53,10 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 	return (
 		<>
 			{formSchema.map((item, index) => {
+				if (item.isHidden) {
+					return null;
+				}
+
 				let renderedField;
 				switch (item.renderField) {
 					case 'autoComplete':
@@ -67,6 +71,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 									margin: 'dense',
 									allowNewOptions: item.renderField === 'autoCompleteNewOption',
 									required: item.required,
+									disabled: item.disabled,
 								}}
 								fieldEvents={{ onChange: item.onChange }}
 								fieldAttributes={{
@@ -94,6 +99,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 										<CampaignField
 											{...field}
 											value={field?.value}
+											disabled={item.disabled}
 											onChange={values => {
 												sideDialogController(dialogKey).updateState({ [item.name]: values });
 												field.onChange(values);
@@ -118,6 +124,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 									render={({ field }) => (
 										<AssociatedDealField
 											{...field}
+											disabled={item.disabled}
 											onChange={values => {
 												sideDialogController(dialogKey).updateState({ [item.name]: values });
 												field.onChange(values);
