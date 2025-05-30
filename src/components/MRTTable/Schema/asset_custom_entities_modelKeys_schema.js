@@ -131,6 +131,27 @@ const AssetCustomEntitiesModelKeysMeta = {
 				return <>{isRequired ? 'Yes' : 'No'}</>;
 			},
 		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'accessControl.admin.keyword',
+			accessorFn: row => row?.accessControl?.admin,
+			id: 'accessControl.admin',
+			header: 'Admin Access',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'accessControl.owner.keyword',
+			accessorFn: row => row?.accessControl?.owner,
+			id: 'accessControl.owner',
+			header: 'Owner Access',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'accessControl.user.keyword',
+			accessorFn: row => row?.accessControl?.user,
+			id: 'accessControl.user',
+			header: 'User Access',
+		},
 	],
 };
 
