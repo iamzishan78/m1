@@ -152,7 +152,9 @@ function AssetAssociationDialog() {
 		});
 	};
 
-	const handleChipClick = model => {
+	const handleChipClick = clickedModel => {
+		let models = allModels?.getAllModels?.models || [];
+		const associatedModel = models.find(model => model.tableName === clickedModel.tableName);
 		// When a chip is clicked, reset the form with the selected model's data
 		tableGlobalController.updateState({
 			AssetAssociationDialog: {
@@ -161,8 +163,8 @@ function AssetAssociationDialog() {
 			},
 		});
 		reset({
-			associatedModel: model,
-			fields: model.modelKeys || defaultFields,
+			associatedModel,
+			fields: associatedModel.modelKeys || defaultFields,
 		});
 	};
 
