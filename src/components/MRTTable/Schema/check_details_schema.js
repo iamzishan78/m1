@@ -303,10 +303,12 @@ const CheckDetailsMeta = {
 			id: 'product',
 			header: 'Product',
 
-			muiEditTextFieldProps: editFieldProps({
+			Edit: editAutoCompleteField({
 				tableKey: 'CheckDetailsTable',
-				type: 'text',
-				isSelect: true,
+				placeholder: 'Product',
+				index: 'checkdetails_flat',
+				id: 'product',
+				addNewAllowed: false,
 			}),
 		},
 
@@ -331,11 +333,12 @@ const CheckDetailsMeta = {
 			name: 'interestType.keyword',
 			id: 'interestType',
 			header: 'Interest Type',
-
-			muiEditTextFieldProps: editFieldProps({
+			Edit: editAutoCompleteField({
 				tableKey: 'CheckDetailsTable',
-				type: 'text',
-				isSelect: true,
+				placeholder: 'Interest Type',
+				index: 'checkdetails_flat',
+				id: 'interestType',
+				addNewAllowed: false,
 			}),
 		},
 
