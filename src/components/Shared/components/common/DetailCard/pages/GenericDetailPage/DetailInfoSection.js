@@ -123,7 +123,6 @@ const useStyles = makeStyles(theme => ({
 	},
 	dataSect: {
 		borderTop: '2px solid #C9C9C9',
-		color: '#757575',
 		width: '100%',
 		maxHeight: '45.25vh',
 		'& p': {
