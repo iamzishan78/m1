@@ -282,14 +282,20 @@ function AssetAssociationDialog() {
 							}}
 						>
 							<div style={{ float: 'right' }}>
-								<Button style={{ margin: '25px 5px 25px 0px' }} variant="outlined" onClick={handleClose}>
+								<Button
+									className={`${classes.addFieldButton}`}
+									style={{ margin: '25px 5px 25px 0px' }}
+									variant="contained"
+									onClick={handleClose}
+								>
 									Cancel
 								</Button>
 								<Button
 									type="submit"
-									className={hasAtLeastOneKey ? classes.btnColor_active : ''}
-									style={{ margin: '25px 25px 25px 5px' }}
-									variant="outlined"
+									className={`${classes.addFieldButton}`}
+									style={{ margin: '25px 25px 25px 5px', fontWeight: 600 }}
+									variant="contained"
+									color="primary"
 									disabled={hasAtLeastOneKey ? false : true}
 								>
 									{isCreateMode ? 'Create Association' : 'Update Association'}

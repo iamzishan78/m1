@@ -108,7 +108,7 @@ function CustomAssetEntityDialog() {
 	});
 
 	const fields = useWatch({ control, name: 'fields' });
-	console.log('fields', fields);
+
 	const creationPlace = watch('creation_place', ''); // Watch the "creation_place" field
 
 	const { stateValues } = tableGlobalController.useState(['AssetCustomEntityDialog', 'selectedAsset']);
