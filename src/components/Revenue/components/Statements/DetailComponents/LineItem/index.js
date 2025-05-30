@@ -68,16 +68,16 @@ export default function LineItem({ checkId }) {
 	const TableSchema = useMemo(() => {
 		const TableSchema = CheckDetailsMeta.TableSchema;
 
-		return TableSchema.map(column => {
-			if (column.id === 'property._id') {
-				column.isPinned = false;
-			}
-			if (column.id === 'property.purchaserNumber') {
-				column.isPinned = true;
-			}
-
-			return column;
-		});
+		return TableSchema.filter(column => column.id !== 'comments') // Exclude comments column
+			.map(column => {
+				if (column.id === 'property._id') {
+					column.isPinned = false;
+				}
+				if (column.id === 'property.purchaserNumber') {
+					column.isPinned = true;
+				}
+				return column;
+			});
 	}, []);
 
 	return (
