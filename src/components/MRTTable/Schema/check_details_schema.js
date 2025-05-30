@@ -7,6 +7,7 @@ import { get, set, merge, unset } from 'lodash';
 import { createRow } from 'material-react-table';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import {
 	CommonSchema,
 	editAutoCompleteField,
@@ -81,6 +82,8 @@ const CheckDetailsMeta = {
 	enableEditing: true,
 	enableRowActions: true,
 	positionActionsColumn: 'last',
+	additionalQueries: ['comments'],
+	getIdsFromRows: rows => rows?.map(row => row?._id) || [],
 	getRowId: row => row?._id,
 	onCreatingRowCancel: async ({ table }) => {
 		tableController('CheckDetailsTable').clearEditing();
@@ -552,6 +555,16 @@ const CheckDetailsMeta = {
 					}
 				},
 			}),
+		},
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ row }) => {
+				const id = row.getValue('_id');
+				const { stateValues } = tableController('CheckDetailsTable').useState(['commentsCounter']);
+				const comment = stateValues?.commentsCounter?.find(comment => comment._id === id);
+				const targetLabel = 'checkDetail';
+				return <CommentCell id={id} value={comment?.total} targetLabel={targetLabel} />;
+			},
 		},
 	],
 };
