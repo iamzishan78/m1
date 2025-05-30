@@ -38,19 +38,29 @@ const zodValidationSchema = z.object({
 	asset_name: z.string().nonempty('Table name is required'),
 	creation_place: z.string().nonempty('Creation place is required'),
 	shape_type: z.string().nonempty('Shape type is required'),
-	fields: z.array(
-		z.object({
-			_id: z.string(),
-			mappingKey: z.string().nonempty('Key is required'),
-			keyType: z.string().nonempty('Key type is required'),
-			label: z.string().nonempty('Label is required'),
-			isSummaryField: z.boolean(),
-			isControlColumn: z.boolean(),
-			isGridDisplayed: z.boolean(),
-			isDialogDisplayed: z.boolean(),
-			isRequired: z.boolean(),
-		})
-	),
+	fields: z
+		.array(
+			z.object({
+				_id: z.string().optional(),
+				mappingKey: z
+					.string()
+					.nonempty('Key is required')
+					.min(1, 'Key must not be empty')
+					.refine(val => /^[a-zA-Z0-9_]+$/.test(val), {
+						message: 'Key must contain only letters, numbers, and underscores',
+					}),
+				keyType: z.string().nonempty('Key type is required'),
+				label: z.string().nonempty('Label is required').min(1, 'Label must not be empty'),
+				isSummaryField: z.boolean(),
+				isControlColumn: z.boolean(),
+				isGridDisplayed: z.boolean(),
+				isDialogDisplayed: z.boolean(),
+				isRequired: z.boolean(),
+				ownerAccess: z.string().nonempty(),
+				userAccess: z.string().nonempty(),
+			})
+		)
+		.min(1, 'At least one field is required'),
 });
 
 function CustomAssetEntityDialog() {
@@ -69,6 +79,8 @@ function CustomAssetEntityDialog() {
 			isGridDisplayed: true,
 			isDialogDisplayed: true,
 			isRequired: false,
+			ownerAccess: 'full',
+			userAccess: 'full',
 		},
 	];
 	const {
@@ -322,14 +334,20 @@ function CustomAssetEntityDialog() {
 								}}
 							>
 								<div style={{ float: 'right' }}>
-									<Button style={{ margin: '25px 5px 25px 0px' }} variant="outlined" onClick={handleClose}>
+									<Button
+										className={`${classes.addFieldButton}`}
+										style={{ margin: '25px 5px 25px 0px' }}
+										variant="contained"
+										onClick={handleClose}
+									>
 										Cancel
 									</Button>
 									<Button
 										type="submit"
-										className={isDisabled && isCreateMode ? classes.btnColor_disabled : classes.btnColor_active}
-										style={{ margin: '25px 25px 25px 5px' }}
-										variant="outlined"
+										className={`${classes.addFieldButton}`}
+										style={{ margin: '25px 25px 25px 5px', fontWeight: 600 }}
+										variant="contained"
+										color="primary"
 										disabled={isCreateMode ? isDisabled : false}
 									>
 										{isCreateMode ? 'Create Asset' : 'Update Asset'}
