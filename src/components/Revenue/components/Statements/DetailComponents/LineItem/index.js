@@ -1,20 +1,15 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Grid, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import { useQuery } from '@apollo/client';
 import PropTypes from 'prop-types';
 
 import MRTTable from 'components/MRTTable';
 import CheckDetailsMeta from 'components/MRTTable/Schema/check_details_schema';
 import PdfViewer from 'components/Revenue/components/Statements/DetailComponents/LineItem/PdfViewer';
-
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
-
-import { tableController } from 'stateManagement/tableController';
 
 const SPACING = 2;
 
@@ -54,24 +49,6 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const getFilterVariables = (field, index = 'checkdetails_flat', type) => ({
-	index,
-	filters: [],
-	filterKey: field,
-	search: {
-		fields: [],
-		advanceSearch: [],
-	},
-	size: 1,
-	filterAggs: {
-		query: '',
-		field,
-		size: 10000,
-		fieldType: 'string',
-		type,
-	},
-});
-
 export default function LineItem({ checkId }) {
 	const classes = useStyles();
 	const history = useHistory();
@@ -87,39 +64,6 @@ export default function LineItem({ checkId }) {
 	const redirectHandler = () => {
 		history.push(`/revenue/statement/details/${activeStatement?._id}`);
 	};
-
-	const { data: productsData } = useQuery(GET_DB_FILTERS, {
-		variables: getFilterVariables('product'),
-		fetchPolicy: 'no-cache',
-	});
-	const { data: interestTypesData } = useQuery(GET_DB_FILTERS, {
-		variables: getFilterVariables('interestType'),
-		fetchPolicy: 'no-cache',
-	});
-
-	useEffect(() => {
-		const products = productsData?.getDbFilters?.hits?.map(hit => hit.key);
-		const interestTypes = interestTypesData?.getDbFilters?.hits?.map(hit => hit.key);
-
-		if (!products || !interestTypes) {
-			return;
-		}
-
-		const TableSchema = tableController('CheckDetailsTable').getValue('TableSchema');
-
-		tableController('CheckDetailsTable').updateState({
-			TableSchema: TableSchema.map(column => {
-				if (column.id === 'product') {
-					column.editSelectOptions = products;
-				}
-				if (column.id === 'interestType') {
-					column.editSelectOptions = interestTypes;
-				}
-
-				return column;
-			}),
-		});
-	}, [productsData, interestTypesData]);
 
 	const TableSchema = useMemo(() => {
 		const TableSchema = CheckDetailsMeta.TableSchema;
