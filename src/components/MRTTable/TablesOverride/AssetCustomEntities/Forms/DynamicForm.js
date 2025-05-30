@@ -223,6 +223,13 @@ const useStyles = makeStyles(theme => ({
 					color: theme.palette.primary.main,
 				},
 			},
+			'&.Mui-disabled': {
+				color: theme.palette.action.disabled,
+				opacity: 0.6,
+				'& + .MuiFormControlLabel-label': {
+					color: theme.palette.text.disabled,
+				},
+			},
 		},
 	},
 	adminAccessText: {
@@ -610,6 +617,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 											<span>Full access (view and edit)</span>
 										</div>
 									}
+									disabled={isAssociationDialog}
 								/>
 								<FormControlLabel
 									value="Readonly"
@@ -620,6 +628,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 											<span>Read-only (can view but not edit)</span>
 										</div>
 									}
+									disabled={isAssociationDialog}
 								/>
 								<FormControlLabel
 									value="Hidden"
@@ -630,6 +639,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 											<span>Hidden (cannot view or edit)</span>
 										</div>
 									}
+									disabled={isAssociationDialog}
 								/>
 							</RadioGroup>
 						)}
@@ -658,6 +668,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 											<span>Full access (view and edit)</span>
 										</div>
 									}
+									disabled={isAssociationDialog}
 								/>
 								<FormControlLabel
 									value="Readonly"
@@ -668,6 +679,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 											<span>Read-only (can view but not edit)</span>
 										</div>
 									}
+									disabled={isAssociationDialog}
 								/>
 								<FormControlLabel
 									value="Hidden"
@@ -678,6 +690,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 											<span>Hidden (cannot view or edit)</span>
 										</div>
 									}
+									disabled={isAssociationDialog}
 								/>
 							</RadioGroup>
 						)}
