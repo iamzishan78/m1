@@ -227,6 +227,12 @@ function AssetAssociationDialog() {
 												onChange={e => {
 													const selectedModel = e.target.value;
 													field.onChange(selectedModel);
+													tableGlobalController.updateState({
+														AssetAssociationDialog: {
+															type: 'addAssetAssociation',
+															isOpen: true,
+														},
+													});
 													reset({
 														...watch(), // Retain other form fields
 														fields: selectedModel?.modelKeys || [], // Reset based on selected model's keys
@@ -298,7 +304,7 @@ function AssetAssociationDialog() {
 									style={{ margin: '25px 25px 25px 5px', fontWeight: 600 }}
 									variant="contained"
 									color="primary"
-									disabled={hasAtLeastOneKey ? false : true}
+									disabled={isCreateMode && hasAtLeastOneKey ? false : true}
 								>
 									{isCreateMode ? 'Create Association' : 'Update Association'}
 								</Button>
