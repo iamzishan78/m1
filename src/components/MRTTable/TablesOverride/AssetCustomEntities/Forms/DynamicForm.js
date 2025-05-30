@@ -335,9 +335,9 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 			isDialogDisplayed: true,
 			isRequired: false,
 			accessControl: {
-				admin: 'full',
-				owner: 'full',
-				user: 'full',
+				admin: 'Full',
+				owner: 'Full',
+				user: 'Full',
 			},
 		});
 	};
@@ -598,11 +598,11 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 					<Controller
 						name={`fields[${index}].accessControl.owner`}
 						control={control}
-						defaultValue="full"
+						defaultValue="Full"
 						render={({ field }) => (
 							<RadioGroup {...field} className={classes.radioGroup}>
 								<FormControlLabel
-									value="full"
+									value="Full"
 									control={<Radio size="small" />}
 									label={
 										<div className={classes.accessOption}>
@@ -612,7 +612,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 									}
 								/>
 								<FormControlLabel
-									value="readonly"
+									value="Readonly"
 									control={<Radio size="small" />}
 									label={
 										<div className={classes.accessOption}>
@@ -622,7 +622,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 									}
 								/>
 								<FormControlLabel
-									value="hidden"
+									value="Hidden"
 									control={<Radio size="small" />}
 									label={
 										<div className={classes.accessOption}>
@@ -646,11 +646,11 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 					<Controller
 						name={`fields[${index}].accessControl.user`}
 						control={control}
-						defaultValue="full"
+						defaultValue="Full"
 						render={({ field }) => (
 							<RadioGroup {...field} className={classes.radioGroup}>
 								<FormControlLabel
-									value="full"
+									value="Full"
 									control={<Radio size="small" />}
 									label={
 										<div className={classes.accessOption}>
@@ -660,7 +660,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 									}
 								/>
 								<FormControlLabel
-									value="readonly"
+									value="Readonly"
 									control={<Radio size="small" />}
 									label={
 										<div className={classes.accessOption}>
@@ -670,7 +670,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 									}
 								/>
 								<FormControlLabel
-									value="hidden"
+									value="Hidden"
 									control={<Radio size="small" />}
 									label={
 										<div className={classes.accessOption}>
@@ -696,9 +696,9 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 		const { admin, owner, user } = field.accessControl;
 
 		// Add access types for each role
-		restrictions.push(`Admin: ${admin === 'full' ? 'Full' : admin === 'readonly' ? 'Read' : 'Hidden'}`);
-		restrictions.push(`Owner: ${owner === 'full' ? 'Full' : owner === 'readonly' ? 'Read' : 'Hidden'}`);
-		restrictions.push(`User: ${user === 'full' ? 'Full' : user === 'readonly' ? 'Read' : 'Hidden'}`);
+		restrictions.push(`Admin: ${admin}`);
+		restrictions.push(`Owner: ${owner}`);
+		restrictions.push(`User: ${user}`);
 
 		return `Access: ${restrictions.join(' | ')}`;
 	};

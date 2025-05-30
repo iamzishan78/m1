@@ -57,9 +57,9 @@ const zodValidationSchema = z.object({
 				isDialogDisplayed: z.boolean(),
 				isRequired: z.boolean(),
 				accessControl: z.object({
-					admin: z.string().default('full'),
-					owner: z.string().default('full'),
-					user: z.string().default('full'),
+					admin: z.string().default('Full'),
+					owner: z.string().default('Full'),
+					user: z.string().default('Full'),
 				}),
 			})
 		)
@@ -83,9 +83,9 @@ function CustomAssetEntityDialog() {
 			isDialogDisplayed: true,
 			isRequired: false,
 			accessControl: {
-				admin: 'full',
-				owner: 'full',
-				user: 'full',
+				admin: 'Full',
+				owner: 'Full',
+				user: 'Full',
 			},
 		},
 	];
