@@ -342,8 +342,8 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 			isDialogDisplayed: true,
 			isRequired: false,
 			accessControl: {
-				admin: 'Full',
 				owner: 'Full',
+				admin: 'Full',
 				user: 'Full',
 			},
 		});
@@ -582,9 +582,9 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 
 				<div className={classes.accessControlSection}>
 					<div className={classes.userRoleHeader}>
-						<ShieldIcon />
+						<PersonIcon />
 						<Typography variant="subtitle1">
-							<strong>Admins</strong>
+							<strong>Owners</strong>
 						</Typography>
 						<Typography variant="body2" style={{ marginLeft: '8px', color: '#666' }}>
 							(Full access by default)
@@ -597,13 +597,13 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 
 				<div className={classes.accessControlSection}>
 					<div className={classes.userRoleHeader}>
-						<PersonIcon />
+						<ShieldIcon />
 						<Typography variant="subtitle1">
-							<strong>Owners</strong>
+							<strong>Admins</strong>
 						</Typography>
 					</div>
 					<Controller
-						name={`fields[${index}].accessControl.owner`}
+						name={`fields[${index}].accessControl.admin`}
 						control={control}
 						defaultValue="Full"
 						render={({ field }) => (
@@ -706,11 +706,11 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 		}
 
 		const restrictions = [];
-		const { admin, owner, user } = field.accessControl;
+		const { owner, admin, user } = field.accessControl;
 
 		// Add access types for each role
-		restrictions.push(`Admin: ${admin}`);
 		restrictions.push(`Owner: ${owner}`);
+		restrictions.push(`Admin: ${admin}`);
 		restrictions.push(`User: ${user}`);
 
 		return `Access: ${restrictions.join(' | ')}`;
