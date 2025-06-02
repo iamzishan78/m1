@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 
 import { Grid, FormControlLabel, FormGroup, Switch, Box } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { detailCardController } from 'stateManagement/detailCardController';
 import { globalStateController } from 'stateManagement/globalStateController';
@@ -124,7 +122,9 @@ const useStyles = makeStyles(theme => ({
 	dataSect: {
 		borderTop: '2px solid #C9C9C9',
 		width: '100%',
-		maxHeight: '45.25vh',
+		maxHeight: '50vh',
+		overflowY: 'auto',
+		display: 'block',
 		'& p': {
 			wordWrap: 'break-word',
 		},
@@ -132,9 +132,9 @@ const useStyles = makeStyles(theme => ({
 			fontWeight: 'bold',
 		},
 		'& > .MuiGrid-item': {
-			borderBottom: '2px solid #C9C9C9',
-			borderRight: '2px solid #C9C9C9',
 			position: 'relative',
+			width: '100%',
+			margin: 0,
 		},
 		'& .fieldName': {
 			borderLeft: '2px solid #C9C9C9',
@@ -190,7 +190,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function DetailInfo() {
 	const classes = useStyles();
-	const [basicInfExp, setBasicInfExp] = useState(true);
 	const [showEmpty, setShowEmpty] = useState(true);
 	const [selectedTab, setSelectedTab] = useState('Basic Info');
 
@@ -231,7 +230,9 @@ export default function DetailInfo() {
 
 	const tabs = ['Basic Info'];
 	const nonSummaryFields = getAssetFields(currentAsset, false);
-	const nonEmptyFields = getNonEmptyFields(currentAssetRecord, nonSummaryFields);
+	// Duplicate fields 5 times for testing scroll
+	const duplicatedFields = [...Array(5)].flatMap(() => [...nonSummaryFields]);
+	const nonEmptyFields = getNonEmptyFields(currentAssetRecord, duplicatedFields);
 
 	return (
 		<div className={classes.root}>
@@ -257,27 +258,14 @@ export default function DetailInfo() {
 
 			{selectedTab === 'Basic Info' && (
 				<>
-					<Grid item xs={12} container className={classes.dataSect} spacing={0}>
-						{showEmpty ? (
-							<CommonSummaryFieldsComponent formFields={nonSummaryFields} isBasicInfo={true} />
-						) : (
-							<CommonSummaryFieldsComponent formFields={nonEmptyFields} isBasicInfo={true} />
-						)}
-					</Grid>
-					<Grid item xs={12}>
-						<h4
-							className={classes.showAll}
-							onClick={() => {
-								setBasicInfExp(!basicInfExp);
-							}}
-						>
-							Show {!basicInfExp ? 'More' : 'Less'}
-							{!basicInfExp ? (
-								<ExpandMoreIcon style={{ position: 'relative', top: '8px' }} />
+					<Grid container className={classes.dataSect}>
+						<Grid item xs={12} style={{ padding: 0 }}>
+							{showEmpty ? (
+								<CommonSummaryFieldsComponent formFields={duplicatedFields} isBasicInfo={true} />
 							) : (
-								<ExpandLessIcon style={{ position: 'relative', top: '8px' }} />
+								<CommonSummaryFieldsComponent formFields={nonEmptyFields} isBasicInfo={true} />
 							)}
-						</h4>
+						</Grid>
 					</Grid>
 				</>
 			)}

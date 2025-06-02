@@ -56,7 +56,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	mainPanelsDiv: {
 		height: '100%',
-		maxHeight: '100vh',
+		maxHeight: '55vh',
 		position: 'relative',
 		'&::-webkit-scrollbar': {
 			width: '0.75em',

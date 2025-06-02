@@ -20,7 +20,6 @@ import GenericFields from './GenericFields';
 
 const useStyles = makeStyles(theme => ({
 	container: ({ isBasicInfo }) => ({
-		height: '100%',
 		padding: !isBasicInfo && '10px 30px 15px 5px',
 		marginBottom: !isBasicInfo && '30px',
 	}),

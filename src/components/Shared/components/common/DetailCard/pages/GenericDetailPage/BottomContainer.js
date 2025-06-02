@@ -14,7 +14,7 @@ import { globalStateController } from 'stateManagement/globalStateController';
 
 import DetailInfo from './DetailInfoSection';
 
-const tableHeight = 'calc(70vh - 100px)';
+const tableHeight = 'calc(45vh)';
 
 const BottomContainer = () => {
 	const [associatedModels, setAssoicatedModels] = useState([]);
