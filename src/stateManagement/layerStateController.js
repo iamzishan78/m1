@@ -29,6 +29,7 @@ import {
 	mapBoxLayerIdentifiers,
 	staticMapBoxLayerIdentifiers,
 	isCustomLayerCopy,
+	aggregationLayers,
 } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
@@ -375,7 +376,12 @@ class LayerStateControllerHandler extends StateController {
 
 	getLayerMeta(dbLayer) {
 		let meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
-		if (dbLayer?.identifier.startsWith('PlatformWells - Point') && dbLayer?.layerType !== 'point') {
+
+		if (
+			dbLayer?.identifier.startsWith('PlatformWells - Point') &&
+			dbLayer?.layerType !== 'point' &&
+			!aggregationLayers.includes(dbLayer?.layerType)
+		) {
 			meta = LayerMeta['Wells'];
 			meta.layer = LayerMeta[dbLayer?.layerType]?.layer;
 			meta.layer.getProps = layerId => {
@@ -390,7 +396,10 @@ class LayerStateControllerHandler extends StateController {
 			meta.propsFunc = LayerMeta[dbLayer?.layerType]?.propsFunc;
 			meta.props = {};
 			return meta;
-		} else if (dbLayer?.identifier.startsWith('PlatformWells - Point')) {
+		} else if (
+			dbLayer?.identifier.startsWith('PlatformWells - Point') &&
+			!aggregationLayers.includes(dbLayer?.layerType)
+		) {
 			return LayerMeta['Wells'];
 		}
 		return meta;
