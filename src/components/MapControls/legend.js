@@ -128,9 +128,28 @@ export default function Legend() {
 							<>
 								{Array.isArray(layer?.layerPaintProps) &&
 									layer?.layerPaintProps?.map((paintProp, propIndex) => {
-										if (paintProp.paintType === 'fill' && paintProp.paintProps['fill-color']) {
-											const fillColor = paintProp.paintProps['fill-color'];
-											const fillOpacity = paintProp.paintProps['fill-opacity'];
+										let fillKey = 'fill-color';
+										let fillOpacityKey = 'fill-opacity';
+										let fillOutlineColorKey = 'fill-outline-color';
+										switch (paintProp.paintType) {
+											case 'fill':
+												break;
+											case 'line':
+												fillKey = 'line-color';
+												fillOpacityKey = 'line-opacity';
+												break;
+											case 'circle':
+												fillKey = 'circle-color';
+												fillOpacityKey = 'fill-opacity';
+												fillOutlineColorKey = 'circle-stroke-color';
+												break;
+											default:
+												break;
+										}
+
+										if (paintProp.paintType) {
+											const fillColor = paintProp.paintProps[fillKey];
+											const fillOpacity = paintProp.paintProps[fillOpacityKey];
 
 											const rgbaColor = fillColor?.startsWith('rgb(')
 												? fillColor.replace('rgb(', 'rgba(').replace(')', `, ${fillOpacity ?? 1})`)
@@ -138,8 +157,8 @@ export default function Legend() {
 											const colorDict = {
 												'Default Layer Colors': {
 													'Fill Color': rgbaColor,
-													...(paintProp.paintProps['fill-outline-color'] && {
-														'Stroke Color': paintProp.paintProps['fill-outline-color'],
+													...(paintProp.paintProps[fillOutlineColorKey] && {
+														'Stroke Color': paintProp.paintProps[fillOutlineColorKey],
 													}),
 												},
 											};
