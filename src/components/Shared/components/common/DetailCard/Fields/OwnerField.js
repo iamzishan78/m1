@@ -16,7 +16,6 @@ import { CONTACT_ENTITY } from 'graphQL/useQueryContactEntity';
 
 import { detailCardController } from 'stateManagement/detailCardController';
 
-
 const useStyles = makeStyles({
 	dateRoot: {
 		color: 'grey',
@@ -77,9 +76,13 @@ function OwnerField({ fieldData, field }) {
 		<ContactPaginatedAutocomplete
 			nameAutValue={prevValue?.contactId ? prevValue?.name : ''}
 			className={classes.field}
+			field={field}
 			setNameAutValue={value => {
-				if (value) {contactEntity(value?._id);}
-				else {callApi({ key: field.key, value: null, field, previousValue: prevValue?._id });}
+				if (value) {
+					contactEntity(value?._id);
+				} else {
+					callApi({ key: field.key, value: null, field, previousValue: prevValue?._id });
+				}
 			}}
 			renderInput={params => (
 				<TextField

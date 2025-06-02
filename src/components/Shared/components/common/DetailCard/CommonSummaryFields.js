@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useContext, useEffect, useState } from 'react';
 
 import { Button, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,6 +13,8 @@ import { globalStateController } from 'stateManagement/globalStateController';
 import { popupController } from 'stateManagement/popupStateController';
 
 import MetaField from 'utils/MetaField';
+
+import { AppContext } from 'AppContext';
 
 import GenericFields from './GenericFields';
 
@@ -47,6 +49,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function CommonSummaryFieldsComponent({ metaDataCategory, formFields, isBasicInfo = false }) {
 	const classes = useStyles({ isBasicInfo });
+	const [stateApp] = useContext(AppContext);
 
 	const {
 		stateValues: { expandedCard },
@@ -67,8 +70,21 @@ export default function CommonSummaryFieldsComponent({ metaDataCategory, formFie
 		if (!formFields) {
 			return;
 		}
+		const role = stateApp.user?.roles?.[0]?.toLowerCase();
 
-		setFields(formFields);
+		const updatedFields = formFields
+			.map(field => {
+				if (field.accessControl?.[role] === 'Hidden') {
+					return null;
+				}
+				return {
+					...field,
+					disabled: field.accessControl?.[role] === 'Readonly',
+				};
+			})
+			.filter(Boolean);
+
+		setFields(updatedFields);
 	}, [formFields, setFields]);
 
 	useEffect(() => {

@@ -46,6 +46,7 @@ const GenericFields = ({ field: fieldObj, summaryDataValues }) => {
 					defaultOptions={field.options || []}
 					payload={field.payload}
 					variant="outlined"
+					field={field}
 				/>
 			);
 
@@ -76,6 +77,7 @@ const GenericFields = ({ field: fieldObj, summaryDataValues }) => {
 					fieldKey={field.key}
 					shapeType={field.shapeType}
 					variant="outlined"
+					field={field}
 				/>
 			);
 

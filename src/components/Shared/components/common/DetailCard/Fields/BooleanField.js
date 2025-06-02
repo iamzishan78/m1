@@ -8,7 +8,7 @@ import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 
 import { detailCardController } from 'stateManagement/detailCardController';
 
-const BooleanField = ({ fieldData, field }) => {
+const BooleanField = ({ fieldData, field, disabled = false }) => {
 	const {
 		stateValues: { page },
 	} = detailCardController.useState(['page', 'loadingField']);
@@ -27,10 +27,10 @@ const BooleanField = ({ fieldData, field }) => {
 	}, [fieldData]);
 
 	return (
-		<FormControl component="fieldset">
+		<FormControl component="fieldset" disabled={field?.disabled}>
 			<MUIRadioGroup row value={value} onChange={handleChange}>
-				<FormControlLabel value="true" control={<Radio color="primary" />} label="Yes" />
-				<FormControlLabel value="false" control={<Radio color="primary" />} label="No" />
+				<FormControlLabel disabled={field?.disabled} value="true" control={<Radio color="primary" />} label="Yes" />
+				<FormControlLabel disabled={field?.disabled} value="false" control={<Radio color="primary" />} label="No" />
 			</MUIRadioGroup>
 		</FormControl>
 	);
@@ -38,10 +38,7 @@ const BooleanField = ({ fieldData, field }) => {
 
 BooleanField.propTypes = {
 	fieldData: PropTypes.object.isRequired,
-	field: PropTypes.shape({
-		key: PropTypes.string.isRequired,
-		label: PropTypes.string.isRequired,
-	}).isRequired,
+	field: PropTypes.object.isRequired,
 };
 
 export default BooleanField;

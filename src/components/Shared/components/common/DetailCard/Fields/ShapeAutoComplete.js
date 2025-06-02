@@ -14,7 +14,6 @@ import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
 
 import { detailCardController } from 'stateManagement/detailCardController';
 
-
 const useStyles = makeStyles({
 	inputRoot: {
 		backgroundColor: '#ffffff',
@@ -30,7 +29,7 @@ const useStyles = makeStyles({
 
 const filter = createFilterOptions();
 
-const ShapeAutoComplete = ({ fieldData, fieldKey, shapeType, ...other }) => {
+const ShapeAutoComplete = ({ fieldData, field, fieldKey, shapeType, ...other }) => {
 	const classes = useStyles();
 
 	const {
@@ -82,6 +81,7 @@ const ShapeAutoComplete = ({ fieldData, fieldKey, shapeType, ...other }) => {
 			loading={loading}
 			onOpen={handleOpen}
 			defaultValue={search}
+			disabled={field?.disabled}
 			value={search}
 			disableListWrap
 			classes={classes}
