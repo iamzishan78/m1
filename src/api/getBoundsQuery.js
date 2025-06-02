@@ -213,7 +213,7 @@ const getBoundsQuery = async ({
 				wellType: 1,
 				wellStatus: 1,
 			});
-		} else if (isDynamicLayer) {
+		} else if (isDynamicLayer || variables.isDynamicAsset) {
 			Object.assign(variables.project, {
 				'assetShape.shapeJson.geometry': 1,
 				'assetShape.shapeJson.id': 1,
