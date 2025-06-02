@@ -244,24 +244,18 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 
 			// Column rendering logic
 			const renderCell = ({ row }) => {
-				let value;
-
+				let value = row.getValue(key);
 				switch (column.keyType) {
 					case 'date':
-						value = formatDate(row.original[key]);
-						break;
-					case 'user':
-						value = row.getValue(key);
+						value = formatDate(value);
 						break;
 					case 'boolean':
-						value = row.original[key] ? 'Yes' : 'No';
+						value = value ? 'Yes' : 'No';
 						break;
-					default:
-						value = row.original[key];
 				}
 
 				if (column.isControlColumn) {
-					const id = isAssociatedModel ? row?.original?.[associationKey]?._id : row.getValue('_id');
+					const id = isAssociatedModel ? row.getValue(`${associationKey}._id}`) : row.getValue('_id');
 
 					return (
 						<ColumnWithLink
