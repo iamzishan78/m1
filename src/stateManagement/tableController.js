@@ -243,13 +243,29 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 			};
 
 			// Column rendering logic
-			const renderCell = ({ renderedCellValue, row }) => {
+			const renderCell = ({ row }) => {
+				let value;
+
+				switch (column.keyType) {
+					case 'date':
+						value = formatDate(row.original[key]);
+						break;
+					case 'user':
+						value = row.getValue(key);
+						break;
+					case 'boolean':
+						value = row.original[key] ? 'Yes' : 'No';
+						break;
+					default:
+						value = row.original[key];
+				}
+
 				if (column.isControlColumn) {
 					const id = isAssociatedModel ? row?.original?.[associationKey]?._id : row.getValue('_id');
 
 					return (
 						<ColumnWithLink
-							value={renderedCellValue}
+							value={value}
 							link={`/land/customAsset/${modelName}/details/${id}`}
 							onClick={e => {
 								e.stopPropagation();
@@ -259,14 +275,12 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 					);
 				}
 
-				const value = column.keyType === 'date' ? formatDate(row.original[key]) : renderedCellValue;
-
 				return <>{value}</>;
 			};
 
 			switch (column.keyType) {
 				case 'boolean':
-					return { ...CommonSchema.BOOLEAN_COLUMN, ...commonProps };
+					return { ...CommonSchema.BOOLEAN_COLUMN, ...commonProps, Cell: renderCell };
 				default:
 					return {
 						...CommonSchema.STRING_COLUMN,
