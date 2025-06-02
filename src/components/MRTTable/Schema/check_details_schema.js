@@ -126,6 +126,7 @@ const CheckDetailsMeta = {
 		await client.mutate({
 			variables: { checkDetail: { ...obj } },
 			mutation: UPDATE_CHECK_DETAIL,
+			refetchQueries: ['getDbFilters'],
 		});
 
 		Controller.clearEditing();
@@ -167,12 +168,14 @@ const CheckDetailsMeta = {
 				})),
 			},
 			mutation: UPDATE_CHECK_DETAILS,
+			refetchQueries: ['getDbFilters'],
 		});
 	},
 	onDelete: async (client, row) => {
 		await client.mutate({
 			variables: { checkDetail: { ...row, IsDeleted: true } },
 			mutation: UPDATE_CHECK_DETAIL,
+			refetchQueries: ['getDbFilters'],
 		});
 	},
 
