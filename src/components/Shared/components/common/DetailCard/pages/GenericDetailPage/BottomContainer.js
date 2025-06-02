@@ -81,10 +81,7 @@ const BottomContainer = () => {
 							deletedKeys: {
 								mainRecord: { key: '_id' },
 								assetTableName: {
-									value: currentAsset.tableName,
-								},
-								associatedAssetName: {
-									value: model.tableName,
+									value: model.associationModelName,
 								},
 							},
 						},
