@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useLazyQuery } from '@apollo/client';
-import { Box, DialogContent, DialogActions, Button, Grid, FormControl, CircularProgress } from '@material-ui/core';
+import { DialogContent, DialogActions, Button, Grid, FormControl } from '@material-ui/core';
 
 import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { GET_METADATA_MODULES } from 'graphQL/useQueryGetMetadataModules';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
-const CreateAutomationDialog = ({ onClose, setFormLoading, handleCreateAutomation }) => {
+const CreateMetaDataAutomationDialog = ({ onClose, setFormLoading, handleCreateAutomation, automation }) => {
 	const [moduleOptions, setModuleOptions] = useState([]);
+	const [selectedModule, setSelectedModule] = useState(automation?.targetModule || '');
+	const [selectedTriggerField, setSelectedTriggerField] = useState(automation?.triggerField || '');
+	const [selectedTargetField, setSelectedTargetField] = useState(automation?.targetKey || '');
+	const [metadataOptions, setMetadataOptions] = useState([]);
 
 	const [getMetadataModules, { data: metadataModules, loading: fetchingModules }] = useLazyQuery(GET_METADATA_MODULES);
+	const [getMetaData, { data: moduleMetadata, loading: fetchingMetadata }] = useLazyQuery(GET_META_DATA);
 
 	useEffect(() => {
 		getMetadataModules();
@@ -17,13 +23,28 @@ const CreateAutomationDialog = ({ onClose, setFormLoading, handleCreateAutomatio
 
 	useEffect(() => {
 		const modules = metadataModules?.getMetadataModules?.modules.filter(Boolean) || [];
-		console.log(modules);
 		setModuleOptions(modules);
 	}, [metadataModules]);
 
 	useEffect(() => {
-		setFormLoading(fetchingModules);
-	}, [fetchingModules]);
+		setFormLoading(fetchingModules || fetchingMetadata);
+	}, [fetchingModules, fetchingMetadata]);
+
+	useEffect(() => {
+		if (selectedModule) {
+			getMetaData({
+				variables: {
+					category: selectedModule,
+				},
+			});
+		}
+	}, [selectedModule]);
+
+	useEffect(() => {
+		if (moduleMetadata?.getMetaData?.metaData) {
+			setMetadataOptions(moduleMetadata?.getMetaData?.metaData || []);
+		}
+	}, [moduleMetadata]);
 
 	return (
 		<>
@@ -35,11 +56,12 @@ const CreateAutomationDialog = ({ onClose, setFormLoading, handleCreateAutomatio
 								fieldAttributes={{
 									label: 'Source Module',
 									optionArray: moduleOptions,
-									// value: newAutomation.triggerField,
+									value: selectedModule,
 								}}
 								fieldEvents={{
 									onChange: ({ value }) => {
-										//Do something here
+										setSelectedModule(value);
+										setSelectedTriggerField('');
 									},
 								}}
 								fieldConfig={{
@@ -50,69 +72,48 @@ const CreateAutomationDialog = ({ onClose, setFormLoading, handleCreateAutomatio
 						</FormControl>
 					</Grid>
 
-					{true && (
+					{selectedModule && (
 						<Grid item xs={12}>
 							<FormControl fullWidth>
 								<CustomAutoComplete
 									fieldAttributes={{
-										label: 'Source Field',
-										// optionArray: fieldOptions[newAutomation.triggerField] || [],
-										// value: newAutomation.triggerValue,
+										label: 'Trigger Field',
+										optionArray: metadataOptions,
+										value: selectedTriggerField,
 									}}
 									fieldEvents={{
-										onChange: ({ value }) => {
-											//Do something here
+										onChange: ({ valueObj }) => {
+											setSelectedTriggerField(valueObj);
 										},
 									}}
 									fieldConfig={{
 										variant: 'outlined',
 										size: 'small',
-										// disabled: !newAutomation.triggerField,
+										disabled: !selectedModule,
 									}}
 								/>
 							</FormControl>
 						</Grid>
 					)}
 
-					<Grid item xs={12}>
-						<FormControl fullWidth>
-							<CustomAutoComplete
-								fieldAttributes={{
-									label: 'Target Module',
-									optionArray: moduleOptions,
-									// value: newAutomation.targetModule,
-								}}
-								fieldEvents={{
-									onChange: ({ value }) => {
-										//Do something here
-									},
-								}}
-								fieldConfig={{
-									variant: 'outlined',
-									size: 'small',
-								}}
-							/>
-						</FormControl>
-					</Grid>
-
-					{true && (
+					{selectedTriggerField && (
 						<Grid item xs={12}>
 							<FormControl fullWidth>
 								<CustomAutoComplete
 									fieldAttributes={{
 										label: 'Target Field',
-										// optionArray: fieldOptions[newAutomation.targetModule] || [],
-										// value: newAutomation.targetKey,
+										optionArray: metadataOptions.filter(({ _id }) => _id !== selectedTriggerField?._id),
+										value: selectedTargetField,
 									}}
 									fieldEvents={{
-										onChange: ({ value }) => {
-											//Do something here
+										onChange: ({ valueObj }) => {
+											setSelectedTargetField(valueObj);
 										},
 									}}
 									fieldConfig={{
 										variant: 'outlined',
 										size: 'small',
-										// disabled: !newAutomation.targetModule,
+										disabled: !selectedTriggerField,
 									}}
 								/>
 							</FormControl>
@@ -140,17 +141,17 @@ const CreateAutomationDialog = ({ onClose, setFormLoading, handleCreateAutomatio
 	);
 };
 
-CreateAutomationDialog.propTypes = {
+CreateMetaDataAutomationDialog.propTypes = {
 	isOpen: PropTypes.bool.isRequired,
 	onClose: PropTypes.func.isRequired,
-	newAutomation: PropTypes.shape({
+	automation: PropTypes.shape({
 		triggerField: PropTypes.string,
 		triggerValue: PropTypes.string,
 		targetModule: PropTypes.string,
 		targetKey: PropTypes.string,
 	}),
-	setNewAutomation: PropTypes.func.isRequired,
+	setFormLoading: PropTypes.func.isRequired,
 	handleCreateAutomation: PropTypes.func.isRequired,
 };
 
-export default CreateAutomationDialog;
+export default CreateMetaDataAutomationDialog;

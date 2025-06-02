@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Grid, Box, Typography, CircularProgress, Dialog, DialogTitle, DialogContent } from '@material-ui/core';
+import { Grid, Box, Typography, CircularProgress, Dialog, DialogTitle } from '@material-ui/core';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 
@@ -10,7 +10,7 @@ import { GET_AUTOMATIONS } from 'graphQL/useQueryGetAutomations';
 import { globalStateController } from 'stateManagement/globalStateController';
 
 import AutomationHeader from './components/AutomationHeader';
-import CreateMetadataAutomation from './components/CreateAutomationDialog';
+import CreateMetadataAutomation from './components/CreateMetaDataAutomationDialog';
 import MetadataAutomation from './components/MetadataAutomation';
 
 const Automations = () => {
