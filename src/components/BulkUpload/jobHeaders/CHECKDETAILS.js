@@ -132,6 +132,12 @@ const CHECKDETAILSENERGY = [
 		required: false,
 		actual_key: 'grossOwnerValue',
 	},
+	{
+		label: 'Owner Volume',
+		mapped_key: '',
+		required: false,
+		actual_key: 'grossOwnerVolume',
+	},
 	// Tax keys
 	{
 		label: 'Tax Type',
@@ -324,6 +330,12 @@ const checkDetailsKeys = [
 		mapped_key: '',
 		required: false,
 		actual_key: 'grossOwnerValue',
+	},
+	{
+		label: 'Owner Volume',
+		mapped_key: '',
+		required: false,
+		actual_key: 'grossOwnerVolume',
 	},
 	{
 		label: 'Owner Tax Amount',
