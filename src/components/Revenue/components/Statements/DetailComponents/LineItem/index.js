@@ -71,10 +71,16 @@ export default function LineItem({ checkId }) {
 		return TableSchema.filter(column => column.id !== 'comments') // Exclude comments column
 			.map(column => {
 				if (column.id === 'property._id') {
-					column.isPinned = false;
+					return {
+						...column,
+						isPinned: false,
+					};
 				}
 				if (column.id === 'property.purchaserNumber') {
-					column.isPinned = true;
+					return {
+						...column,
+						isPinned: true,
+					};
 				}
 				return column;
 			});
