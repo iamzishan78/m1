@@ -103,7 +103,7 @@ function AssociationDialog() {
 			tableGlobalController.refetch();
 		},
 	});
-	console.log('associatedDataOptions', associatedDataOptions);
+
 	useEffect(() => {
 		if (isOpen) {
 			getDbData({
@@ -144,6 +144,9 @@ function AssociationDialog() {
 	};
 
 	const getFormattedValue = (key, selectedOption) => {
+		if (!selectedOption || !key) {
+			return '';
+		}
 		const value = key.keyType === 'user' ? selectedOption[key.mappingKey]?.['name'] : selectedOption[key.mappingKey];
 
 		switch (key.keyType) {
