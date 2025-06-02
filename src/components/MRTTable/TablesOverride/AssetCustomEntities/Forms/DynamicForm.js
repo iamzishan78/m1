@@ -29,6 +29,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import LockIcon from '@mui/icons-material/Lock';
 import PersonIcon from '@mui/icons-material/Person';
 import ShieldIcon from '@mui/icons-material/Shield';
+import StarIcon from '@mui/icons-material/Star';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
@@ -275,6 +276,20 @@ const useStyles = makeStyles(theme => ({
 	fieldTitleError: {
 		'& .MuiTypography-subtitle1': {
 			color: theme.palette.error.main,
+		},
+	},
+	controlColumnBadge: {
+		display: 'inline-flex',
+		alignItems: 'center',
+		backgroundColor: theme.palette.primary.main,
+		color: 'white',
+		padding: '3px 8px',
+		borderRadius: '12px',
+		marginLeft: '8px',
+		fontSize: '0.75rem',
+		'& .MuiSvgIcon-root': {
+			fontSize: '0.875rem',
+			marginRight: '4px',
 		},
 	},
 }));
@@ -772,6 +787,12 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 										{currentField?.label || `Field ${index + 1}`}
 										{errorCount && <span className={classes.errorIndicator}>{errorCount}</span>}
 									</Typography>
+									{currentField?.isControlColumn && (
+										<div className={classes.controlColumnBadge}>
+											<StarIcon />
+											Control Column
+										</div>
+									)}
 									{restrictionText && <Chip size="small" label={restrictionText} variant="outlined" />}
 								</div>
 								<div className={classes.fieldActions}>
