@@ -11,12 +11,21 @@ import { layerController } from 'stateManagement/layerStateController';
 
 import { styleImageMap } from './components/Layer/Common';
 
-export default function LegendCollapse({ layer, basedOnKey, basedOnDict, typography, isImage, isColor, isAggLayer }) {
+export default function LegendCollapse({
+	layer,
+	basedOnKey,
+	basedOnDict,
+	typography,
+	isImage,
+	isColor,
+	isAggLayer,
+	listHeight = 300,
+	isSubset = false,
+}) {
 	const [open, setOpen] = useState(false);
 
 	const { layerGeometry, layerIdentifier } = layer;
 	const legendData = Object.keys(basedOnDict?.[basedOnKey?.label] || {});
-
 	const handleToggle = () => setOpen(!open);
 
 	const attroptions = (layerController.getValue('bins') || []).map((key, index) => {
@@ -52,7 +61,7 @@ export default function LegendCollapse({ layer, basedOnKey, basedOnDict, typogra
 							height: 24,
 							background:
 								isImage && !isAggLayer
-									? `url(${styleImageMap[basedOnDict?.[basedOnKey?.label]?.[item]]}) center/cover`
+									? `url(${styleImageMap[basedOnDict?.[basedOnKey?.label]?.[item]] || styleImageMap['hatch-1x']}) center/cover`
 									: !isAggLayer
 										? basedOnDict?.[basedOnKey?.label]?.[item]
 										: item.color,
@@ -68,16 +77,18 @@ export default function LegendCollapse({ layer, basedOnKey, basedOnDict, typogra
 
 	return (
 		<>
-			<ListItem
-				sx={{
-					color: '#b0b0b0',
-					py: 1.5,
-					px: 2,
-					borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-				}}
-			>
-				<ListItemText primary={`${layerGeometry ? layerGeometry : 'Polygon'} ${layerIdentifier}`} />
-			</ListItem>
+			{!isSubset && (
+				<ListItem
+					sx={{
+						color: '#b0b0b0',
+						py: 1.5,
+						px: 2,
+						borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+					}}
+				>
+					<ListItemText primary={`${layerGeometry ? layerGeometry : 'Polygon'} ${layerIdentifier}`} />
+				</ListItem>
+			)}
 
 			<ListItemButton
 				onClick={handleToggle}
@@ -91,7 +102,7 @@ export default function LegendCollapse({ layer, basedOnKey, basedOnDict, typogra
 			>
 				<Typography>
 					<b>
-						{basedOnKey?.label} ( {typography} )
+						{`${basedOnKey?.label}`} {typography ? `(${typography})` : ''}
 					</b>
 				</Typography>
 				<ChevronRight
@@ -105,7 +116,7 @@ export default function LegendCollapse({ layer, basedOnKey, basedOnDict, typogra
 			<Collapse in={open} timeout="auto" unmountOnExit>
 				<Box sx={{ maxHeight: 300, overflow: 'hidden' }}>
 					<FixedSizeList
-						height={300}
+						height={listHeight}
 						itemCount={!isAggLayer ? legendData.length : attroptions.length}
 						itemSize={48} // Adjust based on item height
 						width="100%"
