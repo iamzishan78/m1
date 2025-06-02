@@ -498,6 +498,11 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 										onChange={e => {
 											field.onChange(e.target.checked);
 											setValue(`fields[${index}].isRequired`, e.target.checked);
+											if (e.target.checked) {
+												// Set both admin and user access to Full when field becomes control column
+												setValue(`fields[${index}].accessControl.admin`, 'Full');
+												setValue(`fields[${index}].accessControl.user`, 'Full');
+											}
 										}}
 										color="primary"
 										size="small"
@@ -558,7 +563,14 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 								render={({ field }) => (
 									<Checkbox
 										checked={!!field.value}
-										onChange={e => field.onChange(e.target.checked)}
+										onChange={e => {
+											field.onChange(e.target.checked);
+											if (e.target.checked) {
+												// Set both admin and user access to Full when field is required
+												setValue(`fields[${index}].accessControl.admin`, 'Full');
+												setValue(`fields[${index}].accessControl.user`, 'Full');
+											}
+										}}
 										color="primary"
 										size="small"
 										disabled={watchedFields[index]?.isControlColumn || isAssociationDialog} // Disable when Control Column is selected
@@ -628,7 +640,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 											<span>Read-only (can view but not edit)</span>
 										</div>
 									}
-									disabled={isAssociationDialog}
+									disabled={isAssociationDialog || watchedFields[index]?.isRequired}
 								/>
 								<FormControlLabel
 									value="Hidden"
@@ -639,7 +651,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 											<span>Hidden (cannot view or edit)</span>
 										</div>
 									}
-									disabled={isAssociationDialog}
+									disabled={isAssociationDialog || watchedFields[index]?.isRequired}
 								/>
 							</RadioGroup>
 						)}
@@ -679,7 +691,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 											<span>Read-only (can view but not edit)</span>
 										</div>
 									}
-									disabled={isAssociationDialog}
+									disabled={isAssociationDialog || watchedFields[index]?.isRequired}
 								/>
 								<FormControlLabel
 									value="Hidden"
@@ -690,7 +702,7 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 											<span>Hidden (cannot view or edit)</span>
 										</div>
 									}
-									disabled={isAssociationDialog}
+									disabled={isAssociationDialog || watchedFields[index]?.isRequired}
 								/>
 							</RadioGroup>
 						)}
