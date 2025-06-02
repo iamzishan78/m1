@@ -94,7 +94,7 @@ const MainGridRightContainer = () => {
 						handleExpandClick('deleteConfirmation');
 					}}
 				>
-					{`Delete ${currentAsset?.name}`}
+					Delete
 				</MenuItem>
 			</Menu>
 		</>
