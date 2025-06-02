@@ -469,7 +469,26 @@ export const editAutoCompleteField =
 			setInputValue(newVal);
 		};
 
-		const handleChange = (e, newValue) => {
+		const handleBlur = input => {
+			const finalValue = (input ?? inputValue) || '';
+			const validationError = validate?.(finalValue);
+
+			const editedData = Controller.getValue('editedData');
+			const rowData = editedData?.[row.id] || {};
+
+			set(rowData, column.id, finalValue);
+
+			if (cell.setValue) {
+				cell.setValue(finalValue);
+			} else {
+				row._valuesCache[column.id] = finalValue;
+			}
+
+			Controller.setValidationErrors(row.id, column.id, validationError);
+			Controller.setEditedData(row.id, rowData);
+		};
+
+		const handleChange = (e, newValue, type) => {
 			let finalValue = '';
 
 			if (typeof newValue === 'string') {
@@ -487,25 +506,10 @@ export const editAutoCompleteField =
 			const originals = optionsData?.getDbFilters?.hits?.map(hit => hit.original?.[0]);
 
 			onChange?.(finalValue, row, originals);
-		};
 
-		const handleBlur = () => {
-			const finalValue = inputValue || '';
-			const validationError = validate?.(finalValue);
-
-			const editedData = Controller.getValue('editedData');
-			const rowData = editedData?.[row.id] || {};
-
-			set(rowData, column.id, finalValue);
-
-			if (cell.setValue) {
-				cell.setValue(finalValue);
-			} else {
-				row._valuesCache[column.id] = finalValue;
+			if (type === 'selectOption') {
+				handleBlur(finalValue);
 			}
-
-			Controller.setValidationErrors(row.id, column.id, validationError);
-			Controller.setEditedData(row.id, rowData);
 		};
 
 		return (
@@ -552,7 +556,7 @@ export const editAutoCompleteField =
 						{...params}
 						required={required}
 						size="small"
-						onBlur={handleBlur}
+						onBlur={() => handleBlur()}
 						error={!!errorText}
 						helperText={errorText}
 						placeholder={placeholder}
