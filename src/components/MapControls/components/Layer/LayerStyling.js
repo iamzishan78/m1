@@ -458,7 +458,9 @@ function LayerStyling() {
 													margin: 'dense',
 												}}
 												fieldEvents={{
-													onChange: ({ value }) => layerStylingController.setSelectedValue(value),
+													onChange: ({ valueObj }) => {
+														layerStylingController.setSelectedValue(valueObj);
+													},
 												}}
 											/>
 										</div>
@@ -648,7 +650,7 @@ function LayerStyling() {
 												<CustomAutoComplete
 													fieldAttributes={{
 														label: 'Select a field',
-														value: selectedValue,
+														value: selectedFillStyle,
 														optionArray: options,
 													}}
 													fieldConfig={{
@@ -657,7 +659,7 @@ function LayerStyling() {
 														margin: 'dense',
 													}}
 													fieldEvents={{
-														onChange: ({ value }) => layerStylingController.setSelectedFillStyle(value),
+														onChange: ({ valueObj }) => layerStylingController.setSelectedFillStyle(valueObj),
 													}}
 												/>
 											</div>
@@ -706,7 +708,7 @@ function LayerStyling() {
 												<CustomAutoComplete
 													fieldAttributes={{
 														label: 'Select a field',
-														value: selectedValue,
+														value: selectedStrokeValue,
 														optionArray: options,
 													}}
 													fieldConfig={{
@@ -715,7 +717,7 @@ function LayerStyling() {
 														margin: 'dense',
 													}}
 													fieldEvents={{
-														onChange: ({ value }) => layerStylingController.setSelectedStrokeValue(value),
+														onChange: ({ valueObj }) => layerStylingController.setSelectedStrokeValue(valueObj),
 													}}
 												/>
 											</div>
@@ -759,7 +761,7 @@ function LayerStyling() {
 													<CustomAutoComplete
 														fieldAttributes={{
 															label: 'Select a field',
-															value: selectedValue,
+															value: selectedLineStyle,
 															optionArray: options,
 														}}
 														fieldConfig={{
@@ -768,7 +770,7 @@ function LayerStyling() {
 															margin: 'dense',
 														}}
 														fieldEvents={{
-															onChange: ({ value }) => layerStylingController.setSelectedLineStyle(value),
+															onChange: ({ valueObj }) => layerStylingController.setSelectedLineStyle(valueObj),
 														}}
 													/>
 												</div>

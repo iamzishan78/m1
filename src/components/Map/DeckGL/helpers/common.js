@@ -5,7 +5,12 @@ import mapboxgl from 'mapbox-gl';
 
 import { colorBasedAttributes } from 'components/MapControls/components/Layer/LayerAttributes/ColorBasedAttributes';
 import { copy, getPolygonString } from 'components/Shared/functions';
-import { deckGlLandGridIdentifiers, ifDefaultLayers } from 'components/Shared/functions/shapeLayer';
+import {
+	deckGlLandGridIdentifiers,
+	ifDeckGlLandGridIdentifiers,
+	ifDefaultLayers,
+	ifPlatformLandGridIdentifiers,
+} from 'components/Shared/functions/shapeLayer';
 
 import { getLayerKey } from 'stateManagement/helpers';
 import { layerController } from 'stateManagement/layerStateController';
@@ -926,14 +931,18 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	return props;
 }
 
-export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true, radius }) => {
+export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true, radius, getMultiLandGrid }) => {
 	let features = pickDeckObjects({ x, y, depth, radius });
 
-	if (!getLandGrid) {
+	if (!getLandGrid && !getMultiLandGrid) {
 		features = features.filter(f => !deckGlLandGridIdentifiers.some(prefix => f.layer.id.startsWith(prefix)));
 	} else {
-		features = features.filter(f => deckGlLandGridIdentifiers.some(prefix => f.layer.id.startsWith(prefix)));
-		return { clickedFeature: features[0], layer: { identifier: 'Land Grid' }, features };
+		if (getLandGrid) {
+			features = features.filter(f => ifDeckGlLandGridIdentifiers(f.layer.id));
+			return { clickedFeature: features[0], layer: { identifier: 'Land Grid' }, features };
+		}
+
+		features = features.filter(f => ifPlatformLandGridIdentifiers(f.layer.id));
 	}
 
 	let clickedFeature = null;

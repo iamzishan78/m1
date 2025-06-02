@@ -13,7 +13,7 @@ import parse from 'autosuggest-highlight/parse';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
-const useStyles = makeStyles(theme => ({}));
+const useStyles = makeStyles(() => ({}));
 
 function WellSearchApiField(props) {
 	const classes = useStyles();
@@ -63,7 +63,6 @@ function WellSearchApiField(props) {
 			lastTwelveMonthBOE: lastTwelveMonthBOE, // Last twelve months (BOE) for the selected well
 		});
 		props.setTenantWell(dataTenantWell?.tenantWell);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataTenantWell]);
 
 	return (
@@ -86,7 +85,7 @@ function WellSearchApiField(props) {
 						});
 				}}
 				value={selectedWell}
-				getOptionLabel={(option, value) => option.WellName}
+				getOptionLabel={option => option.WellName}
 				filterOptions={x => x}
 				renderOption={option => {
 					const parts = parse(option.WellName, []);
@@ -142,7 +141,7 @@ function WellSearchApiField(props) {
 						onChange={event => {
 							getDbData({
 								variables: {
-									index: 'platformData:wells',
+									index: 'platform_wells',
 									pagination: {
 										first: 50,
 										after: null,

@@ -1,11 +1,13 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { useApolloClient } from '@apollo/client';
+import { useApolloClient, useMutation } from '@apollo/client';
 import { debounce } from 'lodash';
 
 import { deepEqual } from 'components/Shared/functions';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
+
+import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 
 import { drawController } from 'stateManagement/drawStateController';
 import { layerFiltersController } from 'stateManagement/layerFiltersController';
@@ -40,6 +42,8 @@ function LayerManager() {
 	const moveRef = useRef({});
 	const [isReady, setIsReady] = useState(false);
 
+	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
+
 	const { bbox, recalculate } = layerController.useState(['bbox', 'recalculate']);
 	const { polygonFilter, polygonsFilter } = layerFiltersController.useState(['polygonFilter', 'polygonsFilter']);
 	const { layers, deckLayer, layerStateValues } = layerController.useState(['layers', 'deckLayer'], 'layerStateValues');
@@ -50,7 +54,7 @@ function LayerManager() {
 
 	useEffect(() => {
 		if (!window.mapRef) {
-			return;
+			return null;
 		}
 		move(moveRef);
 		window.mapRef?.on?.('move', () => move(moveRef));
@@ -61,8 +65,8 @@ function LayerManager() {
 	}, [window.mapRef]);
 
 	useEffect(() => {
-		layerController.init(client, history);
-	}, [client, history]);
+		layerController.init(client, history, updateLayerSettings);
+	}, [client, history, updateLayerSettings]);
 
 	useEffect(() => {
 		if (layerStateValues?.layers?.length > 0 && !isReady) {

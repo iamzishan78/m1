@@ -28,7 +28,7 @@ const PermitClick = () => {
 		const { data: well } = await client.query({
 			query: GET_DB_DATA,
 			variables: {
-				index: 'platformData:wells',
+				index: 'platform_wells',
 				pagination: {
 					first: 1,
 					keep_alive: '1micros',
@@ -85,7 +85,7 @@ const PermitClick = () => {
 	useEffect(() => {
 		const { selectedPermit } = popupStateValues;
 
-		if (selectedPermit && !selectedPermit.hasOwnProperty('Lease')) {
+		if (selectedPermit && !Object.prototype.hasOwnProperty.call(selectedPermit, 'Lease')) {
 			getRecentPermitDetail({
 				variables: { id: selectedPermit.PermitId },
 			});

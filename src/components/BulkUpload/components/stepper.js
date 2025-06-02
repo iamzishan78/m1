@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 
 import { getDateWithoutTime } from 'components/Shared/functions';
 
+import { CREATE_MAPPING } from 'graphQL/useMappingConfiguration';
 import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
 import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
 import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
@@ -188,6 +189,7 @@ export default function CustomizedSteppers(props) {
 	const client = useApolloClient();
 	const history = useHistory();
 	const previousRoute = matchRoutes(props.routes, history.pathHistory[1]);
+	const [createMapping] = useMutation(CREATE_MAPPING);
 
 	const { activeStepNumber, csvDataToSend, transferData, selectedShapeLayerOption, jobType, jobStateValues } =
 		jobController.useState(
@@ -201,6 +203,8 @@ export default function CustomizedSteppers(props) {
 				'selectedShapeLayerOption',
 				'jobType',
 				'job',
+				'saveMappingChecked',
+				'mappingName',
 			],
 			'jobStateValues'
 		);
@@ -210,7 +214,6 @@ export default function CustomizedSteppers(props) {
 	const [processing, setProcessing] = useState(false);
 
 	const [buttonTitle, setButtonTitle] = useState('false');
-
 	const steps = getSteps(jobStateValues.job);
 	const dispatch = useDispatch();
 	const [getJobUploadUri, { data: contactUploadUri }] = useLazyQuery(GET_JOB_UPLOAD_URI, {
@@ -287,11 +290,43 @@ export default function CustomizedSteppers(props) {
 		}
 		set(_obj, key, value);
 	};
+	const handleSaveMapping = async () => {
+		if (jobStateValues.saveMappingChecked) {
+			const mappingInput = {
+				name: jobStateValues.mappingName,
+				type: 'CSV_MAPPING',
+				mappings: jobStateValues.mappedHeadersFromCSV,
+			};
+
+			try {
+				await createMapping({
+					variables: {
+						input: mappingInput,
+					},
+				});
+			} catch (error) {
+				console.error('Error saving mapping:', error);
+			}
+			jobController.updateState({
+				mappingName: null,
+				saveMappingChecked: false,
+				selectedMapping: null,
+			});
+		}
+	};
 
 	const handleNext = async () => {
 		const activeStep = jobStateValues.activeStepNumber;
 		if (activeStep === steps.length - 2) {
 			if (jobStateValues.jobType === 'SHAPE_TO_M1_LAYER') {
+				if (
+					jobStateValues?.saveMappingChecked &&
+					(!jobStateValues.mappingName || !jobStateValues?.mappingName?.trim())
+				) {
+					return;
+				}
+
+				await handleSaveMapping();
 				const jobInitialization = await client.mutate({
 					mutation: INITIALIZE_EXPORT_JOB,
 					variables: {

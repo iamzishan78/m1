@@ -183,6 +183,10 @@ export const useLayerStyle = layer => {
 			: layerType === 'line'
 				? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps['line-color'])
 				: ifRgbaConvt(layer.layerPaintProps[0]?.paintProps['circle-color']);
+
+	if (layerType === 'fill' && layer.layerPaintProps?.[0]?.paintProps) {
+		layer.layerPaintProps[0].paintProps['fill-opacity'] = 1;
+	}
 	const initialStrokeColor =
 		layerType === 'fill'
 			? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps['fill-outline-color'])

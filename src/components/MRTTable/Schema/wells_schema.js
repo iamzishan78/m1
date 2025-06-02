@@ -8,7 +8,7 @@ import { tableController } from 'stateManagement/tableController';
 
 import FlyToMap from '../Common/TableCells/coordinates_fly_map';
 
-const esIndex = 'platformData:wells';
+const esIndex = 'platform_wells';
 
 const WellsMeta = {
 	esIndex,

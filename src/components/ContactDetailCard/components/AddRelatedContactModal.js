@@ -196,7 +196,9 @@ export default function AddRelatedContactModal(props) {
 								onChange: ({ value }) => {
 									const selectedContact = formattedContactOptions?.find(option => option?._id === value?._id);
 									console.log({ value, selectedContact });
-									if (!selectedContact) {return;}
+									if (!selectedContact) {
+										return;
+									}
 									const contact = {
 										value: selectedContact?._id,
 										name: selectedContact?.name,

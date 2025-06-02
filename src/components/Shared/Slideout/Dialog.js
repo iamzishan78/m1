@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => ({
 		overflowY: 'overlay',
 		overflowX: 'hidden',
 		marginRight: selectedActivity ? '60px' : '0px',
+		flexGrow: 1,
 	}),
 }));
 

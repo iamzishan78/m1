@@ -71,16 +71,18 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 			return;
 		}
 
-		if (!isMetaField)
-			{return callApi({ key: field.key, value: currValue, field, previousValue: fieldData, resetFn: setValue });}
+		if (!isMetaField) {
+			return callApi({ key: field.key, value: currValue, field, previousValue: fieldData, resetFn: setValue });
+		}
 
 		const oldCustomData = summaryData.custom_data || {};
 		const customData = {
 			...oldCustomData,
 			[field.key.replaceAll('custom_data.', '')]: value,
 		};
-		if (!isEqual(customData, oldCustomData))
-			{callApi({ key: 'custom_data', value: customData, originalKey: field.key, field, fieldData, resetFn: setValue });}
+		if (!isEqual(customData, oldCustomData)) {
+			callApi({ key: 'custom_data', value: customData, originalKey: field.key, field, fieldData, resetFn: setValue });
+		}
 	};
 
 	const handleBlur = currValue => {

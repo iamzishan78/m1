@@ -689,14 +689,30 @@ export const AdminManagementRoutes = {
 	},
 };
 
-export const dataManagementRoutes = Object.keys(SCHEMA).map(tableName => ({
-	featureFlag: 'DATA',
-	title: startCase(tableName.replace('Table', '')),
-	link: `/data/${camelCase(tableName)}`,
-	value: tableName,
-	isDefault: true,
-	hideSearch: true,
-}));
+export const dataManagementRoutes = Object.keys(SCHEMA)
+	.filter(
+		tableName =>
+			![
+				'GenericTable',
+				'RelatedBillingPartiesTable',
+				'PotentialShapeOwnersTable',
+				'TaxRollInterestsTable',
+				'RelatedPayeesTable',
+				'PotentialWellOwnersTable',
+				'PotentialWellsTable',
+				'FailedBulkDataEditingTable',
+				'WellOwnersTable',
+				'PropertiesRevenueTable',
+			].includes(tableName)
+	)
+	.map(tableName => ({
+		featureFlag: 'DATA',
+		title: startCase(tableName.replace('Table', '')),
+		link: `/data/${camelCase(tableName)}`,
+		value: tableName,
+		isDefault: true,
+		hideSearch: true,
+	}));
 
 export const paymentGridsInitialData = [
 	{ index: 0, value: 'payees', label: 'Payees', showCounts: true },

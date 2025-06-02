@@ -46,7 +46,6 @@ import { layerController } from 'stateManagement/layerStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
 
 import { showInfoMessage } from 'actions';
-import { AppContext } from 'AppContext';
 
 import CategorySection from './CategorySection';
 import DeleteSourceAndCategoryConfirmationDialog from './DeleteSourceAndCategoryConfirmationDialog';

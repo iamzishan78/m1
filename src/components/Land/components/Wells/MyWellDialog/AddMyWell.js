@@ -7,7 +7,6 @@ import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 
-
 import { useLazyQuery, useMutation } from '@apollo/client';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -170,7 +169,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 								onTextFieldChange: value => {
 									getDbData({
 										variables: {
-											index: 'platformData:wells',
+											index: 'platform_wells',
 											pagination: {
 												first: 50,
 												after: null,

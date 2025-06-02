@@ -134,6 +134,7 @@ export const deckGlDataLayerIdentifiers = [
 	'My Wells',
 ];
 export const deckGlLandGridIdentifiers = ['AbstractGeo', 'Pls', 'Land Grid'];
+export const platformLandGridIdentifiers = ['PlatformParcels'];
 export const deckGlLayerIdentifiers = [...deckGlDataLayerIdentifiers, 'Wells'];
 export const isCustomLayerCopy = identifier =>
 	deckGlLayerIdentifiers.some(layer => identifier.toLowerCase().includes(layer.toLowerCase()));
@@ -146,6 +147,10 @@ export const ifDeckGlLayerIdentifiers = id => deckGlLayerIdentifiers.some(identi
 export const ifMapBoxGlLayerIdentifiers = id => mapBoxLayerIdentifiers.some(identifier => id.startsWith(identifier));
 export const ifStaticMapBoxGlLayerIdentifiers = id =>
 	staticMapBoxLayerIdentifiers.some(identifier => id.startsWith(identifier));
+export const ifDeckGlLandGridIdentifiers = id =>
+	deckGlLandGridIdentifiers.some(identifier => id.startsWith(identifier));
+export const ifPlatformLandGridIdentifiers = id =>
+	platformLandGridIdentifiers.some(identifier => id.startsWith(identifier));
 
 export const modifyExandableCardStyle = selectedShape => {
 	let backgroundColor = '#112040';

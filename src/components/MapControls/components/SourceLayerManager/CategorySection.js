@@ -102,10 +102,10 @@ export default function CategorySection({ title, search, layerCategory }) {
 		if (layers) {
 			for (let index = 0; index < layers.length; index++) {
 				if (layers[index].type === 'group') {
-					if (layers[index].layers.find(layer => layer.layerSettings.showable === false)) {
+					if (layers[index].layers.find(layer => layer.layerSettings?.showable === false)) {
 						check = false;
 					}
-				} else if (layers[index].layerSettings.showable === false) {
+				} else if (layers[index].layerSettings?.showable === false) {
 					check = false;
 				}
 			}

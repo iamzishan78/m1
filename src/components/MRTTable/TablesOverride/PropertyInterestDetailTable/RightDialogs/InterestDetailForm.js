@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 
-
 import { Typography, Grid, TextField, MenuItem, Select, Button, IconButton } from '@material-ui/core';
 import { Clear } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
@@ -10,7 +9,6 @@ import { makeStyles } from '@material-ui/styles';
 import { useMutation } from '@apollo/client';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-
 
 import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';
 import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';

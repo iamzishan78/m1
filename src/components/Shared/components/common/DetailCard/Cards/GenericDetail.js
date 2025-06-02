@@ -16,7 +16,6 @@ import { GET_RECORD_FROM_RUN_TIME_MODEL } from 'graphQL/useQueryRunTimeModel';
 import { detailCardController } from 'stateManagement/detailCardController';
 import { globalStateController } from 'stateManagement/globalStateController';
 
-
 import { AppContext } from 'AppContext';
 
 function GenericDetailCard() {

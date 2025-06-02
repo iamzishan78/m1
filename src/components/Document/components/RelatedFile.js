@@ -21,7 +21,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 
-
 import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 import { grey600, grey400 } from 'material-ui/styles/colors';
@@ -1038,7 +1037,9 @@ const DocumentType = ({ documentTypes, setDocumentType, value, disabled, classNa
 				allowNewOptions: true,
 				inputClassName: className,
 				getCustomOptionLabel: option => {
-					if (typeof option === 'string') {return option;}
+					if (typeof option === 'string') {
+						return option;
+					}
 					return option.name;
 				},
 				renderOptionComp: ({ option }) => {

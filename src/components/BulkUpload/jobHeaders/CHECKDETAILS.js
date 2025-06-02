@@ -320,12 +320,6 @@ const checkDetailsKeys = [
 		actual_key: 'grossPropertyValue',
 	},
 	{
-		label: 'Owner Volume',
-		mapped_key: '',
-		required: false,
-		actual_key: 'grossOwnerVolume',
-	},
-	{
 		label: 'Owner Value',
 		mapped_key: '',
 		required: false,

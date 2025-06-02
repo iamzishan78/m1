@@ -331,8 +331,8 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 				<Dialog
 					open={openCommentsDialog.state ? true : false}
 					onClose={() => setCommentsDialog(null)}
-					fullWidth={false}
-					maxWidth
+					fullWidth={true}
+					maxWidth="sm"
 				>
 					{openCommentsDialog && (
 						<Comments

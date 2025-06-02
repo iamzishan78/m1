@@ -1,0 +1,339 @@
+import React, { useState } from 'react';
+
+import {
+	Grid,
+	ListItemText,
+	makeStyles,
+	Divider,
+	List,
+	ListItem,
+	Typography,
+	Tooltip,
+	InputBase,
+} from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+import SearchIcon from '@material-ui/icons/Search';
+
+import PropTypes from 'prop-types';
+
+import DBSearchField from 'components/Shared/Forms/Fields/DBSearchField';
+
+import { UserSession } from 'utils/user';
+
+import GlobalStyles from 'GlobalStyles';
+
+const useStyles = makeStyles(theme => ({
+	rootPadding: {
+		padding: '6px 15px',
+	},
+	list: {
+		overflowY: 'auto',
+		maxHeight: '79vh',
+		'& .MuiList-padding': {
+			padding: '23px 0px !important',
+		},
+	},
+	button: {
+		width: '100%',
+	},
+	actionGrid: {
+		margin: '0px 0px 10px 0px',
+	},
+	search: {
+		position: 'relative',
+		borderRadius: theme.shape.borderRadius,
+		marginLeft: 0,
+		marginTop: 5,
+		width: '100%',
+		[theme.breakpoints.up('sm')]: {
+			width: 'auto',
+		},
+	},
+	iconSearch: {
+		height: '100%',
+		display: 'flex',
+		position: 'absolute',
+		alignItems: 'center',
+		justifyContent: 'center',
+		color: 'rgba(121, 121, 121, 0.85)',
+		zIndex: 1,
+		'&:hover': {
+			color: '#fff',
+			cursor: 'pointer',
+		},
+	},
+	inputRoot: {
+		color: 'inherit',
+	},
+	inputInput: {
+		paddingLeft: `calc(1em + ${theme.spacing(2)}px)`,
+		transition: theme.transitions.create('width'),
+		width: '100%',
+
+		[theme.breakpoints.up('sm')]: {
+			width: '0ch',
+			'&:focus': {
+				width: '30ch',
+				height: '2ch',
+			},
+		},
+	},
+	deleteIcon: {
+		'& svg': {
+			fill: '#c1c5ca',
+		},
+		'&:hover': {
+			'& svg': {
+				fill: '#929aa3',
+			},
+		},
+	},
+	Link: {
+		color: `${GlobalStyles.colors.lightBlue}`,
+		textDecoration: 'none',
+		cursor: 'pointer',
+		fontSize: '16px',
+		margin: 0,
+		variant: 'subtitle1',
+		'&:hover': {
+			fontWeight: '700',
+		},
+	},
+	secondaryText: {
+		color: 'grey',
+		fontSize: '14px',
+		margin: 0,
+		paddingLeft: 16,
+		paddingBottom: 4,
+		marginTop: -8,
+	},
+}));
+
+export default function DocumentAssociation({
+	title,
+	items,
+	navigateTo,
+	esFilter,
+	esIndex,
+	esFields,
+	searchExistingItems,
+	onSearchBlur,
+	setSearchState,
+	isSearchActive,
+	search,
+	setSearch,
+	relatedObjectType,
+	deleteDescriptorFile,
+	getSelectedItem,
+	addFileLoading,
+	deleteFileLoading,
+	updateDocumentLoading,
+	sort = {},
+	href = '',
+}) {
+	// Initials
+	const classes = useStyles();
+	const tenantName = UserSession.getStorageItem('tenantName');
+
+	// States
+	const [addSelection, setAddSelection] = useState(false);
+	const [deletedRow, setDeletedRow] = useState('');
+
+	const getName = shape => {
+		if (Object.prototype.hasOwnProperty.call(shape, 'checkNumber')) {
+			return [shape?.checkNumber, shape?.payor?.name].filter(Boolean).join(' - ');
+		}
+		return shape?.shapeJson?.name || shape?.entityDetail?.name || shape?.name || '';
+	};
+
+	return (
+		<div style={{ marginRight: '14px' }}>
+			<Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
+				{!addSelection && (
+					<React.Fragment>
+						{!isSearchActive && (
+							<Grid item xs={10}>
+								<Typography variant="h6" style={{ fontWeight: 'bold' }}>
+									{title}
+								</Typography>
+							</Grid>
+						)}
+						<Grid item xs={1}>
+							<div className={classes.search}>
+								<Tooltip
+									title="Search"
+									className={classes.iconSearch}
+									onClick={() => {
+										if (!isSearchActive) {
+											document.getElementById('searchInputDocuments').focus();
+										}
+									}}
+								>
+									<SearchIcon />
+								</Tooltip>
+								<InputBase
+									id="searchInputDocuments"
+									autoComplete="off"
+									placeholder={`Search ${title}`}
+									classes={{
+										root: classes.inputRoot,
+										input: classes.inputInput,
+									}}
+									inputProps={{ 'aria-label': 'search' }}
+									onFocus={() => setSearchState(true)}
+									value={search}
+									onBlur={onSearchBlur}
+									onChange={evt => searchExistingItems(evt.target.value)}
+								/>
+							</div>
+						</Grid>
+					</React.Fragment>
+				)}
+				{addSelection && (
+					<Grid item xs={11}>
+						<DBSearchField
+							filters={esFilter}
+							index={esIndex}
+							pagination={{
+								first: 50,
+								after: null,
+							}}
+							fields={esFields}
+							onSelect={selection => {
+								setAddSelection(false);
+								getSelectedItem(selection, relatedObjectType);
+							}}
+							fieldName={title}
+							sort={sort}
+						/>
+					</Grid>
+				)}
+				<Grid item xs={1}>
+					<IconButton
+						onClick={() => {
+							setAddSelection(addSelection => !addSelection);
+							setSearch('');
+						}}
+					>
+						<AddIcon id="addIcon" size="large" />
+					</IconButton>
+				</Grid>
+			</Grid>
+			<Divider />
+			<div className={classes.list}>
+				{(updateDocumentLoading === true || addFileLoading === true) && (
+					<Grid container className={classes.actionGrid}>
+						<Grid item xs={12}>
+							<div style={{ display: 'flex', justifyContent: 'center' }}>
+								<CircularProgress size="20px" />
+							</div>
+						</Grid>
+					</Grid>
+				)}
+
+				<List id={`${title}List`} aria-label={`${title} list`}>
+					{items && items.length ? (
+						items.map((shape, index) => (
+							// eslint-disable-next-line react/no-array-index-key
+							<div style={{ padding: '0px 0px 0px', overflow: 'hidden' }} key={index}>
+								<ListItem>
+									<a
+										className={classes.Link}
+										href={`${href ? href.replace('{ID}', shape._id.toLowerCase()).replace('{TENANT}', tenantName) : '_blank'}`}
+										onClick={e => {
+											e.preventDefault();
+											navigateTo(shape);
+										}}
+										target="_blank"
+										rel="noreferrer"
+									>
+										{getName(shape)}
+									</a>
+
+									{deleteFileLoading && deletedRow === shape._id ? (
+										<ListItemSecondaryAction>
+											<IconButton edge="end" aria-label="delete">
+												<CircularProgress size="20px" />
+											</IconButton>
+										</ListItemSecondaryAction>
+									) : (
+										<ListItemSecondaryAction
+											onClick={() => {
+												setDeletedRow(shape._id);
+												deleteDescriptorFile(shape._id);
+											}}
+										>
+											<IconButton edge="end" aria-label="delete" className={classes.deleteIcon}>
+												<DeleteIcon />
+											</IconButton>
+										</ListItemSecondaryAction>
+									)}
+								</ListItem>
+								<Divider />
+							</div>
+						))
+					) : (
+						<ListItem>
+							<ListItemText
+								primary={`No ${title} found.`}
+								primaryTypographyProps={{
+									color: 'primary',
+								}}
+							/>
+						</ListItem>
+					)}
+				</List>
+			</div>
+		</div>
+	);
+}
+
+DocumentAssociation.propTypes = {
+	title: PropTypes.string.isRequired,
+	items: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string.isRequired,
+			name: PropTypes.string,
+			entityDetail: PropTypes.shape({
+				name: PropTypes.string,
+			}),
+			checkNumber: PropTypes.string,
+		})
+	),
+	navigateTo: PropTypes.func.isRequired,
+	esFilter: PropTypes.array,
+	esIndex: PropTypes.string,
+	esFields: PropTypes.array,
+	searchExistingItems: PropTypes.func.isRequired,
+	onSearchBlur: PropTypes.func.isRequired,
+	setSearchState: PropTypes.func.isRequired,
+	isSearchActive: PropTypes.bool,
+	search: PropTypes.string,
+	setSearch: PropTypes.func.isRequired,
+	relatedObjectType: PropTypes.string,
+	deleteDescriptorFile: PropTypes.func.isRequired,
+	getSelectedItem: PropTypes.func.isRequired,
+	addFileLoading: PropTypes.bool,
+	deleteFileLoading: PropTypes.bool,
+	updateDocumentLoading: PropTypes.bool,
+	sort: PropTypes.object,
+	href: PropTypes.string,
+};
+
+DocumentAssociation.defaultProps = {
+	items: [],
+	esFilter: [],
+	esFields: [],
+	isSearchActive: false,
+	search: '',
+	relatedObjectType: '',
+	addFileLoading: false,
+	deleteFileLoading: false,
+	updateDocumentLoading: false,
+	sort: {},
+	href: '',
+};

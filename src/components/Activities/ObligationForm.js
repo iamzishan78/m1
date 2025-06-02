@@ -406,7 +406,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 						{...commonTextFieldProps}
 						fieldAttributes={{
 							...commonTextFieldProps.fieldAttributes,
-							value: applicable,
+							value: applicable === true ? 'Yes' : 'No',
 							title: 'Applicable',
 						}}
 					/>

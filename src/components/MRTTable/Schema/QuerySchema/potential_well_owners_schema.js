@@ -44,9 +44,7 @@ const PotentialWellOwnersMeta = {
 	getIdsFromRows: rows => rows?.map(row => row?.id) || [],
 	CustomToolBar: PotentialWellOwnersToolbar,
 	isClientSide: true,
-	isSelectAllAllowed: true,
 	isDeleteDisabled: true,
-	isExportDisabled: true,
 	enableFacetedValues: true,
 	TableSchema: [
 		{

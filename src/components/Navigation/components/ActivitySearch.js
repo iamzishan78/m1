@@ -10,7 +10,6 @@ import EventIcon from '@material-ui/icons/Event';
 import List from '@material-ui/icons/List';
 import SearchIcon from '@material-ui/icons/Search';
 
-
 import { useLazyQuery } from '@apollo/client';
 import PropTypes from 'prop-types';
 

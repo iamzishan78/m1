@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	dockMenu: {
 		width: '100%',
-		height: '50vh',
+		height: '40vh',
 	},
 	tapsRoot: {
 		// flexGrow: 1,

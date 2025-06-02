@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState, Fragment, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { IconButton, TextField, withStyles, Typography, Grid } from '@material-ui/core';
@@ -28,7 +28,7 @@ import { UPDATE_DOCUMENT, UPDATE_PDF_TEXTS } from 'graphQL/useMutationUpdateDocu
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
-import { createViewStateController, viewFormInitialState } from 'stateManagement/addAndEditController';
+import { formStateController } from 'stateManagement/formStateController';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
@@ -216,8 +216,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 
 	const [updateDocument] = useMutation(UPDATE_DOCUMENT);
 
-	const formController = createViewStateController(tableKey);
-	const formState = formController.useCompleteState();
+	const formState = formStateController.useCompleteState();
 	const formStateValues = formState;
 
 	const tableState = tableController(tableKey).useState(['TableSchema', 'columnVisibility']);
@@ -228,37 +227,12 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		return filteredColumns[accessorKey] === true && obj?.isCustom;
 	});
 
-	const [fileUpload, setFileUpload] = useState({ upload: false, fileExtension: null, fileInformation: '' });
-	const [url, setUrl] = useState({
-		isValid: selectedDocument?.url ? true : false,
-		value: selectedDocument?.url,
-		error: false,
-	});
 	const [inputFile, setInputFile] = useState(null);
 	const [fileDownload, setFileDownload] = useState(false);
 
-	const saveDocument = document => {
-		updateDocument({
-			variables: {
-				document,
-			},
-			refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
-			awaitRefetchQueries: true,
-		}).then(res => {
-			if (res?.data?.updateDocumentFile) {
-				const { success, message } = res.data.updateDocumentFile;
-				if (success) {
-					Loader.successToast('DocumentUpdating', message);
-				} else {
-					Loader.errorToast('DocumentUpdating', message);
-				}
-			} else {
-				Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
-			}
-
-			tableGlobalController.refetch();
-		});
-	};
+	const setFileUpload = useCallback(fileUpload => {
+		formStateController.updateState({ fileUpload });
+	}, []);
 
 	useEffect(() => {
 		if (selectedDocument?._id || fileDownload) {
@@ -299,6 +273,20 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 			const MBS = 4;
 
 			if (file_id) {
+				const documentDialog = tableGlobalController.getValue('documentDialog');
+
+				if (!documentDialog.selectedRow?._id) {
+					tableGlobalController.updateState({
+						documentDialog: {
+							...documentDialog,
+							selectedRow: {
+								...documentDialog.selectedRow,
+								_id: file_id,
+							},
+						},
+					});
+				}
+
 				const blockBlobClient = new BlockBlobClient(uri);
 				blockBlobClient
 					.uploadBrowserData(inputFile, {
@@ -316,11 +304,11 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							return;
 						}
 
-						if (fileUpload.fileExtension !== 'pdf') {
+						if (formStateValues.fileUpload.fileExtension !== 'pdf') {
 							return;
 						}
 
-						convertFile(fileUpload.fileInformation, (texts, error) => {
+						convertFile(formStateValues.fileUpload.fileInformation, (texts, error) => {
 							if (error) {
 								return;
 							}
@@ -339,45 +327,15 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						});
 					})
 					.catch(err => console.log(err));
-
-				delete formStateValues.tableKey;
-				const document = {
-					...formStateValues,
-					fileId: file_id,
-				};
-
-				Loader.createToast('DocumentUpdating', 'Document Updating in Progress');
-
-				saveDocument(document);
-				handleClose();
 			}
 		}
 	}, [addFileData]);
 
-	useEffect(() => {
-		let fieldsValue = {};
-		if (selectedDocument) {
-			fieldsValue = _.pick(selectedDocument, Object.keys(viewFormInitialState));
-		}
-		formController?.initialize(tableKey, fieldsValue);
-
-		return () => {
-			formController?.reset();
-		};
-	}, [selectedDocument]);
-
-	useEffect(() => {
-		const value = url?.isValid ? url?.value : null;
-		formController.updateState({ url: value });
-	}, [url]);
-
 	const uploadFile = () => {
-		Loader.createToast('FileUploading', 'File Uploading in Progress');
-
-		setInputFile(fileUpload?.fileInformation);
+		setInputFile(formStateValues.fileUpload?.fileInformation);
 		addFile({
 			variables: {
-				fileName: fileUpload?.fileInformation?.name,
+				fileName: formStateValues.fileUpload?.fileInformation?.name,
 				userId: getUser?._id,
 				// relatedObjectId: null,
 				// relatedObjectType: null,
@@ -398,6 +356,12 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 			}
 		});
 	};
+
+	useEffect(() => {
+		if (formStateValues.fileUpload && formStateValues.fileUpload.upload) {
+			uploadFile();
+		}
+	}, [formStateValues.fileUpload]);
 
 	const replaceFile = fileIdToDelete => {
 		Loader.createToast('ReplaceFile', 'File Deletion in Progress');
@@ -443,7 +407,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							multiline
 							value={formStateValues?.documentNumber}
 							onChange={e => {
-								formController.updateState({ documentNumber: e.target.value });
+								formStateController.updateState({ documentNumber: e.target.value });
 							}}
 						/>
 					</ListItem>
@@ -455,7 +419,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							multiline
 							value={formStateValues?.documentName}
 							onChange={e => {
-								formController.updateState({ documentName: e.target.value });
+								formStateController.updateState({ documentName: e.target.value });
 							}}
 						/>
 					</ListItem>
@@ -471,7 +435,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								} else if (value?.name) {
 									documentType = value.name;
 								}
-								formController.updateState({ documentType });
+								formStateController.updateState({ documentType });
 							}}
 							value={formStateValues?.documentType}
 						/>
@@ -482,7 +446,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							fieldAttributes={{ value: formStateValues?.dateTime }}
 							fieldEvents={{
 								onChange: value => {
-									formController.updateState({ dateTime: value });
+									formStateController.updateState({ dateTime: value });
 								},
 							}}
 							fieldConfig={{
@@ -504,7 +468,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								multiline
 								value={formStateValues?.book}
 								onChange={e => {
-									formController.updateState({ book: e.target.value });
+									formStateController.updateState({ book: e.target.value });
 								}}
 							/>
 						</div>
@@ -521,7 +485,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								multiline
 								value={formStateValues?.page}
 								onChange={e => {
-									formController.updateState({ page: e.target.value });
+									formStateController.updateState({ page: e.target.value });
 								}}
 							/>
 						</div>
@@ -533,7 +497,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								multiline
 								value={formStateValues?.instrument}
 								onChange={e => {
-									formController.updateState({ instrument: e.target.value });
+									formStateController.updateState({ instrument: e.target.value });
 								}}
 							/>
 						</div>
@@ -549,7 +513,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 											className={classes.maxWidth}
 											value={formStateValues?.custom_data?.[meta?.dbKey]}
 											onChange={e => {
-												formController.updateState({
+												formStateController.updateState({
 													custom_data: {
 														...(formStateValues.custom_data || {}),
 														[meta?.dbKey]: e.target.value,
@@ -573,7 +537,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 											value={formStateValues?.custom_data?.[meta?.dbKey]}
 											onCustomKeyChange={value => {
 												let dropdownValue = value ? value : null;
-												formController.updateState({
+												formStateController.updateState({
 													custom_data: {
 														...(formStateValues.custom_data || {}),
 														[meta?.dbKey]: dropdownValue,
@@ -620,28 +584,29 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 					}
 					interactive
 				>
-					{new RegExp(['jpg', 'jpeg', 'png', 'bmp'].join('|')).test(fileUpload?.fileExtension) ? (
+					{new RegExp(['jpg', 'jpeg', 'png', 'bmp'].join('|')).test(formStateValues.fileUpload?.fileExtension) ? (
 						<img
-							src={fileUpload?.fileInformation?.uri}
-							alt={fileUpload?.fileInformation?.name}
+							src={formStateValues.fileUpload?.fileInformation?.uri}
+							alt={formStateValues.fileUpload?.fileInformation?.name}
 							className={classes.forImage}
 						></img>
 					) : (
-						<div className={fileUpload?.fileExtension ? classes.forImageContainer : ''} onClick={() => {}}>
-							{get_file_icon(fileUpload?.fileExtension)}
+						<div
+							className={formStateValues.fileUpload?.fileExtension ? classes.forImageContainer : ''}
+							onClick={() => {}}
+						>
+							{get_file_icon(formStateValues.fileUpload?.fileExtension)}
 						</div>
 					)}
 				</LightTooltip>
 
-				{!fileUpload?.fileExtension ? (
+				{!formStateValues.fileUpload?.fileExtension ? (
 					<div className={classes.Uploadcomp}>
 						<UploadZone
 							userId={getUser?._id}
 							fileId={selectedDocument?._id}
 							setFileUpload={setFileUpload}
 							title={'Upload Document'}
-							setUrl={setUrl}
-							url={url}
 						/>
 					</div>
 				) : null}
@@ -668,13 +633,40 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						color="secondary"
 						size="medium"
 						disableElevation
-						disabled={!fileUpload?.upload && !url?.isValid}
+						disabled={!formStateValues.fileUpload?.upload}
 						onClick={() => {
-							if (fileUpload?.upload) {
-								uploadFile();
-							} else {
-								delete formStateValues.tableKey;
-								saveDocument({ ...formStateValues, fileId: null });
+							if (formStateValues.fileUpload?.upload) {
+								Loader.createToast('FileUploading', 'File Uploading in Progress');
+
+								const document = {
+									...formStateValues,
+									fileId: addFileData?.addFileDescriptor?.file?.id || selectedDocument?._id,
+								};
+								delete document.tableKey;
+								delete document.fileUpload;
+
+								Loader.createToast('DocumentUpdating', 'Document Updating in Progress');
+								updateDocument({
+									variables: {
+										document,
+									},
+									refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
+									awaitRefetchQueries: true,
+								}).then(res => {
+									if (res?.data?.updateDocumentFile) {
+										const { success, message } = res.data.updateDocumentFile;
+										if (success) {
+											Loader.successToast('DocumentUpdating', message);
+										} else {
+											Loader.errorToast('DocumentUpdating', message);
+										}
+									} else {
+										Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
+									}
+
+									tableGlobalController.refetch();
+								});
+
 								handleClose();
 							}
 						}}

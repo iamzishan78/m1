@@ -96,7 +96,7 @@ function AllDialogs(props) {
 			}
 		);
 
-		if ((hasMultiGrids && dataToDelete?.mainRecord?.includes(paymentMultiGrid?.paymentId)) || rest?.isSelectAll) {
+		if (hasMultiGrids && dataToDelete?.mainRecord?.includes(paymentMultiGrid?.paymentId)) {
 			tableGlobalController.updateState({
 				paymentMultiGrid: { showMultiGrid: false },
 			});

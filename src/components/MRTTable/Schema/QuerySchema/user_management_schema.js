@@ -39,9 +39,7 @@ const UserManagementMeta = {
 	CustomToolBar: UserManagementToolbar,
 	onClickedRow,
 	isClientSide: true,
-	isSelectAllAllowed: true,
 	isDeleteAllowed: true,
-	isExportDisabled: true,
 	enableFacetedValues: true,
 	TableSchema: [
 		{

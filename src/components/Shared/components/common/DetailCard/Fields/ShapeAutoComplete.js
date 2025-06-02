@@ -14,7 +14,6 @@ import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
 
 import { detailCardController } from 'stateManagement/detailCardController';
 
-
 const useStyles = makeStyles({
 	inputRoot: {
 		backgroundColor: '#ffffff',

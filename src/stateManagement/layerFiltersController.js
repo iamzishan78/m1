@@ -55,7 +55,7 @@ const layerFilterInitialState = {
 	Wells: {
 		layerName: 'Wells',
 		variables: {
-			index: 'platformData:wells',
+			index: 'platform_wells',
 			pagination: {
 				first: 10000,
 				after: null,
@@ -186,6 +186,25 @@ const layerFilterInitialState = {
 		variables: {
 			isDynamicAsset: true,
 			filters: [],
+		},
+	},
+	PlatformParcels: {
+		layerName: 'PlatformParcels',
+		allowedTypes: ['Polygon', 'MultiPolygon'],
+		variables: {
+			index: 'platform_parcels',
+			sort: {
+				field: '_ts',
+				order: 'desc',
+			},
+			pagination: {
+				getAllData: true,
+			},
+			filters: [],
+			search: {
+				query: null,
+				fields: [],
+			},
 		},
 	},
 };

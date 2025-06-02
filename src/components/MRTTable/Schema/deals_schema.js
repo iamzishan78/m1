@@ -1,4 +1,3 @@
- 
 import React from 'react';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
