@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useLazyQuery } from '@apollo/client';
+
 import { DialogContent, DialogActions, Button, Grid, FormControl } from '@material-ui/core';
 
+import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
+
 import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
-import { GET_METADATA_MODULES } from 'graphQL/useQueryGetMetadataModules';
+
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { GET_METADATA_MODULES } from 'graphQL/useQueryGetMetadataModules';
+
+import DynamicMetadataField from './DynamicMetadataField';
 
 const CreateMetaDataAutomationDialog = ({ onClose, setFormLoading, handleCreateAutomation, automation }) => {
 	const [moduleOptions, setModuleOptions] = useState([]);
@@ -13,6 +18,8 @@ const CreateMetaDataAutomationDialog = ({ onClose, setFormLoading, handleCreateA
 	const [selectedTriggerField, setSelectedTriggerField] = useState(automation?.triggerField || '');
 	const [selectedTargetField, setSelectedTargetField] = useState(automation?.targetKey || '');
 	const [metadataOptions, setMetadataOptions] = useState([]);
+	const [triggerValue, setTriggerValue] = useState(automation?.triggerValue || '');
+	const [targetValue, setTargetValue] = useState('');
 
 	const [getMetadataModules, { data: metadataModules, loading: fetchingModules }] = useLazyQuery(GET_METADATA_MODULES);
 	const [getMetaData, { data: moduleMetadata, loading: fetchingMetadata }] = useLazyQuery(GET_META_DATA);
@@ -48,7 +55,7 @@ const CreateMetaDataAutomationDialog = ({ onClose, setFormLoading, handleCreateA
 
 	return (
 		<>
-			<DialogContent>
+			<DialogContent style={{ overflow: 'visible' }}>
 				<Grid container spacing={3}>
 					<Grid item xs={12}>
 						<FormControl fullWidth>
@@ -84,6 +91,7 @@ const CreateMetaDataAutomationDialog = ({ onClose, setFormLoading, handleCreateA
 									fieldEvents={{
 										onChange: ({ valueObj }) => {
 											setSelectedTriggerField(valueObj);
+											setTriggerValue('');
 										},
 									}}
 									fieldConfig={{
@@ -98,8 +106,19 @@ const CreateMetaDataAutomationDialog = ({ onClose, setFormLoading, handleCreateA
 
 					{selectedTriggerField && (
 						<Grid item xs={12}>
+							<DynamicMetadataField
+								selectedField={selectedTriggerField}
+								value={triggerValue}
+								onChange={value => setTriggerValue(value)}
+							/>
+						</Grid>
+					)}
+
+					{selectedTriggerField && (
+						<Grid item xs={12}>
 							<FormControl fullWidth>
 								<CustomAutoComplete
+									style={{ borderRadius: '4px' }}
 									fieldAttributes={{
 										label: 'Target Field',
 										optionArray: metadataOptions.filter(({ _id }) => _id !== selectedTriggerField?._id),
@@ -108,6 +127,7 @@ const CreateMetaDataAutomationDialog = ({ onClose, setFormLoading, handleCreateA
 									fieldEvents={{
 										onChange: ({ valueObj }) => {
 											setSelectedTargetField(valueObj);
+											setTargetValue('');
 										},
 									}}
 									fieldConfig={{
@@ -119,6 +139,16 @@ const CreateMetaDataAutomationDialog = ({ onClose, setFormLoading, handleCreateA
 							</FormControl>
 						</Grid>
 					)}
+
+					{selectedTargetField && (
+						<Grid item xs={12}>
+							<DynamicMetadataField
+								selectedField={selectedTargetField}
+								value={targetValue}
+								onChange={value => setTargetValue(value)}
+							/>
+						</Grid>
+					)}
 				</Grid>
 			</DialogContent>
 			<DialogActions>
@@ -128,9 +158,19 @@ const CreateMetaDataAutomationDialog = ({ onClose, setFormLoading, handleCreateA
 				<Button
 					color="primary"
 					variant="contained"
-					disabled={false}
+					disabled={!selectedModule || !selectedTriggerField || !triggerValue || !selectedTargetField || !targetValue}
 					onClick={() => {
-						handleCreateAutomation();
+						handleCreateAutomation({
+							config: {
+								module: selectedModule,
+								triggerField: selectedTriggerField.esKey,
+								triggerValue: triggerValue,
+								triggerLabel: selectedTriggerField.label,
+								targetField: selectedTargetField.esKey,
+								targetValue: targetValue,
+								targetLabel: selectedTargetField.label,
+							},
+						});
 						onClose();
 					}}
 				>

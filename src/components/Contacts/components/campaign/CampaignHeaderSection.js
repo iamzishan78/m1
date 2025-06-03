@@ -189,7 +189,7 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
 				</Grid>
 			</Grid>
 
-			<Grid container style={{ paddingTop: '1rem', paddingBottom: '1.5rem' }}>
+			<Grid container style={{ paddingTop: '1rem', paddingBottom: '1.5rem', border: '1px solid red' }}>
 				<CommonFieldList
 					data={campaign || {}}
 					fields={metaDataRes?.getMetaData?.metaData || []}

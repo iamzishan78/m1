@@ -10,13 +10,11 @@ import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(theme => ({
 	card: {
-		height: '100%',
 		'&:hover': {
 			boxShadow: theme.shadows[4],
 		},
 	},
 	cardContent: {
-		height: '100%',
 		padding: theme.spacing(2),
 	},
 	header: {
@@ -93,7 +91,7 @@ const MetadataAutomation = ({ automation, onAutomationChange }) => {
 							Trigger Condition
 						</Typography>
 						<Typography className={classes.value}>
-							{automation?.config?.triggerField}: {automation?.config?.triggerValue}
+							<b>{`${automation?.config?.triggerLabel}:`}</b> {automation?.config?.triggerValue}
 						</Typography>
 					</Box>
 
@@ -104,7 +102,7 @@ const MetadataAutomation = ({ automation, onAutomationChange }) => {
 							Target Action
 						</Typography>
 						<Typography className={classes.value}>
-							{automation?.config?.targetField}: {automation?.config?.targetValue}
+							<b>{`${automation?.config?.targetLabel}: `}</b> {automation?.config?.targetValue}
 						</Typography>
 					</Box>
 
@@ -139,8 +137,10 @@ MetadataAutomation.propTypes = {
 			module: PropTypes.string,
 			triggerField: PropTypes.string,
 			triggerValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+			triggerLabel: PropTypes.string,
 			targetField: PropTypes.string,
 			targetValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+			targetLabel: PropTypes.string,
 		}),
 	}),
 	onAutomationChange: PropTypes.func,

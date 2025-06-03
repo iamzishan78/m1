@@ -62,12 +62,11 @@ const Automations = () => {
 	}, [filters, automations]);
 
 	const onAutomationChange = data => {
-		console.log({ data });
-		// upsertAutomation({
-		// 	variables: {
-		// 		automation: data,
-		// 	},
-		// });
+		upsertAutomation({
+			variables: {
+				automation: { ...data, userId: globalStateController.getValue('user').mongoId, type: selectedType?.value },
+			},
+		});
 	};
 
 	const renderAutomationCard = automation => {
@@ -116,7 +115,7 @@ const Automations = () => {
 			/>
 
 			{/* CARD SECTION */}
-			<Grid container spacing={3} style={{ height: '88vh', overflow: 'scroll' }}>
+			<Grid container spacing={3} style={{ maxHeight: '88vh', overflow: 'scroll' }}>
 				{filteredAutomations.length ? (
 					filteredAutomations.map(automation => renderAutomationCard(automation))
 				) : (
@@ -129,7 +128,7 @@ const Automations = () => {
 			</Grid>
 
 			{/* CREATION DIALOG */}
-			<Dialog open={isCreateDialogOpen} onClose={() => setCreateDialogOpen(false)} fullWidth>
+			<Dialog open={isCreateDialogOpen} onClose={() => setCreateDialogOpen(false)} maxWidth="sm" fullWidth>
 				<DialogTitle>
 					<Box display="flex" justifyContent="space-between" alignItems="center">
 						<Box>
