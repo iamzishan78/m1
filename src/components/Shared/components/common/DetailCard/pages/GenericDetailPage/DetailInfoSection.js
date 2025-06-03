@@ -230,9 +230,7 @@ export default function DetailInfo() {
 
 	const tabs = ['Basic Info'];
 	const nonSummaryFields = getAssetFields(currentAsset, false);
-	// Duplicate fields 5 times for testing scroll
-	const duplicatedFields = [...Array(5)].flatMap(() => [...nonSummaryFields]);
-	const nonEmptyFields = getNonEmptyFields(currentAssetRecord, duplicatedFields);
+	const nonEmptyFields = getNonEmptyFields(currentAssetRecord, nonSummaryFields);
 
 	return (
 		<div className={classes.root}>
@@ -261,7 +259,7 @@ export default function DetailInfo() {
 					<Grid container className={classes.dataSect}>
 						<Grid item xs={12} style={{ padding: 0 }}>
 							{showEmpty ? (
-								<CommonSummaryFieldsComponent formFields={duplicatedFields} isBasicInfo={true} />
+								<CommonSummaryFieldsComponent formFields={nonSummaryFields} isBasicInfo={true} />
 							) : (
 								<CommonSummaryFieldsComponent formFields={nonEmptyFields} isBasicInfo={true} />
 							)}
