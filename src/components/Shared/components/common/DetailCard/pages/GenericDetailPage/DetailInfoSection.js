@@ -122,6 +122,7 @@ const useStyles = makeStyles(theme => ({
 	dataSect: {
 		borderTop: '2px solid #C9C9C9',
 		width: '100%',
+		minHeight: '6vh',
 		maxHeight: '50vh',
 		overflowY: 'auto',
 		display: 'block',
