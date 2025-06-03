@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable no-use-before-define */
 import React from 'react';
 
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
@@ -1016,7 +1018,7 @@ class TableESStateControllerHandler extends StateController {
 
 	setAdvanceSearch(value, otherState) {
 		if (!isEqual(value, this.getValue('advanceSearch'))) {
-			this.mergeState({
+			this.updateState({
 				advanceSearch: value,
 				...(otherState && { globalFilter: otherState.globalFilter || '' }),
 			});
