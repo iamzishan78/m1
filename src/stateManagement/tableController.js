@@ -255,7 +255,12 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 				}
 
 				if (column.isControlColumn) {
-					const id = isAssociatedModel ? row.getValue(`${associationKey}._id}`) : row.getValue('_id');
+					let id;
+					if (isAssociatedModel) {
+						id = row.original[associationKey]?._id;
+					} else {
+						id = row.getValue('_id');
+					}
 
 					return (
 						<ColumnWithLink
