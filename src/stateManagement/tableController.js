@@ -250,7 +250,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 						value = formatDate(value);
 						break;
 					case 'boolean':
-						value = value ? 'Yes' : 'No';
+						value = [true, 'true', 'True'].includes(value) ? 'Yes' : 'No';
 						break;
 				}
 
