@@ -33,10 +33,15 @@ import $ from 'jquery';
 
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import { modifyExandableCardStyle } from 'components/Shared/functions/shapeLayer';
 
+import { UPDATE_ASSET_SHAPE_LABEL } from 'graphQL/useMutationRunTimeModel';
+
+import { detailCardController } from 'stateManagement/detailCardController';
 import { drawController } from 'stateManagement/drawStateController';
 import { globalStateController } from 'stateManagement/globalStateController';
+import { layerController } from 'stateManagement/layerStateController';
 import { popupController } from 'stateManagement/popupStateController';
 
 import { showInfoMessage } from 'actions';
@@ -83,7 +88,11 @@ function ExpandableCard(props) {
 		stateValues: { selectedShape, selectedWell },
 	} = popupController.useState(['selectedShape', 'selectedWell']);
 
-	const { globalState } = globalStateController.useState(['user'], 'globalState');
+	const { globalState } = globalStateController.useState(['user', 'currentAsset'], 'globalState');
+
+	const {
+		stateValues: { currentAssetRecord },
+	} = detailCardController.useState(['currentAssetRecord'], 'stateValues');
 
 	const handleMenuClick = event => {
 		setAnchorEl(event.currentTarget);
@@ -117,6 +126,14 @@ function ExpandableCard(props) {
 
 	// Queries
 	const [trackByObjectId, { data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
+	const [updateAssetShapeLabel] = useMutation(UPDATE_ASSET_SHAPE_LABEL, {
+		onCompleted: () => {
+			layerController.resetBounds(
+				currentAssetRecord?.assetShape?.shapeJson?.identifier || currentAssetRecord?.assetShape?.shapeJson?.layer?.id,
+				true
+			);
+		},
+	});
 
 	const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(selectedShape);
 
@@ -268,6 +285,33 @@ function ExpandableCard(props) {
 						fill: 'red !important',
 					},
 				},
+			},
+		},
+		assetShapeLabel: {
+			'& .MuiOutlinedInput-root': {
+				borderRadius: '8px',
+				backgroundColor: '#ffffff',
+				width: '350px',
+				'& fieldset': {
+					borderColor: '#e0e0e0',
+				},
+				'&:hover fieldset': {
+					borderColor: '#18AADD',
+				},
+				'&.Mui-focused fieldset': {
+					borderColor: '#18AADD',
+				},
+			},
+			'& .MuiInputLabel-root': {
+				color: '#666666',
+				'&.Mui-focused': {
+					color: '#18AADD',
+				},
+			},
+			'& .MuiOutlinedInput-input': {
+				padding: '10px 14px',
+				fontSize: '14px',
+				color: '#333333',
 			},
 		},
 	}));
@@ -431,6 +475,16 @@ function ExpandableCard(props) {
 		}
 	};
 
+	const handleUpdateAssetShapeLabel = async shapeLabel => {
+		if (currentAssetRecord && globalState?.currentAsset) {
+			updateAssetShapeLabel({
+				variables: { tableName: globalState.currentAsset.tableName, shapeLabel, recordId: currentAssetRecord._id },
+				refetchQueries: ['getRecordFromRunTimeModel'],
+				awaitRefetchQueries: true,
+			});
+		}
+	};
+
 	const getTitle = () => {
 		if (!title) {
 			return '--';
@@ -448,6 +502,27 @@ function ExpandableCard(props) {
 				{selectedShape ? (
 					<>
 						<Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+							{selectedShape?.isGenericAssetShape && (
+								<Grid item xs={12} sm={6} md={4}>
+									<CustomTextField
+										fieldAttributes={{
+											name: 'assetShape.shapeJson.properties.shapeName',
+											value: selectedShape.shapeLabel || '',
+											placeholder: 'Enter shape label',
+											size: 'small',
+										}}
+										fieldConfig={{
+											variant: 'outlined',
+											customStyleClass: classes.assetShapeLabel,
+										}}
+										fieldEvents={{
+											onBlur: value => {
+												handleUpdateAssetShapeLabel(value);
+											},
+										}}
+									/>
+								</Grid>
+							)}
 							{!selectedShape?.isGenericAssetShape && (
 								<Grid item>
 									<Avatar color="#1a2341">
