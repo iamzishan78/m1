@@ -114,7 +114,7 @@ const CreateMetaDataAutomationDialog = ({ onClose, setFormLoading, handleCreateA
 						</Grid>
 					)}
 
-					{selectedTriggerField && (
+					{selectedModule && (
 						<Grid item xs={12}>
 							<FormControl fullWidth>
 								<CustomAutoComplete

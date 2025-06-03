@@ -91,7 +91,7 @@ const MetadataAutomation = ({ automation, onAutomationChange }) => {
 							Trigger Condition
 						</Typography>
 						<Typography className={classes.value}>
-							<b>{`${automation?.config?.triggerLabel}:`}</b> {automation?.config?.triggerValue}
+							<b>{`${automation?.config?.triggerLabel}:`}</b> {automation?.config?.triggerValue?.toString?.()}
 						</Typography>
 					</Box>
 
@@ -102,7 +102,7 @@ const MetadataAutomation = ({ automation, onAutomationChange }) => {
 							Target Action
 						</Typography>
 						<Typography className={classes.value}>
-							<b>{`${automation?.config?.targetLabel}: `}</b> {automation?.config?.targetValue}
+							<b>{`${automation?.config?.targetLabel}: `}</b> {automation?.config?.targetValue?.toString?.()}
 						</Typography>
 					</Box>
 

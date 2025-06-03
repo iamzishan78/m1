@@ -16,13 +16,13 @@ const DynamicMetadataField = ({ selectedField, value, onChange }) => {
 	const fieldLabel = `Enter value for ${selectedField.label}`;
 	const dateLabel = `Select date for ${selectedField.label}`;
 
-	if (['text', 'number'].includes(selectedField.type)) {
+	if (['link', 'text', 'number'].includes(selectedField.type)) {
 		return (
 			<FormControl fullWidth>
 				<CustomTextField
 					style={{ borderRadius: '4px' }}
 					fieldConfig={{
-						type: selectedField.type,
+						type: selectedField.type === 'number' ? 'number' : 'text',
 						variant: 'outlined',
 						size: 'small',
 					}}
@@ -97,7 +97,7 @@ const DynamicMetadataField = ({ selectedField, value, onChange }) => {
 DynamicMetadataField.propTypes = {
 	selectedField: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
-		type: PropTypes.oneOf(['text', 'number', 'date', 'dropdown', 'select', 'multiselect']).isRequired,
+		type: PropTypes.oneOf(['link', 'text', 'number', 'date', 'dropdown', 'select', 'multiselect']).isRequired,
 		label: PropTypes.string.isRequired,
 		dropdownOptions: PropTypes.arrayOf(
 			PropTypes.shape({
