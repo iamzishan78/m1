@@ -18,6 +18,8 @@ import Link from '@material-ui/core/Link';
 import AddIcon from '@material-ui/icons/Add';
 import SearchIcon from '@material-ui/icons/Search';
 
+import { LinearProgress } from '@mui/material';
+
 import { useLazyQuery, useMutation } from '@apollo/client';
 import get from 'lodash/get';
 
@@ -128,9 +130,10 @@ const Agreements = ({ platformWell }) => {
 
 	const [stateApp] = useContext(AppContext);
 
-	const [addShapeWellInterest] = useMutation(ADD_SHAPE_WELL_INTEREST);
+	const [addShapeWellInterest, { loading }] = useMutation(ADD_SHAPE_WELL_INTEREST);
 
-	const [getShapeWellInterest, { data: associatedAgrements }] = useLazyQuery(GET_SHAPE_WELL_INTEREST);
+	const [getShapeWellInterest, { data: associatedAgrements, loading: agrementsLoading }] =
+		useLazyQuery(GET_SHAPE_WELL_INTEREST);
 
 	useEffect(() => {
 		if (platformWell?._id) {
@@ -154,7 +157,7 @@ const Agreements = ({ platformWell }) => {
 					shapeId: shapeId,
 				},
 			},
-			refetchQueries: ['getMyWellByGlobalId'],
+			refetchQueries: ['getMyWellByGlobalId', 'getShapeWellInterest'],
 			awaitRefetchQueries: true,
 		});
 	};
@@ -240,6 +243,7 @@ const Agreements = ({ platformWell }) => {
 				</Grid>
 			</Grid>
 			<Divider />
+			{(loading || agrementsLoading) && <LinearProgress />}
 			<div className={classes.list}>
 				<List id="wellsList" aria-label="wells list">
 					{agreements?.length > 0 ? (

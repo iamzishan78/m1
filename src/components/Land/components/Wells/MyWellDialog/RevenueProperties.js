@@ -23,6 +23,8 @@ import AddIcon from '@material-ui/icons/Add';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SearchIcon from '@material-ui/icons/Search';
 
+import { LinearProgress } from '@mui/material';
+
 import { useLazyQuery, useMutation } from '@apollo/client';
 
 import { UPSERT_WELL_DESCRIPTOR } from 'graphQL/useMutationWellDescriptor';
@@ -174,7 +176,7 @@ const ReveueProperties = ({ platformWell, propertyDescriptor }) => {
 	const [isSearchActive, setSearchState] = useState(false);
 	const [addWell, setAddWell] = useState(false);
 
-	const [upsertWellDescriptor] = useMutation(UPSERT_WELL_DESCRIPTOR);
+	const [upsertWellDescriptor, { loading }] = useMutation(UPSERT_WELL_DESCRIPTOR);
 
 	const handleAddProperty = propertyId => {
 		upsertWellDescriptor({
@@ -183,12 +185,13 @@ const ReveueProperties = ({ platformWell, propertyDescriptor }) => {
 				relatedObject: propertyId,
 				relatedObjectType: 'Property',
 			},
-			refetchQueries: ['getMyWellByGlobalId'],
+			refetchQueries: ['getMyWellByGlobalId', 'getWellPropertyInterest'],
 			awaitRefetchQueries: true,
 		});
 	};
 
-	const [getWellPropertyInterest, { data: wellPropertyInterests }] = useLazyQuery(GET_WELL_PROPERTY_INTERESTS);
+	const [getWellPropertyInterest, { data: wellPropertyInterests, loading: propertiesLoading }] =
+		useLazyQuery(GET_WELL_PROPERTY_INTERESTS);
 
 	useEffect(() => {
 		if (platformWell?._id) {
@@ -273,6 +276,7 @@ const ReveueProperties = ({ platformWell, propertyDescriptor }) => {
 				</Grid>
 			</Grid>
 			<Divider />
+			{(loading || propertiesLoading) && <LinearProgress />}
 			<div className={classes.list}>
 				<List id="wellsList" aria-label="wells list">
 					{properties?.length > 0 ? (
