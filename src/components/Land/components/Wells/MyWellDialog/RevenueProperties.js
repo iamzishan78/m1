@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable react/prop-types */
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import {
@@ -22,9 +23,10 @@ import AddIcon from '@material-ui/icons/Add';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 
 import { UPSERT_WELL_DESCRIPTOR } from 'graphQL/useMutationWellDescriptor';
+import { GET_WELL_PROPERTY_INTERESTS } from 'graphQL/useQueryWellDescriptors';
 
 import { statusData } from 'utils/data';
 
@@ -162,7 +164,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
+const ReveueProperties = ({ platformWell, propertyDescriptor }) => {
 	// Initials
 	let history = useHistory();
 	const classes = useStyles();
@@ -185,6 +187,20 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 			awaitRefetchQueries: true,
 		});
 	};
+
+	const [getWellPropertyInterest, { data: wellPropertyInterests }] = useLazyQuery(GET_WELL_PROPERTY_INTERESTS);
+
+	useEffect(() => {
+		if (platformWell?._id) {
+			getWellPropertyInterest({
+				variables: {
+					descriptorObject: platformWell._id,
+				},
+			});
+		}
+	}, []);
+
+	const properties = wellPropertyInterests?.getWellPropertyInterest?.[0]?.properties;
 
 	return (
 		<div style={{ marginRight: '14px' }}>
@@ -259,7 +275,7 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 			<Divider />
 			<div className={classes.list}>
 				<List id="wellsList" aria-label="wells list">
-					{properties.length > 0 ? (
+					{properties?.length > 0 ? (
 						properties.map(property => (
 							<Accordion className={classes.accordion} key={property._id}>
 								<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
