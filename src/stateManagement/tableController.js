@@ -19,6 +19,7 @@ import CustomTypography from 'components/Shared/components/Fields/CustomTypograp
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
@@ -253,6 +254,9 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 						break;
 					case 'boolean':
 						value = [true, 'true', 'True'].includes(value) ? 'Yes' : 'No';
+						break;
+					case 'number':
+						value = vf_number(value, 2);
 						break;
 				}
 
