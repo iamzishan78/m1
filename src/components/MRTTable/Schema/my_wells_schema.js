@@ -9,6 +9,8 @@ import { formatDate } from 'components/Shared/functions';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { tableController, tableGlobalController } from 'stateManagement/tableController';
 
+import FlyToMap from '../Common/TableCells/coordinates_fly_map';
+
 const esIndex = 'mywells_flat';
 
 const MyWellsMeta = {
@@ -42,7 +44,7 @@ const MyWellsMeta = {
 		{
 			...CommonSchema.HIDDEN, // Added to allow search with this field too
 			name: 'wellData.wellName',
-			id: 'wellData?.WellName',
+			id: 'wellData.WellName',
 			hidden: true,
 			isSearchField: true,
 		},
@@ -60,9 +62,10 @@ const MyWellsMeta = {
 				>
 					<ColumnWithLink
 						value={renderedCellValue}
-						link={`/land/well/details/${row?.original?.wellData?.Id}?mongoWellId=${row?.original?._id}`}
+						link={`/land/well/details/${row?.original?.wellData?.Id || row?.original?.wellData?.id}?mongoWellId=${row?.original?._id}`}
 						onClickForTestCase={() => {
-							globalStateController.handleMyWellTestCase(row?.original?.wellData?.Id, row?.original?._id);
+							const globalId = row?.original?.wellData?.Id || row?.original?.wellData?.id;
+							globalStateController.handleMyWellTestCase(globalId, row?.original?._id);
 							tableGlobalController.updateState({
 								addWellDialog: {
 									type: 'addWell',
@@ -340,6 +343,19 @@ const MyWellsMeta = {
 				const { stateValues } = tableController('MyWellsTable').useState(['commentsCounter']);
 				const comment = stateValues?.commentsCounter?.find(comment => comment._id === id);
 				return <CommentCell id={id} value={comment?.total} targetLabel={'well'} />;
+			},
+		},
+		{
+			...CommonSchema.ACTION_COLUMN,
+			name: 'coordinates',
+			id: 'coordinates',
+			header: '',
+			size: 70,
+			Cell: ({ row }) => {
+				const wellData = row?.original?.wellData;
+				const id = wellData?.Id;
+				const disabled = !wellData?.latitude || !wellData?.longitude || !id;
+				return <FlyToMap id={id} type="wells" disabled={disabled} />;
 			},
 		},
 	],

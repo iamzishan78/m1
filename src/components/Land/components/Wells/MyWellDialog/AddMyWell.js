@@ -166,6 +166,10 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 								onChange: async ({ value }) => {
 									await handleWellDetail(value);
 								},
+								onBlur: () => {
+									const values = getValues();
+									handleSave(values);
+								},
 								onTextFieldChange: value => {
 									getDbData({
 										variables: {

@@ -100,8 +100,16 @@ export default function CommentsWithIcon(props) {
 					onClose={() => {
 						setOpenDialog(false);
 					}}
+					size="sm"
+					fullWidth
 				>
-					<Comments focus targetSourceId={props.objectId} targetLabel={props.targetLabel} />
+					<Comments
+						focus
+						targetSourceId={props.objectId}
+						targetLabel={props.targetLabel}
+						isSaveAllowed={true}
+						isHelperTextAllow={true}
+					/>
 				</Dialog>
 			)}
 		</React.Fragment>

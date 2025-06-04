@@ -1,5 +1,5 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable no-use-before-define */
+ 
+ 
 import React from 'react';
 
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
@@ -460,7 +460,7 @@ class TableESStateControllerHandler extends StateController {
 		const defaultColumnsPinning = {
 			left: [
 				...(pinnedFields.length > 0
-					? _.concat([rowSelectId, 'mrt-row-numbers'], isClientSide ? pinnedFields : _.slice(pinnedFields, 1))
+					? _.concat([rowSelectId, 'mrt-row-numbers'], isClientSide ? pinnedFields : pull(pinnedFields, rowSelectId))
 					: [rowSelectId, 'mrt-row-numbers']),
 			],
 		};

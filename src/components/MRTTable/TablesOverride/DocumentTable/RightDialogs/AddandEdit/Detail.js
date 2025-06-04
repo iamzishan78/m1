@@ -358,6 +358,8 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	};
 
 	useEffect(() => {
+		console.log(formStateValues.fileUpload);
+
 		if (formStateValues.fileUpload && formStateValues.fileUpload.upload) {
 			uploadFile();
 		}

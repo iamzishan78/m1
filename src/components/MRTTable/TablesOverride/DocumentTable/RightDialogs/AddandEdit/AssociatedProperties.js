@@ -11,6 +11,8 @@ import { DELETE_PROPERTY_FROM_FILE_DESCRIPTOR } from 'graphQL/useMutationDeleteP
 
 import { globalStateController } from 'stateManagement/globalStateController';
 
+import { UserSession } from 'utils/user';
+
 import DocumentAssociation from './DocumentAssociation';
 
 export default function AssociatedProperties({ selectedDocument }) {
@@ -82,7 +84,8 @@ export default function AssociatedProperties({ selectedDocument }) {
 
 	// sending to property page
 	const goToProperty = property => {
-		history.push(`/revenue/property/details/${property?._id.toLowerCase()}`);
+		const tenantName = UserSession.getStorageItem('tenantName');
+		history.push(`/revenue/property/details/${property?._id.toLowerCase()}?tenant=${tenantName}`);
 		window.setStateApp(stateApp => ({ ...stateApp, DocumentDrawer: false, selectedDocument: {} }));
 	};
 
