@@ -124,7 +124,9 @@ export function customStartCaseString(str, isDate) {
 	}
 
 	if (isDate) {
-		return moment.parseZone(new Date(+str)).format('MM/DD/YY');
+		let date = moment.parseZone(new Date(+str)).format('MM/DD/YY');
+		if (date === 'Invalid date') date = moment.parseZone(new Date(str)).format('MM/DD/YY');
+		return date === 'Invalid date' ? '' : date;
 	}
 
 	if (str && str.split(' ').length < 2) {
@@ -181,7 +183,18 @@ export const formatDate = (date, simple = true) => {
 	if (!date) {
 		return '--';
 	}
-	return moment(date).format(simple ? 'MM/DD/YYYY' : 'MMMM D, YYYY');
+	const format = simple ? 'MM/DD/YYYY' : 'MMMM D, YYYY';
+	if (date.includes('T00:00:00.000Z')) {
+		return moment.utc(date).format(format);
+	}
+	return moment(date).format(format);
+};
+
+export const formatFieldDate = (date, format = 'yyyy-MM-DD') => {
+	if (!date) {
+		return '';
+	}
+	return moment.utc(date || '').format(format);
 };
 
 export const processInBatches = async (promises, batchSize) => {

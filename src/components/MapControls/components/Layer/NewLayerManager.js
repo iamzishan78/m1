@@ -23,7 +23,6 @@ import { copy } from 'components/Shared/functions';
 import { ADDLAYER } from 'graphQL/useMutationAddLayer';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 
-import { globalStateController } from 'stateManagement/globalStateController';
 import { layerController } from 'stateManagement/layerStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
 
@@ -73,14 +72,19 @@ function NewLayerManager() {
 
 		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.layerIdentifier;
 
+		let layerIdentifier = selectCategory.layerIdentifier;
+		if (layerIdentifier.startsWith('Tracts')) {
+			layerIdentifier = layerIdentifier.replace('Tracts', 'Parcels');
+		}
+
 		addLayer({
 			variables: {
 				layer: {
 					...layer,
 					layerCategory,
-					layerIdentifier: selectCategory.layerIdentifier,
+					layerIdentifier,
 					layerType,
-					identifier: selectCategory.layerIdentifier + uuid(),
+					identifier: layerIdentifier + uuid(),
 					groupId: null,
 					groupName: null,
 					file: source.file,

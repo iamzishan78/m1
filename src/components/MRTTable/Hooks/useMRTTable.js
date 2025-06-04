@@ -142,6 +142,7 @@ const useMRTTable = tableKey => {
 			enableGrouping: tableStateValues?.enableGrouping ?? true,
 			enableColumnResizing: true,
 			enableRowSelection: !tableStateValues?.disableRowSelection,
+			positionCreatingRow: tableStateValues?.positionCreatingRow,
 			enableColumnPinning: true,
 			// enableMultiRowSelection: true,
 			// enableSelectAll: true,
@@ -281,10 +282,14 @@ const useMRTTable = tableKey => {
 								const pagination = tableState.pagination;
 
 								const newPagination = paginationFunc(pagination);
+								newPagination.first = newPagination.pageSize;
 								Controller.updateState({
 									pagination: newPagination,
 								});
 								return newPagination;
+							},
+							muiPaginationProps: {
+								showLastButton: false,
 							},
 						}),
 						manualSorting: true,

@@ -175,6 +175,7 @@ const ContactBulkProgress = () => {
 					refetchHelper(['getContactPurchaseData']);
 				} else if (name === 'Sync Dialpad Contacts') {
 					message = lastMessage;
+					refetchHelper(['getDailpadContact', 'getContact']);
 				} else if (type === 'contacts') {
 					message =
 						status === 'Created'
@@ -227,9 +228,9 @@ const ContactBulkProgress = () => {
 					}
 					// Refetch when its the status is completed for the last job iteration
 					if (i === dataJobs.getJobsStatus.jobs.length - 1) {
-						const { progress: jobProgress, totalProgress } = dataJobs.getJobsStatus.jobs[i];
+						const { progress: jobProgress, totalProgress, type } = dataJobs.getJobsStatus.jobs[i];
 						// Check if the current progress is equal to the total progress
-						if (jobProgress === totalProgress) {
+						if (jobProgress === totalProgress && ['SHAPEOWNER', 'PARCELINTERESTS'].includes(type)) {
 							tableGlobalController.refetch();
 							tableGlobalController.setSelectedTab(0);
 						}

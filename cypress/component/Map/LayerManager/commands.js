@@ -6,8 +6,7 @@ import ldata from '../../../fixtures/ldata.json';
 
 const headers = {
 	'Content-Type': 'application/json',
-	'X-ZUMO-AUTH': ldata.x_zumo_auth,
-	'X-MS-TOKEN-AAD-ID-TOKEN': ldata.access_token,
+	'ID-TOKEN': ldata.access_token,
 };
 
 // Cypress custom command to update visibility of all user layers
@@ -90,25 +89,27 @@ Cypress.Commands.add('toggleLayerSettings', ({ shapeName, type, isTrue }) => {
 	cy.wait(100).then(() => {
 		switch (type) {
 			case 'text':
-				// Finding the unit text layer in the map reference
-				const unitTextLayer = window.mapRef.__deck.layerManager.layers.find(
-					l => l.constructor.layerName === 'TextLayer' && l.id.startsWith('Units_')
-				);
+				{
+					// Finding the unit text layer in the map reference
+					const unitTextLayer = window.mapRef.__deck.layerManager.layers.find(
+						l => l.constructor.layerName === 'TextLayer' && l.id.startsWith('Units_')
+					);
 
-				// Expecting the visibility of unit text layer to match the expected visibility
-				expect(!!unitTextLayer?.props?.visible).to.be.equal(!isTrue);
-
+					// Expecting the visibility of unit text layer to match the expected visibility
+					expect(!!unitTextLayer?.props?.visible).to.be.equal(!isTrue);
+				}
 				break;
 
 			case 'pickable':
-				// Finding the unit layer in the map reference
-				let unitLayer = window.mapRef.__deck.layerManager.layers.find(
-					l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
-				);
+				{
+					// Finding the unit layer in the map reference
+					let unitLayer = window.mapRef.__deck.layerManager.layers.find(
+						l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
+					);
 
-				// Expecting the pickability of text layer to match the expected pickability
-				expect(!!unitLayer?.props?.pickable).to.be.equal(!isTrue);
-
+					// Expecting the pickability of text layer to match the expected pickability
+					expect(!!unitLayer?.props?.pickable).to.be.equal(!isTrue);
+				}
 				break;
 
 			default:

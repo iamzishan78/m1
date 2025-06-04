@@ -59,10 +59,16 @@ function CustomAutoComplete({
 }) {
 	const client = useApolloClient();
 	const filter = createFilterOptions();
-	const [options, setOptions] = useState(optionArray);
+	const [options, setOptions] = useState(query ? ['LOADING...'] : []);
 	const [fieldValue, setFieldValue] = useState(null);
 	const [isLoading, setIsLoading] = useState(loading);
 	const watchValue = watch ? watch(name) : '';
+
+	useEffect(() => {
+		if (Array.isArray(optionArray) && optionArray.length > 0) {
+			setOptions(optionArray);
+		}
+	}, [optionArray]);
 
 	useEffect(() => {
 		if (value) {
@@ -84,7 +90,9 @@ function CustomAutoComplete({
 		setOptions([]);
 		try {
 			const res = await client.query({
-				variables: isESSearch ? { ...variables, search: { ...variables.search, query: value } } : variables,
+				variables: isESSearch
+					? { ...variables, search: { ...variables.search, query: value ? `*${value}*` : null } }
+					: variables,
 				query,
 			});
 			if (res) {
@@ -112,7 +120,7 @@ function CustomAutoComplete({
 		if (getCustomOptionLabel) {
 			return getCustomOptionLabel(option);
 		} else {
-			return option.label || option.value || option.name || '';
+			return option?.label || option?.value || option?.name || '';
 		}
 	};
 
@@ -120,43 +128,50 @@ function CustomAutoComplete({
 		if (option?._id && value._id) {
 			return option._id === value._id;
 		} else {
-			return option.value === value.value || option.name === value.name;
+			return option === value || option.value === value.value || option.name === value.name;
 		}
 	};
 
-	const autoCompleteChnage = ({ reason, newValue, oldValue, fieldOnChange }) => {
+	const autoCompleteChnage = ({ event, reason, newValue, oldValue, fieldOnChange }) => {
 		const value = newValue ? (newValue.value ?? newValue) : null;
-		onChange?.({ value, oldValue, reason });
-		fieldOnChange ? fieldOnChange(value) : setFieldValue(value);
+		const valueObj = newValue;
+		onChange?.({ value, oldValue, valueObj, reason, event });
+		fieldOnChange?.(value);
+		setFieldValue(value);
 	};
 
-	const textFieldChange = event => {
+	const textFieldChange = debounce(event => {
 		if (multiple) {
 			return;
 		}
 
 		const value = event.target.value;
 		setFieldValue(value);
-		query && fetchOptions(value);
 		onTextFieldChange?.(value);
-	};
+		isESSearch && fetchOptions(value);
+	}, 500);
 
 	const getValue = fieldValue => {
 		if (multiple) {
 			return typeof fieldValue === 'string' ? [fieldValue] : fieldValue || [];
 		}
 
-		const fallbackValue = value || defaultValue || null;
-
-		if (!fieldValue) {
-			return fallbackValue;
+		if (query && ((options.length === 1 && options[0] === 'LOADING...') || isLoading)) {
+			return 'LOADING...';
 		}
+
+		const fallbackValue = value ?? defaultValue ?? null;
 
 		if (typeof fieldValue === 'string') {
-			return options?.find(opt => opt.value === fieldValue || opt === fieldValue) || fieldValue;
+			return (
+				options?.find(
+					opt => opt === fieldValue || opt?._id === fieldValue || opt?.value === fieldValue || opt?.name === fieldValue
+				) ||
+				(fieldValue ?? fallbackValue)
+			);
 		}
 
-		return options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue)) || fieldValue;
+		return options?.find(opt => getOptionLabel(opt) === getOptionLabel(fieldValue)) || (fieldValue ?? fallbackValue);
 	};
 
 	const getOptionsArray = value => {
@@ -171,9 +186,7 @@ function CustomAutoComplete({
 		let filtered = filter(options, params);
 		const inputValue = params.inputValue || '';
 
-		const isExisting =
-			Array.isArray(filtered) &&
-			filtered.some(option => (option.value ? option.value === inputValue : option === inputValue));
+		const isExisting = Array.isArray(filtered) && filtered.some(option => getOptionLabel(option) === inputValue);
 
 		if (inputValue !== '' && !isExisting && allowNewOptions) {
 			filtered = [...filtered, { id: 'newEntity', value: inputValue }];
@@ -187,7 +200,7 @@ function CustomAutoComplete({
 			return (
 				<Typography
 					{...props}
-					key={option._id || option}
+					key={getOptionLabel(option)}
 					style={{ color: 'midnightblue', paddingLeft: '12px' }}
 				>{`Add '${option.value || option}'`}</Typography>
 			);
@@ -195,14 +208,14 @@ function CustomAutoComplete({
 
 		if (renderOptionComp) {
 			return (
-				<Grid container spacing={0} {...props} key={option._id || option}>
+				<Grid container spacing={0} {...props} key={getOptionLabel(option)}>
 					{renderOptionComp({ props, option })}
 				</Grid>
 			);
 		}
 
 		return (
-			<Grid container spacing={0} {...props} key={option._id || option}>
+			<Grid container spacing={0} {...props} key={getOptionLabel(option)}>
 				<Grid container item xs={12} alignItems="center">
 					<Grid item xs>
 						<Typography variant="body2">{getOptionLabel(option)}</Typography>
@@ -216,22 +229,23 @@ function CustomAutoComplete({
 		return (
 			<Autocomplete
 				loading={isLoading}
-				disabled={disabled}
+				disabled={query && isLoading ? true : disabled}
 				defaultValue={defaultValue}
 				renderOption={renderOption}
 				multiple={multiple ?? false}
 				filterOptions={filterOptions}
 				getOptionLabel={getOptionLabel}
 				getOptionSelected={getOptionSelected}
-				value={getValue(field?.value ?? fieldValue)}
+				value={getValue(fieldValue ?? field?.value)}
 				options={getOptionsArray(field?.value)}
 				noOptionsText={isLoading ? <CircularProgress size={20} /> : 'No options'}
 				onBlur={event => {
 					onBlur?.(event);
 					field?.onBlur?.(event);
 				}}
-				onChange={(_, value, reason) =>
+				onChange={(event, value, reason) =>
 					autoCompleteChnage({
+						event,
 						reason,
 						newValue: value,
 						oldValue: field?.value,
@@ -241,7 +255,7 @@ function CustomAutoComplete({
 				renderTags={(value, getTagProps) => {
 					return value?.map((option, index) => (
 						<Chip
-							key={option}
+							key={getOptionLabel(option)}
 							style={chipStyles}
 							{...getTagProps({ index })}
 							label={getOptionLabel(option)}

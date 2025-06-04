@@ -251,16 +251,16 @@ export const analyticsManagementRoutes = {
 		isDefault: true,
 		hideSearch: true,
 	},
-	// ADVANCED_SEARCH: {
-	// 	featureFlag: 'ANALYTICS',
-	// 	title: 'Advanced Search',
-	// 	link: '/analytics/advancedSearch',
-	// 	component: 'AdvancedSearch',
-	// 	value: 'AdvancedSearch',
-	// 	search: true,
-	// 	isDefault: true,
-	// 	hideSearch: true,
-	// },
+	ADVANCED_SEARCH: {
+		featureFlag: 'ANALYTICS',
+		title: 'Advanced Search',
+		link: '/analytics/advancedSearch',
+		component: 'AdvancedSearch',
+		value: 'AdvancedSearch',
+		search: true,
+		isDefault: true,
+		hideSearch: true,
+	},
 	REVENUE_PROPERTY_DETAILS: {
 		featureFlag: 'ANALYTICS',
 		title: 'Revenue',
@@ -682,42 +682,35 @@ export const AdminManagementRoutes = {
 	},
 };
 
-export const dataManagementRoutes = Object.keys(SCHEMA).map(tableName => ({
-	featureFlag: 'DATA',
-	title: startCase(tableName.replace('Table', '')),
-	link: `/data/${camelCase(tableName)}`,
-	value: tableName,
-	isDefault: true,
-	hideSearch: true,
-}));
+export const dataManagementRoutes = Object.keys(SCHEMA)
+	.filter(
+		tableName =>
+			![
+				'GenericTable',
+				'RelatedBillingPartiesTable',
+				'PotentialShapeOwnersTable',
+				'TaxRollInterestsTable',
+				'RelatedPayeesTable',
+				'PotentialWellOwnersTable',
+				'PotentialWellsTable',
+				'FailedBulkDataEditingTable',
+				'WellOwnersTable',
+				'PropertiesRevenueTable',
+			].includes(tableName)
+	)
+	.map(tableName => ({
+		featureFlag: 'DATA',
+		title: startCase(tableName.replace('Table', '')),
+		link: `/data/${camelCase(tableName)}`,
+		value: tableName,
+		isDefault: true,
+		hideSearch: true,
+	}));
 
 export const paymentGridsInitialData = [
 	{ index: 0, value: 'payees', label: 'Payees', showCounts: true },
 	{ index: 0, value: 'billingParties', label: 'Billing Parties', showCounts: true },
 	{ index: 0, value: 'costAllocations', label: 'Cost Allocation', showCounts: true },
-];
-
-export const bypassTenants = [
-	'localhost',
-	'm1dev',
-	'm1cypress',
-	'm1staging',
-	'm1Staging',
-	'wildbasin',
-	'covenant',
-	'sansaba',
-	'farmers',
-	'Quality',
-	'SantaFe',
-	'SITL',
-	'Jetstream',
-	'Elberta',
-	'Frontier',
-	'm1demo',
-	'Vector',
-	'TableRock',
-	'Providence',
-	'Pheasant',
 ];
 
 export const simpleAuthBypass = false;

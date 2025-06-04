@@ -163,6 +163,8 @@ export default function CampaignField(props) {
 		<CustomAutoComplete
 			fieldConfig={{
 				variant: 'standard',
+				size: 'medium',
+				margin: 'dense',
 				disabled: props.disabled,
 				multiple: true,
 				textFieldInputProps: {
@@ -188,7 +190,6 @@ export default function CampaignField(props) {
 			fieldEvents={{
 				onChange: handleChange,
 			}}
-			freeSolo
 			data-testid="campaign-name-autocomplete"
 			renderTags={(value, getTagProps) => {
 				return value.map((tag, index) => (

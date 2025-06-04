@@ -34,7 +34,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	const client = useApolloClient();
 
 	// Destructure table state values
-	const { isClientSide, modelName } = tableStateValues;
+	const { isClientSide, modelName, isGeneric } = tableStateValues;
 
 	// Function to execute query based on client-side or server-side querying
 	const callQuery = async _pagination => {
@@ -74,6 +74,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				isLoading: false,
 				isFetching: false,
 				isError: false,
+				...(isGeneric && Controller.getGenericState(rows)),
 			});
 
 			return;
@@ -351,16 +352,23 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 			const tableMeta = tableState;
 
-			if (tableMeta.pagination?.pageIndex !== previousPagination.current?.pageIndex) {
+			if (
+				tableMeta.pagination?.pageIndex !== previousPagination.current?.pageIndex ||
+				tableMeta.pagination?.pageSize !== previousPagination.current?.pageSize
+			) {
 				const pagination = {
 					pit: tableMeta.data?.pit,
 					...tableMeta.pagination,
 					before:
-						tableMeta.data.rows && tableMeta.pagination?.pageIndex < previousPagination?.current?.pageIndex
+						tableMeta.data.rows &&
+						tableMeta.pagination?.pageIndex > 0 &&
+						tableMeta.pagination?.pageIndex < previousPagination?.current?.pageIndex
 							? tableMeta.data.rows[0]?.sort
 							: null,
 					after:
-						tableMeta.data.rows && tableMeta.pagination?.pageIndex > previousPagination?.current?.pageIndex
+						tableMeta.data.rows &&
+						tableMeta.pagination?.pageIndex > 0 &&
+						tableMeta.pagination?.pageIndex > previousPagination?.current?.pageIndex
 							? tableMeta.data.rows[tableMeta.data.rows.length - 1]?.sort
 							: null,
 					pageIndex: tableMeta.pagination?.pageIndex,

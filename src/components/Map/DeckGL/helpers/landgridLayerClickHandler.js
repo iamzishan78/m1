@@ -1,4 +1,5 @@
 import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
+import { ifPlatformLandGridIdentifiers } from 'components/Shared/functions/shapeLayer';
 
 import { drawController } from 'stateManagement/drawStateController';
 import { popupController } from 'stateManagement/popupStateController';
@@ -81,8 +82,18 @@ const landgridLayerClickHandler = feature => {
 	}
 
 	const selectedAbstracts = drawController.getValue('selectedAbstracts');
-	const isFeatureSelected = selectedAbstracts.find(abstract => abstract?.properties?.Id === feature?.properties?.Id);
-	if (window.event.ctrlKey || window.event.metaKey || drawController.getValue('multiSelectLandGrids')) {
+	const isFeatureSelected = selectedAbstracts.some(abstract => {
+		const abstractIds = [abstract?.properties?.Id, abstract?.id, abstract?._id];
+		const featureIds = [feature?.properties?.Id, feature?.id, feature?._id];
+
+		return featureIds.some((id, idx) => id && abstractIds[idx] === id);
+	});
+	if (
+		window.event.ctrlKey ||
+		window.event.metaKey ||
+		drawController.getValue('multiSelectLandGrids') ||
+		ifPlatformLandGridIdentifiers(feature.layer.id)
+	) {
 		if (isFeatureSelected) {
 			onAbstactLayerClick(feature, 'remove');
 		} else {

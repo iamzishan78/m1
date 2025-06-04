@@ -70,7 +70,8 @@ export default function Legend() {
 			layer?.layerSettings?.selectedStrokeAttribute ||
 			layer?.layerSettings?.selectedFillStyle ||
 			layer?.layerSettings?.selectedLineStyle ||
-			layer?.layerIdentifier === 'Wells'
+			layer?.layerIdentifier === 'Wells' ||
+			(Array.isArray(layer?.layerPaintProps) && layer?.layerPaintProps?.some(prop => prop.paintType === 'fill'))
 	);
 
 	return (
@@ -125,8 +126,89 @@ export default function Legend() {
 					) : (
 						visibleLayers.map((layer, index) => (
 							<>
-								{/* Color based on */}
+								{Array.isArray(layer?.layerPaintProps) &&
+									layer?.layerPaintProps?.map((paintProp, propIndex) => {
+										let fillKey = 'fill-color';
+										let fillOpacityKey = 'fill-opacity';
+										let fillOutlineColorKey = 'fill-outline-color';
+										switch (paintProp.paintType) {
+											case 'fill':
+												break;
+											case 'line':
+												fillKey = 'line-color';
+												fillOpacityKey = 'line-opacity';
+												break;
+											case 'circle':
+												fillKey = 'circle-color';
+												fillOpacityKey = 'fill-opacity';
+												fillOutlineColorKey = 'circle-stroke-color';
+												break;
+											default:
+												break;
+										}
 
+										if (paintProp.paintType) {
+											const fillColor = paintProp.paintProps[fillKey];
+											const fillOpacity = paintProp.paintProps[fillOpacityKey];
+
+											const rgbaColor = fillColor?.startsWith('rgb(')
+												? fillColor.replace('rgb(', 'rgba(').replace(')', `, ${fillOpacity ?? 1})`)
+												: fillColor;
+											const colorDict = {
+												'Default Layer Colors': {
+													'Fill Color': rgbaColor,
+													...(paintProp.paintProps[fillOutlineColorKey] && {
+														'Stroke Color': paintProp.paintProps[fillOutlineColorKey],
+													}),
+												},
+											};
+											const styleDict =
+												layer.layerSettings.lineStyle || layer.layerSettings.fillStyle
+													? {
+															'Default Layer Styles': {
+																...(layer.layerSettings.fillStyle && {
+																	'Fill Style': layer.layerSettings.fillStyle,
+																}),
+																...(layer.layerSettings.lineStyle && {
+																	'Line Style': layer.layerSettings.lineStyle,
+																}),
+															},
+														}
+													: null;
+
+											return (
+												<React.Fragment key={`fill-${propIndex}`}>
+													<LegendCollapse
+														layer={layer}
+														basedOnKey={{ label: 'Default Layer Colors' }}
+														basedOnDict={colorDict}
+														typography={null}
+														index={index}
+														isColor={true}
+														isAggLayer={aggregationLayers.includes(layer.layerType)}
+														listHeight={100}
+													/>
+													{styleDict && (
+														<LegendCollapse
+															layer={layer}
+															basedOnKey={{ label: 'Default Layer Styles' }}
+															basedOnDict={styleDict}
+															typography={null}
+															index={index}
+															isImage={true}
+															isAggLayer={aggregationLayers.includes(layer.layerType)}
+															listHeight={100}
+															isSubset={true}
+														/>
+													)}
+													<Divider style={{ marginLeft: '-20px', marginRight: '-20px', marginTop: '20px' }} />
+												</React.Fragment>
+											);
+										}
+										return null;
+									})}
+
+								{/* Color based on */}
 								{layer?.layerSettings?.selectedAttribute && (
 									<>
 										<LegendCollapse
@@ -179,7 +261,7 @@ export default function Legend() {
 									</>
 								)}
 
-								{/* Line Style based on */}
+								{/* circle Style based on */}
 
 								{layer?.layerSettings?.selectedLineStyle && (
 									<>
@@ -187,7 +269,7 @@ export default function Legend() {
 											layer={layer}
 											basedOnKey={layer.layerSettings.selectedLineStyle}
 											basedOnDict={layer.layerSettings.attributeBasedLineStyles}
-											typography={'Line Style Based On'}
+											typography={'circle Style Based On'}
 											index={index}
 											isImage={true}
 											isAggLayer={aggregationLayers.includes(layer.layerType)}
@@ -197,7 +279,7 @@ export default function Legend() {
 									</>
 								)}
 
-								{/* Line Style based on */}
+								{/* circle Style based on */}
 
 								{layer?.layerIdentifier === 'Wells' && (
 									<>

@@ -12,9 +12,10 @@ import {
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { colorBasedAttributes } from 'components/MapControls/components/Layer/LayerAttributes/ColorBasedAttributes';
 import {
-	deckGlLandGridIdentifiers,
 	ifDeckGlDataLayerIdentifiers,
+	ifDeckGlLandGridIdentifiers,
 	ifDeckGlLayerIdentifiers,
+	ifPlatformLandGridIdentifiers,
 } from 'components/Shared/functions/shapeLayer';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
 
@@ -191,7 +192,7 @@ const onFeatureClick = (feature, layer) => {
 		});
 	}
 
-	if (deckGlLandGridIdentifiers.some(prefix => feature.layer.id.startsWith(prefix))) {
+	if (ifDeckGlLandGridIdentifiers(feature.layer.id) || ifPlatformLandGridIdentifiers(feature.layer.id)) {
 		onLandGridClick(feature.object, feature.layer.id, layer);
 		return;
 	}

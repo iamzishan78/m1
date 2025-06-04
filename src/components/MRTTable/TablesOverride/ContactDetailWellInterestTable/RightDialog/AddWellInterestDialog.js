@@ -22,13 +22,13 @@ import AutorenewIcon from '@material-ui/icons/Autorenew';
 import DeleteIcon from '@material-ui/icons/Delete';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
-import parse from 'autosuggest-highlight/parse';
+import PropTypes from 'prop-types';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { CurrencyFormatCustom, NumberFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
 import { ADDWELLINTEREST } from 'graphQL/useMutationAddWellInterest';
@@ -83,7 +83,6 @@ function AddWellInterestDialog(props) {
 
 	const [initializing, setInitializing] = useState(true);
 	const [loading, setLoading] = useState(false);
-	const [foundWells, setFoundWells] = useState([]);
 	const [selectedWell, setSelectedWell] = useState(null);
 	const [formLeaseName, setFormLeaseName] = useState('');
 	const [formLeaseAcres, setFormLeaseAcres] = useState(null);
@@ -108,6 +107,31 @@ function AddWellInterestDialog(props) {
 		// must be network-only to trigger state change for field updates
 		fetchPolicy: 'network-only',
 	});
+
+	const handleClose = () => {
+		setSelectedWell(null);
+		setFormLeaseName('');
+		setFormLeaseAcres(null);
+		setFormOwnerName('');
+		setFormInterestOwnerType('');
+		setFormInterestType('');
+		setFormInterestAmount(null);
+		setFormRoyaltyAcres(null);
+		setFormTaxValue(null);
+		setStateApp(stateApp => ({
+			...stateApp,
+			wellInterestDialog: false,
+			activeWellInterest: null,
+		}));
+		setInitializing(false);
+		setValid({});
+		props.onClose();
+	};
+
+	const refetchTable = () => {
+		tableGlobalController.refetch();
+	};
+
 	const [addWellInterest] = useMutation(ADDWELLINTEREST, {
 		onCompleted: () => {
 			setLoading(false);
@@ -126,19 +150,6 @@ function AddWellInterestDialog(props) {
 		refetchQueries: ['getContactWells', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
-
-	const [getDbData] = useLazyQuery(GET_DB_DATA, {
-		fetchPolicy: 'no-cache',
-		onCompleted: wellsData => {
-			if (wellsData?.getDbData?.hits) {
-				setFoundWells(wellsData.getDbData.hits);
-			}
-		},
-	});
-
-	const refetchTable = () => {
-		tableGlobalController.refetch();
-	};
 
 	useEffect(() => {
 		getInterestOwnerTypes();
@@ -197,27 +208,6 @@ function AddWellInterestDialog(props) {
 		// if launched from grid row set initializing based on selectedWell state
 		setInitializing(false);
 	}, [selectedWell]);
-
-	const handleClose = () => {
-		setFoundWells([]);
-		setSelectedWell(null);
-		setFormLeaseName('');
-		setFormLeaseAcres(null);
-		setFormOwnerName('');
-		setFormInterestOwnerType('');
-		setFormInterestType('');
-		setFormInterestAmount(null);
-		setFormRoyaltyAcres(null);
-		setFormTaxValue(null);
-		setStateApp(stateApp => ({
-			...stateApp,
-			wellInterestDialog: false,
-			activeWellInterest: null,
-		}));
-		setInitializing(false);
-		setValid({});
-		props.onClose();
-	};
 
 	const formatRoyaltyAcres = royaltyAcres => {
 		const decimals = royaltyAcres.toString().split('.');
@@ -292,6 +282,8 @@ function AddWellInterestDialog(props) {
 
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
+	const handleMenuClose = () => setAnchorEl(null);
+
 	const openConfirmationDialog = () => {
 		setDeleteDialogOpen(true);
 		handleMenuClose();
@@ -319,8 +311,6 @@ function AddWellInterestDialog(props) {
 	};
 
 	const handleMenuClick = event => setAnchorEl(event.currentTarget);
-
-	const handleMenuClose = () => setAnchorEl(null);
 
 	return (
 		<>
@@ -387,38 +377,48 @@ function AddWellInterestDialog(props) {
 
 					<div style={{ marginTop: '15px' }}>
 						<FormControl variant="outlined" fullWidth size="small">
-							<Autocomplete
-								options={foundWells || []}
-								onChange={(e, well) => {
-									setSelectedWell(well);
-									well &&
-										getTenantWell({
-											variables: {
-												globalWellId: well.Id,
-											},
-										});
-									well &&
-										setValid({
-											...valid,
-											'selectedWell.Id': false,
-										});
+							<CustomAutoComplete
+								required={true}
+								error={valid['selectedWell.Id']}
+								helperText={valid['selectedWell.Id'] ? 'Select a well to get started' : ''}
+								fieldAttributes={{
+									value: selectedWell,
+									label: 'Search for a well by name or API',
+									isESSearch: true,
+									query: GET_DB_DATA,
+									variables: {
+										index: 'platform_wells',
+										pagination: {
+											first: 50,
+											after: null,
+										},
+										search: {
+											query: '*',
+											fields: [
+												'api.keyword',
+												'wellName.keyword',
+												'state.keyword',
+												'county.keyword',
+												'wellType.keyword',
+												'wellStatus.keyword',
+												'operator.keyword',
+												'wellBoreProfile.keyword',
+											],
+											advanceSearch: [],
+										},
+										filters: [],
+									},
+									getOptions: res => res?.data?.getDbData?.hits || [],
 								}}
-								value={selectedWell}
-								getOptionLabel={option => option.WellName}
-								filterOptions={x => x}
-								renderOption={option => {
-									const parts = parse(option.WellName, []);
-
-									return (
+								fieldConfig={{
+									variant: 'outlined',
+									margin: 'dense',
+									getCustomOptionLabel: option => option.WellName,
+									renderOptionComp: ({ option }) => (
 										<Grid container spacing={0}>
 											<Grid container item xs={11} alignItems="center">
 												<Grid item xs>
-													{parts.map((part, index) => (
-														<span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-															{part.text}
-														</span>
-													))}
-
+													<span style={{ fontWeight: 400 }}>{option.WellName}</span>
 													{option && option.ApiNumber && (
 														<Typography variant="body2" color="textSecondary">
 															{option.ApiNumber}
@@ -446,46 +446,24 @@ function AddWellInterestDialog(props) {
 												</Grid>
 											</Grid>
 										</Grid>
-									);
+									),
 								}}
-								renderInput={params => (
-									<TextField
-										margin="dense"
-										{...params}
-										required
-										error={valid['selectedWell.Id']}
-										helperText={valid['selectedWell.Id'] ? 'Select a well to get started' : ''}
-										variant="outlined"
-										label="Search for a well by name or API"
-										InputLabelProps={{ shrink: true }}
-										onChange={event => {
-											getDbData({
+								fieldEvents={{
+									onChange: ({ value: well }) => {
+										setSelectedWell(well);
+										well &&
+											getTenantWell({
 												variables: {
-													index: 'platformData:wells',
-													pagination: {
-														first: 50,
-														after: null,
-													},
-													search: {
-														query: `*${event.target.value}*`,
-														fields: [
-															'api.keyword',
-															'wellName.keyword',
-															'state.keyword',
-															'county.keyword',
-															'wellType.keyword',
-															'wellStatus.keyword',
-															'operator.keyword',
-															'wellBoreProfile.keyword',
-														],
-														advanceSearch: [],
-													},
-													filters: [],
+													globalWellId: well.Id,
 												},
 											});
-										}}
-									/>
-								)}
+										well &&
+											setValid({
+												...valid,
+												'selectedWell.Id': false,
+											});
+									},
+								}}
 							/>
 						</FormControl>
 
@@ -557,17 +535,7 @@ function AddWellInterestDialog(props) {
 					</div>
 
 					<div>
-						<h4
-							style={
-								{
-									//margin: "0 0 15px 0",
-									//float: "left",
-									//fontSize: "1.1rem",
-								}
-							}
-						>
-							Enter information for new interest owner
-						</h4>
+						<h4>{'Enter information for new interest owner'}</h4>
 
 						<TextField
 							variant="outlined"
@@ -580,38 +548,34 @@ function AddWellInterestDialog(props) {
 						/>
 
 						<FormControl variant="outlined" fullWidth size="small">
-							<Autocomplete
-								options={interestOwnerTypes || []}
-								onChange={(e, interestOwnerType) => {
-									setFormInterestOwnerType(interestOwnerType);
+							<CustomAutoComplete
+								fieldAttributes={{
+									value: formInterestOwnerType,
+									optionArray: interestOwnerTypes,
+									label: 'Interest Owner Type',
 								}}
-								value={formInterestOwnerType}
-								renderInput={params => (
-									<TextField
-										margin="dense"
-										{...params}
-										variant="outlined"
-										label="Interest Owner Type"
-										InputLabelProps={{ shrink: true }}
-									/>
-								)}
+								fieldConfig={{
+									variant: 'outlined',
+									margin: 'dense',
+								}}
+								fieldEvents={{
+									onChange: ({ value }) => setFormInterestOwnerType(value),
+								}}
 							/>
 
-							<Autocomplete
-								options={interestTypes || []}
-								onChange={(e, interestType) => {
-									setFormInterestType(interestType);
+							<CustomAutoComplete
+								fieldAttributes={{
+									value: formInterestType,
+									optionArray: interestTypes,
+									label: 'Interest Type',
 								}}
-								value={formInterestType}
-								renderInput={params => (
-									<TextField
-										margin="dense"
-										{...params}
-										variant="outlined"
-										label="Interest Type"
-										InputLabelProps={{ shrink: true }}
-									/>
-								)}
+								fieldConfig={{
+									variant: 'outlined',
+									margin: 'dense',
+								}}
+								fieldEvents={{
+									onChange: ({ value }) => setFormInterestType(value),
+								}}
 							/>
 
 							<Grid container spacing={2}>
@@ -726,5 +690,12 @@ function AddWellInterestDialog(props) {
 		</>
 	);
 }
+
+AddWellInterestDialog.propTypes = {
+	open: PropTypes.bool.isRequired,
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	onClose: PropTypes.func.isRequired,
+	contactId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
 
 export default AddWellInterestDialog;

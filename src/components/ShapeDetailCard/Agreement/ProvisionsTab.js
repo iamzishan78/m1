@@ -38,16 +38,16 @@ import PropTypes from 'prop-types';
 
 import Loader from 'components/Loaders';
 import CommentsWithIcon from 'components/Shared/CommentsWithIcon';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
-import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
 
 import { CREATE_AGREEMENT_PROVISION } from 'graphQL/useMutationCreateAgreementProvision';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GET_PROVISION_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetProvisionAutoCompleteList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 import { detailCardController } from 'stateManagement/detailCardController';
 
-import ResponsibleParty from './ResponsibleParty';
 import { AppContext } from '../../../AppContext';
 
 const styles = makeStyles(() => ({
@@ -270,7 +270,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 				});
 			}
 		}
-	}, 500);
+	}, 0);
 
 	return (
 		<Grid container direction="column" spacing={5} className={classes.root}>
@@ -340,53 +340,56 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 										render={({ field }) => <TextField {...field} id="templateRef" type="hidden" />}
 									/>
 									<Grid item md={4}>
-										<Controller
-											control={control}
-											name={`provisions[${index}].type`}
-											defaultValue={item.type}
-											render={({ field: { onChange, value, ref } }) => (
-												<>
-													{item.templateRef ? (
-														<FormControl variant="outlined" fullWidth>
-															<InputLabel id="provision-type-label">Provision Type</InputLabel>
-															<Select
-																labelId="provision-type-label"
-																id={`provision-type-label-${index}`}
-																label="Provision Type"
-																onChange={value => {
-																	onChange(value);
-																	handleChange(item, index);
-																}}
-																inputRef={ref}
-																disabled={provisions[index]?.isTemplate === false}
-																value={value}
-															>
-																{standardProvisions?.map(p => (
-																	<MenuItem key={p.type} value={p.type}>
-																		{p.type}
-																	</MenuItem>
-																))}
-															</Select>
-														</FormControl>
-													) : (
-														<AutoCompleteWithNewOption
-															size="medium"
-															variant="outlined"
-															id="provisionType"
+										{item.templateRef ? (
+											<Controller
+												control={control}
+												name={`provisions[${index}].type`}
+												defaultValue={item.type}
+												render={({ field: { onChange, value, ref } }) => (
+													<FormControl variant="outlined" fullWidth>
+														<InputLabel id="provision-type-label">Provision Type</InputLabel>
+														<Select
+															labelId="provision-type-label"
+															id={`provision-type-label-${index}`}
 															label="Provision Type"
-															options={provisionAutoCompleteList}
-															value={value}
-															onChange={(_, value) => {
-																if (value) {
-																	onChange(value.name);
-																}
+															onChange={value => {
+																onChange(value);
 																handleChange(item, index);
 															}}
-														/>
-													)}
-												</>
-											)}
-										/>
+															inputRef={ref}
+															disabled={provisions[index]?.isTemplate === false}
+															value={value}
+														>
+															{standardProvisions?.map(p => (
+																<MenuItem key={p.type} value={p.type}>
+																	{p.type}
+																</MenuItem>
+															))}
+														</Select>
+													</FormControl>
+												)}
+											/>
+										) : (
+											<CustomAutoComplete
+												control={control}
+												watch={watch}
+												fieldAttributes={{
+													name: `provisions[${index}].type`,
+													label: 'Provision Type',
+													defaultValue: '',
+													optionArray: provisionAutoCompleteList,
+												}}
+												fieldConfig={{
+													size: 'medium',
+													allowNewOptions: true,
+													variant: 'outlined',
+												}}
+												fieldEvents={{
+													onChange: () => handleChange(item, index),
+												}}
+												id={'provisionType'}
+											/>
+										)}
 									</Grid>
 									<Grid id={`applicable-${index}`} item md={2}>
 										<Controller
@@ -483,39 +486,49 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 									</Grid>
 
 									<Grid item md={2} id={`frequency-${index}`}>
-										<Controller
+										<CustomAutoComplete
 											control={control}
-											name={`provisions.${index}.frequency`}
-											defaultValue={item.frequency}
-											render={({ field: { onChange, value } }) => (
-												<AutoCompleteWithNewOption
-													size="medium"
-													variant="outlined"
-													label="Frequency"
-													options={frequenciesList}
-													value={value}
-													onChange={(_, value) => {
-														onChange(value?.name ?? '');
-														handleChange(item, index);
-													}}
-												/>
-											)}
+											watch={watch}
+											fieldAttributes={{
+												name: `provisions.${index}.frequency`,
+												label: 'Frequency',
+												defaultValue: item.frequency ?? '',
+												optionArray: frequenciesList,
+											}}
+											fieldConfig={{
+												size: 'medium',
+												variant: 'outlined',
+												allowNewOptions: true,
+											}}
+											fieldEvents={{
+												onChange: () => handleChange(item, index),
+											}}
 										/>
 									</Grid>
 									<Grid item md={2} id={`responsibleParty-${index}`}>
-										<Controller
+										<CustomAutoComplete
 											control={control}
-											name={`provisions[${index}].responsibleParty`}
-											defaultValue={item?.responsibleParty?.name}
-											render={({ field }) => (
-												<ResponsibleParty
-													value={field.value}
-													handleChange={value => {
-														handleChange(item, index);
-														field.onChange(value?.name || null);
-													}}
-												/>
-											)}
+											watch={watch}
+											fieldConfig={{
+												variant: 'outlined',
+												size: 'medium',
+											}}
+											fieldAttributes={{
+												label: 'Responsible Party',
+												name: `provisions[${index}].responsibleParty`,
+												defaultValue: item?.responsibleParty?.name,
+												query: GET_ES_FILTER_LIST,
+												variables: {
+													search: '*',
+													filterKey: 'operator.name.keyword',
+													esIndex: 'properties_flat',
+													size: 50,
+												},
+												getOptions: hits => hits?.data?.getESFilterList?.hits?.map(opt => opt.key),
+											}}
+											fieldEvents={{
+												onChange: () => handleChange(item, index),
+											}}
 										/>
 									</Grid>
 									<Grid item md={2} id={`provisions-${index}`}>

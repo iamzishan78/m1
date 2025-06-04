@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useLazyQuery } from '@apollo/client';
 import { uniqBy } from 'lodash';
 import Chip from '@material-ui/core/Chip';
@@ -107,6 +108,8 @@ export default function AssociatedDealField(props) {
 				}}
 				fieldConfig={{
 					variant: 'standard',
+					margin: 'dense',
+					size: 'medium',
 					multiple: true,
 					disabled: props.disabled,
 					chipStyles: styleClasses.root,
@@ -137,4 +140,19 @@ export default function AssociatedDealField(props) {
 AssociatedDealField.defaultProps = {
 	type: 'textfield',
 	simpleChips: false,
+};
+
+AssociatedDealField.propTypes = {
+	type: PropTypes.string,
+	disabled: PropTypes.bool,
+	simpleChips: PropTypes.bool,
+	targetLabel: PropTypes.string,
+	onChange: PropTypes.func.isRequired,
+	targetLabelId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	value: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+			name: PropTypes.string.isRequired,
+		})
+	),
 };

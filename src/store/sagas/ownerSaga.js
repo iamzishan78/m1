@@ -67,7 +67,7 @@ function* getShapeOwnersAndWells(action) {
 		const shapeWellCount = yield client.query({
 			query: GET_DB_DATA,
 			variables: {
-				index: 'platformData:wells',
+				index: 'platform_wells',
 				filters: [{ type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 				pagination: {
 					getAllData: true,
@@ -116,7 +116,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
 	try {
 		const { currentFeature, filters, search } = action.payload;
 		const wellsCount = yield call(Api.query, GET_DB_DATA_TOTAL, {
-			index: 'platformData:wells',
+			index: 'platform_wells',
 			search,
 			filters: [...(filters || []), { type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 			pagination: {
@@ -126,7 +126,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
 		});
 
 		const wells = yield call(Api.query, GET_DB_DATA, {
-			index: 'platformData:wells',
+			index: 'platform_wells',
 			search,
 			filters: [...(filters || []), { type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 			pagination: {
@@ -167,7 +167,7 @@ function* getMapFilterShapeOwnersAndWells(action) {
 		const shapeWellCount = yield client.query({
 			query: GET_DB_DATA_TOTAL,
 			variables: {
-				index: 'platformData:wells',
+				index: 'platform_wells',
 				search,
 				filters: [...(filters || []), { type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 				pagination: {

@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable no-use-before-define */
 import React from 'react';
 
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
@@ -474,7 +476,7 @@ class TableESStateControllerHandler extends StateController {
 		const defaultColumnsPinning = {
 			left: [
 				...(pinnedFields.length > 0
-					? _.concat([rowSelectId, 'mrt-row-numbers'], _.slice(pinnedFields, 1))
+					? _.concat([rowSelectId, 'mrt-row-numbers'], isClientSide ? pinnedFields : _.slice(pinnedFields, 1))
 					: [rowSelectId, 'mrt-row-numbers']),
 			],
 		};
@@ -689,13 +691,16 @@ class TableESStateControllerHandler extends StateController {
 
 	setColumnVisibility(visibility) {
 		const isClientSide = this.getValue('isClientSide');
+		const grouping = this.getValue('grouping');
 
 		if (!deepEqual(this.getValue('columnVisibility'), visibility)) {
 			if (!isClientSide) {
 				visibility['mrt-row-select'] = false;
 			}
 
-			this.updateState({ columnVisibility: visibility });
+			const filteredGrouping = grouping.filter(key => visibility[key] !== false);
+
+			this.updateState({ columnVisibility: visibility, grouping: filteredGrouping });
 		}
 	}
 
@@ -1029,7 +1034,7 @@ class TableESStateControllerHandler extends StateController {
 
 	setAdvanceSearch(value, otherState) {
 		if (!isEqual(value, this.getValue('advanceSearch'))) {
-			this.mergeState({
+			this.updateState({
 				advanceSearch: value,
 				...(otherState && { globalFilter: otherState.globalFilter || '' }),
 			});
@@ -1083,6 +1088,7 @@ class TableESStateControllerHandler extends StateController {
 
 		const {
 			isGeneric,
+			isClientSide,
 			orderKeys,
 			excludedKeys,
 			nestedKey,
@@ -1093,6 +1099,7 @@ class TableESStateControllerHandler extends StateController {
 			search,
 			columnVirtualization,
 			layerDataSourceName,
+			searchFields: oldSearchFields,
 		} = this.getValues([
 			'isGeneric',
 			'orderKeys',
@@ -1105,6 +1112,7 @@ class TableESStateControllerHandler extends StateController {
 			'search',
 			'columnVirtualization',
 			'layerDataSourceName',
+			'searchFields',
 		]);
 
 		if (!isGeneric || rows?.length === 0) {
@@ -1116,6 +1124,7 @@ class TableESStateControllerHandler extends StateController {
 		const {
 			_TableSchema,
 			tableCss,
+			searchFields,
 			groupedField,
 			ExternalFilter,
 			columnVisibility,
@@ -1130,8 +1139,12 @@ class TableESStateControllerHandler extends StateController {
 			search,
 			columnVirtualization,
 			layerDataSourceName,
+			isClientSide,
 		});
 
+		if (!isEqual(searchFields, oldSearchFields)) {
+			genericState.searchFields = searchFields;
+		}
 		genericState.TableSchema = _TableSchema;
 		genericState.tableCss = tableCss;
 		genericState.groupedField = groupedField;

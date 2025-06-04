@@ -1,5 +1,3 @@
-import { bypassTenants, simpleAuthBypass } from 'utils/data';
-
 import { StateController } from './stateController'; // Import your StateController class
 
 export const globalInitialState = {
@@ -13,11 +11,8 @@ export const globalInitialState = {
 	mapReady: false,
 	showFieldModal: false,
 	apolloClientEndpoint: null,
-	x_zumo_auth: null,
 	cypress: null,
 	testCase: null,
-	bypassLogin: simpleAuthBypass || false,
-	bypassType: '',
 	tenant: null,
 	selectedIconTpe: 'Chip',
 	onMapLoad: null,
@@ -41,27 +36,6 @@ class GlobalStateController extends StateController {
 				},
 			});
 		}
-	}
-
-	setBypassLogin(tenant) {
-		const bypass = simpleAuthBypass
-			? { bypassLogin: true, bypassType: 'SimpleBypass' }
-			: {
-					bypassLogin: bypassTenants.includes(tenant.name),
-					bypassType: 'Auth0Bypass',
-				};
-
-		if (bypass.bypassLogin) {
-			this.updateState({ ...bypass, tenant });
-		}
-	}
-
-	isAuth0Bypass() {
-		return this.getValue('bypassType') === 'Auth0Bypass';
-	}
-
-	isBypassTenant(tenant) {
-		return bypassTenants.map(t => t.toLowerCase()).includes(tenant.toLowerCase());
 	}
 
 	handleMyWellTestCase(globalWellId, mongoWellId) {

@@ -1,4 +1,6 @@
 /* eslint-disable no-undef */
+import React from 'react';
+
 import MapProvider from 'components/Map/MapProvider';
 
 import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
@@ -10,8 +12,7 @@ import { drawAreaGeometry } from '../Draw/data';
 
 const headers = {
 	'Content-Type': 'application/json',
-	'X-ZUMO-AUTH': ldata.x_zumo_auth,
-	'X-MS-TOKEN-AAD-ID-TOKEN': ldata.access_token,
+	'ID-TOKEN': ldata.access_token,
 };
 
 let layerSettings;

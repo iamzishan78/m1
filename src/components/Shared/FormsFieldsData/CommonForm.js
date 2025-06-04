@@ -69,6 +69,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 								error={error || errors?.[item.name]}
 								fieldConfig={{
 									margin: 'dense',
+									size: 'medium',
 									allowNewOptions: item.renderField === 'autoCompleteNewOption',
 									required: item.required,
 									disabled: item.disabled,
@@ -77,12 +78,11 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 								fieldAttributes={{
 									name: item.name,
 									title: item.label,
-									label: item.label,
 									optionArray: item.defaultOptions,
 									getOptions: item.getOptions,
 									query: item.query,
 									variables: item.variables,
-									isESSearch: item.isESSearch || false,
+									isESSearch: item.isESSearch ?? false,
 								}}
 							/>
 						);
@@ -98,6 +98,8 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 									render={({ field }) => (
 										<CampaignField
 											{...field}
+											size="medium"
+											margin="dense"
 											value={field?.value}
 											disabled={item.disabled}
 											onChange={values => {

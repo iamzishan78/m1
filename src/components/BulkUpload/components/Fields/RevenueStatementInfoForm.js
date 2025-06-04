@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { jobController } from 'stateManagement/jobStateController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		padding: '10px 33%',
 	},
@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
 
 const RevenueStatementInfoForm = ({ ...rest }) => {
 	const classes = useStyles();
-	const { control, reset, getValues, uploaderFormValues } = rest;
+	const { control, watch, reset, getValues, uploaderFormValues } = rest;
 
 	useEffect(() => {
 		if (uploaderFormValues) {
@@ -66,6 +66,15 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 			});
 		};
 	}, []);
+
+	useEffect(() => {
+		const importType = watch('importType');
+		if (importType) {
+			jobController.updateState({
+				jobSubType: importType,
+			});
+		}
+	}, [watch('importType')]);
 
 	return (
 		<div className={classes.root}>
@@ -108,6 +117,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 									render={({ field }) => (
 										<Select {...field} fullWidth margin="dense" variant="outlined">
 											<MenuItem value="Standard M1 Import">Standard M1 Import</MenuItem>
+											<MenuItem value="CHECKDETAILSENERGY">EnergyLink Import</MenuItem>
 										</Select>
 									)}
 								/>

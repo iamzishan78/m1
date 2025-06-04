@@ -159,6 +159,12 @@ const ExhibitAMeta = {
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
+			header: 'Subtype',
+			id: 'shape.shapeJson.properties.agreementSubtype',
+			name: 'shape.shapeJson.properties.agreementSubtype',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
 			header: 'Lessor/Grantor',
 			id: 'shape.shapeJson.properties.grantor',
 			name: 'shape.shapeJson.properties.grantor',

@@ -1,12 +1,11 @@
-const UNITS = require('./UNITS').default;
-const TRACTS = require('./TRACTS').default;
-const AGREEMENT_HEADER = require('./AGREEMENT_HEADER').default;
 const AGREEMENT_COMMENTS = require('./AGREEMENT_COMMENTS').default;
+const AGREEMENT_HEADER = require('./AGREEMENT_HEADER').default;
 const AGREEMENT_PROVISIONS = require('./AGREEMENT_PROVISIONS').default;
-const AGREEMENT_RELATED_WELLS = require('./AGREEMENT_RELATED_WELLS').default;
 const AGREEMENT_RELATED_TRACTS = require('./AGREEMENT_RELATED_TRACTS').default;
+const AGREEMENT_RELATED_WELLS = require('./AGREEMENT_RELATED_WELLS').default;
 const AGREEMENT_SHAPE = require('./AGREEMENT_SHAPE').default;
 const CHECKDETAILS = require('./CHECKDETAILS').default;
+const { CHECKDETAILSENERGY } = require('./CHECKDETAILS');
 const CONTACT_COMMENTS = require('./CONTACT_COMMENTS').default;
 const CONTACTS = require('./CONTACTS').default;
 const CONTACTS_WELL_INTEREST = require('./CONTACTS_WELL_INTEREST').default;
@@ -15,7 +14,9 @@ const PROPERTIES = require('./PROPERTIES').default;
 const SHAPEOWNER = require('./SHAPEOWNER').default;
 const TRACT_COMMENTS = require('./TRACT_COMMENTS').default;
 const TRACT_SHAPE = require('./TRACT_SHAPE').default;
+const TRACTS = require('./TRACTS').default;
 const UNIT_SHAPE = require('./UNIT_SHAPE').default;
+const UNITS = require('./UNITS').default;
 
 const eportData = {
 	CONTACTS,
@@ -24,6 +25,7 @@ const eportData = {
 	PARCELINTERESTS,
 	SHAPEOWNER,
 	CHECKDETAILS,
+	CHECKDETAILSENERGY,
 	PROPERTIES,
 	CONTACTS_WELL_INTEREST,
 	AGREEMENT_SHAPE,

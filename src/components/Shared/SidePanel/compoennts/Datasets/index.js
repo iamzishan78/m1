@@ -11,6 +11,7 @@ import LayersIcon from '@material-ui/icons/Layers';
 import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { snapGridSideBarData } from 'components/MapGridCard/components/data';
 import { copy } from 'components/Shared/functions';
@@ -29,14 +30,13 @@ import { mapControlsController } from 'stateManagement/mapControlsController';
 import { scrollbarStyle } from 'styles/common';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
-import { AppContext } from 'AppContext';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import DatasetMenu from './Menu';
 import NameWithTooltip from '../Common/NameWithTooltip';
 
 const useStyles = makeStyles(theme => ({
-	root: () => ({
+	root: {
 		background: '#0e111a',
 		overflow: 'auto',
 		maxHeight: '274px',
@@ -96,7 +96,7 @@ const useStyles = makeStyles(theme => ({
 		paddingLeft: '10px',
 		justifyContent: 'center',
 		alignItems: 'center',
-	}),
+	},
 	subContainer: props => ({
 		marginLeft: theme.spacing(props.depth * 2),
 	}),
@@ -169,7 +169,7 @@ function Datasets({ headerButton, search }) {
 	);
 
 	const onItemClick = dataset => {
-		const stateToUpdate = { mapGridCardActivated: false, selectedDataset: dataset };
+		const stateToUpdate = { selectedLayerControl: null, mapGridCardActivated: false, selectedDataset: dataset };
 		if (
 			dataset.sourceName === 'M1 Platform' &&
 			mapControlsStateValues.selectedDataset?.sourceName !== dataset.sourceName
@@ -270,7 +270,7 @@ function Datasets({ headerButton, search }) {
 				{datasets?.map(({ sourceName, Icon, categories, ...rest }, index) => (
 					<Grid
 						className="item"
-						key={rest._id}
+						key={`dataset-${sourceName}`}
 						data-testid={`dataset-${sourceName === 'M1 Platform' ? 'platform' : 'custom'}`}
 						onClick={() => onItemClick({ sourceName, Icon, categories, ...rest })}
 					>
@@ -286,7 +286,7 @@ function Datasets({ headerButton, search }) {
 										style={{ width: '100%' }}
 									>
 										<Grid item style={{ display: 'flex', flexDirection: 'inline' }}>
-											<NameWithTooltip
+											<Typography
 												style={{
 													color: '#ffff',
 													textOverflow: 'ellipsis',
@@ -294,10 +294,9 @@ function Datasets({ headerButton, search }) {
 													overflow: 'hidden',
 													width: '254px',
 												}}
-												index={index}
-												title={sourceName}
-												height={'18px'}
-											/>
+											>
+												{sourceName}
+											</Typography>
 										</Grid>
 										<Grid item className="actionIcons">
 											<GridOnIcon id={'grid-icon-' + sourceName} className="actionIcon" />
@@ -327,4 +326,20 @@ function Datasets({ headerButton, search }) {
 	);
 }
 
-export default memo(Datasets);
+Datasets.propTypes = {
+	headerButton: PropTypes.shape({
+		fn: PropTypes.func.isRequired,
+	}),
+	search: PropTypes.string,
+};
+
+const DatasetsContainer = memo(Datasets);
+
+DatasetsContainer.propTypes = {
+	headerButton: PropTypes.shape({
+		fn: PropTypes.func.isRequired,
+	}),
+	search: PropTypes.string,
+};
+
+export default DatasetsContainer;

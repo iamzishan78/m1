@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { Controller } from 'react-hook-form';
 
 import TextField from '@material-ui/core/TextField';
@@ -8,15 +9,15 @@ import { upperFirst } from 'lodash';
 
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
 import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
-import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
 
 import { GET_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetAutoCompleteList';
 
 import { US_STATES_CODES } from 'utils/data';
 
 import filterConsts from './filterConsts';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
-function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, control, prefix = '' }) {
+function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, control, watch, prefix = '' }) {
 	const [stateName, setStateName] = useState(tract.state);
 
 	const [getautoCompleteListBasin, { data: dataAutoCompleteListBasin = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
@@ -156,46 +157,38 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 				)}
 			/>
 
-			<Controller
+			<CustomAutoComplete
 				control={control}
-				name={`${prefix}basin`}
-				defaultValue={tract?.basin || ''}
-				render={({ field: { onChange, value } }) => (
-					<AutoCompleteWithNewOption
-						// Disabled will be false in case of new tract
-						{...(!isNewTract && { disabled: true })}
-						margin="dense"
-						label="Basin"
-						InputLabelProps={{ shrink: true }}
-						variant="outlined"
-						options={autoCompleteListBasin}
-						value={value}
-						onChange={(_, value) => {
-							onChange(value?.name ?? '');
-						}}
-					/>
-				)}
+				watch={watch}
+				fieldAttributes={{
+					name: `${prefix}basin`,
+					label: 'Basin',
+					defaultValue: tract?.basin || '',
+					optionArray: autoCompleteListBasin,
+				}}
+				fieldConfig={{
+					disabled: !isNewTract,
+					margin: 'dense',
+					allowNewOptions: true,
+					variant: 'outlined',
+				}}
 			/>
 
-			<Controller
+			<CustomAutoComplete
 				control={control}
-				name={`${prefix}field`}
-				defaultValue={tract?.field || ''}
-				render={({ field: { onChange, value } }) => (
-					<AutoCompleteWithNewOption
-						// Disabled will be false in case of new tract
-						{...(!isNewTract && { disabled: true })}
-						margin="dense"
-						label="Field"
-						InputLabelProps={{ shrink: true }}
-						variant="outlined"
-						options={autoCompleteListField}
-						value={value}
-						onChange={(_, value) => {
-							onChange(value?.name ?? '');
-						}}
-					/>
-				)}
+				watch={watch}
+				fieldAttributes={{
+					name: `${prefix}field`,
+					label: 'Field',
+					defaultValue: tract?.field || '',
+					optionArray: autoCompleteListField,
+				}}
+				fieldConfig={{
+					disabled: !isNewTract,
+					margin: 'dense',
+					allowNewOptions: true,
+					variant: 'outlined',
+				}}
 			/>
 
 			<div style={{ display: !['TX', 'Texas'].includes(stateName) ? 'block' : 'none' }}>
@@ -431,5 +424,18 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 		</>
 	);
 }
+
+TractForm.propTypes = {
+	isNewTract: PropTypes.bool.isRequired,
+	tract: PropTypes.object.isRequired,
+	tractValue: PropTypes.shape({
+		name: PropTypes.string,
+		_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	}).isRequired,
+	setSelectedShapeLayer: PropTypes.func.isRequired,
+	control: PropTypes.object.isRequired,
+	watch: PropTypes.func.isRequired,
+	prefix: PropTypes.string,
+};
 
 export default TractForm;

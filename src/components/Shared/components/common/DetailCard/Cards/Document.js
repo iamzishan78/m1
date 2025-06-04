@@ -13,7 +13,6 @@ import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
 import { detailCardController } from 'stateManagement/detailCardController';
 import { globalStateController } from 'stateManagement/globalStateController';
 
-
 import { Modals } from 'styles/Modal';
 
 import { AppContext } from 'AppContext';

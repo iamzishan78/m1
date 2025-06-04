@@ -95,7 +95,6 @@ const useStyles = makeStyles(theme => ({
 		'& .MuiChip-root': {
 			backgroundColor: '#ECEDED',
 			color: '#606060',
-			borderRadius: '4px',
 		},
 	},
 	input: {
@@ -302,6 +301,10 @@ export default function Tags(props) {
 						'getOwnersIdsFromTagsArray',
 						'getDbData',
 						'getContact',
+						'getContactsFilterOptions',
+						'getContactWellInterestsFilterOptions',
+						'getESPaginatedList',
+						'getESSimpleSearch',
 					],
 					awaitRefetchQueries: true,
 				});
@@ -327,6 +330,10 @@ export default function Tags(props) {
 							'getOwnersIdsFromTagsArray',
 							'getTagsByObjectsIds',
 							'getDbData',
+							'getContactsFilterOptions',
+							'getContactWellInterestsFilterOptions',
+							'getESPaginatedList',
+							'getESSimpleSearch',
 						],
 						awaitRefetchQueries: true,
 					});
@@ -367,6 +374,9 @@ export default function Tags(props) {
 					'getTagsByObjectsIds',
 					'getPaginatedContacts',
 					'getDbData',
+					'getContactsFilterOptions',
+					'getESPaginatedList',
+					'getESSimpleSearch',
 				],
 				awaitRefetchQueries: true,
 			});
@@ -390,6 +400,9 @@ export default function Tags(props) {
 						'getTagsByObjectsIds',
 						'getPaginatedContacts',
 						'getDbData',
+						'getContactsFilterOptions',
+						'getESPaginatedList',
+						'getESSimpleSearch',
 					],
 					awaitRefetchQueries: true,
 				});
@@ -537,6 +550,11 @@ export default function Tags(props) {
 									onClick={() => {
 										if (props.type === 'textfield') {
 											setTFActive(true);
+											getUserAvailableTags({
+												variables: {
+													userId: stateApp.user.mongoId,
+												},
+											});
 										}
 									}}
 									onBlur={() => {

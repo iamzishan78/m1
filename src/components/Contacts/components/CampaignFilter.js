@@ -92,6 +92,7 @@ export default function CustomDatesActivities({ setFromDate, setToDate, minDate,
 							fieldAttributes={{
 								label: 'Date Range',
 								value: CUSTOM_DATES.ALL_DATES,
+								optionArray: Object.values(CUSTOM_DATES),
 							}}
 							fieldEvents={{
 								onChange: ({ value }) => {
@@ -110,8 +111,6 @@ export default function CustomDatesActivities({ setFromDate, setToDate, minDate,
 									style: { backgroundColor: 'white' },
 								},
 							}}
-							options={Object.values(CUSTOM_DATES)}
-							disableListWrap
 							id="custom-date-dropdown"
 						/>
 					</Grid>

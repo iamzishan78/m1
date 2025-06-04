@@ -6,12 +6,12 @@ import { Typography } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
-import parse from 'autosuggest-highlight/parse';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { UPSERT_MY_WELL } from 'graphQL/useMutationUpsertMyWell';
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
@@ -117,29 +117,24 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 			<div style={{ marginTop: '15px' }}>
 				{showSearch && (
 					<FormControl variant="outlined" fullWidth size="small">
-						<Autocomplete
-							options={foundWells || []}
-							onChange={async (e, well) => {
-								await handleWellDetail(well);
+						<CustomAutoComplete
+							filterOptions={options => options}
+							fieldAttributes={{
+								label: 'Search for a well by name or API',
+								value: platformWell.wellName ?? '',
+								optionArray: foundWells ?? [],
 							}}
-							disabled={!!upsertWellLoading}
-							value={platformWell}
-							getOptionLabel={option => option.WellName}
-							filterOptions={x => x}
-							renderOption={option => {
-								const parts = parse(option.WellName, []);
-
-								return (
+							fieldConfig={{
+								size: 'small',
+								variant: 'outlined',
+								disabled: !!upsertWellLoading,
+								required: true,
+								renderOptionComp: ({ option }) => (
 									<Grid container spacing={0}>
 										<Grid container item xs={11} alignItems="center">
 											<Grid item xs>
-												{parts.map((part, index) => (
-													<span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-														{part.text}
-													</span>
-												))}
-
-												{option && option.ApiNumber && (
+												<Typography variant="body2">{option.WellName}</Typography>
+												{option.ApiNumber && (
 													<Typography variant="body2" color="textSecondary">
 														{option.ApiNumber}
 													</Typography>
@@ -165,52 +160,46 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 											</Grid>
 										</Grid>
 									</Grid>
-								);
+								),
 							}}
-							renderInput={params => (
-								<TextField
-									margin="dense"
-									{...params}
-									required
-									variant="outlined"
-									data-testid={'well-search-field'}
-									label="Search for a well by name or API"
-									InputLabelProps={{ shrink: true }}
-									onChange={event => {
-										getDbData({
-											variables: {
-												index: 'platformData:wells',
-												pagination: {
-													first: 50,
-													after: null,
-												},
-												search: {
-													query: `*${event.target.value}*`,
-													fields: [
-														'api.keyword',
-														'wellName.keyword',
-														'state.keyword',
-														'county.keyword',
-														'wellType.keyword',
-														'wellStatus.keyword',
-														'operator.keyword',
-														'wellBoreProfile.keyword',
-													],
-													advanceSearch: [],
-												},
-												filters: [],
+							fieldEvents={{
+								onChange: async ({ value }) => {
+									await handleWellDetail(value);
+								},
+								onTextFieldChange: value => {
+									getDbData({
+										variables: {
+											index: 'platform_wells',
+											pagination: {
+												first: 50,
+												after: null,
 											},
-										});
-									}}
-								/>
-							)}
+											search: {
+												query: `*${value}*`,
+												fields: [
+													'api.keyword',
+													'wellName.keyword',
+													'state.keyword',
+													'county.keyword',
+													'wellType.keyword',
+													'wellStatus.keyword',
+													'operator.keyword',
+													'wellBoreProfile.keyword',
+												],
+												advanceSearch: [],
+											},
+											filters: [],
+										},
+									});
+								},
+							}}
 						/>
 					</FormControl>
 				)}
 
 				<h4>Selected well and lease information</h4>
-				{wellParams.map((param, index) => (
-					<Fragment key={index}>
+				{wellParams.map(param => (
+					<Fragment key={param.esKey}>
 						<Controller
 							control={control}
 							name={param.esKey ?? param.key}
@@ -255,5 +244,11 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 		</div>
 	);
 }
+
+AddWellInterestDialog.propTypes = {
+	handleWellDetail: PropTypes.func.isRequired,
+	platformWell: PropTypes.object.isRequired,
+	showSearch: PropTypes.bool,
+};
 
 export default AddWellInterestDialog;

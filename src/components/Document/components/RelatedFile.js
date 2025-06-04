@@ -20,15 +20,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
-import loadashFilter from 'lodash/filter';
 import { grey600, grey400 } from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
 
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import CustomDatePicker from 'components/Shared/components/Fields/CustomDatePicker';
 import AutoCompleteDocumentList from 'components/Shared/Forms/Fields/AutoCompleteDocumentList';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
@@ -46,10 +45,6 @@ import { tableGlobalController } from 'stateManagement/tableController';
 import { AppContext } from 'AppContext';
 
 import UploadZone from '../../Shared/UploadZone';
-
-// functions
-
-const filter = createFilterOptions();
 
 const useStyles = makeStyles({
 	list: {
@@ -907,117 +902,167 @@ export default function RelatedFile(props) {
 	);
 }
 
-const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
-	const useStyles = makeStyles({
-		inputRoot: {
-			backgroundColor: '#ffffff',
-		},
-		listbox: {
-			boxSizing: 'border-box',
-			'& ul': {
-				padding: 0,
-				margin: 0,
-			},
-		},
-	});
+// const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
+// 	const useStyles = makeStyles({
+// 		inputRoot: {
+// 			backgroundColor: '#ffffff',
+// 		},
+// 		listbox: {
+// 			boxSizing: 'border-box',
+// 			'& ul': {
+// 				padding: 0,
+// 				margin: 0,
+// 			},
+// 		},
+// 	});
 
-	const classes = useStyles();
+// 	const classes = useStyles();
 
-	const onInputChange = (event, value) => {
-		setDocumentType(value);
-	};
+// 	const onInputChange = (event, value) => {
+// 		setDocumentType(value);
+// 	};
+// 	return (
+// 		<Autocomplete
+// 			defaultValue={value}
+// 			value={value}
+// 			disableListWrap
+// 			classes={classes}
+// 			options={
+// 				documentTypes
+// 					? documentTypes?.getFilesType?.map(type => {
+// 							return { _id: type, name: type };
+// 						})
+// 					: []
+// 			}
+// 			getOptionLabel={option => {
+// 				// Value selected with enter, right from the input
+// 				if (typeof option === 'string') {
+// 					return option;
+// 				}
+// 				// Add "xxx" option created dynamically
+// 				if (option.inputValue) {
+// 					return option.name;
+// 				}
+
+// 				if (option?.name) {
+// 					return option.name;
+// 				} else {
+// 					return '';
+// 				}
+// 			}}
+// 			getOptionSelected={(option, value) => {
+// 				return option?._id === value?._id;
+// 			}}
+// 			renderOption={option => {
+// 				if (option._id === 'newEntity') {
+// 					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
+// 				}
+
+// 				return (
+// 					<Grid container spacing={0}>
+// 						<Grid container item xs={12} alignItems="center">
+// 							<Grid item xs>
+// 								<span style={{ fontWeight: 400 }}>{option.name}</span>
+
+// 								<Typography variant="body2" color="textSecondary">
+// 									{joinAddress(option)}
+// 								</Typography>
+// 							</Grid>
+// 						</Grid>
+// 					</Grid>
+// 				);
+// 			}}
+// 			onInputChange={onInputChange}
+// 			filterOptions={(options, params) => {
+// 				let inputValue = JSON.parse(JSON.stringify(value));
+// 				if (inputValue.name) {
+// 					inputValue = inputValue.name;
+// 				}
+// 				const filtered = filter(options, { ...params, inputValue });
+// 				const isExist = loadashFilter(filtered, filter => {
+// 					return filter._id === inputValue;
+// 				});
+// 				// Suggest the creation of a new value
+// 				if (inputValue !== '' && (!isExist || isExist.length === 0)) {
+// 					filtered.unshift({
+// 						name: inputValue,
+// 						_id: 'newEntity',
+// 					});
+// 				}
+// 				return filtered;
+// 			}}
+// 			onChange={(event, newValue) => {
+// 				if (newValue && newValue._id) {
+// 					if (newValue._id !== 'newEntity') {
+// 						setDocumentType(newValue);
+// 					} else {
+// 						setDocumentType({ _id: 'newEntity', name: newValue.name });
+// 					}
+// 				} else {
+// 					setDocumentType('');
+// 				}
+// 			}}
+// 			renderInput={params => (
+// 				<TextField
+// 					margin="dense"
+// 					{...params}
+// 					InputProps={{
+// 						...params.InputProps,
+// 					}}
+// 					size="small"
+// 				/>
+// 			)}
+// 			{...other}
+// 		/>
+// 	);
+// };
+
+const DocumentType = ({ documentTypes, setDocumentType, value, disabled, className }) => {
+	const options = documentTypes
+		? documentTypes?.getFilesType?.map(type => {
+				return { _id: type, name: type };
+			})
+		: [];
+	console.log('Idhr');
+
 	return (
-		<Autocomplete
-			defaultValue={value}
-			value={value}
-			disableListWrap
-			classes={classes}
-			options={
-				documentTypes
-					? documentTypes?.getFilesType?.map(type => {
-							return { _id: type, name: type };
-						})
-					: []
-			}
-			getOptionLabel={option => {
-				// Value selected with enter, right from the input
-				if (typeof option === 'string') {
-					return option;
-				}
-				// Add "xxx" option created dynamically
-				if (option.inputValue) {
-					return option.name;
-				}
-
-				if (option?.name) {
-					return option.name;
-				} else {
-					return '';
-				}
+		<CustomAutoComplete
+			fieldAttributes={{
+				label: 'Document Type',
+				value: value,
+				optionArray: options,
 			}}
-			getOptionSelected={(option, value) => {
-				return option?._id === value?._id;
-			}}
-			renderOption={option => {
-				if (option._id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
-				}
+			fieldConfig={{
+				disabled: disabled,
+				allowNewOptions: true,
+				inputClassName: className,
+				getCustomOptionLabel: option => {
+					if (typeof option === 'string') {
+						return option;
+					}
+					return option.name;
+				},
+				renderOptionComp: ({ option }) => {
+					return (
+						<Grid container spacing={0}>
+							<Grid container item xs={12} alignItems="center">
+								<Grid item xs>
+									<span style={{ fontWeight: 400 }}>{option.name}</span>
 
-				return (
-					<Grid container spacing={0}>
-						<Grid container item xs={12} alignItems="center">
-							<Grid item xs>
-								<span style={{ fontWeight: 400 }}>{option.name}</span>
-
-								<Typography variant="body2" color="textSecondary">
-									{joinAddress(option)}
-								</Typography>
+									<Typography variant="body2" color="textSecondary">
+										{joinAddress(option)}
+									</Typography>
+								</Grid>
 							</Grid>
 						</Grid>
-					</Grid>
-				);
+					);
+				},
 			}}
-			onInputChange={onInputChange}
-			filterOptions={(options, params) => {
-				let inputValue = JSON.parse(JSON.stringify(value));
-				if (inputValue.name) {
-					inputValue = inputValue.name;
-				}
-				const filtered = filter(options, { ...params, inputValue });
-				const isExist = loadashFilter(filtered, filter => {
-					return filter._id === inputValue;
-				});
-				// Suggest the creation of a new value
-				if (inputValue !== '' && (!isExist || isExist.length === 0)) {
-					filtered.unshift({
-						name: inputValue,
-						_id: 'newEntity',
-					});
-				}
-				return filtered;
+			fieldEvents={{
+				onChange: ({ value }) => {
+					setDocumentType(value ?? '');
+				},
 			}}
-			onChange={(event, newValue) => {
-				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') {
-						setDocumentType(newValue);
-					} else {
-						setDocumentType({ _id: 'newEntity', name: newValue.name });
-					}
-				} else {
-					setDocumentType('');
-				}
-			}}
-			renderInput={params => (
-				<TextField
-					margin="dense"
-					{...params}
-					InputProps={{
-						...params.InputProps,
-					}}
-					size="small"
-				/>
-			)}
-			{...other}
 		/>
 	);
 };
@@ -1033,4 +1078,6 @@ DocumentType.propTypes = {
 	setDocumentType: PropTypes.func.isRequired,
 	value: PropTypes.string,
 	documentTypes: PropTypes.object,
+	disabled: PropTypes.bool,
+	className: PropTypes.string,
 };

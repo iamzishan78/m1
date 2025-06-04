@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Grid, FormControl, TextField, Switch, FormControlLabel } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
@@ -6,6 +6,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import CustomFieldSelect from 'components/MRTTable/Common/Components/CustomFieldSelect';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
@@ -265,7 +266,7 @@ const CodeMapping = ({ settingsFor }) => {
 											<Grid item xs={2} className={classes.spacing}>
 												<LongIcon />
 											</Grid>
-											<Grid item xs={4}>
+											<Grid item xs={4} style={{ display: 'flex', alignItems: 'center' }}>
 												{selectedMeta.type === 'multiselect' ? (
 													<ReactSelectField
 														index={index}
@@ -375,4 +376,18 @@ const CodeMappingHeader = ({
 			)}
 		</>
 	);
+};
+
+CodeMappingHeader.propTypes = {
+	metaData: PropTypes.array,
+	mappingType: PropTypes.object,
+	setMappingType: PropTypes.func,
+	isBackground: PropTypes.bool,
+	fullWidth: PropTypes.bool,
+	isShrink: PropTypes.bool,
+	settingsFor: PropTypes.string,
+};
+
+CodeMapping.propTypes = {
+	settingsFor: PropTypes.oneOf(['land', 'revenue']).isRequired,
 };

@@ -1,7 +1,6 @@
 import { entityTypeOptions } from 'components/ContactDetailedInfo/helper';
-
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
 export const phonenumber = inputtxt => {
 	if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
@@ -23,7 +22,7 @@ const zipCopde = inputtxt => {
 	return false;
 };
 
-const contactForm = ({ setValue }) => {
+const contactForm = ({ getValues, setValue, dialpadFeature }) => {
 	const formFields = [
 		{
 			label: 'First Name',
@@ -57,7 +56,7 @@ const contactForm = ({ setValue }) => {
 			label: 'Home phone',
 			name: 'homePhone',
 			onChange: value => {
-				if (phonenumber(value)) {
+				if (!dialpadFeature || phonenumber(value)) {
 					setValue('homePhone', value);
 				} else {
 					setValue('homePhone', '');
@@ -68,7 +67,7 @@ const contactForm = ({ setValue }) => {
 			label: 'Mobile Phone',
 			name: 'mobilePhone',
 			onChange: value => {
-				if (phonenumber(value)) {
+				if (!dialpadFeature || phonenumber(value)) {
 					setValue('mobilePhone', value);
 				} else {
 					setValue('mobilePhone', '');

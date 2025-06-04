@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -32,7 +33,7 @@ const useStyles = makeStyles(theme => ({
 		marginLeft: '30px',
 	},
 
-	aadButton: {
+	loginButton: {
 		backgroundColor: '#17aadd',
 		width: '125px',
 		lineHeight: '1.4',
@@ -138,7 +139,7 @@ const BootstrapInput = withStyles(theme => ({
 }))(InputBase);
 
 const SignInCard = props => {
-	const { handleAADSignIn } = props;
+	const { handleSignIn: handleSignInFunc } = props;
 	const classes = useStyles();
 	const history = useHistory();
 	const query = queryString.parse(history?.location?.search);
@@ -150,12 +151,6 @@ const SignInCard = props => {
 		placeholder: 'i.e. M1neral',
 		autoFocus: false,
 	});
-
-	useEffect(() => {
-		if (query.tenant?.trim()) {
-			handleSignIn(query.tenant);
-		}
-	}, [query.tenant]);
 
 	const updateTenantFlags = (errorText = null) => {
 		setTenantFlags(prevFlags => ({
@@ -173,13 +168,19 @@ const SignInCard = props => {
 		} else {
 			setError(null);
 			if (query.tenant?.trim()) {
-				await handleAADSignIn(tenantValue, updateTenantFlags);
+				await handleSignInFunc(tenantValue, updateTenantFlags);
 			} else {
-				handleAADSignIn(tenantValue, updateTenantFlags);
+				handleSignInFunc(tenantValue, updateTenantFlags);
 			}
 			history.push(history.location.pathname);
 		}
 	};
+
+	useEffect(() => {
+		if (query.tenant?.trim()) {
+			handleSignIn(query.tenant);
+		}
+	}, [query.tenant]);
 
 	const onEnterKey = e => {
 		if (e.keyCode === 13) {
@@ -190,7 +191,7 @@ const SignInCard = props => {
 
 	const loading = query.tenant?.trim() ? true : props.ready;
 
-	const renderAADButtonAndLoader = loading ? (
+	const renderLoginButtonAndLoader = loading ? (
 		<CircularProgress color="secondary" size={28} className={classes.loader} />
 	) : (
 		<Button
@@ -198,7 +199,7 @@ const SignInCard = props => {
 			disableElevation
 			type="submit"
 			id="workSpaceSignin"
-			className={classes.aadButton}
+			className={classes.loginButton}
 			onClick={() => handleSignIn(tenant)}
 			onKeyDown={e => onEnterKey(e)}
 		>
@@ -257,7 +258,7 @@ const SignInCard = props => {
 								value={tenant}
 							/>
 							<>
-								{renderAADButtonAndLoader}
+								{renderLoginButtonAndLoader}
 								{error && (
 									<p id="errorSection" className={classes.errorSection}>
 										{error}
@@ -276,7 +277,7 @@ const SignInCard = props => {
 					color: '#fff',
 				}}
 			>
-				© 2024 M1neral, LLC. All Rights Reserved.
+				© {new Date().getFullYear()} M1neral, LLC. All Rights Reserved.
 			</div>
 
 			<div className={classes.termsAndPrivacy}>

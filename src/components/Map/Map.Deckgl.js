@@ -362,7 +362,7 @@ function Map({
 		const { data: well } = await client.query({
 			query: GET_DB_DATA,
 			variables: {
-				index: 'platformData:wells',
+				index: 'platform_wells',
 				pagination: {
 					first: 1,
 					keep_alive: '1micros',
@@ -502,7 +502,7 @@ function Map({
 		);
 
 		const layer = layerStateValues.layers.find(
-			l => popupStateValues.selectedShapeFile.properties?.layerShapeName === l.layerIdentifier
+			l => popupStateValues.selectedShapeFile.properties?.layerIdentifier === l.layerIdentifier
 		);
 
 		udLayerClickHandler(popupStateValues.selectedShapeFile, layer);

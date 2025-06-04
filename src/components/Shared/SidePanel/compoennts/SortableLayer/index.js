@@ -73,13 +73,14 @@ const SortableLayer = ({ mongoId, search }) => {
 							const groups = hookStateAppLayers.filter(i => i.groupId === item.groupId);
 							const visiable = !!groups.find(i => i.layerSettings.visiable);
 							const showable = !!groups.find(i => i.layerSettings.showable);
+							const groupData = layerGroups.find(g => g.groupId === item.groupId);
 							layerAndGroups.push({
 								depth: 0,
 								type: 'group',
 								collapsed: true,
 								showable,
 								visiable,
-								name: item.groupName,
+								name: groupData ? groupData.name : item.groupName,
 								id: item.groupId,
 							});
 							groups.forEach(item => {

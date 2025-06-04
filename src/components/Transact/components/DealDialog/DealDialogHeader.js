@@ -286,7 +286,7 @@ const DealDialogHeader = ({
 						}}
 						onBlur={() => {
 							setTitleFocus(false);
-							addUpdateDeal();
+							// addUpdateDeal();
 						}}
 					/>
 					{/* <TextareaAutosize aria-label="empty textarea" placeholder="Empty" style={{ width: 200 }} /> */}

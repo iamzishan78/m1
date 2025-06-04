@@ -18,6 +18,14 @@ function PropertyInterestDetaillDialog() {
 		});
 	};
 
+	const handleClickDialogClose = () => {
+		tableGlobalController.updateState({
+			propertyInterestDetaillDialog: {
+				type: 'addInterestDetail',
+			},
+		});
+	};
+
 	return (
 		<>
 			{type === 'addInterestDetail' && (
@@ -27,7 +35,7 @@ function PropertyInterestDetaillDialog() {
 			)}
 
 			{type === 'convertOwnerToContact' && (
-				<ConvertOwnerToContactContainer propertyDetails={rest?.propertyDetails} onClose={handleCloseDialog} />
+				<ConvertOwnerToContactContainer propertyDetails={rest?.propertyDetails} onClose={handleClickDialogClose} />
 			)}
 		</>
 	);

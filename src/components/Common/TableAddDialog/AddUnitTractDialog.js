@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
 
 import { Box, CircularProgress, Dialog, Typography } from '@material-ui/core';
@@ -277,6 +278,7 @@ function AddUnitTractDialog(props) {
 							setSelectedShapeLayer={setSelectedShapeLayer}
 							register={register}
 							control={control}
+							watch={watch}
 						/>
 
 						<Controller
@@ -380,5 +382,22 @@ function AddUnitTractDialog(props) {
 		</>
 	);
 }
+
+AddUnitTractDialog.propTypes = {
+	open: PropTypes.bool.isRequired,
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	shapeId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	shapeType: PropTypes.string,
+	seletedTract: PropTypes.shape({
+		_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		parcel: PropTypes.shape({
+			_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+			name: PropTypes.string,
+		}),
+		parcelId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		name: PropTypes.string,
+	}),
+	onClose: PropTypes.func.isRequired,
+};
 
 export default AddUnitTractDialog;

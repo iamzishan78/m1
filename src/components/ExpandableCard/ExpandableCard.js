@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-
+import { useHistory, Link } from 'react-router-dom';
 import {
 	Avatar,
 	Box,
@@ -59,6 +58,8 @@ import ExpandIcon from './components/svgIcons/ExpandIcon';
 import ShrinkIcon from './components/svgIcons/ShrinkIcon';
 
 import 'material-icons/iconfont/material-icons.css';
+import EditNote from 'components/Shared/svgIcons/edit_note';
+import { UserSession } from 'utils/user';
 
 function ExpandableCard(props) {
 	// initials
@@ -775,6 +776,17 @@ function ExpandableCard(props) {
 										aria-label={`Edit ${targetLabel}`}
 									>
 										<DrawPoly />
+									</IconButton>
+								</Tooltip>
+							)}
+							{targetLabel === 'agreement' && (
+								<Tooltip title={'Open Analyst View'} data-testid="open-analyst-view" placement="top">
+									<IconButton>
+										<Link
+											to={`/land/agreement/details/${selectedShape.id}/?tenant=${UserSession.getStorageItem('tenantName')}`}
+										>
+											<EditNote />
+										</Link>
 									</IconButton>
 								</Tooltip>
 							)}

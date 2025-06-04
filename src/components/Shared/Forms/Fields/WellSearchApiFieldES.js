@@ -11,11 +11,9 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useLazyQuery } from '@apollo/client';
 import debounce from 'lodash/debounce';
 
-// Queries
-
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	secondaryText: {
 		color: 'grey',
 		fontSize: '15px',
@@ -39,10 +37,10 @@ function WellSearchApiField(props) {
 	// searching wells
 	const callWellESSearch = React.useMemo(
 		() =>
-			debounce((request, callback) => {
+			debounce(request => {
 				getDbData({
 					variables: {
-						index: 'platformData:wells',
+						index: 'platform_wells',
 						pagination: {
 							first: request.searchTop ? request.searchTop : startPaginationAt,
 							keep_alive: '1micros',
@@ -55,7 +53,6 @@ function WellSearchApiField(props) {
 					},
 				});
 			}, 500),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[]
 	);
 
@@ -85,7 +82,7 @@ function WellSearchApiField(props) {
 					onChange(well);
 				}}
 				value={selectedWell}
-				getOptionLabel={(option, value) => option.wellName}
+				getOptionLabel={option => option.wellName}
 				filterOptions={x => x}
 				loading
 				id="wellSearch"
@@ -112,7 +109,7 @@ function WellSearchApiField(props) {
 						label="Search for a well by name or API"
 						InputLabelProps={{ shrink: true }}
 						onChange={event => {
-							callWellESSearch({ input: event.target.value }, results => null);
+							callWellESSearch({ input: event.target.value }, () => null);
 						}}
 						onBlur={() => setFocused(false)}
 					/>

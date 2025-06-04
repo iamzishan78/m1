@@ -89,6 +89,6 @@ export const customLayersFieldAccessors = {
 			{ label: 'Completion Date', value: 'completionDate', type: 'date' },
 			{ label: 'First Production Date', value: 'firstProductionDate', type: 'date' },
 		],
-		layerKey: 'platformData:wells',
+		layerKey: 'platform_wells',
 	},
 };

@@ -5,7 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { set } from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -29,7 +29,6 @@ import { showSuccessMessage, showErrorMessage } from 'actions';
 
 import ParcelSummary from './ParcelSummary';
 import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
-import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import Taps from '../Shared/Taps';
 
 const useStyles = makeStyles(theme => ({
@@ -356,7 +355,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 
 	const relatedWellsOverrideMeta = useMemo(
 		() => ({
-			maxTableHeight,
+			maxTableHeight: 'calc(50vh - 100px)',
+			tabLabels: ['Related Wells', 'Potential Wells'],
 			defaultFilters: [{ field: 'shape._id', value: parcelObj?._id }],
 			customProps: { customLayer: parcelObj, shapeType: 'Parcel' },
 			deletedKeys: {
@@ -512,14 +512,32 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 								]}
 							/>,
 							<MRTTable key="Runsheet" name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />,
-							<div key="Wells">
-								<RelatedWellsTable
-									id="relatedWellsTable"
-									overrideMeta={relatedWellsOverrideMeta}
-									shapeType="Parcel"
-									customLayer={copy(parcelObj)}
-								/>
-							</div>,
+							<TabPanels
+								key="Wells"
+								value={selectedTab}
+								panels={[
+									<div key="relatedWellsTable" className={classes.subContent}>
+										<RelatedWellsTable
+											id="relatedWellsTable"
+											overrideMeta={relatedWellsOverrideMeta}
+											shapeType="Parcel"
+											customLayer={copy(parcelObj)}
+										/>
+									</div>,
+									<div key="PotentialWellsTable" className={classes.subContent}>
+										<MRTTable
+											name="PotentialWellsTable"
+											overrideMeta={{
+												tabLabels: ['Related Wells', 'Potential Wells'],
+												customProps: {
+													customLayer: parcelObj,
+													shapeType: 'Parcel',
+												},
+											}}
+										/>
+									</div>,
+								]}
+							/>,
 							<TabPanels
 								key="Units"
 								value={selectedTab}
@@ -567,4 +585,14 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 ParcelsDetailCard.propTypes = {
 	id: PropTypes.string.isRequired,
 	selectTabIndex: PropTypes.number.isRequired,
+	dataCustomLayer: PropTypes.shape({
+		customLayer: PropTypes.shape({
+			_id: PropTypes.string,
+			shape: PropTypes.string,
+			shapeJson: PropTypes.object,
+			state: PropTypes.string,
+			layer: PropTypes.string,
+			name: PropTypes.string,
+		}),
+	}).isRequired,
 };

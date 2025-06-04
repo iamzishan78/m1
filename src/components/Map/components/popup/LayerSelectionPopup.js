@@ -156,31 +156,31 @@ function LayerSelectionPopup(props) {
 
 		const labels = [];
 
-		switch (layer.sourceKey) {
-			case 'Wells':
-			case 'My Wells':
-				labels.push(properties.api);
-				labels.push(properties.wellName);
-				break;
+		// Helper function to check if sourceKey starts with any of the given prefixes
+		const sourceKeyStartsWith = (sourceKey, prefixes) => {
+			return prefixes.some(prefix => sourceKey.startsWith(prefix));
+		};
 
-			case 'Parcels':
-			case 'Area of Interest':
-				labels.push(properties.shapeLabel || properties.label);
-				break;
+		// Get the source key and ensure it exists
+		const sourceKey = layer.sourceKey || '';
 
-			case 'Units':
-				labels.push(properties.uNumber);
-				labels.push(properties.shapeLabel || properties.label);
-				break;
-
-			default:
-				if (properties.layerShapeName) {
-					labels.push(properties.Unit_Name || properties.layerShapeName || layer.layer.id);
-				} else {
-					labels.push(properties.agreementNumber);
-					labels.push(properties.agreementName);
-				}
-				break;
+		// Check source key against prefixes
+		if (sourceKeyStartsWith(sourceKey, ['Wells', 'My Wells'])) {
+			labels.push(properties.api);
+			labels.push(properties.wellName);
+		} else if (sourceKeyStartsWith(sourceKey, ['Parcels', 'Area of Interest'])) {
+			labels.push(properties.shapeLabel || properties.label);
+		} else if (sourceKeyStartsWith(sourceKey, ['Units'])) {
+			labels.push(properties.uNumber);
+			labels.push(properties.shapeLabel || properties.label);
+		} else {
+			// Default case
+			if (properties.layerShapeName) {
+				labels.push(properties.Unit_Name || properties.layerShapeName || layer.layer.id);
+			} else {
+				labels.push(properties.agreementNumber);
+				labels.push(properties.agreementName);
+			}
 		}
 
 		return labels.filter(Boolean).join(' - ');
@@ -192,8 +192,8 @@ function LayerSelectionPopup(props) {
 
 	selectionLayers.forEach(selectionLayer => {
 		selectionLayer.sourceKey = selectionLayer.layer.id.split('_')[0];
-		if (selectionLayer?.object?.properties?.layerShapeName) {
-			selectionLayer.sourceKey = selectionLayer?.object?.properties?.layerShapeName;
+		if (selectionLayer?.object?.properties?.layerIdentifier) {
+			selectionLayer.sourceKey = selectionLayer?.object?.properties?.layerIdentifier;
 		}
 	});
 
@@ -218,8 +218,8 @@ function LayerSelectionPopup(props) {
 					return includes(search, [properties.uNumber, properties.shapeLabel || properties.label]);
 
 				default:
-					if (properties.layerShapeName) {
-						return includes(search, [properties.Unit_Name || properties.layerShapeName || selectionLayer.layer?.id]);
+					if (properties.layerIdentifier) {
+						return includes(search, [properties.Unit_Name || properties.layerIdentifier || selectionLayer.layer?.id]);
 					}
 
 					return includes(search, [properties.agreementNumber, properties.agreementName]);

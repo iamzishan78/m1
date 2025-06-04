@@ -160,7 +160,7 @@ export default class DeckGlOverlay {
 						if (clickedFeature?.object?.geometry?.type === 'Point') {
 							drawWellBoundary(clickedFeature?.object?.geometry?.coordinates);
 						} else {
-							drawBoundary(clickedFeature.object);
+							drawBoundary(clickedFeature.object, 'boundary-layer', layer);
 						}
 					}
 
@@ -173,7 +173,8 @@ export default class DeckGlOverlay {
 
 	static getLayer = layerId => {
 		if (!window.deckOverlay) {
-			throw new Error('DeckOverlay is not initialized.');
+			console.error('DeckOverlay is not initialized.');
+			return null;
 		}
 
 		const layers = window?.deckOverlay?._props?.layers || [];

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -35,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 		marginLeft: '30px',
 	},
 
-	aadButton: {
+	loginButton: {
 		backgroundColor: '#17aadd',
 		width: '125px',
 		lineHeight: '1.4',
@@ -111,7 +112,7 @@ const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
 `;
 
 const BypassSignInCard = props => {
-	const { handleAADSignIn } = props;
+	const { handleSignIn } = props;
 
 	const classes = useStyles();
 
@@ -131,12 +132,6 @@ const BypassSignInCard = props => {
 		autoFocus: false,
 	});
 
-	useEffect(() => {
-		if (tenant.trim() !== '' && tenant === props.tenant) {
-			signInAAD();
-		}
-	}, [props.tenant]);
-
 	const updateTenantFlags = (errorText, t = '') => {
 		setTenantFlags({
 			error: true,
@@ -147,26 +142,32 @@ const BypassSignInCard = props => {
 		errorText ? setError(errorText) : setError(null);
 	};
 
-	const onEnterKey = e => {
-		if (e.keyCode === 13) {
-			e.preventDefault();
-			setError(null);
-			handleAADSignIn(tenant, updateTenantFlags, email);
-		}
-	};
-
-	const signInAAD = async () => {
+	const signIn = async () => {
 		if (tenant.trim() === '' || !email) {
 			updateTenantFlags('Not a valid workspace or email', tenant.trim());
 		} else {
 			setError(null);
-			await handleAADSignIn(tenant, updateTenantFlags, email);
+			await handleSignIn(tenant, updateTenantFlags, email);
 
 			history.push(history.location.pathname);
 		}
 	};
 
-	const renderAADButtonAndLoader = props.ready ? (
+	useEffect(() => {
+		if (tenant.trim() !== '' && tenant === props.tenant) {
+			signIn();
+		}
+	}, [props.tenant]);
+
+	const onEnterKey = e => {
+		if (e.keyCode === 13) {
+			e.preventDefault();
+			setError(null);
+			handleSignIn(tenant, updateTenantFlags, email);
+		}
+	};
+
+	const renderLoginButtonAndLoader = props.ready ? (
 		<CircularProgress color="secondary" size={28} className={classes.loader} />
 	) : (
 		<Button
@@ -174,8 +175,8 @@ const BypassSignInCard = props => {
 			disableElevation
 			type="submit"
 			id="workSpaceSignin"
-			className={classes.aadButton}
-			onClick={signInAAD}
+			className={classes.loginButton}
+			onClick={signIn}
 			onKeyDown={e => onEnterKey(e)}
 		>
 			Sign In
@@ -268,7 +269,7 @@ const BypassSignInCard = props => {
 									});
 								}}
 							/>
-							<>{renderAADButtonAndLoader}</>
+							<>{renderLoginButtonAndLoader}</>
 						</React.Fragment>
 					) : (
 						<CircularProgress color="secondary" size={50} className={classes.loader} />

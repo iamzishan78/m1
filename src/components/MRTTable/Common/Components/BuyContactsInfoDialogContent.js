@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 
 import { Backdrop, FormLabel, Grid, Tooltip } from '@material-ui/core';
@@ -9,16 +10,15 @@ import DialogContent from '@material-ui/core/DialogContent';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import ErrorIcon from '@material-ui/icons/Error';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-
 import { useLazyQuery, useMutation } from '@apollo/client';
+
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
@@ -284,17 +284,19 @@ export default function BuyContactsInfoDialogContent(props) {
 							<Grid item xs={12} style={{ marginTop: '50px' }}>
 								<h3 style={{ margin: '0' }}>Contact address to use for search</h3>
 								<div className={classes.addressAutocomplete}>
-									<Autocomplete
-										id="address"
-										options={addressOptions}
-										getOptionLabel={option => option.label}
-										size="small"
-										defaultValue={address}
-										value={addressOptions.find(opt => opt.value === address)}
-										onChange={(_, value) => {
-											setAddress(value?.value);
+									<CustomAutoComplete
+										fieldConfig={{
+											size: 'small',
+											variant: 'outlined',
 										}}
-										renderInput={params => <TextField {...params} label="Address" variant="outlined" value={address} />}
+										fieldAttributes={{
+											label: 'Address',
+											optionArray: addressOptions,
+											defaultValue: address,
+										}}
+										fieldEvents={{
+											onChange: ({ value }) => setAddress(value),
+										}}
 									/>
 								</div>
 							</Grid>
@@ -305,13 +307,13 @@ export default function BuyContactsInfoDialogContent(props) {
 
 							{contactDataMissing &&
 								contactDataMissing.map(row => (
-									<Grid item xs={12} className={modalClass.inputContainer}>
+									<Grid key={row} item xs={12} className={modalClass.inputContainer}>
 										<FormLabel className={modalClass.inputLabel}>{`${row.name || 'Name Missing'}`}</FormLabel>
 										<FormLabel className={modalClass.inputContent}>
 											<div className="flex jusifyEnd alignCenter">
 												{setMissingLabelsFunc(row) &&
-													setMissingLabelsFunc(row).map((label, index) => (
-														<p key={index + 1} className={classes.label}>
+													setMissingLabelsFunc(row).map(label => (
+														<p key={label} className={classes.label}>
 															{label}
 														</p>
 													))}
@@ -340,7 +342,7 @@ export default function BuyContactsInfoDialogContent(props) {
 							</Grid>
 							{validContactData &&
 								validContactData.map((row, index) => (
-									<Grid item xs={12} className={modalClass.inputContainer}>
+									<Grid key={row} item xs={12} className={modalClass.inputContainer}>
 										<FormLabel className={modalClass.inputLabel}>{`${row.name}`}</FormLabel>
 										<FormLabel className={modalClass.inputContent}>
 											{(jobStateValues?.isJobCompleted || jobStateValues?.isJobFailed) && jobStateValues?.JobOutput && (
@@ -421,3 +423,10 @@ export default function BuyContactsInfoDialogContent(props) {
 		</React.Fragment>
 	);
 }
+
+BuyContactsInfoDialogContent.propTypes = {
+	onClose: PropTypes.func.isRequired,
+	header: PropTypes.string,
+	rows: PropTypes.arrayOf(PropTypes.object).isRequired,
+	setRows: PropTypes.func.isRequired,
+};

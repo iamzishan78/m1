@@ -169,7 +169,7 @@ export const drawPlaceBoundary = coordinates => {
 	}
 };
 
-export const drawBoundary = (selectedUserDefinedLayer, layer_Id) => {
+export const drawBoundary = (selectedUserDefinedLayer, layer_Id, originalLayer) => {
 	if (!window.mapRef) {
 		return;
 	}
@@ -182,24 +182,41 @@ export const drawBoundary = (selectedUserDefinedLayer, layer_Id) => {
 
 	if (selectedUserDefinedLayer?.geometry) {
 		const type = selectedUserDefinedLayer.geometry.type;
+
+		const feature = {
+			type: 'Feature',
+			geometry: selectedUserDefinedLayer.geometry,
+		};
+
+		let strokeWidth = originalLayer?.layerPaintProps?.[0]?.paintProps?.['strokeWidth'] || 20;
+		let pointWidth = (originalLayer?.layerPaintProps?.[0]?.paintProps?.['circle-stroke-width'] || 1) * 40;
+
+		// Calculate area of the shape
+		const area = turf.area(feature);
+		// If area is less than 10 sq meters, set 0
+		if (area < 10) {
+			strokeWidth = 0;
+			pointWidth = 0;
+		}
+		// If area is less than 1000 sq meters, set 1
+		if (area < 1000) {
+			strokeWidth = 1;
+			pointWidth = 1;
+		}
+
 		DeckGlLayer.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
 			props: {
-				data: [
-					{
-						type: 'Feature',
-						geometry: selectedUserDefinedLayer.geometry,
-					},
-				],
+				data: [feature],
 				lineWidthUnits: 'pixels',
 				getFillColor: [0, 0, 0, 0],
 				getLineColor: [255, 255, 0],
-				getLineWidth: 6,
+				getLineWidth: strokeWidth,
 				// if shape is point then apply these features
 				...(type === 'Point' && {
 					lineWidthUnits: 'pixels',
-					getLineWidth: 25,
+					getLineWidth: pointWidth,
 					getFillColor: [255, 255, 0],
 					getLineColor: [255, 255, 0],
 				}),

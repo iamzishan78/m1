@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -10,9 +11,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { extractValueRecursively } from 'components/MRTTable/utils/helper';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 
@@ -21,6 +24,9 @@ import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { sideDialogController } from 'stateManagement/sideDialogController';
 import { tableGlobalController } from 'stateManagement/tableController';
+
+import { showErrorMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	dialogContent: {
@@ -63,24 +69,38 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function AddContactDialogContent(props) {
+	const [stateApp] = React.useContext(AppContext);
 	const Controller = sideDialogController('contactDialog');
 	const formState = Controller.useCompleteState();
 
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user;
+	const dispatch = useDispatch();
 
 	const { control, reset, getValues, setValue, watch } = useForm();
 
 	const { firstName } = getValues() || {};
 
+	const dialpadFeature = React.useMemo(() => {
+		return stateApp.user?.features?.find(feature => feature.name === FEATURES.DIALPAD_INTEGRATION);
+	}, [stateApp.user]);
+
 	const formSchema = useMemo(() => {
 		return contactForm({
 			getValues,
 			setValue,
+			dialpadFeature,
 		});
 	}, [formState?.rerenderJson]);
 
-	const [addContact, { loading }] = useMutation(ADDCONTACT);
+	const [addContact, { loading }] = useMutation(ADDCONTACT, {
+		onCompleted: data => {
+			if (!data.addContact.success) {
+				dispatch(showErrorMessage(data.addContact.message));
+			}
+			tableGlobalController.refetch();
+		},
+	});
 
 	const handleClickDialogClose = e => {
 		e.preventDefault();
@@ -105,6 +125,7 @@ export default function AddContactDialogContent(props) {
 			lastUpdateBy: getUser?._id,
 		});
 
+		// eslint-disable-next-line no-unused-vars
 		const { DialogKey, ...filteredContact } = contact;
 
 		await addContact({
@@ -175,3 +196,7 @@ export default function AddContactDialogContent(props) {
 		</RightDialog>
 	);
 }
+
+AddContactDialogContent.propTypes = {
+	onClose: PropTypes.func.isRequired,
+};
