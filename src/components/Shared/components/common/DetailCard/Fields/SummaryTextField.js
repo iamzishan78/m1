@@ -41,6 +41,9 @@ const useStyles = makeStyles(() => ({
 		'& .MuiInputBase-root': {
 			borderRadius: '7px',
 		},
+		'& .MuiOutlinedInput-input': {
+			padding: '8px 14px',
+		},
 	},
 	hoverPointer: {
 		cursor: 'pointer',
