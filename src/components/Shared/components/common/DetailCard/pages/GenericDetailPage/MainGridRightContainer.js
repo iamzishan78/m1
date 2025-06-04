@@ -3,7 +3,6 @@ import React, { useState, memo } from 'react';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
-import { removeSpaces } from 'components/MRTTable/utils/helper';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 
@@ -32,7 +31,7 @@ const MainGridRightContainer = () => {
 	const { callApi } = useUpdate();
 
 	const handleExpandClick = type => {
-		detailCardController.updateProps({
+		detailCardController.updateState({
 			openDialog: type,
 		});
 	};
@@ -48,7 +47,7 @@ const MainGridRightContainer = () => {
 	return (
 		<>
 			<MetadataDrawer
-				height="95%"
+				height="100%"
 				commentsHeight="auto"
 				title="Additional Details"
 				documentsTitle="Recent Documents"
@@ -95,7 +94,7 @@ const MainGridRightContainer = () => {
 						handleExpandClick('deleteConfirmation');
 					}}
 				>
-					{`Delete ${currentAsset?.name}`}
+					Delete
 				</MenuItem>
 			</Menu>
 		</>

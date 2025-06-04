@@ -55,6 +55,7 @@ const DateTimeField = ({ item, dialogKey }) => {
 				onChange={e => {
 					setDate(e.target.value);
 				}}
+				disabled={item.disabled}
 			/>
 			<TextField
 				className={classes.dateTimeField}
@@ -64,6 +65,7 @@ const DateTimeField = ({ item, dialogKey }) => {
 				onChange={e => {
 					setTime(e.target.value);
 				}}
+				disabled={item.disabled}
 			/>
 		</div>
 	);

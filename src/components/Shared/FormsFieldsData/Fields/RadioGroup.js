@@ -29,7 +29,13 @@ function RadioComponent({ control, item, dialogKey }) {
 						}}
 					>
 						{options.map((option, index) => (
-							<FormControlLabel key={index} value={option.value} control={<Radio />} label={option.label} />
+							<FormControlLabel
+								disabled={item.disabled}
+								key={index}
+								value={option.value}
+								control={<Radio />}
+								label={option.label}
+							/>
 						))}
 					</RadioGroup>
 				)}

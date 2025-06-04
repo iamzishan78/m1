@@ -5,6 +5,7 @@ export const detailCardInitialState = {
 	baseTabKey: 0,
 	bottomTabKey: 0,
 	props: null,
+	openDialog: null,
 };
 
 class DetailCardController extends StateController {

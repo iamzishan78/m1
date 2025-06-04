@@ -95,6 +95,7 @@ const UsersListWithIcon = ({
 			<Grid item xs={fieldSize} style={{ maxWidth: '100%', flex: '1' }}>
 				<Autocomplete
 					id="userList"
+					disabled={field?.disabled}
 					options={users.filter(u => u.text)}
 					onChange={(e, user) => onChangeUser(user)}
 					value={users.find(user => user?.value === selectedUserId) || null}

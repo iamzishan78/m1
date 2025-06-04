@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 
 import NavHeader from 'components/Land/components/Common/NavHeader';
+import { formatDate } from 'components/Shared/functions';
 
 import { detailCardController } from 'stateManagement/detailCardController';
 import { globalStateController } from 'stateManagement/globalStateController';
@@ -17,8 +18,29 @@ function GenericDetailCardContainer() {
 	} = detailCardController.useState(['currentAssetRecord']);
 
 	const controlColumn = useMemo(() => currentAsset?.modelKeys?.find(key => !!key.isControlColumn), [currentAsset]);
+
+	const getControlColumnData = () => {
+		if (controlColumn && currentAssetRecord) {
+			const controlColumnKey = controlColumn?.mappingKey;
+			const value = currentAssetRecord[controlColumnKey];
+
+			switch (controlColumn.keyType) {
+				case 'date':
+					return formatDate(value);
+				case 'user':
+					return value?.name;
+				case 'boolean':
+					return value ? 'Yes' : 'No';
+				default:
+					return value;
+			}
+		}
+
+		return null;
+	};
+
 	return (
-		<NavHeader title={currentAssetRecord?.[controlColumn?.mappingKey]}>
+		<NavHeader title={getControlColumnData()}>
 			<GenericDetail />
 		</NavHeader>
 	);

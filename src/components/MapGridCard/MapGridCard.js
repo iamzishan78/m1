@@ -213,14 +213,19 @@ function MapGridCard() {
 	// contexts
 	const [stateApp] = useContext(AppContext);
 
-	const { layerGridCard, mapControlsStateValues } = mapControlsController.useState(
-		['selectedLayer', 'selectedDataset', 'layerGridCard', 'mapGridCardActivated'],
+	const { layerGridCard, shapeAssetGridCard, mapControlsStateValues } = mapControlsController.useState(
+		['selectedLayer', 'selectedDataset', 'layerGridCard', 'mapGridCardActivated', 'shapeAssetGridCard'],
 		'mapControlsStateValues'
 	);
 	const layerInitialData = platformDataInitialData.find(data => data.value === 'layer');
+	const shapeAssetInitialData = platformDataInitialData.find(data => data.value === 'shapeAsset');
 	// function state
 	const [searchTapValue, SearchTapValue] = useState(
-		mapControlsStateValues.layerGridCard ? layerInitialData : platformDataInitialData[0]
+		mapControlsStateValues.layerGridCard
+			? layerInitialData
+			: mapControlsStateValues.shapeAssetGridCard
+				? shapeAssetInitialData
+				: platformDataInitialData[0]
 	);
 
 	// selectors
@@ -265,13 +270,56 @@ function MapGridCard() {
 		}
 	}, [mapControlsStateValues.selectedLayer, onClose]);
 
+	// Override meta for shape asset layers table
+	const shapeAssetTableOverride = useMemo(() => {
+		const selectedLayer = mapControlsStateValues?.selectedLayer;
+		if (selectedLayer) {
+			tableGlobalController.reInitialized();
+			return {
+				modelName: selectedLayer.tableName,
+				assetName: selectedLayer.name,
+				fetchDynamicSchema: {
+					variables: {
+						name: selectedLayer.name,
+					},
+					name: selectedLayer.name,
+					tableName: selectedLayer.tableName,
+					shapeAssetMapGridCard: true,
+				},
+				deletedKeys: {
+					mainRecord: { key: '_id' },
+					assetTableName: {
+						value: selectedLayer.tableName,
+					},
+				},
+				toolbarInternalActions: {
+					onClose,
+					style: {
+						marginRight: '0.5rem',
+					},
+				},
+			};
+		} else {
+			return {};
+		}
+	}, [mapControlsStateValues.selectedLayer, onClose]);
+
 	React.useEffect(() => {
-		if (!mapControlsStateValues.layerGridCard) {
+		if (mapControlsStateValues.shapeAssetGridCard) {
+			SearchTapValue(shapeAssetInitialData);
+		} else if (!mapControlsStateValues.layerGridCard) {
 			SearchTapValue(platformDataInitialData[0]);
 		} else {
 			SearchTapValue(layerInitialData);
 		}
-	}, [layerGridCard, layerInitialData, mapControlsStateValues.layerGridCard]);
+	}, [
+		layerGridCard,
+		shapeAssetGridCard,
+		layerInitialData,
+		shapeAssetInitialData,
+		mapControlsStateValues.layerGridCard,
+		mapControlsStateValues.shapeAssetGridCard,
+	]);
 
 	const setSearchTapValue = state => {
 		if (searchTapValue !== state) {
@@ -413,6 +461,9 @@ function MapGridCard() {
 									)}
 									{searchTapValue.value === 'layer' && (
 										<MRTTable name="ShapesFilesGenericTable" overrideMeta={shapeFileTableOverride} />
+									)}
+									{searchTapValue.value === 'shapeAsset' && (
+										<MRTTable name="DynamicAssetTable" overrideMeta={shapeAssetTableOverride} />
 									)}
 									{searchTapValue.value === 'contacts' && <MRTTable name="ContactTable" />}
 									{searchTapValue.value === 'unit' && (

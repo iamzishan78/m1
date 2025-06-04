@@ -14,7 +14,7 @@ import { GET_ALL_MODELS } from 'graphQL/useQueryModels';
 
 import { tableGlobalController } from 'stateManagement/tableController';
 
-import { showInfoMessage } from 'actions';
+import { showErrorMessage } from 'actions';
 
 import { useStyles } from './styles';
 import DynamicForm from '../Forms/DynamicForm';
@@ -39,7 +39,7 @@ function AssetAssociationDialog() {
 
 	const { control, handleSubmit, watch, reset, setValue } = useForm({
 		defaultValues: {
-			associatedModels: '',
+			associatedModel: '',
 			fields: [],
 		},
 	});
@@ -95,14 +95,34 @@ function AssetAssociationDialog() {
 			AssetAssociationDialog: {},
 		});
 		reset({
-			associatedModels: '',
+			associatedModel: '',
 			fields: [],
 		});
 	};
 
+	// Function to check for duplicate mapping keys
+	const getDuplicateMappingKeys = () => {
+		const mappingKeys = fields.map(field => field?.mappingKey?.toLowerCase()).filter(key => key); // Filter out empty keys
+
+		const duplicates = mappingKeys.filter((key, index) => mappingKeys.indexOf(key) !== index);
+
+		return [...new Set(duplicates)]; // Return unique duplicates
+	};
+
+	// Find duplicate keys
+	const duplicateKeys = getDuplicateMappingKeys();
+	const hasDuplicateKeys = duplicateKeys.length > 0;
+
 	const onSubmit = data => {
+		if (hasDuplicateKeys) {
+			dispatch(
+				showErrorMessage(`Duplicate mapping keys found: ${hasDuplicateKeys.join(', ')}. Please fix before submitting.`)
+			);
+			return;
+		}
+
 		if (!hasControlColumnSelected) {
-			dispatch(showInfoMessage('Control column selection is required'));
+			dispatch(showErrorMessage('Control column selection is required'));
 			return;
 		}
 
@@ -111,27 +131,12 @@ function AssetAssociationDialog() {
 		Loader.createToast(toastType, `${capitalizedToastType} Entity Association in Progress`);
 		handleClose();
 
-		const { associatedModels = [], fields } = data;
-		const modelId = associatedModels._id;
-
-		// Find if the model already exists in selectedAsset's associated models
-		const existingModelIndex = selectedAsset?.associatedModels?.findIndex(model => model._id === modelId);
-
-		let resultantModels;
-
-		if (existingModelIndex >= 0) {
-			// If the model exists, update its keys
-			resultantModels = [...selectedAsset.associatedModels];
-			resultantModels[existingModelIndex] = { ...associatedModels, modelKeys: fields };
-		} else {
-			// If the model is new, add it to the array
-			resultantModels = [...selectedAsset.associatedModels, { ...associatedModels, modelKeys: fields }];
-		}
+		const { associatedModel } = data;
 
 		upsertAssociatedModels({
 			variables: {
-				name: selectedAsset.name,
-				associatedModels: resultantModels, // Use the updated array
+				tableName: selectedAsset.tableName,
+				associatedModel, // Use the updated array
 			},
 		}).then(res => {
 			if (res?.data?.upsertAssociatedModels) {
@@ -147,7 +152,9 @@ function AssetAssociationDialog() {
 		});
 	};
 
-	const handleChipClick = model => {
+	const handleChipClick = clickedModel => {
+		let models = allModels?.getAllModels?.models || [];
+		const associatedModel = models.find(model => model.tableName === clickedModel.tableName);
 		// When a chip is clicked, reset the form with the selected model's data
 		tableGlobalController.updateState({
 			AssetAssociationDialog: {
@@ -156,8 +163,8 @@ function AssetAssociationDialog() {
 			},
 		});
 		reset({
-			associatedModels: model,
-			fields: model.modelKeys || defaultFields,
+			associatedModel,
+			fields: associatedModel.modelKeys || defaultFields,
 		});
 	};
 
@@ -207,7 +214,7 @@ function AssetAssociationDialog() {
 								<Grid item xs={6}>
 									<Controller
 										control={control}
-										name="associatedModels"
+										name="associatedModel"
 										render={({ field }) => (
 											<TextField
 												select
@@ -220,6 +227,12 @@ function AssetAssociationDialog() {
 												onChange={e => {
 													const selectedModel = e.target.value;
 													field.onChange(selectedModel);
+													tableGlobalController.updateState({
+														AssetAssociationDialog: {
+															type: 'addAssetAssociation',
+															isOpen: true,
+														},
+													});
 													reset({
 														...watch(), // Retain other form fields
 														fields: selectedModel?.modelKeys || [], // Reset based on selected model's keys
@@ -266,7 +279,7 @@ function AssetAssociationDialog() {
 									<Grid item>
 										<h3>Associated Model Keys</h3>
 									</Grid>
-									<DynamicForm control={control} setValue={setValue} />
+									<DynamicForm control={control} setValue={setValue} isAssociationDialog={true} />
 								</>
 							)}
 						</div>
@@ -277,15 +290,21 @@ function AssetAssociationDialog() {
 							}}
 						>
 							<div style={{ float: 'right' }}>
-								<Button style={{ margin: '25px 5px 25px 0px' }} variant="outlined" onClick={handleClose}>
+								<Button
+									className={`${classes.addFieldButton}`}
+									style={{ margin: '25px 5px 25px 0px' }}
+									variant="contained"
+									onClick={handleClose}
+								>
 									Cancel
 								</Button>
 								<Button
 									type="submit"
-									className={hasAtLeastOneKey ? classes.btnColor_active : ''}
-									style={{ margin: '25px 25px 25px 5px' }}
-									variant="outlined"
-									disabled={hasAtLeastOneKey ? false : true}
+									className={`${classes.addFieldButton}`}
+									style={{ margin: '25px 25px 25px 5px', fontWeight: 600 }}
+									variant="contained"
+									color="primary"
+									disabled={isCreateMode && hasAtLeastOneKey ? false : true}
 								>
 									{isCreateMode ? 'Create Association' : 'Update Association'}
 								</Button>

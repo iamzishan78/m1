@@ -73,6 +73,6 @@ export const SCHEMA = {
 	PropertiesRevenueTable: () => import('./QuerySchema/properties_revenue_schema'),
 	DynamicAssetTable: () => import('./dynamic_asset_schema'),
 	DynamicAssoicationTable: () => import('./dynamic_asset_assoication_schema'),
-	CustomAssetEntitiesTable: () => import('./asset_custom_entities_schema'),
-	CustomAssetTable: () => import('./custom_asset_schema'),
+	AssetCustomEntitiesTable: () => import('./asset_custom_entities_schema'),
+	AssetCustomEntitiesModelKeysTable: () => import('./asset_custom_entities_modelKeys_schema'),
 };

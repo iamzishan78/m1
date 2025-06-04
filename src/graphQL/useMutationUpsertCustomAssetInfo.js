@@ -7,7 +7,7 @@ export const UPSERT_CUSTOM_ASSET_INFO = gql`
 `;
 
 export const UPSERT_ASSOCIATED_MODELS = gql`
-	mutation upsertAssociatedModels($name: String, $associatedModels: [JSON]) {
-		upsertAssociatedModels(name: $name, associatedModels: $associatedModels)
+	mutation upsertAssociatedModels($tableName: String!, $associatedModel: JSON!) {
+		upsertAssociatedModels(tableName: $tableName, associatedModel: $associatedModel)
 	}
 `;

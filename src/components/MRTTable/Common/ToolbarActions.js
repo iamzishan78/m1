@@ -131,6 +131,7 @@ function ToolbarActions({ table, tableKey, children }) {
 			excludedIds = excludeFilters(tableKey, tableStateValues?.isSubSetSelect?.total);
 			ESVariables = {
 				index: tableStateValues.esIndex,
+				modelName: tableStateValues.modelName,
 				search,
 				sort: Object.keys(sortOrder).length ? sortOrder : tableStateValues.defaultSort,
 				filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters, ...excludedIds],

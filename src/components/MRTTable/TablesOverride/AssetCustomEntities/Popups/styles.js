@@ -71,4 +71,19 @@ export const useStyles = makeStyles(theme => ({
 	actionButton: {
 		marginLeft: theme.spacing(1),
 	},
+
+	addFieldButton: {
+		marginBottom: '16px',
+		padding: '8px 16px',
+		fontWeight: 600,
+		fontSize: '0.875rem',
+		boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+		'&:hover': {
+			boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+		},
+		'&.Mui-disabled': {
+			backgroundColor: 'rgba(154, 160, 169, 0.5)',
+			color: 'rgba(0, 0, 0, 0.15)',
+		},
+	},
 }));

@@ -41,6 +41,9 @@ const useStyles = makeStyles(() => ({
 		'& .MuiInputBase-root': {
 			borderRadius: '7px',
 		},
+		'& .MuiOutlinedInput-input': {
+			padding: '8px 14px',
+		},
 	},
 	hoverPointer: {
 		cursor: 'pointer',
@@ -54,6 +57,29 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
+const formatValue = (field, inputValue) => {
+	if (!inputValue) {
+		return '';
+	}
+
+	switch (field.type) {
+		case 'date':
+			try {
+				const date = new Date(inputValue);
+				if (isNaN(date.getTime())) {
+					return '';
+				}
+				return date.toISOString().split('T')[0];
+			} catch {
+				return '';
+			}
+		case 'number':
+			return !isNaN(Number(inputValue)) ? inputValue : 0;
+		default:
+			return inputValue;
+	}
+};
+
 const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 	const classes = useStyles();
 	const {
@@ -62,7 +88,7 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 	const { useUpdate } = Pages[page];
 	const { callApi, isChanged, renewFunction } = useUpdate() || {};
 
-	const [value, setValue] = useState(fieldData || (field.type === 'number' ? 0 : ''));
+	const [value, setValue] = useState(() => formatValue(field, fieldData));
 
 	const isChangedValue = isChanged ? isChanged(field.key, value) : null;
 
@@ -105,7 +131,8 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 	};
 
 	useEffect(() => {
-		setValue(fieldData || '');
+		const formattedValue = formatValue(field, fieldData);
+		setValue(formattedValue);
 	}, [fieldData]);
 
 	return (
