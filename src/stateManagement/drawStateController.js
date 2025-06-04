@@ -1071,6 +1071,7 @@ class DrawStateControllerHandler extends StateController {
 				properties: {
 					...currentShape?.properties,
 					...featureToEdit.properties,
+					shapeLabel: currentShape?.properties?.shapeLabel || featureToEdit?.properties?.shapeLabel,
 					shapeArea: calculateLandArea(currentFeature),
 					shapeCenter: calculateShapeCenter(currentFeature?.geometry),
 				},
