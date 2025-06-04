@@ -1,4 +1,5 @@
-import React, { useState, useContext } from 'react';
+ 
+import React, { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import {
@@ -12,32 +13,24 @@ import {
 	Tooltip,
 	InputBase,
 } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import AddIcon from '@material-ui/icons/Add';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { useMutation } from '@apollo/client';
+import { LinearProgress } from '@mui/material';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import get from 'lodash/get';
 
 import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
 
-//Contexts
-import WellSearchApiFieldES from 'components/Shared/Forms/Fields/WellSearchApiFieldES';
-
 import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest';
-import { ADD_WELL_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddWellToFileDescriptor';
+import { GET_SHAPE_WELL_INTEREST } from 'graphQL/useQueryWellDescriptors';
 
 import { AppContext } from 'AppContext';
 
-//Components
 import SearchField from './SearchField';
-
-// Hooks
-
-// Mutations
 
 const useStyles = makeStyles(theme => ({
 	rootPadding: {
@@ -125,7 +118,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const Agreements = ({ platformWell, agreements }) => {
+const Agreements = ({ platformWell }) => {
 	// Initials
 	let history = useHistory();
 	const classes = useStyles();
@@ -137,7 +130,20 @@ const Agreements = ({ platformWell, agreements }) => {
 
 	const [stateApp] = useContext(AppContext);
 
-	const [addShapeWellInterest] = useMutation(ADD_SHAPE_WELL_INTEREST);
+	const [addShapeWellInterest, { loading }] = useMutation(ADD_SHAPE_WELL_INTEREST);
+
+	const [getShapeWellInterest, { data: associatedAgrements, loading: agrementsLoading }] =
+		useLazyQuery(GET_SHAPE_WELL_INTEREST);
+
+	useEffect(() => {
+		if (platformWell?._id) {
+			getShapeWellInterest({
+				variables: {
+					descriptorObject: platformWell._id,
+				},
+			});
+		}
+	}, []);
 
 	const handleAddAgreement = shapeId => {
 		addShapeWellInterest({
@@ -151,10 +157,12 @@ const Agreements = ({ platformWell, agreements }) => {
 					shapeId: shapeId,
 				},
 			},
-			refetchQueries: ['getMyWellByGlobalId'],
+			refetchQueries: ['getMyWellByGlobalId', 'getShapeWellInterest'],
 			awaitRefetchQueries: true,
 		});
 	};
+
+	const agreements = associatedAgrements?.getShapeWellInterest?.[0]?.shapeObj;
 
 	return (
 		<div style={{ marginRight: '14px' }}>
@@ -197,7 +205,7 @@ const Agreements = ({ platformWell, agreements }) => {
 											setSearchState(false);
 										}, 300)
 									}
-									onChange={evt => {}}
+									onChange={() => {}}
 								/>
 							</div>
 						</Grid>
@@ -235,12 +243,13 @@ const Agreements = ({ platformWell, agreements }) => {
 				</Grid>
 			</Grid>
 			<Divider />
+			{(loading || agrementsLoading) && <LinearProgress />}
 			<div className={classes.list}>
 				<List id="wellsList" aria-label="wells list">
-					{agreements.length > 0 ? (
-						agreements.map((agreement, index) => (
-							<div style={{ padding: '0px 0px 0px' }}>
-								<ListItem key={index}>
+					{agreements?.length > 0 ? (
+						agreements.map(agreement => (
+							<div key={agreement._id} style={{ padding: '0px 0px 0px' }}>
+								<ListItem>
 									<Link
 										className={classes.wellLink}
 										color="primary"
