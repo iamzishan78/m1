@@ -268,10 +268,14 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 						id = row.getValue('_id');
 					}
 
+					const link = fetchDynamicSchema.shapeAssetMapGridCard
+						? `/map/${modelName}/${id}`
+						: `/land/customAsset/${modelName}/details/${id}`;
+
 					return (
 						<ColumnWithLink
 							value={value}
-							link={`/land/customAsset/${modelName}/details/${id}`}
+							link={link}
 							onClick={e => {
 								e.stopPropagation();
 								detailCardController.setBottomSelectedTab(0);
