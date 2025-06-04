@@ -24,16 +24,11 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import { useMutation } from '@apollo/client';
 
-//Components
 import { UPSERT_WELL_DESCRIPTOR } from 'graphQL/useMutationWellDescriptor';
 
 import { statusData } from 'utils/data';
 
 import SearchField from './SearchField';
-
-// Hooks
-
-// Mutations
 
 const propertyInterestParams = [
 	{
@@ -243,7 +238,7 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 						{/* <WellSearchApiFieldES getSelectedWell={getSelectedWell} /> */}
 						<SearchField
 							esIndex="properties_flat"
-							fields={['name^4', '_all']}
+							fields={['name', '_all']}
 							optionsParams={['name', 'internalID']}
 							targetLabel="properties"
 							onSelectOption={property => handleAddProperty(property._id)}
@@ -265,8 +260,8 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 			<div className={classes.list}>
 				<List id="wellsList" aria-label="wells list">
 					{properties.length > 0 ? (
-						properties.map((property, index) => (
-							<Accordion className={classes.accordion} key={index}>
+						properties.map(property => (
+							<Accordion className={classes.accordion} key={property._id}>
 								<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
 									<div>
 										<Link
@@ -284,8 +279,8 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 								</AccordionSummary>
 								<AccordionDetails>
 									<div>
-										{propertyInterestParams.map((param, index) => (
-											<React.Fragment key={index}>
+										{propertyInterestParams.map(param => (
+											<React.Fragment key={param.key}>
 												<TextField
 													margin="dense"
 													label={param.label}
@@ -296,8 +291,8 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 												/>
 											</React.Fragment>
 										))}
-										{propertyParams.map((param, index) => (
-											<React.Fragment key={index}>
+										{propertyParams.map(param => (
+											<React.Fragment key={param.key}>
 												<TextField
 													margin="dense"
 													label={param.label}

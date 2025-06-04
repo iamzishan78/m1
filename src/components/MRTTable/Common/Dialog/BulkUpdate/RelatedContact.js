@@ -33,7 +33,7 @@ function RelatedContact({ setFieldKey }) {
 				},
 				search: {
 					query: search ? `*${search}*` : null,
-					fields: ['name^4', '_id'],
+					fields: ['name', '_id'],
 				},
 				sort: {
 					field: 'lastUpdateAt',
