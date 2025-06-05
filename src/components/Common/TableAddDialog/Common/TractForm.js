@@ -1,12 +1,13 @@
 import React, { useEffect, useCallback, useState, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { Controller } from 'react-hook-form';
 
 import TextField from '@material-ui/core/TextField';
 
 import { useLazyQuery } from '@apollo/client';
 import { upperFirst } from 'lodash';
+import PropTypes from 'prop-types';
 
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
 import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
 
@@ -15,7 +16,6 @@ import { GET_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetAutoCompleteList';
 import { US_STATES_CODES } from 'utils/data';
 
 import filterConsts from './filterConsts';
-import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, control, watch, prefix = '' }) {
 	const [stateName, setStateName] = useState(tract.state);
@@ -122,7 +122,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 						filters={{ field: filterConsts.state.filterField, value: 'State' }}
 						label="State"
 						variant="outlined"
-						onChange={(e, value) => {
+						onChange={value => {
 							field.onChange(value.key);
 							setStateName(value.key);
 						}}
@@ -149,7 +149,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 						]}
 						label="County"
 						variant="outlined"
-						onChange={(e, value) => {
+						onChange={value => {
 							field.onChange(value.key);
 						}}
 						autoFocus={false}
@@ -209,7 +209,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 								]}
 								label="Meridian"
 								variant="outlined"
-								onChange={(e, value) => {
+								onChange={value => {
 									field.onChange(value.key);
 								}}
 								autoFocus={false}
@@ -235,7 +235,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 								]}
 								label="Township"
 								variant="outlined"
-								onChange={(e, value) => {
+								onChange={value => {
 									field.onChange(value.key);
 								}}
 								autoFocus={false}
@@ -262,7 +262,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 								]}
 								label="Range"
 								variant="outlined"
-								onChange={(e, value) => {
+								onChange={value => {
 									field.onChange(value.key);
 								}}
 								autoFocus={false}
@@ -292,7 +292,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 								]}
 								label="Survey"
 								variant="outlined"
-								onChange={(e, value) => {
+								onChange={value => {
 									field.onChange(value.key);
 								}}
 								autoFocus={false}
@@ -318,7 +318,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 								]}
 								label="Block"
 								variant="outlined"
-								onChange={(e, value) => {
+								onChange={value => {
 									field.onChange(value.key);
 								}}
 								autoFocus={false}
@@ -353,7 +353,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 						}
 						label="Section"
 						variant="outlined"
-						onChange={(e, value) => {
+						onChange={value => {
 							field.onChange(value.key);
 						}}
 						autoFocus={false}
@@ -383,7 +383,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 							]}
 							label="Abstract"
 							variant="outlined"
-							onChange={(e, value) => {
+							onChange={value => {
 								field.onChange(value.key);
 							}}
 							autoFocus={false}
