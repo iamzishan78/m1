@@ -52,6 +52,7 @@ function SimpleSelectField({ fieldData, field }) {
 			variant="outlined"
 			margin="dense"
 			className={`${classes.field}`}
+			disabled={field.disabled}
 			id="divOrderStatus-simple-select-outlined-label"
 			value={value || ''}
 			fullWidth

@@ -7,7 +7,7 @@ import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 import CustomAutoComplete from './components/Fields/CustomAutoComplete';
 
-const UserList = ({ setValue, value, ...rest }) => {
+const UserList = ({ setValue, value, disabled, ...rest }) => {
 	const [users, setUsers] = useState([]);
 
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
@@ -43,6 +43,7 @@ const UserList = ({ setValue, value, ...rest }) => {
 				textfieldRestProps: {
 					multiline: true,
 				},
+				disabled,
 			}}
 			options={users.filter(u => u.text)}
 			getOptionLabel={option => option.text}

@@ -34,7 +34,7 @@ import Information from './Information';
 import OCRText from './OCRText';
 
 function CreateAndViewComponent({ selectedDocument, tableKey }) {
-	const slideOutState = slidoutStateController.useState(['views', 'view', 'activeTabs']);
+	slidoutStateController.useState(['views', 'view', 'activeTabs']);
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user;
 
@@ -288,11 +288,11 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	};
 
 	useEffect(() => {
-		slideOutState.view.set(views[0]);
+		slidoutStateController.updateState({ view: views[0] });
 	}, []);
 
 	useEffect(() => {
-		slideOutState.views.set(views);
+		slidoutStateController.updateState({ views: views });
 	}, [views]);
 
 	return <Slideout show={true} deleteFunc={deleteFunc} />;

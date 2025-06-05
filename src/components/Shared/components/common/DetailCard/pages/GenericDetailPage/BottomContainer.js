@@ -1,16 +1,24 @@
-import React, { useMemo, memo, useCallback } from 'react';
+import React, { useMemo, memo, useCallback, useState, useEffect } from 'react';
+
+import { useQuery } from '@apollo/client';
 
 import AssetAssociationToolbar from 'components/MRTTable/TablesOverride/AssetCustomEntities/Toolbars/AssetAssoication';
 import DetailCardBottom from 'components/Shared/components/common/DetailCard/DetailCardBottom';
 import ContactInformationIcon from 'components/Shared/svgIcons/ContactPhone';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 
+import { ALL_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
+
 import { detailCardController } from 'stateManagement/detailCardController';
 import { globalStateController } from 'stateManagement/globalStateController';
 
 import DetailInfo from './DetailInfoSection';
 
+const tableHeight = 'calc(45vh)';
+
 const BottomContainer = () => {
+	const [associatedModels, setAssoicatedModels] = useState([]);
+
 	const {
 		globalStateValues: { currentAsset },
 	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
@@ -19,7 +27,24 @@ const BottomContainer = () => {
 		stateValues: { currentAssetRecord },
 	} = detailCardController.useState(['currentAssetRecord']);
 
-	const tableHeight = 'calc(70vh - 100px)';
+	const { data: associatedAssetsData } = useQuery(ALL_CUSTOM_ASSET_INFO, {
+		variables: { ids: currentAsset?.associatedModels?.map(model => model._id) },
+	});
+
+	useEffect(() => {
+		if (associatedAssetsData) {
+			let associatedModels = associatedAssetsData?.getAllCustomAssetInfo?.res || [];
+			associatedModels = associatedModels.map(model => {
+				let matchedModel = currentAsset?.associatedModels?.find(associatedModel => associatedModel._id === model._id);
+				return {
+					...model,
+					useDescriptorKey: matchedModel?.useDescriptorKey,
+					associationModelName: matchedModel?.associationModelName,
+				};
+			});
+			setAssoicatedModels(associatedModels);
+		}
+	}, [associatedAssetsData]);
 
 	const transformAssociatedModels = useCallback(
 		models => {
@@ -37,27 +62,26 @@ const BottomContainer = () => {
 					tableKey: 'DynamicAssoicationTable',
 					props: {
 						overrideMeta: {
-							esIndex: model.associationflatModel,
+							modelName: model.associationModelName,
 							assetName: currentAsset?.name,
 							associatedAssetName: model.name,
 							maxTableHeight: tableHeight,
 							CustomToolBar: AssetAssociationToolbar,
-							defaultFilters: [{ field: `${associationKey}._id.keyword`, value: currentAssetRecord?._id }],
+							defaultFilters: [
+								{ field: associationKey, value: currentAssetRecord?._id, useDescriptorKey: model?.useDescriptorKey },
+							],
 							fetchDynamicSchema: {
-								variables: { name: currentAsset?.name },
+								variables: { tableName: currentAsset?.tableName },
 								name: currentAsset?.name,
 								tableName: currentAsset?.tableName,
 								isAssociatedModel: true,
-								associatedModel: model.tableName,
+								associatedModel: model,
 								associationKey: mrtDataMappingKey,
 							},
 							deletedKeys: {
 								mainRecord: { key: '_id' },
 								assetTableName: {
-									value: currentAsset.tableName,
-								},
-								associatedAssetName: {
-									value: model.tableName,
+									value: model.associationModelName,
 								},
 							},
 						},
@@ -69,7 +93,7 @@ const BottomContainer = () => {
 	);
 
 	const assetAssociatedData = useMemo(() => {
-		const associatedModels = transformAssociatedModels(currentAsset?.associatedModels) || [];
+		const associatedModelsConfig = transformAssociatedModels(associatedModels) || [];
 		return [
 			{
 				index: 0,
@@ -79,9 +103,9 @@ const BottomContainer = () => {
 				showCounts: false,
 				component: <DetailInfo />,
 			},
-			...associatedModels,
+			...associatedModelsConfig,
 		];
-	}, [currentAsset, transformAssociatedModels]);
+	}, [currentAsset, associatedModels, transformAssociatedModels]);
 
 	return <DetailCardBottom data={assetAssociatedData} />;
 };

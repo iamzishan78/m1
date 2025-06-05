@@ -312,7 +312,7 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
 					</p>
 				</Grid>
 			) : props?.isHelperTextAllow ? (
-				<Grid item xs={12}>
+				<Grid style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }} xs={12}>
 					<p className={classes.helperText}>
 						<span>Shift+Enter</span> to add a new line
 					</p>

@@ -5,10 +5,10 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 import AssetEntityToolbar from '../TablesOverride/AssetCustomEntities/Toolbars/AssetEntity';
 
-const esIndex = 'customentitiesmodelkeys_flat';
+const modelName = 'AssetCustomEntitiesModelKeys';
 
-const customAssetMeta = {
-	esIndex,
+const AssetCustomEntitiesModelKeysMeta = {
+	modelName,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,
@@ -131,7 +131,28 @@ const customAssetMeta = {
 				return <>{isRequired ? 'Yes' : 'No'}</>;
 			},
 		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'accessControl.admin.keyword',
+			accessorFn: row => row?.accessControl?.admin,
+			id: 'accessControl.admin',
+			header: 'Admin Access',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'accessControl.owner.keyword',
+			accessorFn: row => row?.accessControl?.owner,
+			id: 'accessControl.owner',
+			header: 'Owner Access',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'accessControl.user.keyword',
+			accessorFn: row => row?.accessControl?.user,
+			id: 'accessControl.user',
+			header: 'User Access',
+		},
 	],
 };
 
-export default customAssetMeta;
+export default AssetCustomEntitiesModelKeysMeta;

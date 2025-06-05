@@ -1,4 +1,5 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
 import { dummySchema } from '../utils/data';
 
 const DynamicAssetAssocitionMeta = {
@@ -9,6 +10,7 @@ const DynamicAssetAssocitionMeta = {
 	},
 	maxTableHeight: 'calc(70vh - 100px)',
 	columnVirtualization: false,
+	isAggregatedSearch: true,
 	TableSchema: [
 		{
 			...CommonSchema.MONGO_ID,

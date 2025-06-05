@@ -396,7 +396,7 @@ const SummarySection = ({ checkId }) => {
 				};
 			});
 
-			const adjustments = [...deducts, ...taxes];
+			const adjustments = [...deducts, ...taxes].filter(ad => ad.name);
 			let totalAdjustment = 0;
 			adjustments.forEach(a => {
 				totalAdjustment += parseFloat(a.value);

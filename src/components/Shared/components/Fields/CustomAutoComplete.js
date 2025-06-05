@@ -162,6 +162,10 @@ function CustomAutoComplete({
 
 		const fallbackValue = value ?? defaultValue ?? null;
 
+		if (typeof fieldValue === 'boolean') {
+			return options.find(opt => opt.value === fieldValue) || fallbackValue;
+		}
+
 		if (typeof fieldValue === 'string') {
 			return (
 				options?.find(

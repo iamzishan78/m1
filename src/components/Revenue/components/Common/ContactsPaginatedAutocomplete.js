@@ -11,7 +11,7 @@ import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
 
 import { AppContext } from 'AppContext';
 
-export default function ContactPaginatedDropdown({ nameAutValue, setNameAutValue, ...rest }) {
+export default function ContactPaginatedDropdown({ nameAutValue, setNameAutValue, field, ...rest }) {
 	const [stateApp] = useContext(AppContext);
 	const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
 	const [hasNextPage, setHasNextPage] = useState(true);
@@ -66,6 +66,7 @@ export default function ContactPaginatedDropdown({ nameAutValue, setNameAutValue
 
 	return (
 		<AutocompEntityNamesVirtualizeList
+			field={field}
 			mongoEntitiesArray={mongoEntitiesArray}
 			setMongoEntitiesArray={setMongoEntitiesArray}
 			nameAutValue={nameAutValue}

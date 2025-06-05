@@ -10,12 +10,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
 
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 import ContactCardDisabledIcon from 'components/Shared/svgIcons/contact_card_disabled';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
 import { AppContext } from 'AppContext';
-import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 
 const LISTBOX_PADDING = 8; // px
 
@@ -152,6 +152,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 		hasNextPage,
 		isNextPageLoading,
 		loadNextPage,
+		field,
 		...other
 	} = props;
 
@@ -261,6 +262,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 				renderOptionComp,
 				allowNewOptions: props?.addNew,
 				textFiledInputProps: getParams,
+				disabled: field?.disabled,
 			}}
 			fieldAttributes={{
 				label,
@@ -284,7 +286,9 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 								});
 							}
 						}
-					} else setNameAutValue(null);
+					} else {
+						setNameAutValue(null);
+					}
 				},
 			}}
 			{...other}

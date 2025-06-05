@@ -11,3 +11,9 @@ export const UPDATE_RECORD_IN_RUN_TIME_MODEL = gql`
 		updateRecordInRunTimeModel(tableName: $tableName, ids: $ids, record: $record)
 	}
 `;
+
+export const UPDATE_ASSET_SHAPE_LABEL = gql`
+	mutation updateAssetShapeLabel($tableName: String!, $shapeLabel: String!, $recordId: String!) {
+		updateAssetShapeLabel(tableName: $tableName, shapeLabel: $shapeLabel, recordId: $recordId)
+	}
+`;

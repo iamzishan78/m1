@@ -282,10 +282,14 @@ const useMRTTable = tableKey => {
 								const pagination = tableState.pagination;
 
 								const newPagination = paginationFunc(pagination);
+								newPagination.first = newPagination.pageSize;
 								Controller.updateState({
 									pagination: newPagination,
 								});
 								return newPagination;
+							},
+							muiPaginationProps: {
+								showLastButton: false,
 							},
 						}),
 						manualSorting: true,

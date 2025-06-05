@@ -213,7 +213,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 				Loader.createToast('addRemoveProvision', 'Provision updation in Progress');
 				upsertAgreementProvision({
 					variables: { provision: { ...addProvision, isDeleted: false } },
-					refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList'],
+					refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList', 'getCombinedFilterList'],
 				}).then(
 					() => {
 						Loader.successToast('addRemoveProvision', 'Provision updation Success');
@@ -232,7 +232,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 			Loader.createToast('addRemoveProvision', 'Provision updation in Progress');
 			upsertAgreementProvision({
 				variables: { provision: { agreement: id, type: provision.type, isDeleted: true } },
-				refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList'],
+				refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList', 'getCombinedFilterList'],
 			}).then(
 				() => {
 					Loader.successToast('addRemoveProvision', 'Provision updation Success');
@@ -266,11 +266,11 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 							isDeleted: false,
 						},
 					},
-					refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList'],
+					refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList', 'getCombinedFilterList'],
 				});
 			}
 		}
-	}, 0);
+	}, 500);
 
 	return (
 		<Grid container direction="column" spacing={5} className={classes.root}>
@@ -459,7 +459,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 												fullWidth: true,
 											}}
 											fieldEvents={{
-												onChange: handleChange(item, index),
+												onChange: () => handleChange(item, index),
 											}}
 										/>
 									</Grid>
@@ -480,7 +480,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 												fullWidth: true,
 											}}
 											fieldEvents={{
-												onChange: handleChange(item, index),
+												onChange: () => handleChange(item, index),
 											}}
 										/>
 									</Grid>

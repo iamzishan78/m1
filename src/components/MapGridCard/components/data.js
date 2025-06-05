@@ -24,6 +24,7 @@ export const platformDataWellsInitialData = [
 
 export const platformDataInitialData = [
 	platformDataWellsInitialData[0],
+	platformDataWellsInitialData[1],
 	platformDataWellsInitialData[2],
 	{
 		index: 2,
@@ -35,6 +36,8 @@ export const platformDataInitialData = [
 	{ index: 3, value: 'layer', Icon: LayersIcon, label: 'Layer', isLayer: true },
 	// { index: 3, value: "lease", Icon: LeaseIcon, label: "Leases" },
 	{ index: 4, value: 'landgrid', Icon: LeaseIcon, label: 'Land Grid', shapeGrid: false, featureFlag: 'LANDGRIDSEARCH' },
+	{ index: 5, value: 'shapeAsset', Icon: LayersIcon, label: 'Shape Asset', isShapeAsset: true },
+
 	// { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts", shapeGrid: false },
 ];
 

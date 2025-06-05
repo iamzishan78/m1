@@ -108,7 +108,7 @@ function AssociationDialog() {
 		if (isOpen) {
 			getDbData({
 				variables: {
-					index: currentAssociatedModel?.tableName,
+					modelName: currentAssociatedModel?.tableName,
 					pagination: {
 						first: 25,
 						after: null,
@@ -131,20 +131,34 @@ function AssociationDialog() {
 
 			addAossciatedData({
 				variables: {
-					assetTableName: currentAsset?.tableName,
-					associatedModelName: currentAssociatedModel?.tableName,
+					mainAssetTableName: currentAsset?.tableName,
+					associatedAssetTableName: currentAssociatedModel?.tableName,
 					descriptorObject: currentAssetRecord?._id,
 					descriptorType: currentAsset?.name,
 					relatedObject: selectedId,
 					relatedObjectType: currentAssociatedModel?.name,
+					associationModelName: currentAssociatedModel?.associationModelName,
 				},
 			});
 		}
 	};
 
 	const getFormattedValue = (key, selectedOption) => {
+		if (!selectedOption || !key) {
+			return '';
+		}
 		const value = key.keyType === 'user' ? selectedOption[key.mappingKey]?.['name'] : selectedOption[key.mappingKey];
-		return key.keyType === 'date' ? formatDate(value) : value || 'N/A';
+
+		switch (key.keyType) {
+			case 'date':
+				return formatDate(value);
+			case 'number':
+				return value?.toString() || '';
+			case 'boolean':
+				return value ? 'Yes' : 'No';
+			default:
+				return value || '';
+		}
 	};
 
 	return (
@@ -183,12 +197,14 @@ function AssociationDialog() {
 							}}
 							value={selectedOption}
 							getOptionSelected={(option, value) => option._id === value?._id}
-							getOptionLabel={option => option[controlColumn?.mappingKey] || ''}
+							getOptionLabel={option => {
+								return getFormattedValue(controlColumn, option);
+							}}
 							renderOption={option => (
 								<Grid container spacing={0}>
 									<Grid container item xs={12} alignItems="center">
 										<Grid item xs>
-											<span style={{ fontWeight: 400 }}>{option[controlColumn?.mappingKey]}</span>
+											<span style={{ fontWeight: 400 }}>{getFormattedValue(controlColumn, option)}</span>
 											<Typography variant="body2" color="textSecondary">
 												{option.label}
 											</Typography>

@@ -4,10 +4,10 @@ import { get } from 'lodash';
 const onClickedRow = selectedRow => {};
 
 const GenericMeta = {
-	pageSize: 25,
+	pageSize: 50,
 	pagination: {
 		pageIndex: 0,
-		pageSize: 25,
+		pageSize: 50,
 	},
 	onClickedRow,
 	maxTableHeight: 'calc(100vh - 489px)',
