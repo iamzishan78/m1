@@ -270,7 +270,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 				});
 			}
 		}
-	}, 0);
+	}, 500);
 
 	return (
 		<Grid container direction="column" spacing={5} className={classes.root}>
@@ -459,7 +459,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 												fullWidth: true,
 											}}
 											fieldEvents={{
-												onChange: handleChange(item, index),
+												onChange: () => handleChange(item, index),
 											}}
 										/>
 									</Grid>
@@ -480,7 +480,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 												fullWidth: true,
 											}}
 											fieldEvents={{
-												onChange: handleChange(item, index),
+												onChange: () => handleChange(item, index),
 											}}
 										/>
 									</Grid>
