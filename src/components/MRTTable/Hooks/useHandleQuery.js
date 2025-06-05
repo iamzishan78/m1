@@ -137,6 +137,12 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			globalFilter = null;
 		}
 
+		const aggregatedColumns = tableMeta.TableSchema?.filter(column => column.isAggregatedField);
+		const aggregatedSearchFields = aggregatedColumns?.map(column => column.name || column.id || column.accessorKey);
+		const searchFields = tableStateValues.advanceSearch?.aggregatedSearch
+			? aggregatedSearchFields
+			: tableMeta.searchFields;
+
 		// Prepare query variables
 		const variables = {
 			index: tableStateValues.esIndex,
@@ -144,7 +150,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
 			search: {
 				query: globalFilter ? `${globalFilter}` : '',
-				fields: tableMeta.searchFields,
+				fields: searchFields,
 				advanceSearch: tableStateValues.advanceSearch,
 			},
 			sort,

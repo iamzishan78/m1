@@ -142,6 +142,7 @@ export const CommonSchema = {
 		size: 250,
 		filter: true,
 		isSearchField: false,
+		isAggregatedField: true,
 		type: 'string',
 		Cell: ({ row }) => {
 			// Passing contact owner in common component
@@ -156,6 +157,7 @@ export const CommonSchema = {
 		size: 250,
 		filter: true,
 		isSearchField: false,
+		isAggregatedField: true,
 		type: 'string',
 		Cell: ({ row }) => {
 			// Passing contact owner in common component
@@ -182,6 +184,7 @@ export const CommonSchema = {
 		size: 250,
 		filter: true,
 		isSearchField: false,
+		isAggregatedField: true,
 		type: 'string',
 		Cell: ({ row }) => {
 			// Passing contact owner in common component

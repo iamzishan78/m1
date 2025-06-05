@@ -234,6 +234,34 @@ function ToolbarActions({ table, tableKey, children }) {
 					{children}
 				</div>
 
+				{tableStateValues?.isAggregatedSearch && (
+					<ToggleButton
+						style={{
+							padding: '0',
+							height: 'fit-content',
+							margin: 'auto 0',
+							color: tableStateValues.advanceSearch?.aggregatedSearch ? '#fff' : '#263451',
+							backgroundColor: tableStateValues.advanceSearch?.aggregatedSearch ? '#263451' : '#fff',
+							border: `1px solid ${tableStateValues.advanceSearch?.aggregatedSearch ? '#fff' : '#263451'}`,
+						}}
+						selected={tableStateValues.advanceSearch?.aggregatedSearch}
+						onChange={() =>
+							tableController(tableKey).updateState({
+								advanceSearch: { aggregatedSearch: !tableStateValues.advanceSearch?.aggregatedSearch },
+							})
+						}
+					>
+						<small
+							style={{
+								padding: '5px',
+								fontWeight: 'normal',
+							}}
+						>
+							{'Aggregated Search'}
+						</small>
+					</ToggleButton>
+				)}
+
 				<ToggleButton
 					style={{
 						padding: '0',

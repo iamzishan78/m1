@@ -19,6 +19,7 @@ const AssetCustomEntitiesMeta = {
 	isInFiniteScroll: true,
 	columnVirtualization: false,
 	isDeleteDisabled: true,
+	isAggregatedSearch: true,
 	CustomToolBar: AssetCustomEntitiesToolbar,
 	defaultFilters: [
 		{
@@ -66,6 +67,7 @@ const AssetCustomEntitiesMeta = {
 			accessorKey: 'controlColumns.label',
 			header: 'Control Columns',
 			Cell: ({ row }) => <Chips list={row?.original?.controlColumns} />,
+			isAggregatedField: true,
 			isSearchField: false,
 			isArrayKey: true,
 			isExport: 'controlColumns',
@@ -79,6 +81,7 @@ const AssetCustomEntitiesMeta = {
 			name: 'associatedModels.name.keyword',
 			accessorKey: 'associatedModels.name',
 			header: 'Associated Models',
+			isAggregatedField: true,
 			isSearchField: false,
 			Cell: ({ row }) => <Chips list={row?.original?.associatedModels} />,
 			isArrayKey: true,

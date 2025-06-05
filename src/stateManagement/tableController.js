@@ -241,6 +241,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 				size: 350,
 				isPinned: !!column.isControlColumn,
 				isSearchField: !['date', 'user'].includes(column.keyType),
+				isAggregatedField: ['user'].includes(column.keyType),
 			};
 
 			// Column rendering logic
