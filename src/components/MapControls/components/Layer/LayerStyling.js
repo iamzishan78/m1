@@ -139,72 +139,117 @@ function LayerStyling() {
 		setRows(layerDataCount?.layerFeaturesCount || 0);
 	}, [layerDataCount]);
 
+	const debouncedUpdate = _.debounce((currentLayers, currentLayer) => {
+		layerController.updateState({ layers: [...currentLayers] });
+
+		layerController.resetBounds(selectedLayer?.identifier, true);
+		updateLayerSettings({
+			variables: {
+				settings: {
+					_id: currentLayer._id,
+					user: user.mongoId,
+					layer: selectedLayer.layerId,
+					layerPaintProps: currentLayer.layerPaintProps,
+					layerSettings: currentLayer.layerSettings,
+				},
+			},
+		}).then(({ data }) => {
+			if (data?.updateUserLayerSettings?.res && !currentLayer._id) {
+				mapControlsController.updateState({
+					selectedLayer: { ...currentLayer, _id: data.updateUserLayerSettings.res._id },
+				});
+			}
+		});
+	}, 250); // Adjust the debounce delay as needed
+
 	useEffect(() => {
 		const hookStateAppLayers = layerController.getValue('layers');
 		if (!layerInitialized) {
 			return null;
 		}
-		if (
-			(hookStateAppLayers &&
+
+		// ======================
+		//  DEBUG-FRIENDLY CHECK
+		// ======================
+		const checks = {
+			//
+			// 1. Paint / color changes
+			//
+			hasFillOrStrokeColor:
+				hookStateAppLayers &&
 				selectedLayer &&
-				((fillColor && fillColor.rgb && (fillColor.alpha || fillColor.alpha === 0)) ||
-					(strokeColor && strokeColor.rgb && (strokeColor.alpha || strokeColor.alpha === 0)))) ||
-			width ||
-			selectedLayer.layerPaintProps?.[0]?.labelProps?.visibility !== layerLabelVisibility ||
-			parseInt(selectedLayer.layerPaintProps?.[0]?.paintProps?.strokeWidth) !== parseInt(strokeWidth) ||
-			parseInt(selectedLayer.layerSettings?.binsWidth) !== parseInt(binsWidth) ||
-			parseInt(selectedLayer.layerSettings?.elevationScale) !== parseInt(elevationScale) ||
-			selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
-			selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
-			selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
-			selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeStyle !== enableStrokeStyle ||
-			selectedLayer.layerSettings?.interaction?.interactionDetail?.enableColorStyle !== enableColorStyle ||
-			!_.isEqual(selectedLayer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
-			!_.isEqual(selectedLayer.layerSettings?.attributeBasedStrokeColors, attributeBasedStrokeColors) ||
-			!_.isEqual(selectedLayer.layerSettings?.attributeBasedStyles, attributeBasedStyles) ||
-			!_.isEqual(selectedLayer.layerSettings?.attributeBasedLineStyles, attributeBasedLineStyles) ||
-			selectedLayer.layerSettings?.selectedAttribute?.label !== selectedValue?.label ||
-			selectedLayer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label ||
-			selectedLayer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label ||
-			selectedLayer.layerSettings?.selectedLineStyle?.label !== selectedLineStyle?.label ||
-			selectedLayer.layerSettings?.fillStyle !== fillStyle ||
-			selectedLayer.layerSettings?.lineStyle !== lineStyle ||
-			selectedLayer.layerSettings?.aggregation !== aggregation ||
-			selectedLayer.layerSettings?.colorScaleType !== colorScaleType ||
-			selectedLayer.layerSettings?.isExtruded !== isExtruded ||
-			!_.isEqual(selectedLayer.layerSettings?.selectedPalette, selectedPalette) ||
-			!_.isEqual(selectedLayer.layerSettings?.isCustomPalette, isCustomPalette)
-		) {
+				((fillColor?.rgb && (fillColor.alpha ?? 1) >= 0) || (strokeColor?.rgb && (strokeColor.alpha ?? 1) >= 0)),
+
+			//
+			// 2. Simple flags & numbers
+			//
+			widthProvided: Boolean(width),
+			labelVisibilityChanged: selectedLayer.layerPaintProps?.[0]?.labelProps?.visibility !== layerLabelVisibility,
+			strokeWidthChanged: +selectedLayer.layerPaintProps?.[0]?.paintProps?.strokeWidth !== +strokeWidth,
+			binsWidthChanged: +selectedLayer.layerSettings?.binsWidth !== +binsWidth,
+			elevationScaleChanged: +selectedLayer.layerSettings?.elevationScale !== +elevationScale,
+
+			//
+			// 3. Interaction flags
+			//
+			clickabilityChanged: selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability,
+			enableFillColorChanged:
+				selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor,
+			enableStrokeColorChanged:
+				selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor,
+			enableStrokeStyleChanged:
+				selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeStyle !== enableStrokeStyle,
+			enableColorStyleChanged:
+				selectedLayer.layerSettings?.interaction?.interactionDetail?.enableColorStyle !== enableColorStyle,
+
+			//
+			// 4. Attribute-based overrides
+			//
+			attributeFillColorsChanged: !_.isEqual(selectedLayer.layerSettings?.attributeBasedColors, attributeBasedColors),
+			attributeStrokeColorsChanged: !_.isEqual(
+				selectedLayer.layerSettings?.attributeBasedStrokeColors,
+				attributeBasedStrokeColors
+			),
+			attributeStylesChanged: !_.isEqual(selectedLayer.layerSettings?.attributeBasedStyles, attributeBasedStyles),
+			attributeLineStylesChanged: !_.isEqual(
+				selectedLayer.layerSettings?.attributeBasedLineStyles,
+				attributeBasedLineStyles
+			),
+
+			//
+			// 5. Drop-downs & palette
+			//
+			selectedAttributeChanged: selectedLayer.layerSettings?.selectedAttribute?.label !== selectedValue?.label,
+			selectedStrokeAttrChanged:
+				selectedLayer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label,
+			selectedFillStyleChanged: selectedLayer.layerSettings?.selectedFillStyle?.label !== selectedFillStyle?.label,
+			selectedLineStyleChanged: selectedLayer.layerSettings?.selectedLineStyle?.label !== selectedLineStyle?.label,
+			fillStyleChanged: selectedLayer.layerSettings?.fillStyle !== fillStyle,
+			lineStyleChanged: selectedLayer.layerSettings?.lineStyle !== lineStyle,
+			aggregationChanged: selectedLayer.layerSettings?.aggregation !== aggregation,
+			colorScaleTypeChanged: selectedLayer.layerSettings?.colorScaleType !== colorScaleType,
+			isExtrudedChanged: selectedLayer.layerSettings?.isExtruded !== isExtruded,
+			paletteChanged: !_.isEqual(selectedLayer.layerSettings?.selectedPalette, selectedPalette),
+			isCustomPaletteChanged: !_.isEqual(selectedLayer.layerSettings?.isCustomPalette, isCustomPalette),
+		};
+
+		// ----------
+		// Collect every check that is true
+		// ----------
+		const triggered = Object.entries(checks)
+			.filter(([, v]) => v) // keep only true checks
+			.map(([k]) => k); // keep the key for logging
+
+		// ----------
+		// ONE place to see *why* the block fires
+		// ----------
+		if (triggered.length) {
 			let { currentLayer } = layerStylingController.handleLayerChange(selectedLayer);
 			const currentLayers = [...hookStateAppLayers];
 			const index = currentLayers.findIndex(l => l.layerId === currentLayer.layerId);
 			currentLayers[index] = currentLayer;
 
-			const TWOFIFTY = 250;
-			const debouncedUpdate = _.debounce(() => {
-				layerController.updateState({ layers: [...currentLayers] });
-				layerController.resetBounds(selectedLayer?.identifier, true);
-				updateLayerSettings({
-					variables: {
-						settings: {
-							_id: currentLayer._id,
-							user: user.mongoId,
-							layer: selectedLayer.layerId,
-							layerPaintProps: currentLayer.layerPaintProps,
-							layerSettings: currentLayer.layerSettings,
-						},
-					},
-				}).then(({ data }) => {
-					if (data?.updateUserLayerSettings?.res && !currentLayer._id) {
-						mapControlsController.updateState({
-							selectedLayer: { ...selectedLayer, _id: data.updateUserLayerSettings.res._id },
-						});
-					}
-				});
-				// layerController.handleDeckLayer(currentLayer, true);
-			}, TWOFIFTY); // Adjust the debounce delay as needed
-
-			debouncedUpdate();
+			debouncedUpdate(currentLayers, currentLayer);
 
 			return () => {
 				debouncedUpdate.cancel(); // Clean up on unmount or dependencies change
