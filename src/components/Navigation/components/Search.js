@@ -197,7 +197,12 @@ const esCallData = {
 		search: request => `*${request.input}*`,
 		searchFields: SHAPE_TYPE['my wells'].SEARCH_FIELDS,
 		formatOptions: data => {
-			return { ...data, Source: myWellsIndexName, Primary: data.wellData.WellName, Secondary: data.wellData.ApiNumber };
+			return {
+				...data,
+				Source: myWellsIndexName,
+				Primary: data.wellData.WellName || data.wellData.wellName,
+				Secondary: data.wellData.ApiNumber,
+			};
 		},
 	},
 	contacts: {
@@ -791,6 +796,8 @@ function Search({ stateApp, setStateApp, isDocument }) {
 						],
 					});
 					layerController.toggleLayersActivity('Search', true);
+				} else {
+					dispatch(showInfoMessage('Selected well coordinates are not available'));
 				}
 			}
 

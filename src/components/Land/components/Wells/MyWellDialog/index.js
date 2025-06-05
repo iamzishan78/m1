@@ -199,12 +199,6 @@ export default function MyWellDialog() {
 		}
 	};
 
-	useEffect(() => {
-		if (globalWellId) {
-			handleWellDetail({ Id: globalWellId });
-		}
-	}, [globalWellId]);
-
 	const dialogTitle = useMemo(() => {
 		if (activePanel === 'Add New Well') {
 			if (globalWellId) {
@@ -258,6 +252,12 @@ export default function MyWellDialog() {
 			setPlatformWell(platformWellData);
 		}
 	};
+
+	useEffect(() => {
+		if (globalWellId) {
+			handleWellDetail({ Id: globalWellId });
+		}
+	}, [globalWellId]);
 
 	const handleCloseDialog = () => {
 		tableGlobalController.updateState({
@@ -389,13 +389,12 @@ export default function MyWellDialog() {
 									// show revenue properties here
 									<RevenueProperties
 										platformWell={platformWell}
-										properties={get(platformWell, 'properties', [])}
 										propertyDescriptor={get(platformWell, 'propertyDescriptor', [])}
 									/>
 								)}
 								{activePanel === 'Agreements' && (
 									// show agreements list here
-									<Agreements platformWell={platformWell} agreements={get(platformWell, 'shapes', [])} />
+									<Agreements platformWell={platformWell} />
 								)}
 							</div>
 						</div>
