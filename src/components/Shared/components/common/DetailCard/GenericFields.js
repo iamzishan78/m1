@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import { copy } from 'utils/helper';
 
 import BooleanField from './Fields/BooleanField';
-import DateField from './Fields/DateField';
 import OwnerField from './Fields/OwnerField';
 import ShapeAutoComplete from './Fields/ShapeAutoComplete';
 import SimpleSelectField from './Fields/SimpleSelectField';
@@ -29,6 +28,7 @@ const GenericFields = ({ field: fieldObj, summaryDataValues }) => {
 		case 'email':
 		case 'currency':
 		case 'number':
+		case 'date':
 			return (
 				<SummaryTextField
 					fieldData={get(summaryDataValues, field.key)}
@@ -46,11 +46,9 @@ const GenericFields = ({ field: fieldObj, summaryDataValues }) => {
 					defaultOptions={field.options || []}
 					payload={field.payload}
 					variant="outlined"
+					field={field}
 				/>
 			);
-
-		case 'date':
-			return <DateField fieldData={get(summaryDataValues, field.key)} field={field} />;
 
 		case 'simpleSelect':
 			return <SimpleSelectField fieldData={get(summaryDataValues, field.key)} field={field} />;
@@ -79,6 +77,7 @@ const GenericFields = ({ field: fieldObj, summaryDataValues }) => {
 					fieldKey={field.key}
 					shapeType={field.shapeType}
 					variant="outlined"
+					field={field}
 				/>
 			);
 

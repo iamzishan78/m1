@@ -47,7 +47,7 @@ export default function AssetManagement() {
 					padding: '20px',
 				}}
 			>
-				<MRTTable name="CustomAssetEntitiesTable" overrideMeta={CustomEntitiesOverrideMeta} />
+				<MRTTable name="AssetCustomEntitiesTable" overrideMeta={CustomEntitiesOverrideMeta} />
 			</div>
 
 			{!isEmpty(selectedAsset) && (
@@ -56,7 +56,11 @@ export default function AssetManagement() {
 						padding: '20px',
 					}}
 				>
-					<MRTTable name="CustomAssetTable" overrideMeta={CustomAssetOverrideMeta} key={selectedAsset?._id} />
+					<MRTTable
+						name="AssetCustomEntitiesModelKeysTable"
+						overrideMeta={CustomAssetOverrideMeta}
+						key={selectedAsset?._id}
+					/>
 				</div>
 			)}
 		</>

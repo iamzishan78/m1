@@ -6,7 +6,6 @@ import { useLazyQuery } from '@apollo/client';
 
 // import RightDialog from './RightDialog';
 // import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
-import ConfirmationDialog from 'components/ContactDetailCard/components/ConfirmationDialog';
 import DetailLayout from 'components/Shared/components/common/DetailCard/DetailLayout';
 // import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
 
@@ -18,6 +17,8 @@ import { globalStateController } from 'stateManagement/globalStateController';
 
 import { AppContext } from 'AppContext';
 
+import ConfirmationDialog from '../DeleteConfirmationDialog';
+
 function GenericDetailCard() {
 	const [stateApp, setStateApp] = useContext(AppContext);
 
@@ -25,9 +26,12 @@ function GenericDetailCard() {
 
 	const { activeModule } = useSelector(({ common }) => common);
 
-	const [openDialog, setOpenDialog] = useState(false);
 	const [assetRecord, setAssetRecord] = useState(null);
 	const [showActivityDialog, setActivityDialog] = useState(null);
+
+	const {
+		stateValues: { openDialog },
+	} = detailCardController.useState(['openDialog']);
 
 	const [getAsset] = useLazyQuery(GET_CUSTOM_ASSET_INFO, {
 		onCompleted: data => {
@@ -91,6 +95,12 @@ function GenericDetailCard() {
 		[]
 	);
 
+	const handleDialogClose = () => {
+		detailCardController.updateState({
+			openDialog: null,
+		});
+	};
+
 	return (
 		<>
 			<div>
@@ -98,7 +108,13 @@ function GenericDetailCard() {
 			</div>
 
 			{openDialog === 'deleteConfirmation' && (
-				<ConfirmationDialog openDialog={openDialog} handleDialogClose={setOpenDialog} id={assetRecord?._id} />
+				<ConfirmationDialog
+					openDialog={openDialog}
+					handleDialogClose={handleDialogClose}
+					tableName={tableName ?? type}
+					module={activeModule?.name}
+					ids={[assetRecord?._id]}
+				/>
 			)}
 
 			{/* {showActivityDialog && (

@@ -11,7 +11,9 @@ const useStyles = makeStyles(theme => ({
 	leftContainer: ({ expandedCard }) => ({
 		padding: '0px 15px 0px 20px',
 		borderBottom: expandedCard ? '0' : '10px solid rgb(242, 242, 242)',
-		maxHeight: 'fit-content',
+		height: 'fit-content',
+		maxHeight: !expandedCard ? '25vh' : '100%',
+		overflowY: 'auto',
 	}),
 	tabRender: {
 		height: '100%',

@@ -1,6 +1,6 @@
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-export const customAssetForm = ({ fields = [] }) => {
+export const customAssetForm = ({ fields = [], user }) => {
 	const userTypeProperties = {
 		variables: {},
 		query: GETMONGOUSERS,
@@ -19,6 +19,8 @@ export const customAssetForm = ({ fields = [] }) => {
 		{ value: false, label: 'No' },
 	];
 
+	const role = user?.roles?.[0]?.toLowerCase();
+
 	const formSchema = fields?.map(field => {
 		const commonProperties = {
 			label: field.label,
@@ -26,6 +28,8 @@ export const customAssetForm = ({ fields = [] }) => {
 			type: field.keyType,
 			required: field.isRequired,
 			renderField: field.keyType,
+			disabled: field.accessControl?.[role] === 'Readonly',
+			isHidden: field.accessControl?.[role] === 'Hidden',
 		};
 
 		switch (field.keyType) {

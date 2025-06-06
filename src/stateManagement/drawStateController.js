@@ -836,7 +836,7 @@ class DrawStateControllerHandler extends StateController {
 		const featureId = hat();
 		const layer = currentAsset?.tableName;
 
-		const layers = globalStateController.getValue('layers');
+		const layers = layerController.getValue('layers');
 		const featureLayer = layers?.find(l => {
 			return l.layerSettings?.showable && l.layerSettings?.visiable && l.identifier.startsWith(currentAsset?.name);
 		});
@@ -1071,6 +1071,7 @@ class DrawStateControllerHandler extends StateController {
 				properties: {
 					...currentShape?.properties,
 					...featureToEdit.properties,
+					shapeLabel: currentShape?.properties?.shapeLabel || featureToEdit?.properties?.shapeLabel,
 					shapeArea: calculateLandArea(currentFeature),
 					shapeCenter: calculateShapeCenter(currentFeature?.geometry),
 				},

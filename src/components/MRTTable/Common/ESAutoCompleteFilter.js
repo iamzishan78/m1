@@ -102,6 +102,10 @@ function ESAutoCompleteFilter({
 				: '';
 			filtersRef.current = currentFilterRef;
 
+			const aggregatedColumns = TableSchema?.filter(column => column.isAggregatedField);
+			const aggregatedSearchFields = aggregatedColumns?.map(column => column.name || column.id || column.accessorKey);
+			const finalSearchFields = advanceSearch?.aggregatedSearch ? aggregatedSearchFields : searchFields;
+
 			getFilters({
 				variables: {
 					esIndex,
@@ -113,7 +117,7 @@ function ESAutoCompleteFilter({
 							: filtersArray,
 					filterKeys: isComposite ? compositeFields : undefined,
 					filterKey: !isComposite ? field : undefined,
-					search: { query: tableController(tableKey).getGlobalFilter(), fields: searchFields, advanceSearch },
+					search: { query: tableController(tableKey).getGlobalFilter(), fields: finalSearchFields, advanceSearch },
 					extendSearchQuery,
 					size: 10,
 					key_as_string: custom?.key_as_string,

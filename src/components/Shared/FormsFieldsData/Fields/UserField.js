@@ -10,6 +10,7 @@ const UserField = ({ dialogKey, item }) => {
 	return (
 		<UserList
 			value={user}
+			disabled={item.disabled}
 			setValue={user => {
 				setUser(user);
 				sideDialogController(dialogKey).updateState({ [item.name]: user });

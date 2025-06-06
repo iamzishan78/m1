@@ -5,6 +5,7 @@ import { Badge } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 import FieldContent from 'components/ContactDetailCard/components/FieldContent';
+import { formatDate } from 'components/Shared/functions';
 import Tags from 'components/Shared/Tagger';
 
 import { detailCardController } from 'stateManagement/detailCardController';
@@ -35,9 +36,22 @@ const Header = () => {
 	const currentAssetRecord = stateValues.currentAssetRecord;
 
 	const getControlColumnData = () => {
-		const controlColumnKey = currentAsset?.modelKeys?.find(key => !!key.isControlColumn)?.mappingKey;
-		if (controlColumnKey && currentAssetRecord) {
-			return currentAssetRecord[controlColumnKey];
+		const controlColumn = currentAsset?.modelKeys?.find(key => !!key.isControlColumn);
+
+		if (controlColumn && currentAssetRecord) {
+			const controlColumnKey = controlColumn?.mappingKey;
+			const value = currentAssetRecord[controlColumnKey];
+
+			switch (controlColumn.keyType) {
+				case 'date':
+					return formatDate(value);
+				case 'user':
+					return value?.name;
+				case 'boolean':
+					return value ? 'Yes' : 'No';
+				default:
+					return value;
+			}
 		}
 
 		return null;
@@ -51,8 +65,14 @@ const Header = () => {
 		<div style={{ display: 'flex' }}>
 			<StyleBadge>
 				<Avatar
-					color={Avatar.getRandomColor(getControlColumnData(), ['#b5d2f6', '#ade2e9', '#eaeaea', '#f2c1e2', '#d7d6fb'])}
-					name={getControlColumnData()}
+					color={Avatar.getRandomColor(String(getControlColumnData()), [
+						'#b5d2f6',
+						'#ade2e9',
+						'#eaeaea',
+						'#f2c1e2',
+						'#d7d6fb',
+					])}
+					name={String(getControlColumnData())}
 					size="93"
 					round
 				/>

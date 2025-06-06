@@ -228,21 +228,6 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		fetchPolicy: 'cache-and-network',
 	});
 
-	useEffect(() => {
-		getAllMongoUsers();
-	}, []);
-
-	useEffect(() => {
-		if (userLists && userLists.allMongoUsers) {
-			setUsers(
-				userLists.allMongoUsers.map(user => ({
-					value: user._id,
-					text: user.name,
-				}))
-			);
-		}
-	}, [userLists]);
-
 	const clearFields = () => {
 		formStateController.updateState({
 			notes: '',
@@ -264,6 +249,21 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		slidoutStateController.updateState({ selectedActivity: null });
 		slidoutStateController.hideSlideout();
 	};
+
+	useEffect(() => {
+		getAllMongoUsers();
+	}, []);
+
+	useEffect(() => {
+		if (userLists && userLists.allMongoUsers) {
+			setUsers(
+				userLists.allMongoUsers.map(user => ({
+					value: user._id,
+					text: user.name,
+				}))
+			);
+		}
+	}, [userLists]);
 
 	const [updateActivityMutation] = useMutation(UPDATEACTIVITY, {
 		onCompleted: () => {
@@ -299,6 +299,23 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		});
 	};
 
+	const updateActivity = async () => {
+		globalStateController.updateState({ universalLoader: true });
+
+		updateActivityMutation({
+			variables: {
+				activity: {
+					_id: selectedActivity?._id,
+					...(status ? { status: status } : {}),
+					notes: notes,
+					user: stateApp.user._id,
+				},
+			},
+		}).then(() => {
+			globalStateController.updateState({ universalLoader: false });
+		});
+	};
+
 	useEffect(() => {
 		const activity = selectedActivity;
 		if (activity) {
@@ -328,23 +345,6 @@ export default function ObligationForm({ setSelectedActivityId }) {
 			slidoutStateController.updateParent('Obligation');
 		}
 	}, []);
-
-	const updateActivity = async () => {
-		globalStateController.updateState({ universalLoader: true });
-
-		updateActivityMutation({
-			variables: {
-				activity: {
-					_id: selectedActivity?._id,
-					...(status ? { status: status } : {}),
-					notes: notes,
-					user: stateApp.user._id,
-				},
-			},
-		}).then(() => {
-			globalStateController.updateState({ universalLoader: false });
-		});
-	};
 
 	useEffect(() => {
 		if (formMode) {

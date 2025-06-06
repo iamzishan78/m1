@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 
 import { Button } from '@material-ui/core';
 
@@ -18,6 +18,17 @@ function WellsToolBar() {
 			},
 		});
 	};
+
+	useEffect(() => {
+		return () => {
+			// Cleanup function that runs when component unmounts
+			tableGlobalController.setState({
+				addWellDialog: {
+					open: false,
+				},
+			});
+		};
+	}, []);
 	return (
 		<>
 			{(window.location.pathname.includes('/land/wells') || testCaseStateValues.testCase) && (

@@ -913,6 +913,7 @@ class LayerStateControllerHandler extends StateController {
 			isFileLayer: isFileDataSource,
 			polygonFilter,
 			polygonsFilter,
+			isDynamicLayer,
 			filters: getFilters(),
 			onData: data => {
 				if (!Array.isArray(data)) {

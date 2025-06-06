@@ -137,6 +137,12 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			globalFilter = null;
 		}
 
+		const aggregatedColumns = tableMeta.TableSchema?.filter(column => column.isAggregatedField);
+		const aggregatedSearchFields = aggregatedColumns?.map(column => column.name || column.id || column.accessorKey);
+		const searchFields = tableStateValues.advanceSearch?.aggregatedSearch
+			? aggregatedSearchFields
+			: tableMeta.searchFields;
+
 		// Prepare query variables
 		const variables = {
 			index: tableStateValues.esIndex,
@@ -144,7 +150,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
 			search: {
 				query: globalFilter ? `${globalFilter}` : '',
-				fields: tableMeta.searchFields,
+				fields: searchFields,
 				advanceSearch: tableStateValues.advanceSearch,
 			},
 			sort,
@@ -352,16 +358,23 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 			const tableMeta = tableState;
 
-			if (tableMeta.pagination?.pageIndex !== previousPagination.current?.pageIndex) {
+			if (
+				tableMeta.pagination?.pageIndex !== previousPagination.current?.pageIndex ||
+				tableMeta.pagination?.pageSize !== previousPagination.current?.pageSize
+			) {
 				const pagination = {
 					pit: tableMeta.data?.pit,
 					...tableMeta.pagination,
 					before:
-						tableMeta.data.rows && tableMeta.pagination?.pageIndex < previousPagination?.current?.pageIndex
+						tableMeta.data.rows &&
+						tableMeta.pagination?.pageIndex > 0 &&
+						tableMeta.pagination?.pageIndex < previousPagination?.current?.pageIndex
 							? tableMeta.data.rows[0]?.sort
 							: null,
 					after:
-						tableMeta.data.rows && tableMeta.pagination?.pageIndex > previousPagination?.current?.pageIndex
+						tableMeta.data.rows &&
+						tableMeta.pagination?.pageIndex > 0 &&
+						tableMeta.pagination?.pageIndex > previousPagination?.current?.pageIndex
 							? tableMeta.data.rows[tableMeta.data.rows.length - 1]?.sort
 							: null,
 					pageIndex: tableMeta.pagination?.pageIndex,
@@ -388,6 +401,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		callQuery({
 			pageIndex: 0,
+			pageSize: tableStateValues?.pageSize || PAGE_SIZE,
 			first: tableStateValues?.pageSize || PAGE_SIZE,
 			after: null,
 		});

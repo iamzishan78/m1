@@ -31,7 +31,7 @@ function transformActivity(activity) {
 const BulkAddActivityForm = ({ fieldKey, setFieldKey }) => {
 	const Controller = sideDialogController('activityDialog');
 	const formState = Controller.useCompleteState();
-	const formStateValues = formState?.get({ noproxy: true });
+	const formStateValues = formState;
 
 	const { control, reset, getValues, setValue, watch } = useForm();
 

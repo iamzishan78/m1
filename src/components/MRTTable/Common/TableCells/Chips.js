@@ -5,10 +5,11 @@ import { Chip } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
 const Chips = ({ list }) => {
+	const items = Array.isArray(list) ? list : [list];
 	return (
 		<div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-			{list &&
-				list.map(item => (
+			{items &&
+				items.map(item => (
 					<Chip
 						style={{
 							backgroundColor: '#f0f0f0',

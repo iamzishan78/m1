@@ -29,6 +29,7 @@ export const mapControlsInitialState = {
 	selectedLayer: null,
 	selectedDataset: null,
 	layerGridCard: false,
+	shapeAssetGridCard: false,
 
 	// From Redux MapGridCard
 	mapGridCardActivated: false,

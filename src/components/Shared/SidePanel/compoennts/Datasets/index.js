@@ -175,7 +175,14 @@ function Datasets({ headerButton, search }) {
 			mapControlsStateValues.selectedDataset?.sourceName !== dataset.sourceName
 		) {
 			stateToUpdate.layerGridCard = false;
+			stateToUpdate.shapeAssetGridCard = false;
 			stateToUpdate.mapGridCardActivated = true;
+		} else if (dataset.sourceName === 'M1 Platform Entities') {
+			stateToUpdate.shapeAssetGridCard = true;
+			stateToUpdate.layerGridCard = false;
+			stateToUpdate.mapGridCardActivated = true;
+
+			stateToUpdate.selectedLayer = { ...dataset.categories[0] };
 		} else {
 			const layers = layerController.getValue('layers');
 			const layer = layers.find(
@@ -183,6 +190,7 @@ function Datasets({ headerButton, search }) {
 			);
 			stateToUpdate.selectedLayer = { ...dataset.categories[0], layerSchema: layer?.layerSchema };
 			stateToUpdate.layerGridCard = true;
+			stateToUpdate.shapeAssetGridCard = false;
 			stateToUpdate.mapGridCardActivated = true;
 		}
 		mapControlsController.updateState(stateToUpdate);

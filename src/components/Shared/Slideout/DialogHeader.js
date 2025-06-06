@@ -19,7 +19,7 @@ const getDealNameFieldHeight = title => {
 	return `${24 * lineLength}px !important`;
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dealStateOpenWon: {
 		padding: '8px 16px',
 		borderRadius: 5,
@@ -56,8 +56,8 @@ const useStyles = makeStyles(theme => ({
 		outline: 'none',
 	},
 	inputFieldDealName: props => ({
-		width: '750px',
-		padding: '20px 30px 20px 30px',
+		width: '110%',
+		padding: '20px 0 20px 10px',
 		'& .MuiTextField-root': {
 			'& .MuiInputBase-multiline': {
 				'& .MuiInputBase-inputMultiline': {
@@ -120,15 +120,17 @@ const DialogHeader = ({ handleClickDialogClose, openConfirmationDialog }) => {
 
 	return (
 		<div>
-			<Grid container style={{ padding: '10px', maxHeight: '115px' }}>
-				<Grid item container xs={9} alignItems="center">
-					<FormControl
-						variant="outlined"
-						className={classes.inputFieldDealName}
-						style={{ marginLeft: '-15px' }}
-						fullWidth
-						size="small"
-					>
+			<Grid
+				style={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					padding: '10px',
+					maxHeight: '115px',
+				}}
+			>
+				<Grid item style={{ flexGrow: 1 }} xs={9} alignItems="center">
+					<FormControl variant="outlined" className={classes.inputFieldDealName} fullWidth size="small">
 						<TextField
 							margin="dense"
 							value={title}

@@ -28,7 +28,7 @@ const useStyles = makeStyles({
 });
 
 const filter = createFilterOptions();
-const SummaryAutoComplete = ({ fieldData, fieldKey, defaultOptions = [], payload, ...other }) => {
+const SummaryAutoComplete = ({ fieldData, field, fieldKey, defaultOptions = [], payload, ...other }) => {
 	const classes = useStyles();
 
 	const {
@@ -90,6 +90,7 @@ const SummaryAutoComplete = ({ fieldData, fieldKey, defaultOptions = [], payload
 			value={search}
 			disableListWrap
 			classes={classes}
+			disabled={field.disabled}
 			options={
 				options?.map(type => {
 					return { _id: type, name: type };
@@ -187,6 +188,7 @@ const SummaryAutoComplete = ({ fieldData, fieldKey, defaultOptions = [], payload
 
 SummaryAutoComplete.propTypes = {
 	fieldData: PropTypes.string,
+	field: PropTypes.object,
 	fieldKey: PropTypes.string.isRequired,
 	defaultOptions: PropTypes.arrayOf(
 		PropTypes.shape({

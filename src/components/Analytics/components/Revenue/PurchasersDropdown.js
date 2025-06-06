@@ -6,7 +6,7 @@ import { useApolloClient } from '@apollo/client';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	actionBar: ({ isBackground, noPadding }) => ({
 		padding: noPadding ? 0 : '10px 40px',
 		display: 'flex',
@@ -65,7 +65,7 @@ const PurchasersDropdown = ({
 					filterKey: 'purchaser.name.keyword',
 					search: {
 						query: '',
-						fields: ['name^4', '_all'],
+						fields: ['name', '_all'],
 					},
 					extendSearchQuery: '',
 					size: 10,
@@ -118,7 +118,12 @@ const PurchasersDropdown = ({
 						}}
 					>
 						<MenuItem value="All Purchasers">All Purchasers</MenuItem>
-						{options && options.map(option => <MenuItem value={option.key}>{option.key}</MenuItem>)}
+						{options &&
+							options.map(option => (
+								<MenuItem key={option.key} value={option.key}>
+									{option.key}
+								</MenuItem>
+							))}
 					</Select>
 				</FormControl>
 			</Grid>

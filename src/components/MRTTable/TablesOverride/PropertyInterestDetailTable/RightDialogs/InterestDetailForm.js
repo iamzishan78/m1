@@ -123,7 +123,7 @@ const InterestDetailForm = ({ selectedInterest, propertyOwnerContact, onClose })
 				variables: {
 					propertyInterest: {
 						...values,
-						interestType: values?.interestType.name,
+						interestType: values?.interestType?.name ? values.interestType.name : values.interestType,
 						owner: values?.owner?._id ? values.owner._id : null,
 						propertyId: id,
 					},

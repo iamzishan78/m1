@@ -233,6 +233,16 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	const setFileUpload = useCallback(fileUpload => {
 		formStateController.updateState({ fileUpload });
 	}, []);
+	const [url, setUrl] = useState({
+		isValid: selectedDocument?.url ? true : false,
+		value: selectedDocument?.url,
+		error: false,
+	});
+
+	useEffect(() => {
+		const value = url?.isValid ? url?.value : null;
+		formStateController.updateState({ url: value });
+	}, [url]);
 
 	useEffect(() => {
 		if (selectedDocument?._id || fileDownload) {
@@ -607,6 +617,8 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							fileId={selectedDocument?._id}
 							setFileUpload={setFileUpload}
 							title={'Upload Document'}
+							setUrl={setUrl}
+							url={url}
 						/>
 					</div>
 				) : null}
@@ -633,7 +645,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						color="secondary"
 						size="medium"
 						disableElevation
-						disabled={!formStateValues.fileUpload?.upload}
+						disabled={!formStateValues.fileUpload?.upload && !url?.isValid}
 						onClick={() => {
 							if (formStateValues.fileUpload?.upload) {
 								Loader.createToast('FileUploading', 'File Uploading in Progress');

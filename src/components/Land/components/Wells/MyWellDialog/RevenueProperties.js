@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import {
@@ -22,18 +22,16 @@ import AddIcon from '@material-ui/icons/Add';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { useMutation } from '@apollo/client';
+import { LinearProgress } from '@mui/material';
 
-//Components
+import { useLazyQuery, useMutation } from '@apollo/client';
+
 import { UPSERT_WELL_DESCRIPTOR } from 'graphQL/useMutationWellDescriptor';
+import { GET_WELL_PROPERTY_INTERESTS } from 'graphQL/useQueryWellDescriptors';
 
 import { statusData } from 'utils/data';
 
 import SearchField from './SearchField';
-
-// Hooks
-
-// Mutations
 
 const propertyInterestParams = [
 	{
@@ -167,7 +165,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
+const ReveueProperties = ({ platformWell, propertyDescriptor }) => {
 	// Initials
 	let history = useHistory();
 	const classes = useStyles();
@@ -177,7 +175,7 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 	const [isSearchActive, setSearchState] = useState(false);
 	const [addWell, setAddWell] = useState(false);
 
-	const [upsertWellDescriptor] = useMutation(UPSERT_WELL_DESCRIPTOR);
+	const [upsertWellDescriptor, { loading }] = useMutation(UPSERT_WELL_DESCRIPTOR);
 
 	const handleAddProperty = propertyId => {
 		upsertWellDescriptor({
@@ -186,10 +184,25 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 				relatedObject: propertyId,
 				relatedObjectType: 'Property',
 			},
-			refetchQueries: ['getMyWellByGlobalId'],
+			refetchQueries: ['getMyWellByGlobalId', 'getWellPropertyInterest'],
 			awaitRefetchQueries: true,
 		});
 	};
+
+	const [getWellPropertyInterest, { data: wellPropertyInterests, loading: propertiesLoading }] =
+		useLazyQuery(GET_WELL_PROPERTY_INTERESTS);
+
+	useEffect(() => {
+		if (platformWell?._id) {
+			getWellPropertyInterest({
+				variables: {
+					descriptorObject: platformWell._id,
+				},
+			});
+		}
+	}, []);
+
+	const properties = wellPropertyInterests?.getWellPropertyInterest?.[0]?.properties;
 
 	return (
 		<div style={{ marginRight: '14px' }}>
@@ -243,7 +256,7 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 						{/* <WellSearchApiFieldES getSelectedWell={getSelectedWell} /> */}
 						<SearchField
 							esIndex="properties_flat"
-							fields={['name^4', '_all']}
+							fields={['name', '_all']}
 							optionsParams={['name', 'internalID']}
 							targetLabel="properties"
 							onSelectOption={property => handleAddProperty(property._id)}
@@ -262,11 +275,12 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 				</Grid>
 			</Grid>
 			<Divider />
+			{(loading || propertiesLoading) && <LinearProgress />}
 			<div className={classes.list}>
 				<List id="wellsList" aria-label="wells list">
-					{properties.length > 0 ? (
-						properties.map((property, index) => (
-							<Accordion className={classes.accordion} key={index}>
+					{properties?.length > 0 ? (
+						properties.map(property => (
+							<Accordion className={classes.accordion} key={property._id}>
 								<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
 									<div>
 										<Link
@@ -284,8 +298,8 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 								</AccordionSummary>
 								<AccordionDetails>
 									<div>
-										{propertyInterestParams.map((param, index) => (
-											<React.Fragment key={index}>
+										{propertyInterestParams.map(param => (
+											<React.Fragment key={param.key}>
 												<TextField
 													margin="dense"
 													label={param.label}
@@ -296,8 +310,8 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 												/>
 											</React.Fragment>
 										))}
-										{propertyParams.map((param, index) => (
-											<React.Fragment key={index}>
+										{propertyParams.map(param => (
+											<React.Fragment key={param.key}>
 												<TextField
 													margin="dense"
 													label={param.label}

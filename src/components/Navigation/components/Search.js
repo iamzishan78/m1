@@ -60,6 +60,7 @@ const operatorIndexName = 'operator-index-m1corev3';
 const wellCogIndexName = 'wellheader-index-m1corev3';
 const ownerCogIndexName = 'globalowner-index-m1corev3';
 const contactIndexName = 'contacts-index';
+const myWellsIndexName = 'mywells_flat';
 
 const maxMinScore = options => {
 	let max = 0;
@@ -192,11 +193,11 @@ const esCallData = {
 		},
 	},
 	'my wells': {
-		esIndex: 'mywells_flat',
+		esIndex: myWellsIndexName,
 		search: request => `*${request.input}*`,
 		searchFields: SHAPE_TYPE['my wells'].SEARCH_FIELDS,
 		formatOptions: data => {
-			return { ...data, Source: 'mywells_flat', Primary: data.wellData.WellName, Secondary: data.wellData.ApiNumber };
+			return { ...data, Source: myWellsIndexName, Primary: data.wellData.WellName, Secondary: data.wellData.ApiNumber };
 		},
 	},
 	contacts: {
@@ -767,27 +768,30 @@ function Search({ stateApp, setStateApp, isDocument }) {
 				}, 2000);
 			}
 
-			//// if well, with lat long
-			if (newValue && newValue.Source === wellCogIndexName && newValue.Longitude && newValue.Latitude) {
-				popupController.setState({
-					selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
-					wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
-					selectedPlaces: null,
-				});
-				setStateApp(stateApp => ({
-					...stateApp,
-					fitBounds: null,
-				}));
-				layerController.updateState({
-					wellListFromSearch: [
-						{
-							id: newValue.Id,
-							longitude: newValue.Longitude,
-							latitude: newValue.Latitude,
-						},
-					],
-				});
-				layerController.toggleLayersActivity('Search', true);
+			//// if platformWell or myWell, with lat long
+			if (newValue && (newValue.Source === wellCogIndexName || newValue.Source === myWellsIndexName)) {
+				const wellData = newValue.Source === wellCogIndexName ? newValue : newValue.wellData;
+				if (wellData && wellData.Latitude && wellData.Longitude) {
+					popupController.setState({
+						selectedWellId: wellData.Id ? wellData.Id.toLowerCase() : null,
+						wellSelectedCoordinates: [wellData.Longitude, wellData.Latitude],
+						selectedPlaces: null,
+					});
+					setStateApp(stateApp => ({
+						...stateApp,
+						fitBounds: null,
+					}));
+					layerController.updateState({
+						wellListFromSearch: [
+							{
+								id: wellData.Id,
+								longitude: wellData.Longitude,
+								latitude: wellData.Latitude,
+							},
+						],
+					});
+					layerController.toggleLayersActivity('Search', true);
+				}
 			}
 
 			//// if owner
@@ -980,7 +984,7 @@ function Search({ stateApp, setStateApp, isDocument }) {
 					if (option.Source === 'places') {
 						return 'Places';
 					}
-					if (option.Source === 'mywells_flat') {
+					if (option.Source === myWellsIndexName) {
 						return 'My Wells';
 					}
 					if (option.layer === 'unit') {
@@ -1168,15 +1172,17 @@ function Search({ stateApp, setStateApp, isDocument }) {
 																					? 'tax owners'
 																					: option.Source === wellCogIndexName
 																						? 'platform wells'
-																						: option.Source === operatorIndexName
-																							? 'operators'
-																							: option.Source === leaseIndexName
-																								? 'leases'
-																								: option.Source === contactIndexName
-																									? 'contacts'
-																									: option.group === 'mapboxSearch'
-																										? 'locations'
-																										: 'all'
+																						: option.Source === myWellsIndexName
+																							? 'my wells'
+																							: option.Source === operatorIndexName
+																								? 'operators'
+																								: option.Source === leaseIndexName
+																									? 'leases'
+																									: option.Source === contactIndexName
+																										? 'contacts'
+																										: option.group === 'mapboxSearch'
+																											? 'locations'
+																											: 'all'
 																			);
 
 																			mapControlsController.updateState({
@@ -1211,7 +1217,8 @@ function Search({ stateApp, setStateApp, isDocument }) {
 																					{option?.shapeJson?.properties?.type === 'agreement' && (
 																						<FolderIcon className={classes.icon} color={'#757575'} />
 																					)}
-																					{option.Source === wellCogIndexName && (
+																					{(option.Source === wellCogIndexName ||
+																						option.Source === myWellsIndexName) && (
 																						<WellIcon className={classes.icon} color={'#757575'} opacity="1.0" small />
 																					)}
 																					{option.Source === leaseIndexName && (
@@ -1293,7 +1300,7 @@ function Search({ stateApp, setStateApp, isDocument }) {
 									{option?.shapeJson?.properties?.type === 'agreement' && (
 										<FolderIcon className={classes.icon} color={'#757575'} />
 									)}
-									{option.Source === wellCogIndexName && (
+									{(option.Source === wellCogIndexName || option.Source === myWellsIndexName) && (
 										<WellIcon className={classes.icon} color={'#757575'} opacity="1.0" small />
 									)}
 									{option.Source === leaseIndexName && (
@@ -1341,7 +1348,7 @@ function Search({ stateApp, setStateApp, isDocument }) {
 											opacity: calcScoreOpacity(
 												option.Source === ownerCogIndexName
 													? maxMinOwnersScore
-													: option.Source === wellCogIndexName
+													: option.Source === wellCogIndexName || option.Source === myWellsIndexName
 														? maxMinWellsScore
 														: option.Source === operatorIndexName
 															? maxMinOperatosScore

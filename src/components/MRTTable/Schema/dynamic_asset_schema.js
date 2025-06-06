@@ -11,6 +11,7 @@ const DynamicAssetMeta = {
 	},
 	maxTableHeight: 'calc(100vh - 215px)',
 	columnVirtualization: false,
+	isAggregatedSearch: true,
 
 	CustomToolBar: DynamicAssetGridToolBar,
 	TableSchema: [

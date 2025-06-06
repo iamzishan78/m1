@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react';
 
+import { makeStyles } from '@material-ui/core/styles';
+
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
 
 import { detailCardController } from 'stateManagement/detailCardController';
 
+const useStyles = makeStyles(() => ({
+	container: {
+		height: '100%',
+		paddingRight: '8px',
+	},
+}));
+
 const SummaryUsersList = ({ fieldData, field }) => {
+	const classes = useStyles();
 	const {
 		stateValues: { page },
 	} = detailCardController.useState(['page']);
@@ -33,12 +43,14 @@ const SummaryUsersList = ({ fieldData, field }) => {
 	}, [fieldData]);
 
 	return (
-		<UsersListWithIcon
-			field={field}
-			placeholder={`Enter ${field?.label}`}
-			selectedUserId={value}
-			onChangeUser={handleChange}
-		/>
+		<div className={classes.container}>
+			<UsersListWithIcon
+				field={field}
+				placeholder={`Enter ${field?.label}`}
+				selectedUserId={value}
+				onChangeUser={handleChange}
+			/>
+		</div>
 	);
 };
 

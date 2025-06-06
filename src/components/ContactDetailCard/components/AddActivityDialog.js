@@ -571,6 +571,7 @@ function AddActivityDialog(props) {
 				<CustomAutoComplete
 					fieldAttributes={{
 						value: outcome,
+						label: 'Outcome',
 						optionArray: outcomeOptions,
 						queryParams: {
 							esIndex: 'activities_flat',
@@ -700,11 +701,10 @@ function AddActivityDialog(props) {
 					value: users.find(user => user.value === owner.id) || null,
 					optionArray: users.filter(u => u.text),
 					getOptions: options => options, // No transformation needed
-					getCustomOptionLabel: option => option.text,
 				}}
 				fieldEvents={{
-					onChange: ({ value }) => {
-						setOwner({ name: value?.text, id: value?.value });
+					onChange: ({ valueObj }) => {
+						setOwner({ name: valueObj?.text, id: valueObj?.value });
 					},
 				}}
 				fieldConfig={{
@@ -716,6 +716,7 @@ function AddActivityDialog(props) {
 						InputLabelProps: { shrink: true },
 					},
 					containerSpacing: 0,
+					getCustomOptionLabel: option => option.text,
 				}}
 			/>
 			<TextField
@@ -738,11 +739,11 @@ function AddActivityDialog(props) {
 					label: 'Activity Status',
 					value: activityStatus.find(item => item?.value === closed?.value),
 					optionArray: activityStatus,
-					getOptionLabel: option => option.key,
 				}}
 				fieldEvents={{
 					onChange: ({ value }) => {
-						setClosed(value);
+						const selected = activityStatus.find(item => item?.value === value);
+						setClosed(selected);
 					},
 				}}
 				fieldConfig={{
@@ -751,6 +752,7 @@ function AddActivityDialog(props) {
 					textfieldRestProps: {
 						className: clsx(classes.inputField, !owner.id && errors.owner && classes.error),
 					},
+					getCustomOptionLabel: option => option.key,
 				}}
 				disableClearable
 			/>

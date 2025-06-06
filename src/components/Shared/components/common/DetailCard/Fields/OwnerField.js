@@ -76,6 +76,7 @@ function OwnerField({ fieldData, field }) {
 		<ContactPaginatedAutocomplete
 			nameAutValue={prevValue?.contactId ? prevValue?.name : ''}
 			className={classes.field}
+			field={field}
 			setNameAutValue={value => {
 				if (value) {
 					contactEntity(value?._id);

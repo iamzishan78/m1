@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { DialogTitle, DialogActions, DialogContent, Grid, makeStyles, Button, IconButton } from '@material-ui/core';
@@ -17,6 +17,8 @@ import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { sideDialogController } from 'stateManagement/sideDialogController';
 import { tableGlobalController } from 'stateManagement/tableController';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {
@@ -85,6 +87,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function AddCustomAssetDialog(props) {
 	const classes = useStyles();
+	const [stateApp] = useContext(AppContext);
+
 	const {
 		globalStateValues: { currentAsset },
 	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
@@ -143,6 +147,7 @@ export default function AddCustomAssetDialog(props) {
 	const formSchema = useMemo(() => {
 		return customAssetForm({
 			fields: currentAsset?.modelKeys,
+			user: stateApp.user,
 		});
 	}, [currentAsset?.modelKeys]);
 
