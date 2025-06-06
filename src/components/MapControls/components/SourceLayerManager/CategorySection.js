@@ -16,6 +16,8 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 
 import PropTypes from 'prop-types';
 
+import { aggregationLayers } from 'components/Shared/functions/shapeLayer';
+
 import { layerController } from 'stateManagement/layerStateController';
 
 import DeleteConfirmationDialog from '../DeleteConfirmationDialog';
@@ -79,11 +81,11 @@ export default function CategorySection({ title, search, layerCategory }) {
 	} = layerController.useState(['projectedLayers'], 'layerStateValues');
 
 	const SectionLayers = React.useMemo(() => {
-		// Filter layers
 		const layers = projectedLayers?.filter(
 			layer =>
 				(layer.layerCategory === layerCategory && layerCategory === 'M1 Layer' && layer.identifier !== 'Land Grid') ||
-				(layer.layerCategory === layerCategory && (layerCategory === 'UD layer' || layer.file))
+				(layer.layerCategory === layerCategory && (layerCategory === 'UD layer' || layer.file)) ||
+				(aggregationLayers.includes(layer.layerType) && layerCategory === 'UD layer')
 		);
 		return handleGroups(layers);
 	}, [projectedLayers]);
