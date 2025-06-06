@@ -75,6 +75,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 		'isAllRowsSelected',
 		'rowSelection',
 		'defaultFilters',
+		'fetchMetaData',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const isSomeRowsSelected =
@@ -237,7 +238,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			{isSomethingSelected && <ExportData classes={classes} {...exportPropsPass} />}
 
 			<OwnerPerUnitTableDialogs />
-			{globalStateValues.showFieldModal && (
+			{tableStateValues.fetchMetaData && globalStateValues.showFieldModal && (
 				<MetaField columns={[]} category="Unit Interest Owners" tableKey={tableKey} />
 			)}
 		</>

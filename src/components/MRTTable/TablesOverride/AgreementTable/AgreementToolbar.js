@@ -2,6 +2,8 @@ import React, { memo } from 'react';
 
 import { Button, ButtonGroup } from '@material-ui/core';
 
+import PropTypes from 'prop-types';
+
 import MetaFieldList from 'components/MRTTable/Common/MetaData/MetaFieldList';
 
 import { globalStateController } from 'stateManagement/globalStateController';
@@ -9,7 +11,7 @@ import { tableController } from 'stateManagement/tableController';
 
 import MetaField from 'utils/MetaField';
 
-function AgreementToolBar({ table, tableKey }) {
+function AgreementToolBar({ tableKey }) {
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState(['metaFieldList', 'fetchMetaData', 'TableSchema']);
 	const tableStateValues = tableState.stateValues;
@@ -36,7 +38,7 @@ function AgreementToolBar({ table, tableKey }) {
 			</ButtonGroup>
 
 			{!!tableStateValues?.metaFieldList && <MetaFieldList tableKey={tableKey} />}
-			{!!globalStateValues.showFieldModal && (
+			{tableState.fetchMetaData && !!globalStateValues.showFieldModal && (
 				<MetaField
 					tableKey={tableKey}
 					columns={tableStateValues?.TableSchema}
@@ -46,5 +48,9 @@ function AgreementToolBar({ table, tableKey }) {
 		</>
 	);
 }
+
+AgreementToolBar.propTypes = {
+	tableKey: PropTypes.string.isRequired,
+};
 
 export default memo(AgreementToolBar);

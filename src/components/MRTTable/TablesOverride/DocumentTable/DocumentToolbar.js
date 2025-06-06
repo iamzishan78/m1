@@ -154,7 +154,7 @@ function DocumentToolBar({ tableKey }) {
 
 				{/* Custom metat data dialog */}
 				{!!tableStateValues?.metaFieldList && <MetaFieldList tableKey={tableKey} />}
-				{!!globalStateValues.showFieldModal && (
+				{tableStateValues.fetchMetaData && !!globalStateValues.showFieldModal && (
 					<MetaField
 						tableKey={tableKey}
 						columns={tableStateValues?.TableSchema}
