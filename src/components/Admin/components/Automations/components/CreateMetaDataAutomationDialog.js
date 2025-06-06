@@ -163,10 +163,10 @@ const CreateMetaDataAutomationDialog = ({ onClose, setFormLoading, handleCreateA
 						handleCreateAutomation({
 							config: {
 								module: selectedModule,
-								triggerField: selectedTriggerField.esKey,
+								triggerField: selectedTriggerField?.esKey?.replace('.keyword', ''),
 								triggerValue: triggerValue,
 								triggerLabel: selectedTriggerField.label,
-								targetField: selectedTargetField.esKey,
+								targetField: selectedTargetField?.esKey?.replace('.keyword', ''),
 								targetValue: targetValue,
 								targetLabel: selectedTargetField.label,
 							},
