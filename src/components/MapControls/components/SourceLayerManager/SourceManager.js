@@ -591,8 +591,9 @@ function SourceManager(props) {
 																	onChange={datasetNameChange}
 																	item={dataset}
 																	name={dataset.sourceName}
-																	isEditable={true}
-																	openEditField={openEditField(dataset.sourceName)}
+																	isEditable={false}
+																	isEditing={openEditField(dataset.sourceName)}
+																	onEditEnd={() => setActionItem(null)}
 																/>
 																{/* <ListItemText primary={dataset.sourceName} /> */}
 																<MoreHorizIcon
@@ -621,8 +622,9 @@ function SourceManager(props) {
 																					onChange={datasetNameChange}
 																					item={layer}
 																					name={layer.layerName || layer.name}
-																					isEditable={true}
-																					openEditField={openEditField(layer.layerName || layer.name)}
+																					isEditable={false}
+																					isEditing={openEditField(layer.layerName || layer.name)}
+																					onEditEnd={() => setActionItem(null)}
 																				/>
 
 																				{/* <ListItemText style={{ padding: '5px 0px 5px 40px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} /> */}

@@ -115,14 +115,17 @@ const CategorySectionList = ({
 				return 112 + rowCount * 42;
 			}
 
-			return 50;
+			// Add extra height when editing
+			const isEditing =
+				actionItem?.layer?.layerId === filteredLayers[index]?.layerId && actionItem?.type === 'editName';
+			return isEditing ? 80 : 50;
 		},
 	});
 
 	useEffect(() => {
 		setUDLayersStates(state => state ?? []);
 		rowVirtualizer.measure();
-	}, [filteredLayers]);
+	}, [filteredLayers, actionItem?.layer?.layerId, actionItem?.type]);
 
 	const maxHeight = 454.5;
 	const itemHeight = 54;
@@ -223,7 +226,8 @@ const CategorySectionList = ({
 												isEditable={false}
 												showExpandIcon
 												openUd={openUDLayers.includes(index)}
-												openEditField={layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'}
+												isEditing={layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'}
+												onEditEnd={() => setActionItem(null)}
 											/>
 											{allowDelete && (
 												<MoreHorizIcon
@@ -260,9 +264,10 @@ const CategorySectionList = ({
 														item={groupLayer}
 														name={groupLayer.layerName}
 														isEditable={false}
-														openEditField={
+														isEditing={
 															groupLayer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'
 														}
+														onEditEnd={() => setActionItem(null)}
 													/>
 													{allowDelete && (
 														<MoreHorizIcon
@@ -311,7 +316,8 @@ const CategorySectionList = ({
 								item={layer}
 								name={layer.layerName}
 								isEditable={false}
-								openEditField={layer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'}
+								isEditing={layer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'}
+								onEditEnd={() => setActionItem(null)}
 							/>
 
 							{layer.identifier === 'Units' && (
