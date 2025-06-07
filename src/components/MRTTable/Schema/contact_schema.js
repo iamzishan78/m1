@@ -317,21 +317,21 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'homePhone.keyword',
 			accessorKey: 'homePhone',
 			header: 'Primary Home Phone',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'mobilePhone.keyword',
 			accessorKey: 'mobilePhone',
 			header: 'Primary Mobile Phone',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'phone1.keyword',
 			accessorKey: 'phone1',
 			header: 'Phone 1 (Purchased Data)',
@@ -340,7 +340,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'phone2.keyword',
 			accessorKey: 'phone2',
 			header: 'Phone 2 (Purchased Data)',
@@ -349,7 +349,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'phone3.keyword',
 			accessorKey: 'phone3',
 			header: 'Phone 3 (Purchased Data)',
@@ -358,7 +358,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'phone4.keyword',
 			accessorKey: 'phone4',
 			header: 'Phone 4 (Purchased Data)',
@@ -367,7 +367,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'phone5.keyword',
 			accessorKey: 'phone5',
 			header: 'Phone 5 (Purchased Data)',
@@ -394,28 +394,28 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'mobilephone2.keyword',
 			accessorKey: 'mobilephone2',
 			header: 'Mobile Phone 2',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'AltPhone.keyword',
 			accessorKey: 'AltPhone',
 			header: 'Primary Work Phone',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'mobilephone3.keyword',
 			accessorKey: 'mobilephone3',
 			header: 'Mobile Phone 3',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'homePhone2.keyword',
 			accessorKey: 'homePhone2',
 			header: 'Home Phone 2',
@@ -423,7 +423,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'homePhone3.keyword',
 			accessorKey: 'homePhone3',
 			header: 'Home Phone 3',
@@ -431,7 +431,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'AltPhone2.keyword',
 			accessorKey: 'AltPhone2',
 			header: 'Work Phone 2',
@@ -439,7 +439,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'AltPhone3.keyword',
 			accessorKey: 'AltPhone3',
 			header: 'Work Phone 3',

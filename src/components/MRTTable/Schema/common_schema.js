@@ -1,5 +1,15 @@
+import DialpadTableCell from 'components/ContactDetailCard/components/FieldContent/DialpadTableCell';
 import { formatDate } from 'components/Shared/functions';
 
+const COMMON_COLUMN = {
+	size: 250,
+	isPinned: false,
+	hidden: false,
+	filter: true,
+	isSearchField: true,
+	enableSorting: true,
+	type: 'string',
+}
 export const CommonSchema = {
 	COMMENTS: {
 		name: 'comments',
@@ -73,15 +83,7 @@ export const CommonSchema = {
 		enableColumnOrdering: false,
 		size: 350,
 	},
-	COMMON_COLUMN: {
-		size: 250,
-		isPinned: false,
-		hidden: false,
-		filter: true,
-		isSearchField: true,
-		enableSorting: true,
-		type: 'string',
-	},
+	COMMON_COLUMN,
 	ACTION_COLUMN: {
 		header: ' ',
 		isPinned: false,
@@ -163,4 +165,10 @@ export const CommonSchema = {
 			return <>{formatDate(row.original?.lastUpdateAt)}</>
 		},
 	},
+	DIALPAD_COLUMN:{
+		...COMMON_COLUMN,
+		Cell: ({ renderedCellValue, row }) => {
+			return <DialpadTableCell value={renderedCellValue} row={row} />;
+		},
+	}
 };
