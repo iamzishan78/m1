@@ -38,6 +38,7 @@ import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Forma
 import { copy } from 'components/Shared/functions';
 import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
 import { set } from 'lodash';
+import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
@@ -117,6 +118,8 @@ function SelectedField({
 	publicTags,
 }) {
 	let filterKey = ''; // Initialize filterKey variable to determine specific filter criteria
+	let esIndex = 'contacts_flat'; // Initialize esIndex variable to determine Elasticsearch index
+	let defaultOptions = []; // Initialize defaultOptions variable to determine default options for autocomplete field
 
 	// Switch statement to render different input fields based on the field type
 	switch (field) {
@@ -152,6 +155,14 @@ function SelectedField({
 			break;
 		case 'Status':
 			filterKey = 'contactStatus.keyword'; // Sets filterKey to 'contactStatus.keyword' for filtering by status
+			break;
+		case 'Outcome':
+			filterKey ='outcome.keyword'; // Sets filterKey to 'outcome.keyword' for filtering by outcome
+			defaultOptions = outcomeOptions;
+			break;
+		case 'Unit Status':
+			filterKey = 'shapeJson.properties.uStatus.keyword'; // Sets filterKey to 'shapeJson.properties.uStatus.keyword' for filtering by unit status	
+			esIndex = 'shapes_flat'; // Sets esIndex to 'shapes_flat' for filtering by unit status
 			break;
 		case 'Industry Type':
 		case 'Lead Source':
@@ -244,6 +255,8 @@ function SelectedField({
 				onChange={(e, fieldKey) => {
 					setFieldKey(fieldKey.value); // Sets the field key value based on selected value
 				}}
+				esIndex={esIndex}
+				defaultOptions={defaultOptions}
 			/>
 		);
 	}
@@ -315,6 +328,7 @@ export default function AssignOwnerToContactDrawer({
 
 	const unitTableFields = [
 		{ title: 'Campaign Name', value: 'campaignName' },
+		{ title: 'Unit Status', value: 'uStatus' },
 		{ title: 'Max Pricing (Per NRA)', value: 'uMaxUnitPricing' },
 		{ title: 'Target Pricing (Per NRA)', value: 'uUnitPricing' },
 		{ title: 'Tags', value: 'contactStatus' },
@@ -331,12 +345,13 @@ export default function AssignOwnerToContactDrawer({
 		{ title: 'Tags', value: 'contactStatus' },
 		{ title: 'Territory', value: 'territory' },
 		{ title: 'County', value: 'county' },
+		{ title: 'Outcome', value: 'outcome' },
 		{ title: 'Time Zone', value: 'timeZone' },
 		{ title: 'Related Contact', value: 'relatedcontact' },
 		{ title: 'Add New Activity', value: 'activity' },
 	];
 
-	const fieldsToUpdate = rest.header === 'UnitTable' ? [...unitTableFields] : [...otherTableFields];
+	const fieldsToUpdate = rest?.header?.includes('Unit') ? [...unitTableFields] : [...otherTableFields];
 
 	useEffect(() => {
 		if (
@@ -448,7 +463,7 @@ export default function AssignOwnerToContactDrawer({
 		const contactIds = rows.map(row => row.contactId || row._id);
 
 		const errorMsg = 'Failed to assign to contact owner';
-		Loader.createToast('contact-creation', 'Contact Bulk Update in progress');
+		Loader.createToast('contact-creation', 'Bulk Update in progress');
 
 		if (field === 'Contact Owner') {
 			assignOwnerToContact({
@@ -542,7 +557,7 @@ export default function AssignOwnerToContactDrawer({
 					Loader.errorToast('contact-creation', errorMsg);
 				}
 			);
-		} else if (field === 'Max Pricing (Per NRA)' || field === 'Target Pricing (Per NRA)') {
+		} else if (field === 'Max Pricing (Per NRA)' || field === 'Target Pricing (Per NRA)' || field === 'Unit Status') {
 			// Map through each row to create an array of shapes to update
 			const shapesToUpdate = rows.map(row => {
 				// Update the campaign with the new value and fieldKey, creating a custom layer for each row

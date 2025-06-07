@@ -108,6 +108,7 @@ export const openSideDialog = async (
 			tableKey,
 			...props,
 			selectedCampaign,
+			esIndex
 		},
 	});
 

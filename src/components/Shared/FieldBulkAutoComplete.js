@@ -4,8 +4,9 @@ import { useLazyQuery } from '@apollo/client';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from "@material-ui/core/TextField";
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { uniq } from 'lodash';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
     iconContainer: {
         display: 'flex',
         flexDirection: 'column',
@@ -17,7 +18,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function FieldBulkAutoComplete({ value, onChange, onKeyDown, onBlur, filterKey, placeholder }) {
+export default function FieldBulkAutoComplete({ value, onChange, onKeyDown, onBlur, filterKey, placeholder, esIndex = 'contacts_flat', defaultOptions=[] }) {
     let classes = useStyles();
     const [options, setOptions] = useState([]);
 
@@ -26,7 +27,7 @@ export default function FieldBulkAutoComplete({ value, onChange, onKeyDown, onBl
     useEffect(() => {
         getFilters({
             variables: {
-                esIndex: 'contacts_flat',
+                esIndex,
                 filterKey: filterKey,
                 size: 50,
             },
@@ -35,12 +36,11 @@ export default function FieldBulkAutoComplete({ value, onChange, onKeyDown, onBl
 
     useEffect(() => {
         if (filtersData?.getESFilterList?.hits) {
-            setOptions(
-                filtersData.getESFilterList.hits.map((hit) => ({
-                    value: hit.key,
-                    text: hit.key
-                }))
-            );
+            let options = uniq([...defaultOptions, ...filtersData.getESFilterList.hits.map((hit) => (hit.key))])
+            setOptions(options.map((op) => ({
+                value: op,
+                text: op
+            })));
         }
     }, [filtersData])
 
