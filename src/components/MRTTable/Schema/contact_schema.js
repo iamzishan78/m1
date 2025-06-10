@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import Avatar from 'react-avatar';
 
@@ -14,7 +15,6 @@ import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagCompon
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
-import DailpadIcon from 'components/Shared/components/svgIcons/DailpadIcon';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import Contact from 'components/Shared/svgIcons/contact';
 
@@ -317,21 +317,21 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'homePhone.keyword',
 			id: 'homePhone',
 			header: 'Primary Home Phone',
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'mobilePhone.keyword',
 			id: 'mobilePhone',
 			header: 'Primary Mobile Phone',
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'phone1.keyword',
 			id: 'phone1',
 			header: 'Phone 1 (Purchased Data)',
@@ -340,7 +340,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'phone2.keyword',
 			id: 'phone2',
 			header: 'Phone 2 (Purchased Data)',
@@ -349,7 +349,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'phone3.keyword',
 			id: 'phone3',
 			header: 'Phone 3 (Purchased Data)',
@@ -358,7 +358,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'phone4.keyword',
 			id: 'phone4',
 			header: 'Phone 4 (Purchased Data)',
@@ -367,7 +367,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'phone5.keyword',
 			id: 'phone5',
 			header: 'Phone 5 (Purchased Data)',
@@ -394,28 +394,28 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'mobilephone2.keyword',
 			id: 'mobilephone2',
 			header: 'Mobile Phone 2',
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'AltPhone.keyword',
 			id: 'AltPhone',
 			header: 'Primary Work Phone',
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'mobilephone3.keyword',
 			id: 'mobilephone3',
 			header: 'Mobile Phone 3',
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'homePhone2.keyword',
 			id: 'homePhone2',
 			header: 'Home Phone 2',
@@ -423,7 +423,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'homePhone3.keyword',
 			id: 'homePhone3',
 			header: 'Home Phone 3',
@@ -431,7 +431,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'AltPhone2.keyword',
 			id: 'AltPhone2',
 			header: 'Work Phone 2',
@@ -439,7 +439,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.DIALPAD_COLUMN,
 			name: 'AltPhone3.keyword',
 			id: 'AltPhone3',
 			header: 'Work Phone 3',
