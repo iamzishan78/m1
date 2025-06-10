@@ -289,13 +289,15 @@ function SelectedField({
 					value: fieldKey ?? null,
 					query: GET_ES_FILTER_LIST,
 					variables: {
-						esIndex: 'contacts_flat',
+						esIndex: esIndex,
 						filterKey: filterKey,
 						size: 50,
 					},
 					placeholder: `Select ${field}`,
 					getOptions: res => {
-						return res?.data?.getESFilterList?.hits?.map(hit => hit.key).filter(opt => opt) || [];
+						// Merge defaultOptions with fetched data
+						const fetchedOptions = res?.data?.getESFilterList?.hits?.map(hit => hit.key).filter(opt => opt) || [];
+						return [...new Set([...defaultOptions, ...fetchedOptions])]; // Use Set for uniqueness like uniq()
 					},
 				}}
 				fieldEvents={{
@@ -304,8 +306,6 @@ function SelectedField({
 				fieldConfig={{
 					size: 'medium',
 				}}
-				esIndex={esIndex}
-				defaultOptions={defaultOptions}
 			/>
 		);
 	}
