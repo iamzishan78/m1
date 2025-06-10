@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import {
@@ -29,8 +29,7 @@ import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 
 import { setCurrentUserGridViewAction } from 'store/actions/sessionActions';
-
-import { AppContext } from '../../AppContext';
+import { globalStateController } from 'stateManagement/globalStateController';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -138,7 +137,7 @@ function GridView({
 }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
-	const [stateApp, setStateApp] = useContext(AppContext);
+	const { stateValues } = globalStateController.useState(['user']);
 
 	const [selectedTab, setSelectedTab] = useState('views');
 	const [allGridViews, setAllGridViews] = useState([]);
@@ -155,7 +154,7 @@ function GridView({
 		if (selectedTab === 'views') {
 			setFilterGridView(JSON.parse(JSON.stringify(allGridViews)));
 		} else if (selectedTab === 'favorites') {
-			const data = allGridViews.filter(view => view.favouriteBy?.includes(stateApp.user.mongoId));
+			const data = allGridViews.filter(view => view.favouriteBy?.includes(stateValues.user?.mongoId));
 			setFilterGridView(data);
 		} else {
 			setFilterGridView([]);
@@ -167,11 +166,11 @@ function GridView({
 		getGridViews({
 			variables: {
 				module: module,
-				userId: stateApp.user.mongoId,
+				userId: stateValues.user?.mongoId,
 			},
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [getGridViews, stateApp.user.mongoId]);
+	}, [getGridViews, stateValues.user?.mongoId]);
 
 	useEffect(() => {
 		if (newGridView?.addGridView?.success) {
@@ -179,11 +178,11 @@ function GridView({
 			dispatch(
 				setCurrentUserGridViewAction.STARTED({
 					gridViewId: newGridView.addGridView.newGridView._id,
-					userId: stateApp.user.mongoId,
+					userId: stateValues.user?.mongoId,
 				})
 			);
 			// setSelectedGridView(newGridView.addGridView.newGridView);
-			setStateApp((state, props) => {
+			window.setStateApp((state, props) => {
 				return {
 					...state,
 					selectedView: newGridView.addGridView.newGridView,
@@ -198,7 +197,7 @@ function GridView({
 			setShowSaveAsNew(false);
 			setEditGridView(null);
 			// setSelectedGridView(updatedGridView.updateGridView.updatedGridView);
-			setStateApp((state, props) => {
+			window.setStateApp((state, props) => {
 				return {
 					...state,
 					selectedView: updatedGridView.updateGridView.updatedGridView,
@@ -238,17 +237,18 @@ function GridView({
 	const handleClick = view => {
 		let data = JSON.parse(JSON.stringify(view));
 		if (data.type === 'Default') {
-			data = defaultHandleDefaultView(data, stateApp.user);
-			data = handleDefaultView(data, stateApp.user);
+			data = defaultHandleDefaultView(data, stateValues.user);
+			data = handleDefaultView(data, stateValues.user);
 		}
+
 		dispatch(
 			setCurrentUserGridViewAction.STARTED({
 				gridViewId: data._id,
-				userId: stateApp.user.mongoId,
+				userId: stateValues.user?.mongoId,
 			})
 		);
 		// setSelectedGridView(data);
-		setStateApp((state, props) => {
+		window.setStateApp(state => {
 			return {
 				...state,
 				selectedView: data,
@@ -312,7 +312,7 @@ function GridView({
 												setEditGridView={setEditGridView}
 												setViewName={setViewName}
 												updateGridView={updateGridView}
-												userId={stateApp.user.mongoId}
+												userId={stateValues.user?.mongoId}
 												updateFavouriteGridView={updateFavouriteGridView}
 												onClick={handleClick}
 											/>
@@ -347,7 +347,7 @@ function GridView({
 												setViewName={setViewName}
 												addGridView={addGridView}
 												selectedFilters={selectedFilters}
-												user={stateApp.user.mongoId}
+												user={stateValues.user?.mongoId}
 												setShowSaveAsNew={setShowSaveAsNew}
 												updateGridView={updateGridView}
 												module={module}
@@ -362,7 +362,7 @@ function GridView({
 															dispatch(
 																setCurrentUserGridViewAction.STARTED({
 																	gridViewId: defautlGrid._id,
-																	userId: stateApp.user.mongoId,
+																	userId: stateValues.user?.mongoId,
 																})
 															);
 														}
@@ -373,7 +373,7 @@ function GridView({
 												setEditGridView={setEditGridView}
 												setViewName={setViewName}
 												updateGridView={updateGridView}
-												userId={stateApp.user.mongoId}
+												userId={stateValues.user?.mongoId}
 												onClick={handleClick}
 												updateFavouriteGridView={updateFavouriteGridView}
 											/>
@@ -389,7 +389,7 @@ function GridView({
 										addGridView={addGridView}
 										selectedFilters={selectedFilters}
 										setShowSaveAsNew={setShowSaveAsNew}
-										user={stateApp.user.mongoId}
+										user={stateValues.user?.mongoId}
 										module={module}
 										columns={columns}
 									/>

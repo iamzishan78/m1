@@ -137,6 +137,7 @@ export const openSideDialog = async ({
 			selectedCampaign,
 			objectType,
 			refetchQueries,
+			esIndex,
 		},
 	});
 

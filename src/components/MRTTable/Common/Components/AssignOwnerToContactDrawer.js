@@ -13,11 +13,12 @@ import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useMutation, useQuery } from '@apollo/client';
-import set from 'lodash/set';
+import { set } from 'lodash';
 import PropTypes from 'prop-types';
 
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
+import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
 import { timeZoneOptions } from 'components/ContactDetailCard/components/FieldContent/timeZoneList';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loader from 'components/Loaders';
@@ -124,6 +125,8 @@ function SelectedField({
 	publicTags,
 }) {
 	let filterKey = ''; // Initialize filterKey variable to determine specific filter criteria
+	let esIndex = 'contacts_flat'; // Initialize esIndex variable to determine Elasticsearch index
+	let defaultOptions = []; // Initialize defaultOptions variable to determine default options for autocomplete field
 
 	// Switch statement to render different input fields based on the field type
 	switch (field) {
@@ -159,6 +162,14 @@ function SelectedField({
 			break;
 		case 'Status':
 			filterKey = 'contactStatus.keyword'; // Sets filterKey to 'contactStatus.keyword' for filtering by status
+			break;
+		case 'Outcome':
+			filterKey = 'outcome.keyword'; // Sets filterKey to 'outcome.keyword' for filtering by outcome
+			defaultOptions = outcomeOptions;
+			break;
+		case 'Unit Status':
+			filterKey = 'shapeJson.properties.uStatus.keyword'; // Sets filterKey to 'shapeJson.properties.uStatus.keyword' for filtering by unit status
+			esIndex = 'shapes_flat'; // Sets esIndex to 'shapes_flat' for filtering by unit status
 			break;
 		case 'Industry Type':
 		case 'Lead Source':
@@ -251,6 +262,8 @@ function SelectedField({
 				onChange={(e, fieldKey) => {
 					setFieldKey(fieldKey.value); // Sets the field key value based on selected value
 				}}
+				esIndex={esIndex}
+				defaultOptions={defaultOptions}
 			/>
 		);
 	}
@@ -334,6 +347,7 @@ export default function AssignOwnerToContactDrawer({
 	const unitTableFields = [
 		// Add unit grid fields for bulk update
 		{ title: 'Campaigns', value: 'campaigns' },
+		{ title: 'Unit Status', value: 'uStatus' },
 		{ title: 'Max Pricing (Per NRA)', value: 'uMaxUnitPricing' },
 		{ title: 'Target Pricing (Per NRA)', value: 'uUnitPricing' },
 		{ title: 'Tags', value: 'contactStatus' },
@@ -350,12 +364,13 @@ export default function AssignOwnerToContactDrawer({
 		{ title: 'Tags', value: 'contactStatus' },
 		{ title: 'Territory', value: 'territory' },
 		{ title: 'County', value: 'county' },
+		{ title: 'Outcome', value: 'outcome' },
 		{ title: 'Time Zone', value: 'timeZone' },
 		{ title: 'Related Contact', value: 'relatedcontact' },
 		{ title: 'Add New Activity', value: 'activity' },
 	];
 
-	const fieldsToUpdate = rest.header === 'UnitTable' ? [...unitTableFields] : [...otherTableFields];
+	const fieldsToUpdate = rest?.header?.includes('Unit') ? [...unitTableFields] : [...otherTableFields];
 
 	useEffect(() => {
 		if (
@@ -471,7 +486,7 @@ export default function AssignOwnerToContactDrawer({
 		const errorMsg = 'Failed to assign to contact owner';
 		Loader.createToast(
 			'contact-creation',
-			`${rest.header === 'UnitTable' ? 'Unit' : 'Contact'} Bulk Update in progress`
+			`${rest?.header?.includes('Unit') ? 'Unit' : 'Contact'} Bulk Update in progress`
 		);
 
 		if (field === 'Contact Owner') {
@@ -599,7 +614,7 @@ export default function AssignOwnerToContactDrawer({
 					Loader.errorToast('contact-creation', errorMsg);
 				}
 			);
-		} else if (field === 'Max Pricing (Per NRA)' || field === 'Target Pricing (Per NRA)') {
+		} else if (field === 'Max Pricing (Per NRA)' || field === 'Target Pricing (Per NRA)' || field === 'Unit Status') {
 			// Map through each row to create an array of shapes to update
 			const shapesToUpdate = rows.map(row => {
 				// Update the campaign with the new value and fieldKey, creating a custom layer for each row
