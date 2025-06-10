@@ -125,7 +125,7 @@ const LayerMeta = {
 		},
 	},
 	'dynamic data layer': {
-		defaultZoom: 1,
+		defaultZoom: 10,
 		geoField: 'assetShape.shapeJson.geometry',
 		hasText: true,
 		isFilterable: true,

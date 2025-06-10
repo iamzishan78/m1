@@ -1023,7 +1023,6 @@ const DocumentType = ({ documentTypes, setDocumentType, value, disabled, classNa
 				return { _id: type, name: type };
 			})
 		: [];
-	console.log('Idhr');
 
 	return (
 		<CustomAutoComplete
