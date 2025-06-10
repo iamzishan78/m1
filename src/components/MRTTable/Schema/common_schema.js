@@ -17,8 +17,8 @@ import { tableController } from 'stateManagement/tableController';
 
 import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED, TO_FIXED } from 'utils/consts';
 
-import NavigationFlagField from '../Common/TableCells/NavigationFlagField';
 import DialpadTableCell from '../Common/TableCells/DialpadTableCell';
+import NavigationFlagField from '../Common/TableCells/NavigationFlagField';
 
 const ACTION_COLUMN = {
 	header: ' ',

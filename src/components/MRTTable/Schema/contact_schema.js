@@ -622,7 +622,7 @@ const ContactMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'outcome.keyword',
 			accessorKey: 'outcome',
 			header: 'Outcome',
