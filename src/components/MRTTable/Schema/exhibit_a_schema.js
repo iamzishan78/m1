@@ -37,13 +37,17 @@ const ExhibitAMeta = {
 			type: 'Default',
 		},
 		handleDefaultView: (view, user) => {
-			switch (view?.name) {
-				case 'My Exhibit A':
-					view.filters[0].value = user._id;
-					break;
+			if (view?.name === 'My Exhibit A') {
+				const newFilters = [...view.filters];
+				newFilters[0] = {
+					...newFilters[0],
+					value: user._id,
+				};
 
-				default:
-					break;
+				return {
+					...view,
+					filters: newFilters,
+				};
 			}
 
 			return view;

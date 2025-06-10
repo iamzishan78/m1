@@ -75,9 +75,19 @@ const TractMeta = {
 			name: 'All Tracts',
 			type: 'Default',
 		},
+		//here
 		handleDefaultView: (view, user) => {
 			if (view?.name === 'My Tracts') {
-				view.filters[0].value = user._id;
+				const newFilters = [...view.filters];
+				newFilters[0] = {
+					...newFilters[0],
+					value: user._id,
+				};
+
+				return {
+					...view,
+					filters: newFilters,
+				};
 			}
 			return view;
 		},

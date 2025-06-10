@@ -1221,9 +1221,30 @@ class TableESStateControllerHandler extends StateController {
 		});
 	}
 
-	applyGridView(selectedView) {
+	applyGridView(_selectedView) {
 		const tableKey = this.getValue('tableKey');
 		const Controller = tableController(tableKey);
+		const { handleDefaultView } = Controller.getValue('gridViewSettings');
+		let selectedView = { ..._selectedView };
+		if (selectedView.type === 'Default') {
+			switch (selectedView?.name) {
+				case 'Recently Added':
+					selectedView.filters = [];
+					selectedView.sorting = [{ field: 'createAt', desc: true }];
+					break;
+
+				case 'Recently Modified':
+					selectedView.filters = [];
+					selectedView.sorting = [{ field: 'lastUpdateAt', desc: true }];
+					break;
+
+				default:
+					break;
+			}
+			selectedView = handleDefaultView
+				? handleDefaultView({ ...selectedView }, globalStateController.getValue('user'))
+				: selectedView;
+		}
 
 		const TableSchema = Controller.getValue('TableSchema');
 		const columnPinning = Controller.getValue('columnPinning');

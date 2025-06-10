@@ -83,13 +83,39 @@ const DocumentMeta = {
 			const TOTAL_DAYS = 30;
 
 			if (view.name === 'My Documents') {
-				view.filters[0].value = user._id;
+				const newFilters = [...view.filters];
+				newFilters[0] = {
+					...newFilters[0],
+					value: user._id,
+				};
+				return { ...view, filters: newFilters };
 			}
+
 			if (view.name === 'Recently Modified' || view.name === 'Recently Added') {
-				view.filters[0].type = 'range';
-				view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(TOTAL_DAYS, 'days').toISOString();
-				view.filters[0].value.range[view.filters[0].field].lte = moment().toISOString();
+				const newFilters = [...view.filters];
+				const firstFilter = newFilters[0];
+
+				const newRange = {
+					...(firstFilter.value.range || {}),
+					[firstFilter.field]: {
+						...(firstFilter.value.range?.[firstFilter.field] || {}),
+						gte: moment().subtract(TOTAL_DAYS, 'days').toISOString(),
+						lte: moment().toISOString(),
+					},
+				};
+
+				newFilters[0] = {
+					...firstFilter,
+					type: 'range',
+					value: {
+						...firstFilter.value,
+						range: newRange,
+					},
+				};
+
+				return { ...view, filters: newFilters };
 			}
+
 			return view;
 		},
 		cssOverride: {
