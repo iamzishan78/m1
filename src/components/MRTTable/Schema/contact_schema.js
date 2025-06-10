@@ -83,7 +83,7 @@ const ContactMeta = {
 		},
 		handleDefaultView: (view, user) => {
 			if (view?.name === 'My Contacts') {
-				view.filters[0].value = user.name;
+				view.filters[0].value = user.name || user.displayName || user.email;
 			}
 
 			return view;
