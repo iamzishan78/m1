@@ -1,14 +1,20 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { useDispatch } from 'react-redux';
+
 import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddIcCallIcon from '@material-ui/icons/AddIcCall';
+
 import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import { globalStateController } from 'stateManagement/globalStateController';
+
 import { INITIATE_DIALPAD_CALL } from 'graphQL/useMutationInitiateCall';
-import { useDispatch } from 'react-redux';
+
+import { globalStateController } from 'stateManagement/globalStateController';
+
 import { showErrorMessage, showInfoMessage, showSuccessMessage } from 'actions';
 
 const useStyles = makeStyles(theme => ({
@@ -70,7 +76,9 @@ export default function DialpadTableCell(props) {
 					if (data?.initiateDialpadCall?.message?.includes('is not synced with dialpad')) {
 						dispatch(showInfoMessage(data?.initiateDialpadCall?.message));
 						triggerPhoneCall(props.value);
-					} else dispatch(showErrorMessage(data?.initiateDialpadCall?.message));
+					} else {
+						dispatch(showErrorMessage(data?.initiateDialpadCall?.message));
+					}
 				}
 			});
 		} else if (isDialPad && !globalState.user?.dialpad) {
@@ -93,3 +101,15 @@ export default function DialpadTableCell(props) {
 		</>
 	);
 }
+
+DialpadTableCell.propTypes = {
+	/** The phone number value to display and call */
+	value: PropTypes.string,
+	/** The row data containing contact information */
+	row: PropTypes.shape({
+		original: PropTypes.shape({
+			_id: PropTypes.string,
+			dialpadIds: PropTypes.arrayOf(PropTypes.string),
+		}),
+	}),
+};
