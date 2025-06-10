@@ -1195,7 +1195,7 @@ class LayerStateControllerHandler extends StateController {
 		const { layers, projectedLayers } = this.getValues(['layers', 'projectedLayers']);
 
 		projectedLayers.forEach(layer => {
-			const layerToUpdate = layersToChange.find(l => l._id === layer._id);
+			const layerToUpdate = layersToChange.find(l => l.layerId === layer.layerId);
 			if (layerToUpdate) {
 				set(layer, field, value);
 				if (field !== 'layerSettings.showable') {
@@ -1212,7 +1212,7 @@ class LayerStateControllerHandler extends StateController {
 					if (field == 'layerSettings.showable') {
 						this.handleDeckLayer({ ...layerFound });
 						layersSettingsToUpdate.push({
-							_id: layerFound.layerId,
+							_id: layerFound._id,
 							layerSettings: layerFound.layerSettings,
 						});
 					}
