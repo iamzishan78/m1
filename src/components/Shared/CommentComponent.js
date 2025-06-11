@@ -307,6 +307,204 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 	);
 };
 
+const StreamUpdateComment = ({ eachComment, modelKeys, classes }) => {
+	// Function to get label for a mapping key
+	const getLabelForField = fieldName => {
+		const field = modelKeys?.find(key => key.mappingKey === fieldName);
+		return field?.label || fieldName;
+	};
+
+	// Function to replace field names with their labels
+	const replaceFieldsWithLabels = text => {
+		if (!text || !modelKeys) {
+			return text;
+		}
+
+		// Create a regex pattern from all mapping keys
+		const mappingKeys = modelKeys.map(key => key.mappingKey);
+		const pattern = new RegExp(`\\b(${mappingKeys.join('|')})\\b`, 'g');
+
+		// Split the text into parts that will be either regular text or React elements
+		const parts = [];
+		let lastIndex = 0;
+		let match;
+
+		// Use exec to get match positions
+		while ((match = pattern.exec(text)) !== null) {
+			// Add text before the match
+			if (match.index > lastIndex) {
+				parts.push(text.substring(lastIndex, match.index));
+			}
+			// Add the label as a bold element
+			const label = getLabelForField(match[0]);
+			parts.push(
+				<span key={`${match.index}-${label}`} style={{ fontWeight: 'bold' }}>
+					{label}
+				</span>
+			);
+			lastIndex = pattern.lastIndex;
+		}
+		// Add any remaining text
+		if (lastIndex < text.length) {
+			parts.push(text.substring(lastIndex));
+		}
+		return parts;
+	};
+
+	const processedComment = replaceFieldsWithLabels(eachComment?.comment);
+
+	return (
+		<div
+			id={eachComment?._id}
+			className={`${classes.whiteSpace}`}
+			style={{ paddingLeft: '25px', paddingRight: '25px' }}
+			key={eachComment?._id}
+		>
+			<div
+				style={{
+					display: 'flex',
+					alignItems: 'flex-start',
+					gap: '12px',
+					color: '#6d6e6f',
+					fontSize: '14px',
+				}}
+			>
+				<div>
+					<span
+						style={{
+							color: '#1e1f21',
+							fontWeight: 500,
+							marginRight: '8px',
+						}}
+					>
+						{eachComment?.user?.name}
+					</span>
+					<span>
+						{Array.isArray(processedComment)
+							? processedComment.map(part => {
+									if (React.isValidElement(part)) {
+										return part;
+									}
+									return part.split(/"([^"]*)"/).map((subPart, subIndex) =>
+										subIndex % 2 === 0 ? (
+											subPart
+										) : (
+											<span key={`${eachComment?._id}-quote-${subPart}-${subIndex}`} style={{ fontWeight: 'bold' }}>
+												{subPart}
+											</span>
+										)
+									);
+								})
+							: processedComment?.split(/"([^"]*)"/).map((part, index) =>
+									index % 2 === 0 ? (
+										part
+									) : (
+										<span key={`${eachComment?._id}-quote-${part}-${index}`} style={{ fontWeight: 'bold' }}>
+											{part}
+										</span>
+									)
+								)}
+					</span>
+					{!isNaN(eachComment?.ts) && (
+						<span style={{ marginLeft: '8px' }}>
+							<ReactTimeAgo
+								className={classes.commentTime}
+								style={{
+									whiteSpace: 'nowrap',
+									fontSize: '12px',
+									color: '#6d6e6f',
+								}}
+								date={new Date(Number(eachComment?.ts))}
+								locale="en-US"
+							/>
+						</span>
+					)}
+				</div>
+			</div>
+		</div>
+	);
+};
+
+StreamUpdateComment.propTypes = {
+	eachComment: PropTypes.shape({
+		_id: PropTypes.string.isRequired,
+		comment: PropTypes.string,
+		ts: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		user: PropTypes.shape({
+			name: PropTypes.string,
+			email: PropTypes.string,
+		}),
+	}).isRequired,
+	modelKeys: PropTypes.arrayOf(
+		PropTypes.shape({
+			mappingKey: PropTypes.string,
+			label: PropTypes.string,
+		})
+	),
+	classes: PropTypes.object.isRequired,
+};
+
+const StreamAssociationComment = ({ eachComment, classes }) => {
+	return (
+		<div
+			id={eachComment?._id}
+			className={`${classes.whiteSpace}`}
+			style={{ paddingLeft: '25px', paddingRight: '25px' }}
+			key={eachComment?._id}
+		>
+			<div
+				style={{
+					display: 'flex',
+					alignItems: 'flex-start',
+					gap: '12px',
+					color: '#6d6e6f',
+					fontSize: '14px',
+				}}
+			>
+				<div>
+					<span
+						style={{
+							color: '#1e1f21',
+							fontWeight: 500,
+							marginRight: '8px',
+						}}
+					>
+						{eachComment?.user?.name}
+					</span>
+					<span>{eachComment?.comment}</span>
+					{!isNaN(eachComment?.ts) && (
+						<span style={{ marginLeft: '8px' }}>
+							<ReactTimeAgo
+								className={classes.commentTime}
+								style={{
+									whiteSpace: 'nowrap',
+									fontSize: '12px',
+									color: '#6d6e6f',
+								}}
+								date={new Date(Number(eachComment?.ts))}
+								locale="en-US"
+							/>
+						</span>
+					)}
+				</div>
+			</div>
+		</div>
+	);
+};
+
+StreamAssociationComment.propTypes = {
+	eachComment: PropTypes.shape({
+		_id: PropTypes.string.isRequired,
+		comment: PropTypes.string,
+		ts: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		user: PropTypes.shape({
+			name: PropTypes.string,
+			email: PropTypes.string,
+		}),
+	}).isRequired,
+	classes: PropTypes.object.isRequired,
+};
+
 export default function CommentComponent(props) {
 	const { targetSourceId, commentsHeight } = props;
 	const ACTIVITY_TAB = 2;
@@ -884,120 +1082,18 @@ export default function CommentComponent(props) {
 								const commentorText = eachComment?.user?.name || eachComment?.user?.email;
 
 								if (eachComment?.commentType?.commentType === 'StreamUpdate') {
-									// Function to get label for a mapping key
-									const getLabelForField = fieldName => {
-										const field = modelKeys?.find(key => key.mappingKey === fieldName);
-										return field?.label || fieldName;
-									};
-
-									// Function to replace field names with their labels
-									const replaceFieldsWithLabels = text => {
-										if (!text || !modelKeys) {
-											return text;
-										}
-
-										// Create a regex pattern from all mapping keys
-										const mappingKeys = modelKeys.map(key => key.mappingKey);
-										const pattern = new RegExp(`\\b(${mappingKeys.join('|')})\\b`, 'g');
-
-										// Split the text into parts that will be either regular text or React elements
-										const parts = [];
-										let lastIndex = 0;
-										let match;
-
-										// Use exec to get match positions
-										while ((match = pattern.exec(text)) !== null) {
-											// Add text before the match
-											if (match.index > lastIndex) {
-												parts.push(text.substring(lastIndex, match.index));
-											}
-											// Add the label as a bold element
-											const label = getLabelForField(match[0]);
-											parts.push(
-												<span key={`${match.index}-${label}`} style={{ fontWeight: 'bold' }}>
-													{label}
-												</span>
-											);
-											lastIndex = pattern.lastIndex;
-										}
-										// Add any remaining text
-										if (lastIndex < text.length) {
-											parts.push(text.substring(lastIndex));
-										}
-										return parts;
-									};
-
-									const processedComment = replaceFieldsWithLabels(eachComment?.comment);
-
 									return (
-										<div
-											id={eachComment?._id}
-											className={`${classes.whiteSpace}`}
-											style={{ paddingLeft: '25px', paddingRight: '25px' }}
+										<StreamUpdateComment
 											key={eachComment?._id}
-										>
-											<div
-												style={{
-													display: 'flex',
-													alignItems: 'flex-start',
-													gap: '12px',
-													color: '#6d6e6f',
-													fontSize: '14px',
-												}}
-											>
-												<div>
-													<span
-														style={{
-															color: '#1e1f21',
-															fontWeight: 500,
-															marginRight: '8px',
-														}}
-													>
-														{eachComment?.user?.name}
-													</span>
-													<span>
-														{Array.isArray(processedComment)
-															? processedComment.map(part => {
-																	if (React.isValidElement(part)) {
-																		return part;
-																	}
-																	return part.split(/"([^"]*)"/).map((subPart, subIndex) =>
-																		subIndex % 2 === 0 ? (
-																			subPart
-																		) : (
-																			<span key={`${eachComment?._id}-quote-${subPart}`} style={{ fontWeight: 'bold' }}>
-																				{subPart}
-																			</span>
-																		)
-																	);
-																})
-															: processedComment?.split(/"([^"]*)"/).map((part, index) =>
-																	index % 2 === 0 ? (
-																		part
-																	) : (
-																		<span key={`${eachComment?._id}-quote-${part}`} style={{ fontWeight: 'bold' }}>
-																			{part}
-																		</span>
-																	)
-																)}
-													</span>
-													{!isNaN(eachComment?.ts) && (
-														<span style={{ marginLeft: '8px' }}>
-															<ReactTimeAgo
-																className={classes.commentTime}
-																style={{
-																	whiteSpace: 'nowrap',
-																	fontSize: '12px',
-																	color: '#6d6e6f',
-																}}
-																date={new Date(Number(eachComment?.ts))}
-																locale="en-US"
-															/>
-														</span>
-													)}
-												</div>
-											</div>
-										</div>
+											eachComment={eachComment}
+											modelKeys={modelKeys}
+											classes={classes}
+										/>
+									);
+								}
+								if (eachComment?.commentType?.commentType === 'StreamAssociation') {
+									return (
+										<StreamAssociationComment key={eachComment?._id} eachComment={eachComment} classes={classes} />
 									);
 								}
 
