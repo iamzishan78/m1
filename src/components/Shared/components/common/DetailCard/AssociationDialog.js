@@ -139,6 +139,7 @@ function AssociationDialog() {
 					relatedObjectType: currentAssociatedModel?.name,
 					associationModelName: currentAssociatedModel?.associationModelName,
 				},
+				refetchQueries: ['getCommentsByObjectId'],
 			});
 		}
 	};
