@@ -1,3 +1,5 @@
+/* eslint-disable no-use-before-define */
+/* eslint-disable react/prop-types */
 import React from 'react';
 
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
@@ -7,7 +9,6 @@ import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
-import OwnerTypeCell from 'components/MRTTable/Common/TableCells/OwnerTypeCell';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
@@ -544,6 +545,7 @@ class TableESStateControllerHandler extends StateController {
 			tagsList: [],
 			isTrackedList: [],
 			isSummaryGrid: rest.isSummaryGrid ?? false,
+			globalFilter,
 		};
 
 		const _defaultFilters = defaultFilters || this.getValue('defaultFilters') || [];

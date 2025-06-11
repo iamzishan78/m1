@@ -33,7 +33,7 @@ const AdvancedSearch = () => {
 						id="search"
 						label="Search"
 						variant="standard"
-						value={search}
+						value={search || ''}
 						onChange={e => setSearch(e.target.value)}
 					/>
 
