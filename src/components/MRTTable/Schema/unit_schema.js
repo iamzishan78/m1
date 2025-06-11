@@ -83,8 +83,14 @@ const UnitMeta = {
 		},
 		handleDefaultView: (view, user) => {
 			if (view?.name === 'My Units') {
-				view.filters[0].value = user._id;
+				view.filters = [
+					{
+						field: 'shapeJson.properties.ownerName',
+						value: user.name || user.displayName || user.email,
+					},
+				];
 			}
+
 			return view;
 		},
 		cssOverride: {

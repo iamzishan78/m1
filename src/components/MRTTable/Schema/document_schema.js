@@ -81,13 +81,19 @@ const DocumentMeta = {
 			const TOTAL_DAYS = 30;
 
 			if (view.name === 'My Documents') {
-				view.filters[0].value = user._id;
+				view.filters = [
+					{
+						field: 'user.name',
+						value: user.name || user.displayName || user.email,
+					},
+				];
 			}
+
 			if (view.name === 'Recently Modified' || view.name === 'Recently Added') {
-				view.filters[0].type = 'range';
-				view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(TOTAL_DAYS, 'days').toISOString();
-				view.filters[0].value.range[view.filters[0].field].lte = moment().toISOString();
+				const fieldName = view.name === 'Recently Modified' ? 'lastUpdateAt' : 'ts';
+				view.sort = [{ field: fieldName, desc: true }];
 			}
+
 			return view;
 		},
 		cssOverride: {
@@ -193,6 +199,16 @@ const DocumentMeta = {
 			name: 'instrument.keyword',
 			id: 'instrument',
 			header: 'Instrument #',
+		},
+
+		{
+			name: 'user.name',
+			id: 'user.name',
+			header: 'Owner',
+			size: 250,
+			filter: true,
+			isSearchField: false,
+			type: 'string',
 		},
 
 		{

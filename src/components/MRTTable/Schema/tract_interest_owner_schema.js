@@ -48,10 +48,7 @@ const TractInterestOwnerMeta = {
 			name: 'All Tract Owners',
 			type: 'Default',
 		},
-		handleDefaultView: (view, user) => {
-			if (view?.name === 'My Tract Owner') {
-				view.filters[0].value = user._id;
-			}
+		handleDefaultView: (view, _) => {
 			return view;
 		},
 		cssOverride: {

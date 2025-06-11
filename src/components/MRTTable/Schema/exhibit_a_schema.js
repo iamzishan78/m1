@@ -36,16 +36,7 @@ const ExhibitAMeta = {
 			name: 'All Exhibit A',
 			type: 'Default',
 		},
-		handleDefaultView: (view, user) => {
-			switch (view?.name) {
-				case 'My Exhibit A':
-					view.filters[0].value = user._id;
-					break;
-
-				default:
-					break;
-			}
-
+		handleDefaultView: (view, _) => {
 			return view;
 		},
 		cssOverride: {

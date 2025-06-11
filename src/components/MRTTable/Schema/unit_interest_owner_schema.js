@@ -94,10 +94,7 @@ const UnitInterestOwnerMeta = {
 			name: 'All Unit Owners',
 			type: 'Default',
 		},
-		handleDefaultView: (view, user) => {
-			if (view?.name === 'My Unit Owner') {
-				view.filters[0].value = user._id;
-			}
+		handleDefaultView: (view, _) => {
 			return view;
 		},
 		cssOverride: {

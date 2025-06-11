@@ -28,8 +28,14 @@ const UnitInterestMeta = {
 		},
 		handleDefaultView: (view, user) => {
 			if (view?.name === 'My Unit Interest') {
-				view.filters[0].value = user._id;
+				view.filters = [
+					{
+						field: 'contactOwners',
+						value: user.name || user.displayName || user.email,
+					},
+				];
 			}
+
 			return view;
 		},
 		cssOverride: {

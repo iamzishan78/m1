@@ -35,16 +35,7 @@ const AcreageDetilsMeta = {
 			name: 'All Acreage Detail',
 			type: 'Default',
 		},
-		handleDefaultView: (view, user) => {
-			switch (view?.name) {
-				case 'My Acreage Detail':
-					view.filters[0].value = user._id;
-					break;
-
-				default:
-					break;
-			}
-
+		handleDefaultView: (view, _) => {
 			return view;
 		},
 		cssOverride: {

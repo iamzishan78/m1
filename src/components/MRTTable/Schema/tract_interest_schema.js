@@ -45,8 +45,14 @@ const TractInterestsMeta = {
 		},
 		handleDefaultView: (view, user) => {
 			if (view?.name === 'My Tract Interest') {
-				view.filters[0].value = user._id;
+				view.filters = [
+					{
+						field: 'contactOwners',
+						value: user.name || user.displayName || user.email,
+					},
+				];
 			}
+
 			return view;
 		},
 		cssOverride: {
@@ -85,13 +91,6 @@ const TractInterestsMeta = {
 			Cell: ({ row }) => {
 				return <ContactNameLink contact={row?.original?.contact} />;
 			},
-		},
-
-		{
-			...CommonSchema.STRING_COLUMN,
-			name: 'contact.entityDetail.name.keyword',
-			id: 'contact.entityDetail.name',
-			header: 'Owner Name',
 		},
 
 		{
