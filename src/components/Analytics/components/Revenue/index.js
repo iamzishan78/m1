@@ -606,7 +606,7 @@ export default function RevenueAnalytics(props) {
 
 			{tabs[tab] === 'Property Interests' && (
 				<Box sx={{ padding: '1em', marginLeft: '1em' }}>
-					<MRTTable name="PropertyIntrestTable" />
+					<MRTTable name="PropertyInterestTable" />
 				</Box>
 			)}
 		</>

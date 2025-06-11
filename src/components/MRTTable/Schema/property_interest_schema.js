@@ -11,7 +11,7 @@ import { INTEREST_TO_FIXED } from 'utils/consts';
 
 const esIndex = 'propertyinterest_flat';
 
-const PropertyIntrestMeta = {
+const PropertyInterestMeta = {
 	esIndex,
 	pageSize: 25,
 	pagination: {
@@ -146,4 +146,4 @@ const PropertyIntrestMeta = {
 	],
 };
 
-export default PropertyIntrestMeta;
+export default PropertyInterestMeta;
