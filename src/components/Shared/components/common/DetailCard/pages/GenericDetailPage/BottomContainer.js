@@ -67,6 +67,7 @@ const BottomContainer = () => {
 							associatedAssetName: model.name,
 							maxTableHeight: tableHeight,
 							CustomToolBar: AssetAssociationToolbar,
+							refetchQueries: ['getCommentsByObjectId'],
 							defaultFilters: [
 								{ field: associationKey, value: currentAssetRecord?._id, useDescriptorKey: model?.useDescriptorKey },
 							],
@@ -83,6 +84,9 @@ const BottomContainer = () => {
 								assetTableName: {
 									value: model.associationModelName,
 								},
+								relatedModelLabel: { value: `Related ${model.name}` },
+								assetName: { value: currentAsset?.name },
+								assetId: { value: currentAssetRecord?._id },
 							},
 						},
 					},
