@@ -23,6 +23,8 @@ import { DRAWING_MODES } from 'components/Navigation/NavigationContext';
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { calculateLandArea, shapeTypeLayers } from 'components/Shared/functions/shapeLayer';
 
+import { UserSession } from 'utils/user';
+
 import { showErrorMessage } from 'actions';
 
 import { detailCardController } from './detailCardController';
@@ -1091,6 +1093,7 @@ class DrawStateControllerHandler extends StateController {
 					tableName: currentAsset?.tableName,
 					ids: [currentAssetRecord?._id],
 					record: { assetShape },
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 				refetchQueries: ['getRecordFromRunTimeModel', 'getCustomAssetInfo', 'getDbData'],
 				awaitRefetchQueries: true,

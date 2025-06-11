@@ -8,6 +8,8 @@ import { UPDATE_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel
 import { detailCardController } from 'stateManagement/detailCardController';
 import { globalStateController } from 'stateManagement/globalStateController';
 
+import { UserSession } from 'utils/user';
+
 import { showInfoMessage } from 'actions';
 
 const useUpdate = () => {
@@ -60,6 +62,7 @@ const useUpdate = () => {
 					record: {
 						[key]: value,
 					},
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 				refetchQueries: ['getRecordFromRunTimeModel'],
 				awaitRefetchQueries: false,
