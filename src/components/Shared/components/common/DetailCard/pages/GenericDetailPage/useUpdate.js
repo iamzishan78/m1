@@ -65,7 +65,7 @@ const useUpdate = () => {
 					targetLabel: currentAsset?.name,
 					tenant: UserSession.getStorageItem('tenantName'),
 				},
-				refetchQueries: ['getRecordFromRunTimeModel'],
+				refetchQueries: ['getRecordFromRunTimeModel', 'getCommentsByObjectId'],
 				awaitRefetchQueries: false,
 			});
 		},
