@@ -7,8 +7,20 @@ export const ADD_RECORD_IN_RUN_TIME_MODEL = gql`
 `;
 
 export const UPDATE_RECORD_IN_RUN_TIME_MODEL = gql`
-	mutation updateRecordInRunTimeModel($tableName: String, $ids: [String], $record: JSON) {
-		updateRecordInRunTimeModel(tableName: $tableName, ids: $ids, record: $record)
+	mutation updateRecordInRunTimeModel(
+		$tableName: String
+		$ids: [String]
+		$record: JSON
+		$targetLabel: String
+		$tenant: String
+	) {
+		updateRecordInRunTimeModel(
+			tableName: $tableName
+			ids: $ids
+			record: $record
+			targetLabel: $targetLabel
+			tenant: $tenant
+		)
 	}
 `;
 

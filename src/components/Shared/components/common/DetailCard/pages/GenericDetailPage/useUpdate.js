@@ -62,6 +62,7 @@ const useUpdate = () => {
 					record: {
 						[key]: value,
 					},
+					targetLabel: currentAsset?.name,
 					tenant: UserSession.getStorageItem('tenantName'),
 				},
 				refetchQueries: ['getRecordFromRunTimeModel'],

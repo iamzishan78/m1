@@ -1094,6 +1094,7 @@ class DrawStateControllerHandler extends StateController {
 					ids: [currentAssetRecord?._id],
 					record: { assetShape },
 					tenant: UserSession.getStorageItem('tenantName'),
+					targetLabel: currentAsset?.name,
 				},
 				refetchQueries: ['getRecordFromRunTimeModel', 'getCustomAssetInfo', 'getDbData'],
 				awaitRefetchQueries: true,
