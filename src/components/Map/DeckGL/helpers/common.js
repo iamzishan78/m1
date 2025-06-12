@@ -505,6 +505,8 @@ export const generateFileFilters = ({
 		mustQuery = [
 			{ 'properties.layerIdentifier': fileAlternateName },
 			{ 'properties.layerIdentifier': fileLayer.layerIdentifier },
+			{ 'properties.layerShapeName': fileAlternateName },
+			{ 'properties.layerShapeName': fileLayer.layerIdentifier },
 		];
 	}
 
