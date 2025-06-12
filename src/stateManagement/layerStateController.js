@@ -16,7 +16,7 @@ import {
 	getHeatMapLayerProps,
 	getHexLayerProps,
 } from 'components/Map/DeckGL/helpers/common';
-import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
+import DeckGlOverlay from 'components/Map/DeckGL/helpers/DeckGlOverlay';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { copy } from 'components/Shared/functions';
@@ -567,13 +567,13 @@ class LayerStateControllerHandler extends StateController {
 				return;
 			}
 
-			DeckGlLayer.updateLayer(updatedState, layer.id);
+			DeckGlOverlay.updateLayer(updatedState, layer.id);
 		});
 	}
 
 	updateLayer(layer, updatedState) {
 		const layerId = `${layer?.identifier}_${layer.layerId}`;
-		DeckGlLayer.updateLayer(updatedState, layerId);
+		DeckGlOverlay.updateLayer(updatedState, layerId);
 	}
 
 	removeLayer(layer, recalculate = false) {
@@ -582,7 +582,7 @@ class LayerStateControllerHandler extends StateController {
 		}
 
 		const layerId = `${layer?.identifier}_${layer.layerId}`;
-		DeckGlLayer.removeLayer(layerId);
+		DeckGlOverlay.removeLayer(layerId);
 		delete deckLayers[layerId];
 
 		// Retrieve current boundingStates
@@ -767,7 +767,7 @@ class LayerStateControllerHandler extends StateController {
 				beforeLayerId,
 			};
 			const metaLayer = meta.layer;
-			const deckLayer = DeckGlLayer.addLayer({
+			const deckLayer = DeckGlOverlay.addLayer({
 				layerId: layerId,
 				type: metaLayer.type,
 				beforeLayer: beforeLayerId,
@@ -1129,9 +1129,9 @@ class LayerStateControllerHandler extends StateController {
 		}
 
 		if (currentLayer && !beforeLayer) {
-			DeckGlLayer.moveLayer(`${currentLayer?.identifier}_${currentLayer.layerId}`);
+			DeckGlOverlay.moveLayer(`${currentLayer?.identifier}_${currentLayer.layerId}`);
 		} else {
-			DeckGlLayer.moveLayer(
+			DeckGlOverlay.moveLayer(
 				`${currentLayer?.identifier}_${currentLayer.layerId}`,
 				`${beforeLayer?.identifier}_${beforeLayer.layerId}`
 			);

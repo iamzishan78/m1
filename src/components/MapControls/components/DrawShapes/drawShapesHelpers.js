@@ -2,7 +2,7 @@ import { area, convertArea, length } from '@turf/turf';
 import * as turf from '@turf/turf';
 import { SRCenter } from 'mapbox-gl-draw-scale-rotate-mode';
 
-import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
+import DeckGlOverlay from 'components/Map/DeckGL/helpers/DeckGlOverlay';
 
 import { drawController } from 'stateManagement/drawStateController';
 
@@ -90,12 +90,12 @@ export const createShapeLabelLayer = feature => {
 export const drawWellBoundary = coordinates => {
 	const layerId = 'boundary-layer';
 
-	if (DeckGlLayer.getLayer(layerId)) {
-		DeckGlLayer.removeLayer(layerId);
+	if (DeckGlOverlay.getLayer(layerId)) {
+		DeckGlOverlay.removeLayer(layerId);
 	}
 
 	if (coordinates && coordinates.length > 0 && coordinates[0]) {
-		DeckGlLayer.addLayer({
+		DeckGlOverlay.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
 			props: {
@@ -134,12 +134,12 @@ export const drawPlaceBoundary = coordinates => {
 
 	const layerId = 'boundary-layer';
 
-	if (DeckGlLayer.getLayer(layerId)) {
-		DeckGlLayer.removeLayer(layerId);
+	if (DeckGlOverlay.getLayer(layerId)) {
+		DeckGlOverlay.removeLayer(layerId);
 	}
 
 	if (coordinates && coordinates.length > 0 && coordinates[0]) {
-		DeckGlLayer.addLayer({
+		DeckGlOverlay.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
 			props: {
@@ -176,8 +176,8 @@ export const drawBoundary = (selectedUserDefinedLayer, layer_Id, originalLayer) 
 
 	const layerId = layer_Id || 'boundary-layer';
 
-	if (DeckGlLayer.getLayer(layerId)) {
-		DeckGlLayer.removeLayer(layerId);
+	if (DeckGlOverlay.getLayer(layerId)) {
+		DeckGlOverlay.removeLayer(layerId);
 	}
 
 	if (selectedUserDefinedLayer?.geometry) {
@@ -204,7 +204,7 @@ export const drawBoundary = (selectedUserDefinedLayer, layer_Id, originalLayer) 
 			pointWidth = 1;
 		}
 
-		DeckGlLayer.addLayer({
+		DeckGlOverlay.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
 			props: {
@@ -242,8 +242,8 @@ export const drawBoundaries = shapes => {
 };
 
 export const clearSelectedAbstracts = () => {
-	if (DeckGlLayer?.getLayer('Land Grid_selection')) {
-		DeckGlLayer.removeLayer('Land Grid_selection');
+	if (DeckGlOverlay?.getLayer('Land Grid_selection')) {
+		DeckGlOverlay.removeLayer('Land Grid_selection');
 	}
 	drawController.updateState({
 		selectedAbstracts: [],

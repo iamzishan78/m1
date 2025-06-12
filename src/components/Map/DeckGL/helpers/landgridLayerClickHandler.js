@@ -1,4 +1,4 @@
-import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
+import DeckGlOverlay from 'components/Map/DeckGL/helpers/DeckGlOverlay';
 import { ifPlatformLandGridIdentifiers } from 'components/Shared/functions/shapeLayer';
 
 import { drawController } from 'stateManagement/drawStateController';
@@ -16,7 +16,7 @@ const onAbstactLayerClick = (feature, action) => {
 
 	let drawStateToUpdate;
 
-	DeckGlLayer.addLayer({
+	DeckGlOverlay.addLayer({
 		layerId: 'Land Grid_selection',
 		type: 'SimpleGeoJsonLayer',
 		props: {
@@ -28,8 +28,8 @@ const onAbstactLayerClick = (feature, action) => {
 		},
 	});
 
-	if (DeckGlLayer?.getLayer('Land Grid_selection')) {
-		DeckGlLayer.removeLayer('Land Grid_selection');
+	if (DeckGlOverlay?.getLayer('Land Grid_selection')) {
+		DeckGlOverlay.removeLayer('Land Grid_selection');
 	}
 
 	let requiredAbstracts = [];
@@ -52,7 +52,7 @@ const onAbstactLayerClick = (feature, action) => {
 		};
 	}
 
-	DeckGlLayer.addLayer({
+	DeckGlOverlay.addLayer({
 		layerId: 'Land Grid_selection',
 		type: 'SimpleGeoJsonLayer',
 		props: {
