@@ -32,6 +32,15 @@ const MAX_COLOR_VALUE = 251;
 const DEFAULT_COLOR_VALUE = 152;
 const MAX_COLOR_COMPONENT_VALUE = 255;
 
+const defaultColorPalette = [
+	[255, 255, 178],
+	[254, 217, 118],
+	[254, 178, 76],
+	[253, 141, 60],
+	[240, 59, 32],
+	[189, 0, 38],
+];
+
 const lineStyles = {
 	dots: [2, 2],
 	dashed: [10, 3],
@@ -711,15 +720,6 @@ export function getHexLayerProps(dbLayer) {
 	props.colorScaleType = dbLayer.layerSettings?.colorScaleType || 'quantize';
 	props.extruded = dbLayer.layerSettings?.isExtruded;
 
-	const defaultColorPalette = [
-		[255, 255, 178],
-		[254, 217, 118],
-		[254, 178, 76],
-		[253, 141, 60],
-		[240, 59, 32],
-		[189, 0, 38],
-	];
-
 	// Ensure colorRange is always set with a default if not provided
 	props.colorRange = dbLayer.layerSettings?.selectedPalette || defaultColorPalette;
 
@@ -761,7 +761,19 @@ export function getHeatMapLayerProps(dbLayer) {
 		}
 	};
 	props.radiusPixels = dbLayer.layerSettings?.binsWidth * 10 || 50;
-	props.colorRange = dbLayer.layerSettings?.selectedPalette;
+
+	props.colorRange = dbLayer.layerSettings?.selectedPalette || defaultColorPalette;
+
+	// // Add required properties for heatmap
+	// props.intensity = 1.0;
+	// props.threshold = 0.05;
+	// props.weightsTextureSize = 256;
+	// props.getWeight = () => 1;
+	// props.colorDomain = [0, 100]; // Default domain
+
+	// // Add color scale type
+	// props.colorScaleType = dbLayer.layerSettings?.colorScaleType || 'quantize';
+
 	return props;
 }
 export function getGridLayerProps(dbLayer) {
