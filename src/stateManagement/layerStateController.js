@@ -374,34 +374,49 @@ class LayerStateControllerHandler extends StateController {
 		NotificationManager.error(error, 'Error', 6000);
 	}
 
+	/**
+	 * Gets the metadata configuration for a database layer
+	 * @param {Object} dbLayer - The database layer object containing identifier and layerType
+	 * @returns {Object} The layer metadata configuration
+	 */
 	getLayerMeta(dbLayer) {
-		let meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
+		// Get base metadata from LayerMeta using either identifier or layerType
+		let meta = copy(LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType]);
 
-		if (
-			dbLayer?.identifier.startsWith('PlatformWells - Point') &&
-			dbLayer?.layerType !== 'point' &&
-			!aggregationLayers.includes(dbLayer?.layerType)
-		) {
-			meta = LayerMeta['Wells'];
-			meta.layer = LayerMeta[dbLayer?.layerType]?.layer;
-			meta.layer.getProps = layerId => {
-				return {
-					data: deckLayers[layerId].getData([]),
-					getPosition: d => d.geometry.geometries[0].coordinates,
-					parameters: {
-						depthTest: false, // Disable depth testing to draw points on top
-					},
-				};
-			};
-			meta.propsFunc = LayerMeta[dbLayer?.layerType]?.propsFunc;
-			meta.props = {};
-			return meta;
-		} else if (
-			dbLayer?.identifier.startsWith('PlatformWells - Point') &&
-			!aggregationLayers.includes(dbLayer?.layerType)
-		) {
-			return LayerMeta['Wells'];
+		// Special handling for PlatformWells - Point layers
+		if (dbLayer?.identifier.startsWith('PlatformWells - Point')) {
+			// Handle non-aggregation layers
+			if (!aggregationLayers.includes(dbLayer?.layerType)) {
+				// Special case for non-point layer types
+				if (dbLayer?.layerType !== 'point') {
+					// Create a hybrid metadata combining Wells base with specific layer type
+					meta = copy(LayerMeta['Wells']);
+					meta.layer = copy(LayerMeta[dbLayer?.layerType])?.layer;
+
+					// Override getProps to handle point data visualization
+					meta.layer.getProps = layerId => {
+						return {
+							data: deckLayers[layerId].getData([]),
+							getPosition: d => d.geometry.geometries[0].coordinates,
+							parameters: {
+								depthTest: false, // Disable depth testing to draw points on top
+							},
+						};
+					};
+					meta.propsFunc = LayerMeta[dbLayer?.layerType]?.propsFunc;
+					meta.props = {};
+					return meta;
+				}
+
+				// For point layer types, return standard Wells metadata
+				return LayerMeta['Wells'];
+			}
+
+			// For aggregation layers, modify metadata properties
+			meta.isFileDataSource = false;
+			meta.geoField = 'geoJSON';
 		}
+
 		return meta;
 	}
 
@@ -423,7 +438,7 @@ class LayerStateControllerHandler extends StateController {
 		];
 
 		return formattedDbLayers.filter(dbLayer => {
-			const meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
+			const meta = this.getLayerMeta(dbLayer);
 
 			if (!meta?.layer && !ifStaticMapBoxGlLayerIdentifiers(dbLayer?.identifier)) {
 				return false;
@@ -738,7 +753,7 @@ class LayerStateControllerHandler extends StateController {
 
 	handleStaticMapBoxLayer(dbLayer) {
 		const map = window.mapRef;
-		const meta = LayerMeta[dbLayer?.identifier] || LayerMeta[dbLayer?.layerType];
+		const meta = this.getLayerMeta(dbLayer);
 		const visible = dbLayer?.layerSettings?.visiable;
 		if (map.getLayer(meta?.id)) {
 			map.setLayoutProperty(meta?.id, 'visibility', visible ? 'visible' : 'none');
