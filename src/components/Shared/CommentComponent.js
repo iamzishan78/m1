@@ -385,25 +385,17 @@ const StreamUpdateComment = ({ eachComment, modelKeys, classes }) => {
 									if (React.isValidElement(part)) {
 										return part;
 									}
-									return part.split(/"([^"]*)"/).map((subPart, subIndex) =>
-										subIndex % 2 === 0 ? (
-											subPart
-										) : (
-											<span key={`${eachComment?._id}-quote-${subPart}-${subIndex}`} style={{ fontWeight: 'bold' }}>
-												{subPart}
-											</span>
-										)
-									);
+									return part
+										.split(/"([^"]*)"/)
+										.map((part, index) =>
+											index % 2 === 0 ? part : <span key={`${eachComment?._id}-quote-${part}`}>{part}</span>
+										);
 								})
-							: processedComment?.split(/"([^"]*)"/).map((part, index) =>
-									index % 2 === 0 ? (
-										part
-									) : (
-										<span key={`${eachComment?._id}-quote-${part}-${index}`} style={{ fontWeight: 'bold' }}>
-											{part}
-										</span>
-									)
-								)}
+							: processedComment
+									?.split(/"([^"]*)"/)
+									.map((part, index) =>
+										index % 2 === 0 ? part : <span key={`${eachComment?._id}-quote-${part}`}>{part}</span>
+									)}
 					</span>
 					{!isNaN(eachComment?.ts) && (
 						<span style={{ marginLeft: '8px' }}>
@@ -445,6 +437,39 @@ StreamUpdateComment.propTypes = {
 };
 
 const StreamAssociationComment = ({ eachComment, classes }) => {
+	const comment = eachComment?.comment || '';
+	const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+
+	// Regex to match $$...$$
+	const regex = /\$\$(.+?)\$\$/g;
+
+	// Split the comment into parts, keeping the $$...$$ delimiters
+	const parts = [];
+	let lastIndex = 0;
+	let match;
+	while ((match = regex.exec(comment)) !== null) {
+		// Text before the link
+		if (match.index > lastIndex) {
+			parts.push({
+				type: 'text',
+				content: comment.slice(lastIndex, match.index),
+			});
+		}
+		// The link itself
+		parts.push({
+			type: 'link',
+			content: match[1],
+		});
+		lastIndex = regex.lastIndex;
+	}
+	// Any remaining text after the last match
+	if (lastIndex < comment.length) {
+		parts.push({
+			type: 'text',
+			content: comment.slice(lastIndex),
+		});
+	}
+
 	return (
 		<div
 			id={eachComment?._id}
@@ -471,7 +496,24 @@ const StreamAssociationComment = ({ eachComment, classes }) => {
 					>
 						{eachComment?.user?.name}
 					</span>
-					<span>{eachComment?.comment}</span>
+					<span>
+						{parts.map(part => {
+							const key = `${eachComment?._id}-${part.type}-${typeof part.content === 'string' ? part.content.slice(0, 20) : ''}`;
+							return part.type === 'link' ? (
+								<a
+									key={key}
+									href={baseUrl + part.content}
+									target="_blank"
+									rel="noopener noreferrer"
+									style={{ color: 'blue', textDecoration: 'underline' }}
+								>
+									Link to record
+								</a>
+							) : (
+								<React.Fragment key={key}>{part.content}</React.Fragment>
+							);
+						})}
+					</span>
 					{!isNaN(eachComment?.ts) && (
 						<span style={{ marginLeft: '8px' }}>
 							<ReactTimeAgo
