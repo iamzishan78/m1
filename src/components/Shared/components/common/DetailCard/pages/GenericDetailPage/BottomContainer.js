@@ -84,7 +84,8 @@ const BottomContainer = () => {
 								assetTableName: {
 									value: model.associationModelName,
 								},
-								relatedModelLabel: { value: `Related ${model.name}` },
+								relatedModelTableName: { value: model.tableName },
+								relatedModelLabel: { value: model.name },
 								assetName: { value: currentAsset?.name },
 								assetId: { value: currentAssetRecord?._id },
 							},
