@@ -19,9 +19,18 @@ steps:
       versionSpec: "21.7.3"
     displayName: "Install Node.js"
 
-  - script: |
-      yarn install
-    displayName: "Yarn Install"
+   - script: |
+      yarn config set registry https://registry.npmjs.org
+      yarn config set network-timeout 300000
+      n=0
+      until [ "$n" -ge 5 ]
+      do
+        yarn install && break
+        n=$((n+1))
+        echo "Retrying yarn install... ($n)"
+        sleep 10
+      done
+    displayName: "Resilient Yarn Install"
 
   - script: |
       echo $NODE_OPTIONS
