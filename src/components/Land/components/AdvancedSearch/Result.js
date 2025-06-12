@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Typography } from '@mui/material';
 
 import { debounce } from 'lodash';
+import PropTypes from 'prop-types';
 
 import MRTTable from 'components/MRTTable';
 
@@ -28,7 +29,7 @@ const Result = ({ indices, search, setSearch }) => {
 	}, [search]);
 
 	useEffect(() => {
-		setSearch(stateValues.globalFilter);
+		setSearch(stateValues.globalFilter || '');
 	}, [globalFilter]);
 
 	if (!indices || indices.length === 0) {
@@ -44,9 +45,16 @@ const Result = ({ indices, search, setSearch }) => {
 			name={'GenericTable'}
 			overrideMeta={{
 				esIndex: indices.join(','),
+				globalFilter: search,
 			}}
 		/>
 	);
+};
+
+Result.propTypes = {
+	indices: PropTypes.arrayOf(PropTypes.string).isRequired,
+	search: PropTypes.string.isRequired,
+	setSearch: PropTypes.func.isRequired,
 };
 
 export default Result;

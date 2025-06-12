@@ -38,7 +38,7 @@ const getEmptyGroupAndLayer = (group, type) => {
 			depth: 0,
 			type: 'group',
 			collapsed: true,
-			showable: true,
+			showable: false,
 			visiable: true,
 			name: group.name,
 			id: group.groupId,

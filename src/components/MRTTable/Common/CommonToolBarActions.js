@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 
 import Button from '@material-ui/core/Button';
@@ -136,6 +137,7 @@ export const openSideDialog = async ({
 			selectedCampaign,
 			objectType,
 			refetchQueries,
+			esIndex,
 		},
 	});
 

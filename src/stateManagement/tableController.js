@@ -1,3 +1,5 @@
+/* eslint-disable no-use-before-define */
+/* eslint-disable react/prop-types */
 import React from 'react';
 
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
@@ -7,7 +9,6 @@ import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
-import OwnerTypeCell from 'components/MRTTable/Common/TableCells/OwnerTypeCell';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
@@ -544,6 +545,7 @@ class TableESStateControllerHandler extends StateController {
 			tagsList: [],
 			isTrackedList: [],
 			isSummaryGrid: rest.isSummaryGrid ?? false,
+			globalFilter,
 		};
 
 		const _defaultFilters = defaultFilters || this.getValue('defaultFilters') || [];
@@ -1221,9 +1223,30 @@ class TableESStateControllerHandler extends StateController {
 		});
 	}
 
-	applyGridView(selectedView) {
+	applyGridView(_selectedView) {
 		const tableKey = this.getValue('tableKey');
 		const Controller = tableController(tableKey);
+		const { handleDefaultView } = Controller.getValue('gridViewSettings');
+		let selectedView = { ..._selectedView };
+		if (selectedView.type === 'Default') {
+			switch (selectedView?.name) {
+				case 'Recently Added':
+					selectedView.filters = [];
+					selectedView.sorting = [{ field: 'createAt', desc: true }];
+					break;
+
+				case 'Recently Modified':
+					selectedView.filters = [];
+					selectedView.sorting = [{ field: 'lastUpdateAt', desc: true }];
+					break;
+
+				default:
+					break;
+			}
+			selectedView = handleDefaultView
+				? handleDefaultView({ ...selectedView }, globalStateController.getValue('user'))
+				: selectedView;
+		}
 
 		const TableSchema = Controller.getValue('TableSchema');
 		const columnPinning = Controller.getValue('columnPinning');

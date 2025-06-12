@@ -83,7 +83,7 @@ const PropertyRevenueDetailMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.ownerNumber.keyword',
 			accessorFn: row => row?.property?.ownerNumber,
 			id: 'property.ownerNumber',
@@ -91,7 +91,7 @@ const PropertyRevenueDetailMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property._owner.name.keyword',
 			accessorFn: row => row?.property?._owner?.name,
 			id: 'property._owner.name',
@@ -99,7 +99,7 @@ const PropertyRevenueDetailMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'check.depositDate.keyword',
 			accessorFn: row => row?.check?.depositDate,
 			id: 'check.depositDate',
@@ -107,7 +107,7 @@ const PropertyRevenueDetailMeta = {
 			type: 'date',
 			isSearchField: false,
 			// Cell rendering for Check Date column
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ renderedCellValue }) => {
 				return <>{formatDate(renderedCellValue)}</>;
 			},
 			hidden: true,
@@ -120,14 +120,14 @@ const PropertyRevenueDetailMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'check.source.keyword',
 			accessorKey: 'check.source',
 			header: 'Source',
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'check.sourceId.keyword',
 			accessorFn: row => row?.check?.sourceId,
 			id: 'check.sourceId',
@@ -135,7 +135,7 @@ const PropertyRevenueDetailMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'check.checkNumber.keyword',
 			accessorKey: 'check.checkNumber',
 			id: 'check.checkNumber',
@@ -144,14 +144,14 @@ const PropertyRevenueDetailMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.state.keyword',
 			accessorKey: 'property.state',
 			header: 'State',
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.county.keyword',
 			accessorKey: 'property.county',
 			header: 'County',

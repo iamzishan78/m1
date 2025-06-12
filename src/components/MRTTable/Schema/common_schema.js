@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 
 import { Autocomplete, Box, createFilterOptions, TextField } from '@mui/material';
@@ -16,6 +17,7 @@ import { tableController } from 'stateManagement/tableController';
 
 import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED, TO_FIXED } from 'utils/consts';
 
+import DialpadTableCell from '../Common/TableCells/DialpadTableCell';
 import NavigationFlagField from '../Common/TableCells/NavigationFlagField';
 import OwnerTypeCell from '../Common/TableCells/OwnerTypeCell';
 
@@ -35,6 +37,16 @@ const ACTION_COLUMN = {
 	enableColumnDragging: false,
 	enableResizing: false,
 	showInLast: true,
+};
+
+const COMMON_COLUMN = {
+	size: 250,
+	isPinned: false,
+	hidden: false,
+	filter: true,
+	isSearchField: true,
+	enableSorting: true,
+	type: 'string',
 };
 
 export const CommonSchema = {
@@ -100,15 +112,7 @@ export const CommonSchema = {
 		enableColumnDragging: false,
 		size: 350,
 	},
-	STRING_COLUMN: {
-		size: 250,
-		isPinned: false,
-		hidden: false,
-		filter: true,
-		isSearchField: true,
-		enableSorting: true,
-		type: 'string',
-	},
+	STRING_COLUMN: COMMON_COLUMN,
 	SELECT_SOME: {
 		name: 'over-ride-checkbox',
 		id: 'over-ride-checkbox',
@@ -381,6 +385,12 @@ export const CommonSchema = {
 			},
 		};
 		return column;
+	},
+	DIALPAD_COLUMN: {
+		...COMMON_COLUMN,
+		Cell: ({ renderedCellValue, row }) => {
+			return <DialpadTableCell value={renderedCellValue} row={row} />;
+		},
 	},
 };
 

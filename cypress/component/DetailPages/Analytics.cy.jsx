@@ -10,8 +10,8 @@ describe('AnalyticsSection', () => {
 		cy.interceptAndWait(
 			['getDbData'],
 			alias => {
-				cy.viewport(1600, 1200).mount(<MRTTable name="PropertyIntrestTable" />, {
-					spec: 'PropertyIntrestTableSpec',
+				cy.viewport(1600, 1200).mount(<MRTTable name="PropertyInterestTable" />, {
+					spec: 'PropertyInterestTableSpec',
 				});
 			},
 			{ wait: false }
