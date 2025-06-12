@@ -255,24 +255,24 @@ const Activities = () => {
 			if (activityFilterByType && activityFilterByOwner !== 'all') {
 				filters.push({ field: 'ownerId.keyword', value: activityFilterByOwner });
 			}
-			const today = moment().format('yyyy-MM-DD');
+			const today = moment().format('MM/DD/YYYY');
 			switch (activityFilterByTime) {
 				case 'upcoming':
 					filters.push({
+						type: 'advanced',
+						searchType: 'greaterThanOrEqualTo',
+						columnType: 'date',
 						field: 'dateTime',
-						value: {
-							gte: `${today}T00:00:00.000Z`,
-						},
-						type: 'range',
+						value: today,
 					});
 					break;
 				case 'overdue':
 					filters.push({
+						type: 'advanced',
+						searchType: 'lessThanOrEqualTo',
+						columnType: 'date',
 						field: 'endDateTime',
-						value: {
-							lte: `${today}T00:00:00.000Z`,
-						},
-						type: 'range',
+						value: today,
 					});
 					filters.push({ field: 'isClosed', value: 'false' });
 					break;
