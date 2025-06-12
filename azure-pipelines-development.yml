@@ -19,7 +19,7 @@ steps:
       versionSpec: "21.7.3"
     displayName: "Install Node.js"
 
-   - script: |
+  - script: |
       yarn config set registry https://registry.npmjs.org
       yarn config set network-timeout 300000
       n=0
