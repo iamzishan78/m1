@@ -73,17 +73,13 @@ const CampaignMeta = {
 			type: 'Default',
 		},
 		handleDefaultView: (view, user) => {
-			if (view?.name === 'My Campaigns') {
-				const newFilters = [...view.filters];
-				newFilters[0] = {
-					...newFilters[0],
-					value: user._id,
-				};
-
-				return {
-					...view,
-					filters: newFilters,
-				};
+			if (view.name === 'My Campaigns') {
+				view.filters = [
+					{
+						field: 'owner.name',
+						value: user.name || user.displayName || user.email,
+					},
+				];
 			}
 
 			return view;

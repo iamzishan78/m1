@@ -85,17 +85,14 @@ const ContactMeta = {
 		},
 		handleDefaultView: (view, user) => {
 			if (view?.name === 'My Contacts') {
-				const newFilters = [...view.filters];
-				newFilters[0] = {
-					...newFilters[0],
-					value: user.name || user.displayName || user.email,
-				};
-
-				return {
-					...view,
-					filters: newFilters,
-				};
+				view.filters = [
+					{
+						field: 'contactOwners.name',
+						value: user.name || user.displayName || user.email,
+					},
+				];
 			}
+
 			return view;
 		},
 		cssOverride: {
