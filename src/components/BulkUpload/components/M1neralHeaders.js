@@ -302,9 +302,23 @@ export default function M1neralHeaders() {
 
 	const handleChange_select = async (event, index) => {
 		const selectedHeader = data.find(el => el?.actual_key === event.target.value);
-		CSV_headers[index].actual_key = selectedHeader?.actual_key;
-		CSV_headers[index].label = selectedHeader?.label;
-		CSV_headers[index].required = true;
+
+		// Create a new copy of the CSV_headers array with the updated object
+		const updatedHeaders = CSV_headers.map((header, i) => {
+			if (i === index) {
+				return {
+					...header,
+					actual_key: selectedHeader?.actual_key,
+					label: selectedHeader?.label,
+					required: true,
+				};
+			}
+			return header;
+		});
+
+		// Update the CSV_headers reference with the new array
+		CSV_headers = updatedHeaders;
+
 		await changeDataToSendState();
 		UpdateState();
 	};
