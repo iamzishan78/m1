@@ -711,7 +711,21 @@ export function getHexLayerProps(dbLayer) {
 	props.colorScaleType = dbLayer.layerSettings?.colorScaleType || 'quantize';
 	props.extruded = dbLayer.layerSettings?.isExtruded;
 
-	props.colorRange = dbLayer.layerSettings?.selectedPalette;
+	const defaultColorPalette = [
+		[255, 255, 178],
+		[254, 217, 118],
+		[254, 178, 76],
+		[253, 141, 60],
+		[240, 59, 32],
+		[189, 0, 38],
+	];
+
+	// Ensure colorRange is always set with a default if not provided
+	props.colorRange = dbLayer.layerSettings?.selectedPalette || defaultColorPalette;
+
+	// Add colorDomain to ensure proper color mapping
+	props.colorDomain = [0, 100]; // Default domain, will be updated by onSetColorDomain
+
 	props.onSetColorDomain = domain => {
 		const [min, max] = domain;
 		if (min === Infinity || max === Infinity) {
@@ -723,7 +737,7 @@ export function getHexLayerProps(dbLayer) {
 			return;
 		}
 
-		const numColors = dbLayer.layerSettings?.selectedPalette?.length;
+		const numColors = props.colorRange.length;
 		const binSize = (max - min) / numColors; // Auto bin size
 		const autoBins = Array.from({ length: numColors + 1 }, (_, i) => min + i * binSize);
 		const binLabels = autoBins.slice(0, -1).map((start, i) => `${start} - ${autoBins[i + 1]}`);
