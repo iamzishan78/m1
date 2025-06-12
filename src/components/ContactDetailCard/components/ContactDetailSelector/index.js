@@ -230,6 +230,7 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 			defaultFilters: [
 				{ field: 'shape.layer.keyword', value: 'parcel' },
 				{ field: 'contact._id', value: contactData._id || '' },
+				{ field: 'descriptor', value: 'ParcelDescriptor' },
 			],
 			customProps: {
 				contactId: contactData._id,
