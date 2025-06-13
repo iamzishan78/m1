@@ -10,6 +10,8 @@ import { DropzoneAreaBase } from 'material-ui-dropzone';
 
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
 
+import { detailCardController } from 'stateManagement/detailCardController';
+import { globalStateController } from 'stateManagement/globalStateController';
 import { tableGlobalController } from 'stateManagement/tableController';
 
 import { showErrorMessage, showWarningMessage } from '../../../actions';
@@ -46,6 +48,13 @@ export default function UploadZone(props) {
 	const dispatch = useDispatch();
 	const [, setInputFile] = useState(null);
 	const [addFile, { loading: addFileLoading }] = useMutation(ADDDESCRIPTORFILE);
+
+	const {
+		globalStateValues: { currentAsset },
+	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
+	const {
+		stateValues: { currentAssetRecord },
+	} = detailCardController.useState(['currentAssetRecord'], 'stateValues');
 
 	const handleUploadFile = addFileData => {
 		if (addFileData && addFileData?.addFileDescriptor?.success) {
@@ -97,8 +106,21 @@ export default function UploadZone(props) {
 						userId: props.userId,
 						relatedObjectId: props.relatedObjectId,
 						relatedObjectType: props.relatedObjectType,
+						currentAsset: {
+							name: currentAsset?.name,
+							_id: currentAssetRecord?._id,
+						},
 					},
-					refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'getParcelFilesCount', 'getContact', 'getDbData'],
+					refetchQueries: [
+						'getRecentContactFiles',
+						'getParcelFiles',
+						'getParcelFilesCount',
+						'getContact',
+						'getDbData',
+						'getCommentsByObjectId',
+						'getCommentsCounter',
+						'getCommentsByObjectsIds',
+					],
 					awaitRefetchQueries: true,
 				}).then(res => {
 					handleUploadFile(res.data);

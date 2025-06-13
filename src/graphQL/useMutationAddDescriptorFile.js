@@ -7,6 +7,7 @@ export const ADDDESCRIPTORFILE = gql`
 		$relatedObjectId: ID
 		$relatedObjectType: String
 		$fileId: ID
+		$currentAsset: JSON
 	) {
 		addFileDescriptor(
 			fileName: $fileName
@@ -14,6 +15,7 @@ export const ADDDESCRIPTORFILE = gql`
 			relatedObjectId: $relatedObjectId
 			relatedObjectType: $relatedObjectType
 			fileId: $fileId
+			currentAsset: $currentAsset
 		) {
 			success
 			message
