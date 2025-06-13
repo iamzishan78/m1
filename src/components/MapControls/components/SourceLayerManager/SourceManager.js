@@ -523,6 +523,8 @@ function SourceManager(props) {
 								<div onClick={e => e.stopPropagation()}>
 									<CategorySection search={props.search} title="M1neral Platform Sources" layerCategory="M1 Layer" />
 
+									<CategorySection search={props.search} title="M1 Platform Entities" layerCategory="M1 Entity Layer" />
+
 									<StyledListItem2
 										button
 										onClick={() => setIsOpenUserSources(!isOpenUserSources)}
@@ -563,7 +565,7 @@ function SourceManager(props) {
 											})
 											?.map(dataset => (
 												<Fragment key={dataset._id}>
-													{dataset.sourceName !== 'M1 Platform' ? (
+													{dataset.sourceName !== 'M1 Platform' && dataset.sourceName !== 'M1 Platform Entities' ? (
 														<>
 															<StyledListItem2
 																data-testid={`source-${dataset.sourceName}`}

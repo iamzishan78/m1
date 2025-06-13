@@ -7,6 +7,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 
@@ -25,14 +26,11 @@ export default function DeleteConfirmationDialog(props) {
 		if (layerDeleted && layerDeleted.updateLayer) {
 			if (layerDeleted.updateLayer.success) {
 				dispatch(showSuccessMessage('The layer was successfully removed'));
-				dispatch(setMainMapState({ removeLayerFromMap: [props.layer] }));
 				window.setStateApp(state => ({
 					...state,
 					universalCircularLoaderAct: false,
 				}));
 				props.handleDialogClose(false);
-				const layer = layerController.getLayerFromMongoId(layerDeleted.updateLayer.layer._id);
-				layerController.removeLayer(layer);
 			} else {
 				window.setStateApp(state => ({
 					...state,
@@ -47,16 +45,11 @@ export default function DeleteConfirmationDialog(props) {
 		if (layersDeleted && layersDeleted.updateManyLayer) {
 			if (layersDeleted.updateManyLayer.success) {
 				dispatch(showSuccessMessage('The Group was successfully removed'));
-				dispatch(setMainMapState({ removeLayerFromMap: props.layer.layers }));
 				window.setStateApp(state => ({
 					...state,
 					universalCircularLoaderAct: false,
 				}));
 				props.handleDialogClose(false);
-				layersDeleted.updateManyLayer.res?.forEach?.(l => {
-					const layer = layerController.getLayerFromMongoId(l._id);
-					layerController.removeLayer(layer);
-				});
 			} else {
 				window.setStateApp(state => ({
 					...state,
@@ -69,7 +62,19 @@ export default function DeleteConfirmationDialog(props) {
 
 	const handleAccept = async () => {
 		window.setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
-		// Determine the appropriate mutation to call
+
+		// First remove the layer(s) from the map
+		if (props.layer.type === 'group') {
+			props.layer.layers.forEach(layer => {
+				layerController.removeLayer(layer);
+				dispatch(setMainMapState({ removeLayerFromMap: [layer] }));
+			});
+		} else {
+			layerController.removeLayer(props.layer);
+			dispatch(setMainMapState({ removeLayerFromMap: [props.layer] }));
+		}
+
+		// Then update the state and call the mutation
 		let layersToRemove = [];
 		if (props.layer.type === 'group') {
 			updateManyLayer({
@@ -137,3 +142,18 @@ export default function DeleteConfirmationDialog(props) {
 		</div>
 	);
 }
+
+DeleteConfirmationDialog.propTypes = {
+	layer: PropTypes.shape({
+		layerId: PropTypes.string,
+		type: PropTypes.string,
+		id: PropTypes.string,
+		layers: PropTypes.arrayOf(
+			PropTypes.shape({
+				layerId: PropTypes.string,
+			})
+		),
+	}).isRequired,
+	openDialog: PropTypes.bool.isRequired,
+	handleDialogClose: PropTypes.func.isRequired,
+};

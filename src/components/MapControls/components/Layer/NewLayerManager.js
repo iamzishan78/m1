@@ -68,9 +68,19 @@ function NewLayerManager() {
 	};
 
 	const createLayer = () => {
-		const layerType = source.name === 'M1 Platform' ? 'data layer' : selectGeometry?.value || 'file layer';
+		let layerType;
+		let layerCategory;
 
-		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.layerIdentifier;
+		if (source.name === 'M1 Platform Entities') {
+			layerType = 'dynamic data layer';
+			layerCategory = 'UD layer';
+		} else if (source.name === 'M1 Platform') {
+			layerType = 'data layer';
+			layerCategory = 'UD layer';
+		} else {
+			layerType = selectGeometry?.value || 'file layer';
+			layerCategory = selectCategory.layerIdentifier;
+		}
 
 		let layerIdentifier = selectCategory.layerIdentifier;
 		if (layerIdentifier.startsWith('Tracts')) {
@@ -82,6 +92,7 @@ function NewLayerManager() {
 				layer: {
 					...layer,
 					layerCategory,
+					tableName: selectCategory.tableName,
 					layerIdentifier,
 					layerType,
 					identifier: layerIdentifier + uuid(),

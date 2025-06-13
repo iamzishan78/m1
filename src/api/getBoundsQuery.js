@@ -270,7 +270,9 @@ const getBoundsQuery = async ({
 		if (!isFileLayer) {
 			if (layerSettings.selectedAttribute) {
 				Object.assign(variables.project, {
-					[layerSettings.selectedAttribute.value.replace('.keyword', '')]: 1,
+					[layerSettings.selectedAttribute.value.includes('.keyword')
+						? layerSettings.selectedAttribute.value.replace('.keyword', '')
+						: layerSettings.selectedAttribute.value]: 1,
 				});
 			}
 			if (layerSettings.selectedStrokeAttribute) {

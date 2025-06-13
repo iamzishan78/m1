@@ -111,6 +111,10 @@ const AttrsFillStyleDropdown = ({
 		} else if (selectedLayer?.identifier === 'My Wells') {
 			esIndex = 'mywells_flat';
 			filters = [];
+		} else if (selectedLayer?.layerType === 'dynamic data layer' && selectedLayer?.tableName) {
+			// For dynamic data layers, use the tableName as esIndex and keep filters empty
+			esIndex = selectedLayer.tableName;
+			filters = [];
 		} else {
 			filters = [
 				layerType === 'agreement'
@@ -244,6 +248,7 @@ AttrsFillStyleDropdown.propTypes = {
 	selectedLayer: PropTypes.shape({
 		layerType: PropTypes.string,
 		identifier: PropTypes.string,
+		tableName: PropTypes.string,
 	}),
 	setFillStyle: PropTypes.func.isRequired,
 	fillStyle: PropTypes.string,

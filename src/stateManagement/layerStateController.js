@@ -911,7 +911,7 @@ class LayerStateControllerHandler extends StateController {
 			}
 
 			if (isDynamicLayer) {
-				filters.variables.index = dbLayer.layerPaintProps[0].id;
+				filters.variables.index = dbLayer.tableName;
 				return filters;
 			}
 

@@ -33,7 +33,6 @@ import { showErrorMessage, showSuccessMessage } from 'actions';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import DatasetMenu from './Menu';
-import NameWithTooltip from '../Common/NameWithTooltip';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -275,7 +274,7 @@ function Datasets({ headerButton, search }) {
 				)}
 			</StyledMenuSecondaryHeaderItem>
 			<div className={classes.root}>
-				{datasets?.map(({ sourceName, Icon, categories, ...rest }, index) => (
+				{datasets?.map(({ sourceName, Icon, categories, ...rest }) => (
 					<Grid
 						className="item"
 						key={`dataset-${sourceName}`}
@@ -308,8 +307,10 @@ function Datasets({ headerButton, search }) {
 										</Grid>
 										<Grid item className="actionIcons">
 											<GridOnIcon id={'grid-icon-' + sourceName} className="actionIcon" />
-											{sourceName === 'M1 Platform' && <Box paddingRight="24px" />}
-											{sourceName !== 'M1 Platform' && (
+											{(sourceName === 'M1 Platform' || sourceName === 'M1 Platform Entities') && (
+												<Box paddingRight="24px" />
+											)}
+											{sourceName !== 'M1 Platform' && sourceName !== 'M1 Platform Entities' && (
 												<DatasetMenu
 													handleRemove={handleRemove}
 													handleTransfer={handleTransfer}
