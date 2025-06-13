@@ -4,6 +4,7 @@ import CommonSummaryFieldsComponent from 'components/Shared/components/common/De
 import DocViewer from 'components/Shared/DocViewer';
 
 import { globalStateController } from 'stateManagement/globalStateController';
+import { popupController } from 'stateManagement/popupStateController';
 
 import { AppContext } from 'AppContext';
 
@@ -17,10 +18,17 @@ const MainGridLeftContainer = () => {
 		globalStateValues: { currentAsset },
 	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
 
+	const {
+		stateValues: { expandedCard },
+	} = popupController.useState(['expandedCard']);
+
 	useEffect(() => {
 		const summaryFields = getAssetFields(currentAsset, true);
-		setFormFields(summaryFields);
-	}, [currentAsset, setFormFields]);
+		const nonsummaryFields = expandedCard ? getAssetFields(currentAsset, false) : [];
+
+		// If card is expanded, combine both summary and non-summary fields
+		setFormFields([...summaryFields, ...nonsummaryFields]);
+	}, [currentAsset, setFormFields, expandedCard]);
 
 	const ExtenstionGetter = name => {
 		let fileExtension = name?.slice(name.lastIndexOf('.') + 1)?.toLowerCase();
