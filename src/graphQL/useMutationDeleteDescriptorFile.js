@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const DELETEDESCRIPTORFILE = gql`
-	mutation deleteDescriptorFile($id: String) {
-		deleteFileDescriptor(descriptorId: $id) {
+	mutation deleteDescriptorFile($id: String, $currentAsset: JSON) {
+		deleteFileDescriptor(descriptorId: $id, currentAsset: $currentAsset) {
 			success
 			message
 		}

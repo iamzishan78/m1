@@ -25,6 +25,8 @@ import { tableGlobalController } from 'stateManagement/tableController';
 import { AppContext } from 'AppContext';
 
 import UploadZone from './DailogUploadZone';
+import { globalStateController } from 'stateManagement/globalStateController';
+import { detailCardController } from 'stateManagement/detailCardController';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const useStyles = makeStyles(theme => ({
@@ -158,6 +160,13 @@ const Documents = memo(props => {
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 	const [recentFiles, setRecentFiles] = useState([]);
 
+	const {
+		globalStateValues: { currentAsset },
+	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
+	const {
+		stateValues: { currentAssetRecord },
+	} = detailCardController.useState(['currentAssetRecord'], 'stateValues');
+
 	useEffect(() => {
 		if (props.filesData?.viewFiles) {
 			setRecentFiles(props.filesData.viewFiles);
@@ -257,8 +266,20 @@ const Documents = memo(props => {
 			deleteFile({
 				variables: {
 					id: fileIdToDelete,
+					currentAsset: {
+						name: currentAsset?.name,
+						_id: currentAssetRecord?._id,
+					},
 				},
-				refetchQueries: ['getRecentContactFiles', 'getContactFiles', 'getParcelFiles', 'getParcelFilesCount'],
+				refetchQueries: [
+					'getRecentContactFiles',
+					'getContactFiles',
+					'getParcelFiles',
+					'getParcelFilesCount',
+					'getCommentsByObjectId',
+					'getCommentsCounter',
+					'getCommentsByObjectsIds',
+				],
 				awaitRefetchQueries: true,
 				onCompleted: () => {
 					tableGlobalController.refetch();
