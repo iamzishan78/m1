@@ -15,6 +15,7 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
 import { aggregationLayers } from 'components/Shared/functions/shapeLayer';
 import { getLayerColor } from 'components/Shared/SidePanel/compoennts/common';
 
+import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
@@ -110,6 +111,8 @@ function LayerStyling() {
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
+	const [getCustomAssetInfo, { data: customAssetInfo }] = useLazyQuery(GET_CUSTOM_ASSET_INFO);
+
 	const [getShapeFileSchema, { data: shapeFileSchema }] = useLazyQuery(GET_SHAPE_FILE_SCHEMA);
 
 	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
@@ -130,6 +133,14 @@ function LayerStyling() {
 				variables: {
 					user: user?.mongoId,
 					category: colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey,
+				},
+			});
+		}
+
+		if (selectedLayer?.layerType === 'dynamic data layer') {
+			getCustomAssetInfo({
+				variables: {
+					tableName: selectedLayer?.tableName,
 				},
 			});
 		}
@@ -335,7 +346,13 @@ function LayerStyling() {
 				value: md.esKey,
 			})) || [];
 
-		return [...colorAttributes, ...metaDataOptions];
+		const customAssetOptions =
+			customAssetInfo?.getCustomAssetInfo?.asset?.modelKeys?.map(field => ({
+				label: field.label,
+				value: field.mappingKey,
+			})) || [];
+
+		return [...colorAttributes, ...metaDataOptions, ...customAssetOptions];
 	}, [selectedLayer, metaDataRes, shapeFileSchema]);
 
 	return (

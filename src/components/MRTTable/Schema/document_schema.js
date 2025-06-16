@@ -83,37 +83,17 @@ const DocumentMeta = {
 			const TOTAL_DAYS = 30;
 
 			if (view.name === 'My Documents') {
-				const newFilters = [...view.filters];
-				newFilters[0] = {
-					...newFilters[0],
-					value: user._id,
-				};
-				return { ...view, filters: newFilters };
+				view.filters = [
+					{
+						field: 'user.name',
+						value: user.name || user.displayName || user.email,
+					},
+				];
 			}
 
 			if (view.name === 'Recently Modified' || view.name === 'Recently Added') {
-				const newFilters = [...view.filters];
-				const firstFilter = newFilters[0];
-
-				const newRange = {
-					...(firstFilter.value.range || {}),
-					[firstFilter.field]: {
-						...(firstFilter.value.range?.[firstFilter.field] || {}),
-						gte: moment().subtract(TOTAL_DAYS, 'days').toISOString(),
-						lte: moment().toISOString(),
-					},
-				};
-
-				newFilters[0] = {
-					...firstFilter,
-					type: 'range',
-					value: {
-						...firstFilter.value,
-						range: newRange,
-					},
-				};
-
-				return { ...view, filters: newFilters };
+				const fieldName = view.name === 'Recently Modified' ? 'lastUpdateAt' : 'ts';
+				view.sort = [{ field: fieldName, desc: true }];
 			}
 
 			return view;
@@ -221,6 +201,16 @@ const DocumentMeta = {
 			name: 'instrument.keyword',
 			id: 'instrument',
 			header: 'Instrument #',
+		},
+
+		{
+			name: 'user.name',
+			id: 'user.name',
+			header: 'Owner',
+			size: 250,
+			filter: true,
+			isSearchField: false,
+			type: 'string',
 		},
 
 		{

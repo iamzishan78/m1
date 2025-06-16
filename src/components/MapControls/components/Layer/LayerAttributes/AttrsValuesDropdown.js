@@ -116,6 +116,10 @@ const AttrsValuesDropdown = ({
 		} else if (selectedLayer?.identifier === 'My Wells') {
 			esIndex = 'mywells_flat';
 			filters = [];
+		} else if (selectedLayer?.layerType === 'dynamic data layer' && selectedLayer?.tableName) {
+			// For dynamic data layers, use the tableName as esIndex and keep filters empty
+			esIndex = selectedLayer.tableName;
+			filters = [];
 		} else {
 			filters = [
 				layerType === 'agreement'
@@ -240,6 +244,7 @@ AttrsValuesDropdown.propTypes = {
 	selectedLayer: PropTypes.shape({
 		layerType: PropTypes.string,
 		identifier: PropTypes.string,
+		tableName: PropTypes.string,
 	}),
 	setFillColor: PropTypes.func.isRequired,
 	fillColor: PropTypes.oneOfType([
@@ -252,4 +257,5 @@ AttrsValuesDropdown.propTypes = {
 	]).isRequired,
 	attributeBasedColors: PropTypes.object.isRequired,
 	setAttributeBasedColors: PropTypes.func.isRequired,
+	tableName: PropTypes.string,
 };

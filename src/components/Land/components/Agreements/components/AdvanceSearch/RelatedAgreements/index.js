@@ -72,17 +72,16 @@ export default function RelatedAgreementsFilters(props) {
 	const [filterList, setFilterList] = useState([[], []]);
 
 	useEffect(() => {
-		if (stateApp.landSearchFilters.relatedAgreements?.length === 0 && filterList.find(fl => fl.length !== 0)) {
+		if (stateApp.landSearchFilters?.relatedAgreements?.length === 0 && filterList.find(fl => fl.length !== 0)) {
 			setFilterList([[], []]);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [stateApp.landSearchFilters.relatedAgreements]);
+	}, [stateApp.landSearchFilters?.relatedAgreements]);
 
 	const changeLandAgreements = React.useMemo(
 		() =>
 			debounce((request, callback, index) => {
 				const { filterKey } = callback;
-				const landAgreementsFilters = [...stateApp.landSearchFilters.relatedAgreements];
+				const landAgreementsFilters = [...stateApp.landSearchFilters?.relatedAgreements];
 				const _index = landAgreementsFilters.findIndex(f => f.field === filterKey);
 				if (_index === -1 && request[0] !== null) {
 					landAgreementsFilters.push({ field: filterKey, value: request[0] });
@@ -96,7 +95,7 @@ export default function RelatedAgreementsFilters(props) {
 					landSearchFilters: { ...stateApp.landSearchFilters, relatedAgreements: landAgreementsFilters },
 				}));
 			}, 1000),
-		[setStateApp, stateApp.landSearchFilters.relatedAgreements]
+		[setStateApp, stateApp.landSearchFilters?.relatedAgreements]
 	);
 
 	const onFilterChange = (request, callback, filter, index) => {
@@ -121,7 +120,7 @@ export default function RelatedAgreementsFilters(props) {
 						filter={filter}
 						filterList={filterList}
 						index={index}
-						appliedFilters={stateApp.landSearchFilters.relatedAgreements}
+						appliedFilters={stateApp?.landSearchFilters?.relatedAgreements}
 					/>
 				</Grid>
 			))}

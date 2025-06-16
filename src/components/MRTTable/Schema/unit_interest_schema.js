@@ -26,20 +26,16 @@ const UnitInterestMeta = {
 			name: 'All Unit Interests',
 			type: 'Default',
 		},
-		//here
 		handleDefaultView: (view, user) => {
 			if (view?.name === 'My Unit Interest') {
-				const newFilters = [...view.filters];
-				newFilters[0] = {
-					...newFilters[0],
-					value: user._id,
-				};
-
-				return {
-					...view,
-					filters: newFilters,
-				};
+				view.filters = [
+					{
+						field: 'contactOwners',
+						value: user.name || user.displayName || user.email,
+					},
+				];
 			}
+
 			return view;
 		},
 		cssOverride: {

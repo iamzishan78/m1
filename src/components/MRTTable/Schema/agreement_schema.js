@@ -83,20 +83,16 @@ const AgreementMeta = {
 			name: 'All Agreements',
 			type: 'Default',
 		},
-		//here
 		handleDefaultView: (view, user) => {
 			if (view?.name === 'My Agreements') {
-				const newFilters = [...view.filters];
-				newFilters[0] = {
-					field: 'shapeJson.properties.ownerName',
-					value: user.name || user.displayName || user.email,
-				};
-
-				return {
-					...view,
-					filters: newFilters,
-				};
+				view.filters = [
+					{
+						field: 'shapeJson.properties.ownerName',
+						value: user.name || user.displayName || user.email,
+					},
+				];
 			}
+
 			return view;
 		},
 		cssOverride: {

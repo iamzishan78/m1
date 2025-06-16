@@ -798,6 +798,10 @@ function Search({ stateApp, setStateApp, isDocument }) {
 					layerController.toggleLayersActivity('Search', true);
 				} else {
 					dispatch(showInfoMessage('Selected well coordinates are not available'));
+					mapControlsController.updateState({ searchValue: '' });
+					layerController.updateState({ wellListFromSearch: [] });
+					setValue('');
+					setOptions([]);
 				}
 			}
 

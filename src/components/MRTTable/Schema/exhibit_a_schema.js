@@ -36,22 +36,6 @@ const ExhibitAMeta = {
 			name: 'All Exhibit A',
 			type: 'Default',
 		},
-		handleDefaultView: (view, user) => {
-			if (view?.name === 'My Exhibit A') {
-				const newFilters = [...view.filters];
-				newFilters[0] = {
-					...newFilters[0],
-					value: user._id,
-				};
-
-				return {
-					...view,
-					filters: newFilters,
-				};
-			}
-
-			return view;
-		},
 		cssOverride: {
 			top: '198px',
 			left: '19px',

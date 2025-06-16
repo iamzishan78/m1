@@ -297,13 +297,13 @@ const Activities = () => {
 				case 'open':
 					filters.push({
 						field: 'isClosed',
-						value: 'false',
+						value: false,
 					});
 					break;
 				case 'closed':
 					filters.push({
 						field: 'isClosed',
-						value: 'true',
+						value: true,
 					});
 					break;
 

@@ -20,22 +20,6 @@ const AcreageSummaryMeta = {
 			name: 'All Acreage Summary',
 			type: 'Default',
 		},
-		handleDefaultView: (view, user) => {
-			if (view?.name === 'My Acreage Summary') {
-				const newFilters = [...view.filters];
-				newFilters[0] = {
-					...newFilters[0],
-					value: user._id,
-				};
-
-				return {
-					...view,
-					filters: newFilters,
-				};
-			}
-
-			return view;
-		},
 		cssOverride: {
 			top: '263px',
 			left: '19px',

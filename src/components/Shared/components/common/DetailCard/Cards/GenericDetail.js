@@ -1,6 +1,13 @@
 import React, { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
+
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
 
 import { useLazyQuery } from '@apollo/client';
 
@@ -21,13 +28,14 @@ import ConfirmationDialog from '../DeleteConfirmationDialog';
 
 function GenericDetailCard() {
 	const [stateApp, setStateApp] = useContext(AppContext);
-
+	const history = useHistory();
 	const { id, tableName, paramId, type } = useParams();
 
 	const { activeModule } = useSelector(({ common }) => common);
 
 	const [assetRecord, setAssetRecord] = useState(null);
 	const [showActivityDialog, setActivityDialog] = useState(null);
+	const [showErrorDialog, setShowErrorDialog] = useState(false);
 
 	const {
 		stateValues: { openDialog },
@@ -43,8 +51,15 @@ function GenericDetailCard() {
 	const [getRecordFromAsset] = useLazyQuery(GET_RECORD_FROM_RUN_TIME_MODEL, {
 		onCompleted: data => {
 			const record = data?.getRecordFromRunTimeModel?.asset;
+			if (!record) {
+				setShowErrorDialog(true);
+				return;
+			}
 			setAssetRecord(record);
 			detailCardController.updateState({ currentAssetRecord: record });
+		},
+		onError: () => {
+			setShowErrorDialog(true);
 		},
 	});
 
@@ -101,11 +116,28 @@ function GenericDetailCard() {
 		});
 	};
 
+	const handleErrorDialogClose = () => {
+		setShowErrorDialog(false);
+		history.goBack();
+	};
+
 	return (
 		<>
 			<div>
 				<DetailLayout loading={!assetRecord} page="GenericDetailPage" props={detailProps} />
 			</div>
+
+			<Dialog open={showErrorDialog} onClose={handleErrorDialogClose}>
+				<DialogTitle>Record Not Found</DialogTitle>
+				<DialogContent>
+					<Typography>The requested record does not exist !.</Typography>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleErrorDialogClose} color="primary">
+						Go Back
+					</Button>
+				</DialogActions>
+			</Dialog>
 
 			{openDialog === 'deleteConfirmation' && (
 				<ConfirmationDialog

@@ -185,6 +185,7 @@ function AssociatedFlowDetails(props) {
 				{ field: 'contact._id', value: props.contacts },
 				{ field: 'deals._id', value: props.deal },
 				{ field: 'shape.layer.keyword', value: 'parcel' },
+				{ field: 'descriptor', value: 'ParcelDescriptor' },
 			],
 			refetchQueries: ['flowDealSummary'],
 			toolbarInternalActions,

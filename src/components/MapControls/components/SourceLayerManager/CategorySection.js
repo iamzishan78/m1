@@ -76,6 +76,7 @@ export default function CategorySection({ title, search, layerCategory }) {
 
 	const [openM1, setOpenM1] = React.useState(true);
 	const [selectAllMinerallayers, setSelectAllMinerallayers] = React.useState(false);
+	const [selectAllEntityLayers, setSelectAllEntityLayers] = React.useState(false);
 	const {
 		layerStateValues: { projectedLayers },
 	} = layerController.useState(['projectedLayers'], 'layerStateValues');
@@ -84,6 +85,7 @@ export default function CategorySection({ title, search, layerCategory }) {
 		const layers = projectedLayers?.filter(
 			layer =>
 				(layer.layerCategory === layerCategory && layerCategory === 'M1 Layer' && layer.identifier !== 'Land Grid') ||
+				(layer.layerCategory === layerCategory && layerCategory === 'M1 Entity Layer') ||
 				(layer.layerCategory === layerCategory && (layerCategory === 'UD layer' || layer.file)) ||
 				(aggregationLayers.includes(layer.layerType) && layerCategory === 'UD layer')
 		);
@@ -96,6 +98,8 @@ export default function CategorySection({ title, search, layerCategory }) {
 
 		if (layerType === 'M1 Layer') {
 			setSelectAllMinerallayers(value);
+		} else if (layerType === 'M1 Entity Layer') {
+			setSelectAllEntityLayers(value);
 		}
 	};
 
@@ -114,10 +118,16 @@ export default function CategorySection({ title, search, layerCategory }) {
 		}
 		if (layerType === 'M1') {
 			setSelectAllMinerallayers(check);
+		} else if (layerType === 'M1 Entity') {
+			setSelectAllEntityLayers(check);
 		}
 	};
+
 	useEffect(() => {
-		checkAllLayers(SectionLayers, 'M1');
+		checkAllLayers(
+			SectionLayers,
+			layerCategory === 'M1 Layer' ? 'M1' : layerCategory === 'M1 Entity Layer' ? 'M1 Entity' : ''
+		);
 	}, [projectedLayers]);
 
 	const handleClick = event => {
@@ -151,13 +161,16 @@ export default function CategorySection({ title, search, layerCategory }) {
 	return (
 		<>
 			<StyledListHeader button onClick={() => setOpenM1(!openM1)}>
-				{layerCategory === 'M1 Layer' && (
+				{(layerCategory === 'M1 Layer' || layerCategory === 'M1 Entity Layer') && (
 					<Checkbox
-						checked={selectAllMinerallayers}
+						checked={layerCategory === 'M1 Layer' ? selectAllMinerallayers : selectAllEntityLayers}
 						color="darkgray"
 						onClick={e => e.stopPropagation()}
 						onChange={() => {
-							handleCheckAllLayers(!selectAllMinerallayers, layerCategory);
+							handleCheckAllLayers(
+								layerCategory === 'M1 Layer' ? !selectAllMinerallayers : !selectAllEntityLayers,
+								layerCategory
+							);
 						}}
 						inputProps={{ 'aria-label': 'primary checkbox' }}
 					/>

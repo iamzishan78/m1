@@ -59,7 +59,7 @@ import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { copy } from '../Shared/functions';
 import ZoomFault from './components/ZoomFault';
 import { extractUniqueFilters } from './DeckGL/helpers/common';
-import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
+import DeckGlOverlay from './DeckGL/helpers/DeckGlOverlay';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import MarkerIcon from './sprites/marker-icon.png';
 import {
@@ -844,7 +844,7 @@ function Map({
 				window.mapRef = newMap;
 				window.drawRef = Draw;
 				// Initializing overlay
-				DeckGlLayer.initializeOverlay({ transactBarView: stateApp.transactBarView });
+				DeckGlOverlay.initializeOverlay({ transactBarView: stateApp.transactBarView });
 				layerController.resetMapStates(true);
 
 				setStateApp(state => ({

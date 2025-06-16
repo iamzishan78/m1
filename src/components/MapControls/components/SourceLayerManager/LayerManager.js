@@ -50,6 +50,8 @@ export default function LayerManager({ search }) {
 					<div onClick={e => e.stopPropagation()}>
 						<CategorySection search={search} title="M1neral Platform Layers" layerCategory="M1 Layer" />
 
+						<CategorySection search={search} title="M1 Entity Layers" layerCategory="M1 Entity Layer" />
+
 						<CategorySection search={search} title="Client Specific Layers" layerCategory="UD layer" />
 					</div>
 				</div>
