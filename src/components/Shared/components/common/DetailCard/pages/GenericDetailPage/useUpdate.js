@@ -43,8 +43,20 @@ const useUpdate = () => {
 		return true;
 	};
 
+	const getModelAndMappingKey = field => {
+		if (!field) {
+			return { model: null, mappingKey: null };
+		}
+
+		if (field.type === 'user') {
+			return { model: 'User', mappingKey: 'name' };
+		}
+
+		return { model: null, mappingKey: null };
+	};
+
 	return {
-		callApi: ({ key, value, originalKey, field, previousValue, resetFn }) => {
+		callApi: ({ key, value, originalKey, field, previousValue, resetFn, model, mappingKey }) => {
 			if (field && resetFn) {
 				const isValid = validateField(field, value);
 				if (!isValid) {
@@ -55,6 +67,11 @@ const useUpdate = () => {
 
 			detailCardController.updateState({ loadingField: originalKey || key });
 
+			if (!model && !mappingKey) {
+				model = getModelAndMappingKey(field).model;
+				mappingKey = getModelAndMappingKey(field).mappingKey;
+			}
+
 			updateRecordInRunTimeModel({
 				variables: {
 					ids: [currentAssetRecord?._id],
@@ -64,6 +81,8 @@ const useUpdate = () => {
 					},
 					targetLabel: currentAsset?.name,
 					tenant: UserSession.getStorageItem('tenantName'),
+					model,
+					mappingKey,
 				},
 				refetchQueries: ['getRecordFromRunTimeModel', 'getCommentsByObjectId'],
 				awaitRefetchQueries: false,

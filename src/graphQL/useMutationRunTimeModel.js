@@ -13,6 +13,8 @@ export const UPDATE_RECORD_IN_RUN_TIME_MODEL = gql`
 		$record: JSON
 		$targetLabel: String
 		$tenant: String
+		$model: String
+		$mappingKey: String
 	) {
 		updateRecordInRunTimeModel(
 			tableName: $tableName
@@ -20,6 +22,8 @@ export const UPDATE_RECORD_IN_RUN_TIME_MODEL = gql`
 			record: $record
 			targetLabel: $targetLabel
 			tenant: $tenant
+			model: $model
+			mappingKey: $mappingKey
 		)
 	}
 `;
