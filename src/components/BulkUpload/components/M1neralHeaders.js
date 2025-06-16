@@ -567,7 +567,6 @@ export default function M1neralHeaders() {
 								onChange={e => {
 									jobController.updateState({
 										mappingName: e.target.value,
-										saveMappingChecked: false, // Reset checkbox when name changes
 									});
 								}}
 							/>
