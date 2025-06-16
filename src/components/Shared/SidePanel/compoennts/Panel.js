@@ -626,7 +626,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 									currentStyle={mapStateValues.mapVars.styleId}
 									title={title}
 								/>
-								<Box overflow="hidden scroll">
+								<Box overflow="hidden scroll" style={{ height: '50%' }}>
 									<Collapse in={true} timeout="auto" unmountOnExit>
 										<DisplayList
 											onDragEnd={onDragEnd}
