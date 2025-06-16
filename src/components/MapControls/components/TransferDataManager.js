@@ -1,8 +1,6 @@
 import React, { useState, useContext, useEffect, Fragment } from 'react';
 
-import { IconButton } from '@material-ui/core';
-import { Collapse } from '@material-ui/core';
-import { Grid, Typography, Divider, Button } from '@material-ui/core';
+import { IconButton, Collapse, Grid, Typography, Divider, Button } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -24,12 +22,13 @@ import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
 import { jobController } from 'stateManagement/jobStateController';
 import { mapControlsController } from 'stateManagement/mapControlsController';
+
 import { history } from 'store';
 
 import { AppContext } from '../../../AppContext';
 import { deepEqual } from '../../Shared/functions';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	list: {
 		border: '2px solid #A9A9A9',
 		padding: '0px',
@@ -85,7 +84,7 @@ const StyledListItem = withStyles(theme => ({
 	},
 }))(ListItem);
 
-export default function TransferDataManager(props) {
+export default function TransferDataManager() {
 	const classes = useStyles();
 
 	const [stateApp] = useContext(AppContext);
@@ -242,14 +241,21 @@ export default function TransferDataManager(props) {
 										{dataset?.categories.map((layer, index) => {
 											const labelId = `m1layer-list-label-${index}`;
 											return (
-												<StyledListItem key={index} ContainerComponent="li">
+												<StyledListItem
+													key={selectedSourceCategory?.layerName || selectedSourceCategory?.layerShapeName}
+													ContainerComponent="li"
+												>
 													<Checkbox
-														checked={selectedSourceCategory?.layerName === (layer.layerName || layer.layerShapeName)}
+														checked={
+															(selectedSourceCategory?.layerName || selectedSourceCategory?.layerShapeName) ===
+															(layer.layerName || layer.layerShapeName)
+														}
 														color="dark gray"
 														onClick={e => e.stopPropagation()}
 														onChange={() => {
 															setSelectedSourceCategory(
-																selectedSourceCategory?.layerName !== (layer.layerName || layer.layerShapeName)
+																(selectedSourceCategory?.layerName || selectedSourceCategory?.layerShapeName) !==
+																	(layer.layerName || layer.layerShapeName)
 																	? layer
 																	: null
 															);
@@ -301,7 +307,7 @@ export default function TransferDataManager(props) {
 										{snapGridSideBarData.map((row, index) => {
 											const labelId = `m1layer-list-label-${index}`;
 											return (
-												<StyledListItem key={index} ContainerComponent="li">
+												<StyledListItem key={row.label} ContainerComponent="li">
 													<Checkbox
 														checked={selectedPlatformCategory?.label === row.label}
 														color="dark gray"
