@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory, Link } from 'react-router-dom';
+
 import {
 	Avatar,
 	Box,
@@ -22,6 +23,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
+import DescriptionIcon from '@material-ui/icons/Description';
 import DrawPoly from '@material-ui/icons/EditLocationOutlined';
 import FolderIcon from '@material-ui/icons/Folder';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -29,11 +31,13 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import $ from 'jquery';
+import PropTypes from 'prop-types';
 
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import { modifyExandableCardStyle } from 'components/Shared/functions/shapeLayer';
+import EditNote from 'components/Shared/svgIcons/edit_note';
 
 import { UPDATE_ASSET_SHAPE_LABEL } from 'graphQL/useMutationRunTimeModel';
 
@@ -42,6 +46,8 @@ import { drawController } from 'stateManagement/drawStateController';
 import { globalStateController } from 'stateManagement/globalStateController';
 import { layerController } from 'stateManagement/layerStateController';
 import { popupController } from 'stateManagement/popupStateController';
+
+import { UserSession } from 'utils/user';
 
 import { showInfoMessage } from 'actions';
 
@@ -58,8 +64,6 @@ import ExpandIcon from './components/svgIcons/ExpandIcon';
 import ShrinkIcon from './components/svgIcons/ShrinkIcon';
 
 import 'material-icons/iconfont/material-icons.css';
-import EditNote from 'components/Shared/svgIcons/edit_note';
-import { UserSession } from 'utils/user';
 
 function ExpandableCard(props) {
 	// initials
@@ -648,6 +652,14 @@ function ExpandableCard(props) {
 		}, 10);
 	};
 
+	const handleViewGenericDetail = () => {
+		if (selectedShape?.isGenericAssetShape) {
+			const assetName = selectedShape?.properties?.type || selectedShape?.shapeJson?.properties?.name;
+			const tenantName = UserSession.getStorageItem('tenantName');
+			history.push(`/land/customAsset/${assetName}/details/${selectedShape.id}/?tenant=${tenantName}`);
+		}
+	};
+
 	// BreadCrum for Document's well
 	const DisplayBreadCrums = () => {
 		return (
@@ -766,6 +778,17 @@ function ExpandableCard(props) {
 					classes={{ title: classes.title, subheader: classes.subheader }}
 					action={
 						<div className={classes.headerIcons}>
+							{selectedShape?.isGenericAssetShape && (
+								<Tooltip title="View Generic Detail" placement="top">
+									<IconButton
+										onClick={handleViewGenericDetail}
+										aria-label="View Generic Detail"
+										className={classes.icons}
+									>
+										<DescriptionIcon />
+									</IconButton>
+								</Tooltip>
+							)}
 							{(targetLabel === 'parcel' || selectedShape) && (
 								<Tooltip title={'Edit shape boundary'} data-testid="edit-shape-boundary" placement="top">
 									<IconButton
@@ -951,5 +974,28 @@ function ExpandableCard(props) {
 		</React.Fragment>
 	);
 }
+
+ExpandableCard.propTypes = {
+	cardWidthExpanded: PropTypes.string,
+	cardLeft: PropTypes.number,
+	cardTop: PropTypes.number,
+	cardWidth: PropTypes.string,
+	height: PropTypes.string,
+	title: PropTypes.string,
+	targetLabel: PropTypes.string,
+	expanded: PropTypes.bool,
+	handleCloseExpandableCard: PropTypes.func,
+	component: PropTypes.node,
+	subTitle: PropTypes.string,
+	parent: PropTypes.string,
+	targetSourceId: PropTypes.string,
+	mouseX: PropTypes.number,
+	mouseY: PropTypes.number,
+	position: PropTypes.string,
+	noTrackAvailable: PropTypes.bool,
+	handleDelete: PropTypes.func,
+	deleteCustomLayer: PropTypes.func,
+	deleteParcel: PropTypes.func,
+};
 
 export default React.memo(ExpandableCard);

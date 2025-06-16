@@ -9,6 +9,7 @@ import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
+import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
@@ -323,7 +324,20 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 		};
 	});
 
-	return [...baseSchema, ...dynamicColumns, ...auditColumns];
+	const coordinatesColumn = {
+		...CommonSchema.ACTION_COLUMN,
+		name: 'coordinates',
+		id: 'coordinates',
+		header: '',
+		size: 70,
+		Cell: ({ row }) => {
+			const id = row.getValue('_id');
+			const type = row.original?.assetShape?.layer;
+			return <FlyToMap id={id} type={type} disabled={!id} />;
+		},
+	};
+
+	return [...baseSchema, ...dynamicColumns, ...auditColumns, coordinatesColumn];
 }
 
 async function fetchGridViews(client, module) {
