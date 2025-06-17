@@ -268,12 +268,23 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		}
 
 		if (aggregationColumns?.length) {
+			let globalFilter = tableStateValues.globalFilter;
+
+			if (tableStateValues.isGeneric && !tableStateValues.globalSearch) {
+				globalFilter = null;
+			}
+
 			const result = await client.query({
 				variables: {
 					index: esIndex,
 					modelName,
 					filters: [...filters, ...defaultFilters],
 					aggs: Object.assign({}, ...aggregationColumns),
+					search: {
+						query: globalFilter ? `${globalFilter}` : '',
+						fields: tableMeta.searchFields,
+						advanceSearch: tableStateValues.advanceSearch,
+					},
 				},
 				query: GET_DB_AGGS,
 			});
@@ -316,7 +327,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		}
 
 		fetchFooterAggregationData();
-	}, [refetch, tableState.filters]);
+	}, [refetch, tableState.filters, tableState.globalFilter, tableState.advanceSearch]);
 
 	// Effect to reset pagination and scroll to top when filters, sorting, grouping, or global filter change
 	useEffect(() => {

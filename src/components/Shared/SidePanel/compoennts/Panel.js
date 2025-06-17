@@ -565,7 +565,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 						{type === 'base' && (
 							<>
 								<BasemapImageBox setBaseMap={setBaseMap} currentStyle={mapStateValues.mapVars.styleId} title={title} />
-								<Box sx={{ maxHeight: 'calc(100vh - 500px)', overflow: 'auto' }}>
+								<Box overflow="hidden scroll" style={{ height: '50%' }}>
 									<Collapse in={true} timeout="auto" unmountOnExit>
 										<DisplayList
 											onDragEnd={onDragEnd}
