@@ -16,7 +16,6 @@ import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } fr
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
-import { globalStateController } from 'stateManagement/globalStateController';
 import { layerFiltersController } from 'stateManagement/layerFiltersController';
 import { layerController } from 'stateManagement/layerStateController';
 import { tableController, tableESState } from 'stateManagement/tableController';
@@ -345,10 +344,20 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 		let datasetsShapeNames =
 			datasets?.flatMap(dataset =>
-				dataset.categories.map(category => ({
-					label: `[${dataset.name}] - ${category.layerIdentifier}`,
-					value: `${dataset.file}_${category.layerIdentifier}`,
-				}))
+				dataset.categories
+					.map(category => {
+						const matchingLayer = layers.find(
+							l => l.file === dataset.file && l.layerIdentifier === category.layerIdentifier
+						);
+						if (!matchingLayer) {
+							return null;
+						}
+						return {
+							label: `[${dataset.name}] - ${category.layerIdentifier}`,
+							value: `${dataset.file}_${category.layerIdentifier}`,
+						};
+					})
+					.filter(Boolean)
 			) || [];
 
 		const m1LayersOptions = Object.keys(customLayersFieldAccessors).map(layer => ({ label: layer, value: layer }));
@@ -372,6 +381,16 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		const layer = layers.find(l => l.file === fileId && l.layerIdentifier === layerIdentifier);
 
 		if (dataSourceName && !(customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema)) {
+			console.log('ER: ', {
+				layers,
+				datasets,
+				dataSourceName,
+				layerIdentifier,
+				fileId,
+				layer,
+				c1: customLayersFieldAccessors[dataSourceName]?.keys,
+				c2: layer?.layerSchema,
+			});
 			return [];
 		}
 		const tableKey = Object.keys(tableESState).find(key => {
@@ -398,7 +417,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 						'singleselect',
 						false
 					);
-					// layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
+					// layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, getMapViewFilters());
 					setFieldNameObj({});
 					setValue(`mapViews.${index}.fieldName`, null);
 					setValue(`mapViews.${index}.filterType`, null);
