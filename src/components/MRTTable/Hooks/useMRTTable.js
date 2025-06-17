@@ -448,9 +448,9 @@ const useMRTTable = tableKey => {
 						},
 
 						onColumnOrderChange: orderingFunc => {
-							const ordering = tableState?.ordering;
+							const columnOrdering = tableState?.columnOrdering;
 
-							const newOrder = typeof orderingFunc === 'function' ? orderingFunc(ordering || []) : orderingFunc;
+							const newOrder = typeof orderingFunc === 'function' ? orderingFunc(columnOrdering || []) : orderingFunc;
 
 							Controller.setColumnOrdering(newOrder);
 

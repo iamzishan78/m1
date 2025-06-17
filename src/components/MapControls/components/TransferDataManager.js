@@ -230,14 +230,18 @@ export default function TransferDataManager() {
 										{dataset?.categories.map((layer, index) => {
 											const labelId = `m1layer-list-label-${index}`;
 											return (
-												<StyledListItem key={layer.layerName || layer.layerIdentifier} ContainerComponent="li">
+												<StyledListItem key={layer?.layerName || layer?.layerShapeName} ContainerComponent="li">
 													<Checkbox
-														checked={selectedSourceCategory?.layerName === (layer.layerName || layer.layerIdentifier)}
+														checked={
+															(selectedSourceCategory?.layerName || selectedSourceCategory?.layerShapeName) ===
+															(layer.layerName || layer.layerShapeName)
+														}
 														color="dark gray"
 														onClick={e => e.stopPropagation()}
 														onChange={() => {
 															setSelectedSourceCategory(
-																selectedSourceCategory?.layerName !== (layer.layerName || layer.layerIdentifier)
+																(selectedSourceCategory?.layerName || selectedSourceCategory?.layerShapeName) !==
+																	(layer.layerName || layer.layerShapeName)
 																	? layer
 																	: null
 															);
@@ -289,7 +293,7 @@ export default function TransferDataManager() {
 										{snapGridSideBarData.map(row => {
 											const labelId = `m1layer-list-label-${row.index}`;
 											return (
-												<StyledListItem key={row.index} ContainerComponent="li">
+												<StyledListItem key={row.label} ContainerComponent="li">
 													<Checkbox
 														checked={selectedPlatformCategory?.label === row.label}
 														color="dark gray"

@@ -19,12 +19,21 @@ steps:
     displayName: 'Install Node.js'
 
   - script: |
-      yarn install
-    displayName: 'Yarn Install'
+      yarn config set registry https://registry.npmjs.org
+      yarn config set network-timeout 300000
+      n=0
+      until [ "$n" -ge 5 ]
+      do
+        yarn install && break
+        n=$((n+1))
+        echo "Retrying yarn install... ($n)"
+        sleep 10
+      done
+    displayName: 'Resilient Yarn Install'
 
   - script: |
       npx update-browserslist-db@latest || true
-    displayName: "Update Browserslist"
+    displayName: 'Update Browserslist'
 
   - script: |
       echo $NODE_OPTIONS
