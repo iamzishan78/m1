@@ -158,6 +158,7 @@ export const getBasicInfoContent = contactData => {
 		'Entity Type': {
 			data: { ownerType: ownerType },
 			linkType: LinkTypes.None,
+			allowNewOptions: true,
 		},
 		// Added county for basic info
 		County: {
@@ -318,6 +319,7 @@ export const getBasicInfoExpContent = (contactData, metafields = []) => {
 		Outcome: {
 			data: { outcome: contactData?.outcome },
 			linkType: LinkTypes.None,
+			allowNewOptions: true,
 		},
 		Campaigns: {
 			data: { campaigns: contactData?.campaigns || [] },
@@ -339,10 +341,12 @@ export const getBasicInfoExpContent = (contactData, metafields = []) => {
 		Stage: {
 			data: { status: stage },
 			linkType: LinkTypes.None,
+			allowNewOptions: true,
 		},
 		Status: {
 			data: { contactStatus },
 			linkType: LinkTypes.None,
+			allowNewOptions: true,
 		},
 		'Contact Owner': {
 			data: {

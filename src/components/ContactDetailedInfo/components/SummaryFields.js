@@ -325,6 +325,7 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 										size: 'small',
 										margin: 'dense',
 										variant: 'outlined',
+										allowNewOptions: true,
 									}}
 									fieldEvents={{
 										onChange: ({ value }) => updateFieldData(field.key, value ?? ''),

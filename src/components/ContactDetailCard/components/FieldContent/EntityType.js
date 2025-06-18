@@ -80,6 +80,7 @@ export default function EntityType({ setDocumentType, value, ...other }) {
 			fieldConfig={{
 				margin: 'dense',
 				size: 'small',
+				allowNewOptions: other.allowNewOptions,
 			}}
 			disableListWrap
 			disableClearable={false}

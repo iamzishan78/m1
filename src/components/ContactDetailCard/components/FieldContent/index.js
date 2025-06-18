@@ -391,6 +391,7 @@ export default function FieldContent({
 							}}
 							fieldConfig={{
 								size: 'medium',
+								allowNewOptions: row.allowNewOptions,
 							}}
 							onKeyDown={event => keyDownHandler(event, ['contactOwner', 'contactOwnerId'])}
 						/>
@@ -419,6 +420,7 @@ export default function FieldContent({
 									size: 'small',
 									margin: 'dense',
 									variant: 'outlined',
+									allowNewOptions: row.allowNewOptions,
 								}}
 								fieldEvents={{
 									onChange: ({ value }) => {
@@ -468,6 +470,7 @@ export default function FieldContent({
 										className: classes.editTextField,
 										autoFocus: true,
 									},
+									allowNewOptions: row.allowNewOptions,
 								}}
 								onKeyDown={event => keyDownHandler(event, [fieldName])}
 							/>
@@ -491,6 +494,7 @@ export default function FieldContent({
 										id: 'fieldContentInput' + fieldName,
 										autoFocus: true,
 									},
+									allowNewOptions: row.allowNewOptions,
 								}}
 								fieldEvents={{
 									onChange: ({ value }) => {
@@ -521,6 +525,7 @@ export default function FieldContent({
 										[fieldName]: val,
 									}));
 								}}
+								allowNewOptions={row.allowNewOptions}
 								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
 								onKeyDown={event => keyDownHandler(event, [fieldName])}
 								onBlur={() => onBlurHandler([fieldName])}
@@ -549,6 +554,7 @@ export default function FieldContent({
 										id: 'contact-detail-outcome',
 										autoFocus: true,
 									},
+									allowNewOptions: row.allowNewOptions,
 								}}
 								fieldEvents={{
 									onChange: ({ value }) => {
@@ -586,6 +592,7 @@ export default function FieldContent({
 										id: 'fieldContentInput' + fieldName,
 										autoFocus: true,
 									},
+									allowNewOptions: row.allowNewOptions,
 								}}
 								fieldEvents={{
 									onChange: ({ value }) => {
@@ -621,6 +628,7 @@ export default function FieldContent({
 													id: 'fieldContentInput' + fieldName,
 													autoFocus: true,
 												},
+												allowNewOptions: row.allowNewOptions,
 											}}
 											fieldEvents={{
 												onChange: ({ value }) => {
