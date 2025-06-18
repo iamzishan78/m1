@@ -250,7 +250,7 @@ export default function DetailInfo(props) {
 	}, [user]);
 
 	useEffect(() => {
-		if (props.purchaseData.length > 0) {
+		if (props.purchaseData.length > 0 && !selectedPurchaseData) {
 			setSelectedPurchaseData(props.purchaseData[0]._id);
 		}
 	}, [props.purchaseData]);
