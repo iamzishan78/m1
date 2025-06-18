@@ -42,7 +42,7 @@ const useStyles = makeStyles(() => ({
 			borderRadius: '7px',
 		},
 		'& .MuiOutlinedInput-input': {
-			padding: '8px 14px',
+			padding: '13px 14px',
 		},
 	},
 	hoverPointer: {
@@ -80,7 +80,7 @@ const formatValue = (field, inputValue) => {
 	}
 };
 
-const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
+const SummaryTextField = ({ fieldData, field, summaryData, isMetaField, customGridSpacing }) => {
 	const classes = useStyles();
 	const {
 		stateValues: { page, loadingField },
@@ -152,6 +152,7 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 				multiline: field.multiline,
 				disabled: field.disabled,
 				customStyleClass: `${classes.field} ${field.isOverRideable && isChangedValue ? classes.baseValueChanged : null}`,
+				customGridSpacing,
 			}}
 			fieldAttributes={{
 				value: value,
@@ -198,6 +199,7 @@ SummaryTextField.propTypes = {
 	}).isRequired,
 	summaryData: PropTypes.object,
 	isMetaField: PropTypes.bool,
+	customGridSpacing: PropTypes.number,
 };
 
 export default SummaryTextField;

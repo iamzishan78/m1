@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
+import PropTypes from 'prop-types';
+
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
 
@@ -10,7 +12,7 @@ import { detailCardController } from 'stateManagement/detailCardController';
 const useStyles = makeStyles(() => ({
 	container: {
 		height: '100%',
-		paddingRight: '8px',
+		paddingRight: '4px',
 	},
 }));
 
@@ -52,6 +54,11 @@ const SummaryUsersList = ({ fieldData, field }) => {
 			/>
 		</div>
 	);
+};
+
+SummaryUsersList.propTypes = {
+	fieldData: PropTypes.object,
+	field: PropTypes.object.isRequired,
 };
 
 export default SummaryUsersList;

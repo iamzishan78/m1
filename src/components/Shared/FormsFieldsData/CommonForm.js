@@ -73,6 +73,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error, errors }) {
 									allowNewOptions: item.renderField === 'autoCompleteNewOption',
 									required: item.required,
 									disabled: item.disabled,
+									multiple: item.multiple ?? false,
 								}}
 								fieldEvents={{ onChange: item.onChange }}
 								fieldAttributes={{

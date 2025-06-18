@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
 export const customAssetFormValidationSchema = ({ fields = [] }) => {
-	if (!Array.isArray(fields) || fields.length === 0) return z.object({});
+	if (!Array.isArray(fields) || fields.length === 0) {
+		return z.object({});
+	}
 
 	const schema = fields.reduce((acc, field) => {
 		let validator;
@@ -32,7 +34,9 @@ export const customAssetFormValidationSchema = ({ fields = [] }) => {
 						message: `${label} is required`,
 					});
 
-				if (!isRequired) validator = validator.optional();
+				if (!isRequired) {
+					validator = validator.optional();
+				}
 				break;
 
 			case 'date':
@@ -55,7 +59,9 @@ export const customAssetFormValidationSchema = ({ fields = [] }) => {
 
 			case 'boolean':
 				validator = z.boolean();
-				if (!isRequired) validator = validator.optional();
+				if (!isRequired) {
+					validator = validator.optional();
+				}
 				break;
 
 			default:

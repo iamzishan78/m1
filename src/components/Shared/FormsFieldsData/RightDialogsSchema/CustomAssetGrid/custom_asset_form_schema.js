@@ -44,6 +44,13 @@ export const customAssetForm = ({ fields = [], user }) => {
 					...commonProperties,
 					options: booleanTypeOptions,
 				};
+			case 'array':
+				return {
+					...commonProperties,
+					renderField: 'autoComplete',
+					defaultOptions: field.options || [],
+					multiple: field.selectType === 'multi',
+				};
 			default:
 				return {
 					...commonProperties,

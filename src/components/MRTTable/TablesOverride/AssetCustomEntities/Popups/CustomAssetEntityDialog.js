@@ -40,28 +40,81 @@ const zodValidationSchema = z.object({
 	shape_type: z.string().nonempty('Shape type is required'),
 	fields: z
 		.array(
-			z.object({
-				_id: z.string().optional(),
-				mappingKey: z
-					.string()
-					.nonempty('Key is required')
-					.min(1, 'Key must not be empty')
-					.refine(val => /^[a-zA-Z0-9_]+$/.test(val), {
-						message: 'Key must contain only letters, numbers, and underscores',
+			z
+				.object({
+					_id: z.string().optional(),
+					mappingKey: z
+						.string()
+						.nonempty('Key is required')
+						.min(1, 'Key must not be empty')
+						.refine(val => /^[a-zA-Z0-9_]+$/.test(val), {
+							message: 'Key must contain only letters, numbers, and underscores',
+						}),
+					keyType: z.string().nonempty('Key type is required'),
+					label: z.string().nonempty('Label is required').min(1, 'Label must not be empty'),
+					isSummaryField: z.boolean(),
+					isControlColumn: z.boolean(),
+					isGridDisplayed: z.boolean(),
+					isDialogDisplayed: z.boolean(),
+					isRequired: z.boolean(),
+					selectType: z.string().optional(),
+					optionType: z.string().optional(),
+					options: z
+						.array(
+							z.object({
+								label: z.string().nonempty('Label is required'),
+								value: z
+									.union([z.string().nonempty('Value is required'), z.number()])
+									.refine(val => val !== undefined && val !== null && val !== '', {
+										message: 'Value is required',
+									}),
+							})
+						)
+						.optional(),
+					accessControl: z.object({
+						owner: z.string().default('Full'),
+						admin: z.string().default('Full'),
+						user: z.string().default('Full'),
 					}),
-				keyType: z.string().nonempty('Key type is required'),
-				label: z.string().nonempty('Label is required').min(1, 'Label must not be empty'),
-				isSummaryField: z.boolean(),
-				isControlColumn: z.boolean(),
-				isGridDisplayed: z.boolean(),
-				isDialogDisplayed: z.boolean(),
-				isRequired: z.boolean(),
-				accessControl: z.object({
-					owner: z.string().default('Full'),
-					admin: z.string().default('Full'),
-					user: z.string().default('Full'),
-				}),
-			})
+				})
+				.superRefine((data, ctx) => {
+					const { keyType, optionType, options } = data;
+					if (keyType !== 'array' || !optionType || !Array.isArray(options)) {
+						return;
+					}
+
+					options.forEach((option, index) => {
+						const path = ['options', index, 'value'];
+
+						if (optionType === 'number') {
+							// Handle both string and number values
+							const value = option.value;
+							const isInvalid =
+								typeof value === 'string'
+									? isNaN(Number(value)) || value.trim() === ''
+									: typeof value !== 'number' || isNaN(value);
+
+							if (isInvalid) {
+								ctx.addIssue({
+									path,
+									code: z.ZodIssueCode.custom,
+									message: 'All option values must be valid numbers when option type is number',
+								});
+							}
+						}
+
+						if (optionType === 'string') {
+							const isInvalid = typeof option.value !== 'string' || option.value.trim() === '';
+							if (isInvalid) {
+								ctx.addIssue({
+									path,
+									code: z.ZodIssueCode.custom,
+									message: 'All option values must be non-empty strings when option type is string',
+								});
+							}
+						}
+					});
+				})
 		)
 		.min(1, 'At least one field is required'),
 });
