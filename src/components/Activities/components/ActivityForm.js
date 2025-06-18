@@ -532,6 +532,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 							fieldConfig={{
 								variant: 'outlined',
 								size: 'small',
+								allowNewOptions: true,
 							}}
 							fieldEvents={{
 								onChange: ({ value }) => {
