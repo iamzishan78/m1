@@ -604,6 +604,7 @@ export default function DetailInfo(props) {
 													isPurchased
 													row={row}
 													handleQuickActionActivity={props.handleQuickActionActivity}
+													purchaseDataId={selectedPurchaseData}
 												/>
 											</Grid>
 										</React.Fragment>
@@ -632,6 +633,7 @@ export default function DetailInfo(props) {
 														isPurchased
 														row={row}
 														handleQuickActionActivity={props.handleQuickActionActivity}
+														purchaseDataId={selectedPurchaseData}
 													/>
 												</Grid>
 											</React.Fragment>

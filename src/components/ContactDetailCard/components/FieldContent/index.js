@@ -48,6 +48,7 @@ export default function FieldContent({
 	children,
 	id,
 	isPurchased = false,
+	purchaseDataId,
 	entity,
 	melissaRecordId = null,
 	melissaAddressRecordId = null,
@@ -138,7 +139,7 @@ export default function FieldContent({
 				if (isPurchased) {
 					updateContactPurchaseData({
 						variables: {
-							purchaseData: trimmedEditContent,
+							purchaseData: { ...trimmedEditContent, purchaseDataId },
 							isDialpadEnabled: stateApp.user?.features?.some(feature => feature.name === FEATURES.DIALPAD_INTEGRATION),
 						},
 						refetchQueries: ['getContactPurchaseData', 'getDailpadContact', 'getContact'],
