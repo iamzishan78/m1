@@ -583,7 +583,6 @@ function AddActivityDialog(props) {
 						variant: 'outlined',
 						size: 'small',
 						label: 'Outcome',
-						allowNewOptions: true,
 					}}
 					fieldEvents={{
 						onChange: ({ value }) => {
