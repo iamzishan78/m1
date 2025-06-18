@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+
+import { Grid, TextField, Select, MenuItem, IconButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Clear } from '@material-ui/icons';
+
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { get, debounce } from 'lodash';
 import moment from 'moment';
-
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid, TextField, Select, MenuItem, IconButton, Typography } from '@material-ui/core';
-import { Clear } from '@material-ui/icons';
-import { Autocomplete, createFilterOptions } from '@material-ui/lab';
-import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
-import loadashFilter from 'lodash/filter';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
+import CustomAutoComplete from 'components/Shared/components/Fields/CustomAutoComplete';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 import AssociatedWellsList from 'components/Shared/Wells/AssociatedWells';
@@ -36,7 +36,7 @@ const useStyles = makeStyles(() => ({
 	fieldsSection: {
 		margin: '0px 0px',
 		'& .MuiOutlinedInput-root': {
-			height: `46px !important`,
+			height: '46px !important',
 			borderRadius: '6px !important',
 		},
 	},
@@ -92,7 +92,7 @@ const useStyles = makeStyles(() => ({
 	textArea: {
 		margin: '0px 0px',
 		'& .MuiOutlinedInput-root': {
-			height: `auto !important`,
+			height: 'auto !important',
 			borderRadius: '6px !important',
 		},
 	},
@@ -233,7 +233,9 @@ export default function HeaderSection(props) {
 	};
 
 	const setEntity = entityDetails => {
-		if (entityDetails && !checkIfContact(entityDetails?._id)) setEntityToConvert({ ...entityDetails, isEntity: true });
+		if (entityDetails && !checkIfContact(entityDetails?._id)) {
+			setEntityToConvert({ ...entityDetails, isEntity: true });
+		}
 	};
 
 	const handleUpdate = debounce((key, value) => {
@@ -435,29 +437,23 @@ export default function HeaderSection(props) {
 								<div className={classes.label}>Accounting Ref ID</div>
 							</Grid>
 							<Grid item xs={8}>
-								<CustomAutoComplete
+								<Controller
 									control={control}
-									watch={watch}
-									fieldAttributes={{
-										name: 'internalID',
-										optionArray: [],
-									}}
-									fieldConfig={{
-										variant: 'outlined',
-										margin: 'dense',
-										size: 'small',
-										allowNewOptions: true,
-										textfieldRestProps: {
-											fullWidth: true,
-										},
-									}}
-									fieldEvents={{
-										onChange: ({ value }) => {
-											setValue('internalID', value || '');
-										},
-										onBlur: e => updatePropertyData('internalID', e.target.value),
-									}}
-									className={classes.field}
+									name="internalID"
+									render={({ field }) => (
+										<TextField
+											{...field}
+											className={classes.textField}
+											variant="outlined"
+											margin="dense"
+											placeholder=""
+											fullWidth
+											onChange={e => {
+												field.onChange(e.target.value);
+											}}
+											onBlur={e => updatePropertyData('internalID', e.target.value)}
+										/>
+									)}
 								/>
 							</Grid>
 						</Grid>
@@ -539,8 +535,11 @@ export default function HeaderSection(props) {
 											nameAutValue={field.value ? field.value : { _id: '', name: '' }}
 											className={classes.field}
 											setNameAutValue={value => {
-												if (value) contactEntity(value?._id, 'owner');
-												else handleUpdate('owner', null);
+												if (value) {
+													contactEntity(value?._id, 'owner');
+												} else {
+													handleUpdate('owner', null);
+												}
 											}}
 											renderInput={params2 => (
 												<TextField
@@ -723,8 +722,12 @@ export default function HeaderSection(props) {
 										const normalizeValue = value => {
 											if (value) {
 												const formattedValue = value.replace(/\s+/g, '').toLowerCase();
-												if (formattedValue === 'inpay') return 'InPay';
-												if (formattedValue === 'notinpay') return 'NotInPay';
+												if (formattedValue === 'inpay') {
+													return 'InPay';
+												}
+												if (formattedValue === 'notinpay') {
+													return 'NotInPay';
+												}
 											}
 											return '';
 										};
@@ -919,4 +922,44 @@ export default function HeaderSection(props) {
 
 HeaderSection.defaultProps = {
 	propertyDetails: {},
+};
+
+HeaderSection.propTypes = {
+	propertyDetails: PropTypes.shape({
+		_id: PropTypes.string,
+		name: PropTypes.string,
+		number: PropTypes.string,
+		purchaserNumber: PropTypes.string,
+		internalID: PropTypes.string,
+		description: PropTypes.string,
+		ownerNumber: PropTypes.string,
+		documentDate: PropTypes.string,
+		divOrderStatus: PropTypes.string,
+		state: PropTypes.string,
+		county: PropTypes.string,
+		status: PropTypes.string,
+		internalCompany: PropTypes.string,
+		prospectID: PropTypes.string,
+		acquisitionID: PropTypes.string,
+		legalDescription: PropTypes.string,
+		owner: PropTypes.shape({
+			_id: PropTypes.string,
+			name: PropTypes.string,
+		}),
+		operator: PropTypes.shape({
+			_id: PropTypes.string,
+			name: PropTypes.string,
+		}),
+		purchaser: PropTypes.shape({
+			_id: PropTypes.string,
+			name: PropTypes.string,
+		}),
+	}),
+	propertyOwnerContact: PropTypes.arrayOf(
+		PropTypes.shape({
+			entityId: PropTypes.string,
+		})
+	),
+	setEntityToConvert: PropTypes.func,
+	propertyId: PropTypes.string,
 };
