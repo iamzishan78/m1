@@ -9,6 +9,7 @@ import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
+import Chips from 'components/MRTTable/Common/TableCells/Chips';
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -249,6 +250,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 			// Column rendering logic
 			const renderCell = ({ row }) => {
 				let value = row.getValue(key);
+
 				switch (column.keyType) {
 					case 'date':
 						value = formatDate(value);
@@ -258,6 +260,15 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 						break;
 					case 'number':
 						value = vf_number(value, 2);
+						break;
+					case 'array':
+						// Handle array type fields with chip rendering (only if not control column)
+						if (!column.isControlColumn) {
+							if (Array.isArray(value) && value.length > 0) {
+								return <Chips list={value} />;
+							}
+							return <span style={{ color: '#999' }}>—</span>;
+						}
 						break;
 				}
 

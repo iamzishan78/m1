@@ -163,6 +163,7 @@ function CustomTextField({
 		autoFocus = false,
 		variant = 'standard',
 		customStyleClass = '',
+		customGridSpacing = 2,
 	} = {},
 	fieldAttributes: {
 		name = '',
@@ -312,7 +313,7 @@ function CustomTextField({
 	const fieldXs = layout === 'horizontal' ? 9 : 12;
 
 	return (
-		<Grid container spacing={2}>
+		<Grid container spacing={customGridSpacing}>
 			{title && (
 				<Grid item xs={titleXs} sx={{ display: 'flex', alignItems: 'center' }}>
 					<Box component={titleComponent}>{title}</Box>

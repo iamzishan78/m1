@@ -5,6 +5,7 @@ import { DialogTitle, DialogActions, DialogContent, Grid, makeStyles, Button, Ic
 
 import { useMutation } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
+import PropTypes from 'prop-types';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
@@ -108,6 +109,12 @@ export default function AddCustomAssetDialog(props) {
 		resolver: zodResolver(validationSchema),
 	});
 
+	const handleClickDialogClose = () => {
+		props?.onClose();
+		sideDialogController('customAssetDialog').reset();
+		reset();
+	};
+
 	const [addRecordInRunTimeModel, { loading }] = useMutation(ADD_RECORD_IN_RUN_TIME_MODEL, {
 		fetchPolicy: 'no-cache',
 		awaitRefetchQueries: true,
@@ -122,25 +129,46 @@ export default function AddCustomAssetDialog(props) {
 		window.setStateApp(state => ({ ...state, universalCircularLoaderAct: loading }));
 	}, [loading]);
 
-	const handleClickDialogClose = () => {
-		props?.onClose();
-		sideDialogController('customAssetDialog').reset();
-		reset();
-	};
-
 	const handleClickAdd = customAssetData => {
+		// Transform array type fields
+		const transformedData = { ...customAssetData };
+		currentAsset?.modelKeys?.forEach(field => {
+			if (field.keyType === 'array' && field.mappingKey in transformedData) {
+				const value = transformedData[field.mappingKey];
+
+				// Handle both single and multiselect cases
+				let arrayValue;
+				if (Array.isArray(value)) {
+					// For multiselect, extract values from objects
+					arrayValue = value.map(item => {
+						// If item is an object (has label/value), use the value
+						if (item && typeof item === 'object') {
+							return item.value;
+						}
+						// If item is already a primitive value
+						return item;
+					});
+				} else {
+					// For single select, convert single value to array
+					arrayValue = [value];
+				}
+
+				transformedData[field.mappingKey] = arrayValue;
+			}
+		});
+
 		if (props?.onClickAddHandler) {
-			props?.onClickAddHandler({ currentAsset, customAssetData });
+			props?.onClickAddHandler({ currentAsset, customAssetData: transformedData });
 			handleClickDialogClose();
 			return;
 		}
 
 		sideDialogController('customAssetDialog').updateState({
-			...customAssetData,
+			...transformedData,
 		});
 
 		addRecordInRunTimeModel({
-			variables: { tableName: currentAsset?.tableName, record: customAssetData },
+			variables: { tableName: currentAsset?.tableName, record: transformedData },
 		});
 	};
 
@@ -218,3 +246,8 @@ export default function AddCustomAssetDialog(props) {
 		</div>
 	);
 }
+
+AddCustomAssetDialog.propTypes = {
+	onClose: PropTypes.func.isRequired,
+	onClickAddHandler: PropTypes.func,
+};

@@ -214,10 +214,18 @@ export const entityKeyTypes = [
 	{ label: 'Date', value: 'date' },
 	// { label: 'ObjectId', value: 'objectId' },
 	{ label: 'Boolean', value: 'boolean' },
-	// { label: 'Array', value: 'array' },
+	{ label: 'Array', value: 'array' },
 	{ label: 'User', value: 'user' },
-	// { label: 'Tags', value: 'tags' },
-	// { label: 'Comments', value: 'comments' },
+];
+
+export const arraySelectTypes = [
+	{ label: 'Single Select', value: 'single' },
+	{ label: 'Multi Select', value: 'multi' },
+];
+
+export const optionTypes = [
+	{ label: 'String', value: 'string' },
+	{ label: 'Number', value: 'number' },
 ];
 
 // Dummy schema for dynamic schema loading

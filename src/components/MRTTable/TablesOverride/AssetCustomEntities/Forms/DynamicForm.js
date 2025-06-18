@@ -35,7 +35,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 import PropTypes from 'prop-types';
 
-import { entityKeyTypes } from 'components/MRTTable/utils/data';
+import { entityKeyTypes, arraySelectTypes, optionTypes } from 'components/MRTTable/utils/data';
 import { removeSpaces } from 'components/MRTTable/utils/helper';
 
 import { tableGlobalController } from 'stateManagement/tableController';
@@ -292,9 +292,68 @@ const useStyles = makeStyles(theme => ({
 			marginRight: '4px',
 		},
 	},
+	arrayTypeContainer: {
+		marginTop: '16px',
+		border: '1px solid rgba(0, 0, 0, 0.12)',
+		borderRadius: '8px',
+		backgroundColor: '#fff',
+		overflow: 'hidden',
+	},
+	arrayTypeHeader: {
+		padding: '12px 20px',
+		borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+		backgroundColor: theme.palette.grey[50],
+	},
+	arrayTypeContent: {
+		padding: '20px',
+	},
+	arrayTypeGrid: {
+		marginBottom: '0 !important', // Override the default margin
+	},
+	selectOptionsContainer: {
+		marginTop: '0',
+		padding: '0',
+		borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+	},
+	optionItem: {
+		display: 'flex',
+		alignItems: 'flex-start',
+		marginBottom: '16px',
+		gap: '8px',
+		padding: '12px',
+		backgroundColor: theme.palette.grey[50],
+		borderRadius: '4px',
+		'&:last-child': {
+			marginBottom: '0',
+		},
+	},
+	optionFields: {
+		display: 'flex',
+		flexDirection: 'row',
+		gap: '16px',
+		flex: 1,
+		'& .MuiTextField-root': {
+			width: 'calc(50% - 8px)',
+		},
+	},
+	addOptionButton: {
+		marginTop: '16px',
+		padding: '8px 16px',
+		fontWeight: 600,
+		fontSize: '0.875rem',
+		boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+		'&:hover': {
+			boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+		},
+	},
+	optionError: {
+		color: theme.palette.error.main,
+		fontSize: '0.75rem',
+		marginTop: '4px',
+	},
 }));
 
-const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDialog = false }) => {
+const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDialog = false, onFormDataTransform }) => {
 	const [expandedField, setExpandedField] = useState(null);
 	const [activeTab, setActiveTab] = useState({});
 	const [isAddingField, setIsAddingField] = useState(false);
@@ -310,6 +369,40 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 		control,
 		name: 'fields',
 	});
+
+	// Function to clean up isNew flags from options
+	const cleanupOptions = formData => {
+		if (!formData.fields) {
+			return formData;
+		}
+
+		const cleanedData = {
+			...formData,
+			fields: formData.fields.map(field => {
+				if (field.keyType === 'array' && field.options) {
+					return {
+						...field,
+						options: field.options.map(option => {
+							// Remove isNew flag, keep only label and value
+							const cleanOption = { ...option };
+							delete cleanOption.isNew;
+							return cleanOption;
+						}),
+					};
+				}
+				return field;
+			}),
+		};
+
+		return cleanedData;
+	};
+
+	// Expose cleanup function to parent component
+	useEffect(() => {
+		if (onFormDataTransform) {
+			onFormDataTransform(cleanupOptions);
+		}
+	}, [onFormDataTransform]);
 
 	// Handle field expansion on initial load and new field additions
 	useEffect(() => {
@@ -364,7 +457,26 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 		});
 	};
 
+	const validateOption = (value, optionType) => {
+		if (!value && value !== 0) {
+			return true;
+		}
+		if (optionType === 'number') {
+			// For number type, check if it's a valid number
+			return !isNaN(Number(value)) && value !== '';
+		}
+		if (optionType === 'string') {
+			// For string type, ensure it's not a number and has content
+			const stringValue = String(value);
+			return isNaN(Number(stringValue)) && stringValue.trim() !== '';
+		}
+		return true;
+	};
+
 	const renderFieldProperties = (field, index) => {
+		const currentField = watchedFields[index];
+		const isArrayType = currentField?.keyType === 'array';
+
 		return (
 			<div className={classes.tabPanel}>
 				<Grid container spacing={3} className={classes.formGrid}>
@@ -461,6 +573,17 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 										onWheel={e => e.target.blur()}
 										onChange={e => {
 											field.onChange(e.target.value);
+											if (e.target.value === 'array') {
+												// Set defaults when array is selected
+												setValue(`fields[${index}].selectType`, 'single');
+												setValue(`fields[${index}].optionType`, 'string');
+												setValue(`fields[${index}].options`, [{ label: '', value: '' }]);
+											} else {
+												// Reset when other type is selected
+												setValue(`fields[${index}].selectType`, '');
+												setValue(`fields[${index}].optionType`, '');
+												setValue(`fields[${index}].options`, []);
+											}
 										}}
 										placeholder="Select key type"
 										fullWidth
@@ -479,6 +602,204 @@ const DynamicForm = ({ control, setValue, errors, clearErrors, isAssociationDial
 						/>
 					</Grid>
 				</Grid>
+
+				{isArrayType && (
+					<div className={classes.arrayTypeContainer}>
+						<div className={classes.arrayTypeHeader}>
+							<Typography variant="subtitle2">Array Type Configuration</Typography>
+						</div>
+						<div className={classes.arrayTypeContent}>
+							<Grid container spacing={3} className={classes.arrayTypeGrid}>
+								<Grid item xs={12} md={6}>
+									<Typography variant="body2" gutterBottom>
+										Select Type
+									</Typography>
+									<Controller
+										control={control}
+										name={`fields[${index}].selectType`}
+										defaultValue={field.selectType || ''}
+										render={({ field }) => (
+											<>
+												<TextField
+													select
+													size="small"
+													variant="outlined"
+													value={field.value}
+													inputRef={field.ref}
+													onChange={e => {
+														field.onChange(e.target.value);
+													}}
+													fullWidth
+													error={!!errors?.[index]?.selectType}
+													disabled={!isCreateAssetMode}
+												>
+													{arraySelectTypes.map(option => (
+														<MenuItem key={option.value} value={option.value}>
+															{option.label}
+														</MenuItem>
+													))}
+												</TextField>
+												<FormHelperText error>{errors?.[index]?.selectType?.message || ' '}</FormHelperText>
+											</>
+										)}
+									/>
+								</Grid>
+
+								{currentField?.selectType && (
+									<Grid item xs={12} md={6}>
+										<Typography variant="body2" gutterBottom>
+											Option Type
+										</Typography>
+										<Controller
+											control={control}
+											name={`fields[${index}].optionType`}
+											defaultValue={field.optionType || ''}
+											render={({ field }) => (
+												<>
+													<TextField
+														select
+														size="small"
+														variant="outlined"
+														value={field.value}
+														inputRef={field.ref}
+														onChange={e => {
+															field.onChange(e.target.value);
+														}}
+														fullWidth
+														error={!!errors?.[index]?.optionType}
+														disabled={!isCreateAssetMode}
+													>
+														{optionTypes.map(option => (
+															<MenuItem key={option.value} value={option.value}>
+																{option.label}
+															</MenuItem>
+														))}
+													</TextField>
+													<FormHelperText error>{errors?.[index]?.optionType?.message || ' '}</FormHelperText>
+												</>
+											)}
+										/>
+									</Grid>
+								)}
+							</Grid>
+
+							<div className={classes.selectOptionsContainer}>
+								<div className={classes.arrayTypeHeader}>
+									<Typography variant="subtitle2">
+										Select Options{' '}
+										{currentField?.optionType && `(${currentField.optionType === 'number' ? 'Numbers only' : 'Text'})`}
+									</Typography>
+								</div>
+								<div className={classes.arrayTypeContent}>
+									<Controller
+										control={control}
+										name={`fields[${index}].options`}
+										defaultValue={field.options || []}
+										render={({ field }) => (
+											<>
+												{field.value.map((option, optionIndex) => {
+													// Check if this is a newly added option
+													const isNewOption = option.isNew === true;
+
+													return (
+														<div key={`option-${index}-${optionIndex}`} className={classes.optionItem}>
+															<div className={classes.optionFields}>
+																{/* Label – always editable */}
+																<TextField
+																	size="small"
+																	variant="outlined"
+																	label="Label"
+																	value={option.label}
+																	onChange={e => {
+																		const newOptions = [...field.value];
+																		newOptions[optionIndex] = {
+																			...newOptions[optionIndex],
+																			label: e.target.value,
+																		};
+																		field.onChange(newOptions);
+																	}}
+																	error={!option.label}
+																	helperText={!option.label ? 'Label is required' : ' '}
+																/>
+
+																{/* Value – editable only if it's a new option or in create mode */}
+																<TextField
+																	size="small"
+																	variant="outlined"
+																	label="Value"
+																	value={option.value}
+																	onChange={e => {
+																		const newValue = e.target.value;
+																		if (validateOption(newValue, currentField?.optionType)) {
+																			const newOptions = [...field.value];
+																			const processedValue =
+																				currentField?.optionType === 'number' && newValue !== ''
+																					? Number(newValue)
+																					: newValue;
+																			newOptions[optionIndex] = {
+																				...newOptions[optionIndex],
+																				value: processedValue,
+																			};
+																			field.onChange(newOptions);
+																		}
+																	}}
+																	error={
+																		!option.value ||
+																		(currentField?.optionType && !validateOption(option.value, currentField.optionType))
+																	}
+																	helperText={
+																		!option.value
+																			? 'Value is required'
+																			: currentField?.optionType === 'number' &&
+																				  !validateOption(option.value, currentField.optionType)
+																				? 'Must be a valid number'
+																				: currentField?.optionType === 'string' &&
+																					  !validateOption(option.value, currentField.optionType)
+																					? 'Must be text only (no numbers)'
+																					: ' '
+																	}
+																	disabled={isCreateAssetMode ? false : !isNewOption} // Allow editing in create mode, or if it's a new option in edit mode
+																/>
+															</div>
+
+															<IconButton
+																size="small"
+																onClick={() => {
+																	const newOptions = field.value.filter((_, i) => i !== optionIndex);
+																	field.onChange(newOptions);
+																}}
+																disabled={field.value.length <= 1 || (!isCreateAssetMode && !isNewOption)}
+																className={classes.removeButton}
+															>
+																<DeleteIcon />
+															</IconButton>
+														</div>
+													);
+												})}
+
+												<Button
+													variant="contained"
+													color="primary"
+													size="small"
+													startIcon={<AddIcon />}
+													onClick={() => {
+														field.onChange([...field.value, { label: '', value: '', isNew: true }]);
+													}}
+													className={classes.addOptionButton}
+												>
+													Add Option
+												</Button>
+												{errors?.[index]?.options && (
+													<FormHelperText error>{errors[index].options.message}</FormHelperText>
+												)}
+											</>
+										)}
+									/>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
 
 				<div className={classes.checkboxGroup}>
 					{isAddEditAsset && (
@@ -840,6 +1161,7 @@ DynamicForm.propTypes = {
 	errors: PropTypes.object,
 	clearErrors: PropTypes.func,
 	isAssociationDialog: PropTypes.bool,
+	onFormDataTransform: PropTypes.func,
 };
 
 export default DynamicForm;

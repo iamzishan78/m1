@@ -5,6 +5,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { getRandomColor } from 'components/Shared/functions/ui';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
@@ -28,6 +29,7 @@ const useStyles = makeStyles(theme => ({
 		},
 		'& .MuiInputBase-root': {
 			borderRadius: '7px',
+			height: '49px',
 		},
 	},
 	dealOwnerAvatar: {
@@ -162,6 +164,16 @@ const UsersListWithIcon = ({
 			</Grid>
 		</Grid>
 	);
+};
+
+UsersListWithIcon.propTypes = {
+	field: PropTypes.object,
+	label: PropTypes.string,
+	placeholder: PropTypes.string,
+	selectedUserId: PropTypes.string,
+	onChangeUser: PropTypes.func,
+	labelSize: PropTypes.number,
+	fieldSize: PropTypes.number,
 };
 
 export default UsersListWithIcon;
