@@ -1,20 +1,21 @@
 import React, { useState, useContext, useEffect } from 'react';
 
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+
 
 import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { navController } from 'stateManagement/navStateController';
 
 import { WELLGRID } from '../../../graphQL/useQueryWellGrId12345';
+import CustomAutoComplete from '../../Shared/components/Fields/CustomAutoComplete';
 import { NavigationContext } from '../NavigationContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	formControl: {
 		minWidth: 249,
 		color: 'black',
@@ -92,23 +93,23 @@ export default function FilterGrid12345({ gridNumber, label }) {
 		return { wellFiltersNull, stateNavObj };
 	};
 
-	const handleChange = (event, newValue) => {
+	const handleChange = ({ valueObj }) => {
 		const { wellFiltersNull, stateNavObj } = nullDesc();
-		if (newValue === null) {
+		if (valueObj === null) {
 			navController.handleWellsFilters([...wellFiltersNull, { field: `GrId${gridNumber}`, value: null }]);
 			setStateNav({
 				...stateNavObj,
 				[`GrId${gridNumber}`]: null,
 			});
 		} else {
-			if (newValue && newValue[`GrId${gridNumber}`]) {
+			if (valueObj && valueObj[`GrId${gridNumber}`]) {
 				navController.handleWellsFilters([
 					...wellFiltersNull,
-					{ field: `GrId${gridNumber}`, value: newValue[`GrId${gridNumber}`] },
+					{ field: `GrId${gridNumber}`, value: valueObj[`GrId${gridNumber}`] },
 				]);
 				setStateNav({
 					...stateNavObj,
-					[`GrId${gridNumber}`]: newValue[`GrId${gridNumber}`],
+					[`GrId${gridNumber}`]: valueObj[`GrId${gridNumber}`],
 				});
 			}
 		}
@@ -127,34 +128,31 @@ export default function FilterGrid12345({ gridNumber, label }) {
 					<CircularProgress color="secondary" className={classes.loader} size={28} />
 				</div>
 			) : (
-				<Autocomplete
+				<CustomAutoComplete
 					className={classes.autoC}
-					options={gridList}
-					getOptionLabel={option =>
-						option && option[`GrId${gridNumber}`] ? option[`GrId${gridNumber}`] : option ? option : ''
-					}
-					disabled={!stateNav.countyName || gridList.length === 0}
-					autoComplete
-					autoSelect
-					disableListWrap
-					includeInputInList
-					value={gridList.length === 0 ? '' : stateNav[`GrId${gridNumber}`]}
-					onChange={(event, newValue) => {
-						handleChange(event, newValue);
+					fieldConfig={{
+						variant: 'outlined',
+						size: 'medium',
+						disabled: !stateNav.countyName || gridList.length === 0,
+						getCustomOptionLabel: option =>
+							option && option[`GrId${gridNumber}`] ? option[`GrId${gridNumber}`] : option ? option : '',
 					}}
-					onKeyDown={event => onEnterKey(event)}
-					renderInput={params => (
-						<form autoComplete="off">
-							<TextField {...params} fullWidth label={label} variant="outlined" />
-						</form>
-					)}
-					renderOption={option => (
-						<Typography>
-							{option && option[`GrId${gridNumber}`] ? option[`GrId${gridNumber}`] : option ? option : ''}
-						</Typography>
-					)}
+					fieldAttributes={{
+						label,
+						optionArray: gridList,
+						value: gridList.length === 0 ? '' : stateNav[`GrId${gridNumber}`],
+					}}
+					fieldEvents={{
+						onChange: handleChange,
+						onBlur: onEnterKey,
+					}}
 				/>
 			)}
 		</FormControl>
 	);
 }
+
+FilterGrid12345.propTypes = {
+	gridNumber: PropTypes.number.isRequired,
+	label: PropTypes.string.isRequired,
+};

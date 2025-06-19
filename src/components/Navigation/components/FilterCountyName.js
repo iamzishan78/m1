@@ -3,18 +3,17 @@ import React, { useState, useContext, useEffect } from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+
 
 import { useLazyQuery } from '@apollo/client';
 
 import { navController } from 'stateManagement/navStateController';
 
 import { COUNTIES } from '../../../graphQL/useQueryCountiesBySta';
+import CustomAutoComplete from '../../Shared/components/Fields/CustomAutoComplete';
 import { NavigationContext } from '../NavigationContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	formControl: {
 		minWidth: 249,
 		color: 'black',
@@ -74,21 +73,21 @@ export default function FilterCountyName() {
 		}
 	}, [data]);
 
-	const handleCountyNameChange = (event, newValue) => {
-		if (newValue == null) {
+	const handleCountyNameChange = ({ valueObj }) => {
+		if (valueObj == null) {
 			setStateNav(stateNav => ({
 				...stateNav,
 				...nullDesc_Obj,
 			}));
 			navController.handleGeographyFilters(nullDesc);
 		} else {
-			if (newValue && newValue.county) {
+			if (valueObj && valueObj.county) {
 				setStateNav(stateNav => ({
 					...stateNav,
 					...nullDesc_Obj,
-					countyName: newValue.county,
+					countyName: valueObj.county,
 				}));
-				navController.handleGeographyFilters([...nullDesc, { field: 'county', value: newValue.county }]);
+				navController.handleGeographyFilters([...nullDesc, { field: 'county', value: valueObj.county }]);
 			}
 		}
 	};
@@ -106,28 +105,23 @@ export default function FilterCountyName() {
 					<CircularProgress color="secondary" className={classes.loader} size={28} />
 				</div>
 			) : (
-				<Autocomplete
+				<CustomAutoComplete
 					className={classes.autoC}
-					options={countyList}
-					getOptionLabel={option => (option && option.county ? option.county : option ? option : '')}
-					disabled={!stateNav.stateName || countyList.length === 0}
-					autoComplete
-					autoSelect
-					disableListWrap
-					includeInputInList
-					value={countyList.length === 0 ? '' : stateNav.countyName}
-					onChange={(event, newValue) => {
-						handleCountyNameChange(event, newValue);
+					fieldConfig={{
+						size: 'medium',
+						disabled: !stateNav.stateName || countyList.length === 0,
+						variant: 'outlined',
+						getCustomOptionLabel: option => (option && option.county ? option.county : option ? option : ''),
 					}}
-					onKeyDown={event => onEnterKey(event)}
-					renderInput={params => (
-						<form autoComplete="off">
-							<TextField {...params} fullWidth label="County" variant="outlined" />
-						</form>
-					)}
-					renderOption={option => (
-						<Typography>{option && option.county ? option.county : option ? option : ''}</Typography>
-					)}
+					fieldAttributes={{
+						label: 'County',
+						optionArray: countyList,
+						value: countyList.length === 0 ? '' : stateNav.countyName,
+					}}
+					fieldEvents={{
+						onChange: handleCountyNameChange,
+						onBlur: onEnterKey,
+					}}
 				/>
 			)}
 		</FormControl>
