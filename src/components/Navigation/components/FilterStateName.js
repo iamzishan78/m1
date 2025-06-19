@@ -2,16 +2,14 @@ import React, { useContext, useEffect } from 'react';
 
 import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { navController } from 'stateManagement/navStateController';
 
+import CustomAutoComplete from '../../Shared/components/Fields/CustomAutoComplete';
 import { NavigationContext } from '../NavigationContext';
 import { statesAbbNames, statesNames } from './Utils/USAStates&Abb';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	formControl: {
 		minWidth: 249,
 		color: 'black',
@@ -41,30 +39,30 @@ export default function FilterStateName() {
 	const classes = useStyles();
 	const [stateNav, setStateNav] = useContext(NavigationContext);
 
-	useEffect(() => {
-		if (!stateNav.stateName && stateNav.displayStateName) {
-			handleStateNameChange();
-		}
-	}, [stateNav.stateName]);
-
-	const handleStateNameChange = (event, newValue) => {
-		if (newValue === null) {
+	const handleStateNameChange = (value = null) => {
+		if (!value) {
 			setStateNav(stateNav => ({
 				...stateNav,
 				...nullDesc_Obj,
 			}));
 			navController.handleGeographyFilters(nullDesc);
 		} else {
-			const AbbName = statesAbbNames[statesNames.indexOf(newValue)];
+			const AbbName = statesAbbNames[statesNames.indexOf(value)];
 			setStateNav(stateNav => ({
 				...stateNav,
 				...nullDesc_Obj,
 				stateName: AbbName,
-				displayStateName: newValue,
+				displayStateName: value,
 			}));
 			navController.handleGeographyFilters([...nullDesc, { field: 'state', value: AbbName }]);
 		}
 	};
+
+	useEffect(() => {
+		if (!stateNav.stateName && stateNav.displayStateName) {
+			handleStateNameChange();
+		}
+	}, [stateNav.stateName]);
 
 	const onEnterKey = event => {
 		if (event.keyCode === 13) {
@@ -74,24 +72,21 @@ export default function FilterStateName() {
 
 	return (
 		<FormControl variant="outlined" className={classes.formControl}>
-			<Autocomplete
+			<CustomAutoComplete
 				className={classes.autoC}
-				options={statesNames}
-				getOptionLabel={option => option}
-				autoSelect
-				disableListWrap
-				includeInputInList
-				value={stateNav.displayStateName}
-				onChange={(event, newValue) => {
-					handleStateNameChange(event, newValue);
+				fieldConfig={{
+					size: 'medium',
+					variant: 'outlined',
 				}}
-				onKeyDown={event => onEnterKey(event)}
-				renderInput={params => (
-					<form autoComplete="off">
-						<TextField {...params} fullWidth label="State" variant="outlined" />
-					</form>
-				)}
-				renderOption={option => <Typography>{option}</Typography>}
+				fieldAttributes={{
+					label: 'State',
+					optionArray: statesNames,
+					value: stateNav.displayStateName,
+				}}
+				fieldEvents={{
+					onChange: ({ valueObj }) => handleStateNameChange(valueObj),
+					onBlur: onEnterKey,
+				}}
 			/>
 		</FormControl>
 	);
