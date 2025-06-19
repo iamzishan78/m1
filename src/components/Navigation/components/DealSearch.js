@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Grid, InputAdornment, TextField, IconButton, Tooltip } from '@material-ui/core';
+import { Grid, InputAdornment, IconButton, Tooltip } from '@material-ui/core';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -9,9 +9,10 @@ import ClearIcon from '@material-ui/icons/Clear';
 import List from '@material-ui/icons/List';
 import SearchIcon from '@material-ui/icons/Search';
 import TableChartIcon from '@material-ui/icons/TableChart';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { AppContext } from '../../../AppContext';
+import CustomAutoComplete from '../../Shared/components/Fields/CustomAutoComplete';
+
 
 const useStyles = makeStyles(theme => ({
 	search: () => ({
@@ -97,86 +98,82 @@ const DealSearch = () => {
 		}));
 	};
 
+	const renderOptionComp = ({ option }) => {
+		return (
+			<Grid container item xs={12} alignItems="center">
+				<Grid item xs>
+					<span style={{ fontWeight: 400 }}>{option.name}</span>
+				</Grid>
+			</Grid>
+		);
+	};
+
 	return (
 		<>
-			<Autocomplete
+			<CustomAutoComplete
 				className={classes.search}
-				style={{ margin: 0 }}
-				options={allDeals}
-				onChange={(e, deal) => {
-					deal && handleSelectDeal(deal);
-				}}
-				disableClearable={false}
-				forcePopupIcon
 				popupIcon={<ArrowDropDownIcon htmlColor="#fff" />}
-				closeIcon={<ClearIcon htmlColor="#fff" />}
-				getOptionLabel={option => option.name}
-				renderOption={option => {
-					return (
-						<Grid container spacing={0}>
-							<Grid container item xs={12} alignItems="center">
-								<Grid item xs>
-									<span style={{ fontWeight: 400 }}>{option.name}</span>
-								</Grid>
-							</Grid>
-						</Grid>
-					);
-				}}
-				renderInput={params => {
-					const _params = { ...params, inputProps: { ...params.inputProps, value: searchInputValue } };
-					return (
-						<TextField
-							{..._params}
-							style={{ margin: 0 }}
-							className={classes.activitySearchField}
-							margin="dense"
-							variant="outlined"
-							placeholder="Search for deals"
-							onChange={e => setSearchInputValue(e.target.value)}
-							InputProps={{
-								...params.InputProps,
-								startAdornment: (
-									<InputAdornment>
-										<IconButton size="small">
-											<SearchIcon htmlColor="grey" />
+				fieldConfig={{
+					margin: 'dense',
+					variant: 'outlined',
+					renderOptionComp,
+					textfieldRestProps: {
+						style: { margin: 0 },
+						className: classes.activitySearchField,
+					},
+					textFieldInputProps: {
+						startAdornment: (
+							<InputAdornment>
+								<IconButton size="small">
+									<SearchIcon htmlColor="grey" />
+								</IconButton>
+							</InputAdornment>
+						),
+						endAdornment: (
+							<ButtonGroup variant="text">
+								{searchInputValue && searchInputValue !== '' && (
+									<Tooltip title="Clear" placement="top">
+										<IconButton size="small" onClick={() => setSearchInputValue('')}>
+											<ClearIcon htmlColor="#fff" />
 										</IconButton>
-									</InputAdornment>
-								),
-								endAdornment: (
-									<ButtonGroup variant="text">
-										{searchInputValue && searchInputValue !== '' && (
-											<Tooltip title="Clear" placement="top">
-												<IconButton size="small" onClick={() => setSearchInputValue('')}>
-													<ClearIcon htmlColor="#fff" />
-												</IconButton>
-											</Tooltip>
-										)}
-										<Tooltip title="List View">
-											<IconButton
-												size="small"
-												htmlColor="#fff"
-												className={`${classes.toggleBtn} ${stateApp.dealDisplayType === 'table' && classes.activeBtn}`}
-												//temporarily commenting out until list view exists
-												onClick={() => setDealDisplayType('table')}
-											>
-												<List />
-											</IconButton>
-										</Tooltip>
-										<Tooltip title="Board View">
-											<IconButton
-												size="small"
-												htmlColor="#fff"
-												className={`${classes.toggleBtn} ${stateApp.dealDisplayType === 'board' && classes.activeBtn}`}
-												onClick={() => setDealDisplayType('board')}
-											>
-												<TableChartIcon />
-											</IconButton>
-										</Tooltip>
-									</ButtonGroup>
-								),
-							}}
-						/>
-					);
+									</Tooltip>
+								)}
+								<Tooltip title="List View">
+									<IconButton
+										size="small"
+										htmlColor="#fff"
+										className={`${classes.toggleBtn} ${stateApp.dealDisplayType === 'table' && classes.activeBtn}`}
+										onClick={() => setDealDisplayType('table')}
+									>
+										<List />
+									</IconButton>
+								</Tooltip>
+								<Tooltip title="Board View">
+									<IconButton
+										size="small"
+										htmlColor="#fff"
+										className={`${classes.toggleBtn} ${stateApp.dealDisplayType === 'board' && classes.activeBtn}`}
+										onClick={() => setDealDisplayType('board')}
+									>
+										<TableChartIcon />
+									</IconButton>
+								</Tooltip>
+							</ButtonGroup>
+						),
+					},
+				}}
+				fieldAttributes={{
+					optionArray: allDeals,
+					placeholder: 'Search for deals',
+					inputSearchText: searchInputValue,
+				}}
+				fieldEvents={{
+					onChange: ({ valueObj }) => {
+						valueObj && handleSelectDeal(valueObj);
+					},
+					onTextFieldChange: value => {
+						setSearchInputValue(value);
+					},
 				}}
 			/>
 		</>
